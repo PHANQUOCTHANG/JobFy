@@ -1,0 +1,1052 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+// ============================================================
+// ENUMS (Các kiểu dữ liệu cố định)
+// ============================================================
+
+enum UserRole {
+  admin                 // Quản trị viên hệ thống
+  employer              // Nhà tuyển dụng / Doanh nghiệp
+  candidate             // Ứng viên tìm việc
+}
+
+enum UserStatus {
+  active                // Tài khoản đang hoạt động
+  inactive              // Tài khoản tạm dừng
+  banned                // Tài khoản bị khóa / cấm
+  pending_verification  // Tài khoản chờ xác thực email/SĐT
+}
+
+enum GenderType {
+  male                  // Nam
+  female                // Nữ
+  other                 // Khác
+  prefer_not_to_say     // Không muốn tiết lộ
+}
+
+enum JobStatus {
+  draft                 // Tin tuyển dụng nháp
+  published             // Tin đã xuất bản, đang hiển thị
+  closed                // Tin đã đóng chủ động
+  expired               // Tin đã hết hạn hiển thị
+  paused                // Tin tạm dừng tuyển dụng
+}
+
+enum JobType {
+  full_time             // Toàn thời gian
+  part_time             // Bán thời gian
+  contract              // Hợp đồng / Dự án ngắn hạn
+  internship            // Thực tập sinh
+  freelance             // Làm tự do
+  remote                // Làm việc từ xa hoàn toàn
+}
+
+enum ExperienceLevel {
+  intern                // Thực tập sinh
+  fresher               // Mới tốt nghiệp / Chưa có kinh nghiệm
+  junior                // Dưới 2 năm kinh nghiệm
+  mid                   // Từ 2-4 năm kinh nghiệm
+  senior                // Trên 5 năm kinh nghiệm
+  lead                  // Trưởng nhóm kỹ thuật / Team Lead
+  manager               // Trưởng phòng / Quản lý
+  director              // Giám đốc bộ phận
+  executive             // Giám đốc điều hành / C-level
+}
+
+enum SalaryType {
+  hourly                // Lương theo giờ
+  daily                 // Lương theo ngày
+  monthly               // Lương theo tháng
+  yearly                // Lương theo năm
+  negotiable            // Lương thỏa thuận
+}
+
+enum ApplicationStatus {
+  pending               // Hồ sơ mới ứng tuyển, chờ duyệt
+  reviewing             // Đang trong quá trình duyệt hồ sơ
+  shortlisted           // Hồ sơ phù hợp, lọt vào vòng trong
+  interviewed           // Đang/đã phỏng vấn
+  offered               // Đã gửi lời mời nhận việc
+  accepted              // Ứng viên đã đồng ý nhận việc
+  rejected              // Hồ sơ bị từ chối
+  withdrawn             // Ứng viên chủ động rút hồ sơ
+}
+
+enum NotificationType {
+  application_update    // Cập nhật trạng thái ứng tuyển
+  new_job_match         // Gợi ý việc làm phù hợp mới
+  message               // Tin nhắn mới từ cuộc trò chuyện
+  system                // Thông báo từ hệ thống
+  review                // Thông báo liên quan đến đánh giá công ty
+  payment               // Thông báo hóa đơn / thanh toán
+  company_update        // Cập nhật từ công ty đang theo dõi
+}
+
+enum PlanType {
+  free                  // Gói miễn phí
+  basic                 // Gói cơ bản
+  premium               // Gói cao cấp
+  enterprise            // Gói doanh nghiệp lớn
+}
+
+enum PaymentStatus {
+  pending               // Giao dịch đang chờ thanh toán
+  completed             // Giao dịch thành công
+  failed                // Giao dịch thất bại
+  refunded              // Giao dịch đã hoàn tiền
+  cancelled             // Giao dịch bị hủy bỏ
+}
+
+enum PaymentMethod {
+  bank_transfer         // Chuyển khoản ngân hàng
+  credit_card           // Thẻ tín dụng quốc tế
+  momo                  // Ví điện tử MoMo
+  zalopay               // Ví điện tử ZaloPay
+  vnpay                 // Cổng thanh toán VNPay
+}
+
+enum ReportType {
+  spam                  // Tin rác / Trùng lặp
+  fake_job              // Công ty lừa đảo / Tuyển dụng giả mạo
+  inappropriate         // Nội dung phản cảm, vi phạm thuần phong miếng tục
+  scam                  // Lừa đảo tiền bạc / Đa cấp biến tướng
+  other                 // Lý do khác
+}
+
+enum ReportStatus {
+  pending               // Báo cáo mới gửi, đang chờ xử lý
+  reviewed              // Đang xem xét nội dung
+  resolved              // Đã giải quyết (đã xử lý vi phạm)
+  dismissed             // Báo cáo bị bác bỏ (không vi phạm)
+}
+
+enum DegreeType {
+  high_school           // Trung học phổ thông
+  associate             // Cao đẳng / Trung cấp
+  bachelor              // Cử nhân / Kỹ sư (Đại học)
+  master                // Thạc sĩ
+  phd                   // Tiến sĩ
+  certificate           // Chứng chỉ nghề
+  other                 // Khác
+}
+
+enum SkillLevel {
+  beginner              // Mới bắt đầu
+  intermediate          // Trung cấp
+  advanced              // Cao cấp
+  expert                // Chuyên gia
+}
+
+enum CompanySize {
+  value_1_10    @map("1_10")       // Quy mô 1 - 10 nhân sự
+  value_11_50   @map("11_50")      // Quy mô 11 - 50 nhân sự
+  value_51_200  @map("51_200")     // Quy mô 51 - 200 nhân sự
+  value_201_500 @map("201_500")    // Quy mô 201 - 500 nhân sự
+  value_501_1000 @map("501_1000")  // Quy mô 501 - 1000 nhân sự
+  value_1001_5000 @map("1001_5000")// Quy mô 1001 - 5000 nhân sự
+  value_5000_plus @map("5000_plus")// Quy mô trên 5000 nhân sự
+}
+
+enum MessageStatus {
+  sent                  // Đã gửi từ máy khách
+  delivered             // Đối phương đã nhận được thiết bị
+  read                  // Đối phương đã mở xem
+}
+
+// ============================================================
+// 1. LOCATION (Quản lý địa giới hành chính)
+// ============================================================
+
+model Province {
+  id                Int                @id @default(autoincrement()) @db.SmallInt
+  name              String             @db.VarChar(100)
+  code              String             @unique @db.VarChar(10)
+  region            String?            @db.VarChar(50)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  districts         District[]
+  companies         Company[]
+  companyLocations  CompanyLocation[]
+  candidateProfiles CandidateProfile[]
+  resumeExperiences ResumeExperience[]
+  jobs              Jobs[]
+
+  @@map("provinces")
+}
+
+model District {
+  id                Int                @id @default(autoincrement())
+  provinceId        Int                @map("province_id") @db.SmallInt
+  name              String             @db.VarChar(100)
+  code              String             @unique @db.VarChar(10)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  province          Province           @relation(fields: [provinceId], references: [id], onDelete: Cascade)
+  companies         Company[]
+  companyLocations  CompanyLocation[]
+  candidateProfiles CandidateProfile[]
+  jobs              Jobs[]
+
+  @@index([provinceId], map: "idx_districts_province")
+  @@map("districts")
+}
+
+// ============================================================
+// 2. USERS & AUTH (Quản lý tài khoản và định danh)
+// ============================================================
+
+model User {
+  id                String             @id @default(uuid()) @db.Uuid
+  email             String             @unique @db.VarChar(255)
+  phone             String?            @unique @db.VarChar(20)
+  passwordHash      String?            @map("password_hash") @db.VarChar(255)
+  role              UserRole
+  status            UserStatus         @default(pending_verification)
+  emailVerified     Boolean            @default(false) @map("email_verified")
+  phoneVerified     Boolean            @default(false) @map("phone_verified")
+  avatarUrl         String?            @map("avatar_url") @db.VarChar(500)
+  lastLoginAt       DateTime?          @map("last_login_at") @db.Timestamptz
+  loginAttempts     Int                @default(0) @map("login_attempts") @db.SmallInt
+  lockedUntil       DateTime?          @map("locked_until") @db.Timestamptz
+  googleId          String?            @unique @map("google_id") @db.VarChar(100)
+  facebookId        String?            @unique @map("facebook_id") @db.VarChar(100)
+  linkedinId        String?            @unique @map("linkedin_id") @db.VarChar(100)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime?          @map("deleted_at") @db.Timestamptz
+
+  refreshTokens     RefreshToken[]     
+  companiesOwned    Company[]          @relation("CompanyOwner")
+  companyMembers    CompanyMember[]
+  candidateProfile  CandidateProfile?
+  postedJobs        Jobs[]             @relation("JobPoster")
+  reviewedApps      Application[]      @relation("AppReviewer")
+  appNotes          ApplicationNote[]
+  statusHistory     ApplicationStatusHistory[]
+  sentMessages      Message[]
+  companyReviews    CompanyReview[]
+  notifications     Notification[]
+  jobViews          JobView[]
+  reports           Report[]           @relation("Reporter")
+  reviewedReports   Report[]           @relation("ReportReviewer")
+  adminLogs         AdminLog[]
+
+  @@index([email], map: "idx_users_email")
+  @@index([createdAt(sort: Desc)], map: "idx_users_created_at")
+  @@map("users")
+}
+
+model RefreshToken {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  token             String   @unique @db.Text
+  expiresAt         DateTime @map("expires_at") @db.Timestamptz
+  revoked           Boolean  @default(false)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+  @@index([userId])
+}
+
+model Otp {
+  id                String   @id @default(uuid()) @db.Uuid
+  email             String   @db.VarChar(255)
+  otpHash           String   @map("otp_hash") @db.Text
+  expiresAt         DateTime @map("expires_at") @db.Timestamptz
+  verified          Boolean  @default(false)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("otps")
+  @@index([email])
+}
+
+// ============================================================
+// 3. INDUSTRY & JOB CATEGORIES (Quản lý Ngành nghề & Danh mục việc làm)
+// ============================================================
+
+model Industry {
+  id                Int                @id @default(autoincrement())
+  name              String             @unique @db.VarChar(150)
+  slug              String             @unique @db.VarChar(150)
+  iconUrl           String?            @map("icon_url") @db.VarChar(500)
+  isActive          Boolean            @default(true) @map("is_active")
+  sortOrder         Int                @default(0) @map("sort_order") @db.SmallInt
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  categories        JobCategory[]
+  companies         Company[]
+
+  @@map("industries")
+}
+
+model JobCategory {
+  id                Int                @id @default(autoincrement())
+  industryId        Int                @map("industry_id")
+  parentId          Int?               @map("parent_id")
+  name              String             @db.VarChar(150)
+  slug              String             @unique @db.VarChar(150)
+  description       String?            @db.Text
+  isActive          Boolean            @default(true) @map("is_active")
+  sortOrder         Int                @default(0) @map("sort_order") @db.SmallInt
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  industry          Industry           @relation(fields: [industryId], references: [id], onDelete: Cascade)
+  parent            JobCategory?       @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children          JobCategory[]      @relation("CategoryHierarchy")
+  jobs              Jobs[]
+
+  @@index([industryId], map: "idx_jobcat_industry")
+  @@index([slug], map: "idx_jobcat_slug")
+  @@map("job_categories")
+}
+
+// ============================================================
+// 4. SKILLS (Quản lý bộ kỹ năng chuyên môn)
+// ============================================================
+
+model SkillCategory {
+  id                Int                @id @default(autoincrement())
+  name              String             @unique @db.VarChar(100)
+  slug              String             @unique @db.VarChar(100)
+
+  skills            Skill[]
+
+  @@map("skill_categories")
+}
+
+model Skill {
+  id                Int                @id @default(autoincrement())
+  categoryId        Int?               @map("category_id")
+  name              String             @unique @db.VarChar(100)
+  slug              String             @unique @db.VarChar(100)
+  isVerified        Boolean            @default(false) @map("is_verified")
+  usageCount        Int                @default(0) @map("usage_count")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  category          SkillCategory?     @relation(fields: [categoryId], references: [id])
+  resumeSkills      ResumeSkill[]
+  jobSkills         JobSkill[]
+
+  @@index([categoryId], map: "idx_skills_category")
+  @@index([usageCount(sort: Desc)], map: "idx_skills_usage")
+  @@map("skills")
+}
+
+// ============================================================
+// 5. COMPANIES (Quản lý thông tin doanh nghiệp)
+// ============================================================
+
+model Company {
+  id                String             @id @default(uuid()) @db.Uuid
+  ownerId           String             @map("owner_id") @db.Uuid
+  name              String             @db.VarChar(255)
+  slug              String             @unique @db.VarChar(255)
+  logoUrl           String?            @map("logo_url") @db.VarChar(500)
+  coverUrl          String?            @map("cover_url") @db.VarChar(500)
+  website           String?            @db.VarChar(500)
+  taxCode           String?            @unique @map("tax_code") @db.VarChar(50)
+  foundedYear       Int?               @map("founded_year") @db.SmallInt
+  size              CompanySize?
+  industryId        Int?               @map("industry_id")
+  description       String?            @db.Text
+  shortDescription  String?            @map("short_description") @db.VarChar(500)
+  provinceId        Int?               @map("province_id") @db.SmallInt
+  districtId        Int?               @map("district_id")
+  address           String?            @db.VarChar(500)
+  facebookUrl       String?            @map("facebook_url") @db.VarChar(500)
+  linkedinUrl       String?            @map("linkedin_url") @db.VarChar(500)
+  totalJobs         Int                @default(0) @map("total_jobs")
+  totalReviews      Int                @default(0) @map("total_reviews")
+  avgRating         Decimal?           @map("avg_rating") @db.Decimal(3, 2)
+  isVerified        Boolean            @default(false) @map("is_verified")
+  isActive          Boolean            @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime?          @map("deleted_at") @db.Timestamptz
+
+  owner             User               @relation("CompanyOwner", fields: [ownerId], references: [id])
+  industry          Industry?          @relation(fields: [industryId], references: [id])
+  province          Province?          @relation(fields: [provinceId], references: [id])
+  district          District?          @relation(fields: [districtId], references: [id])
+  
+  locations         CompanyLocation[]
+  members           CompanyMember[]
+  resumeExperiences ResumeExperience[]
+  jobs              Jobs[]
+  conversations     Conversation[]
+  reviews           CompanyReview[]
+  subscriptions     EmployerSubscription[]
+  payments          Payment[]
+
+  @@index([ownerId], map: "idx_companies_owner")
+  @@index([industryId], map: "idx_companies_industry")
+  @@index([provinceId], map: "idx_companies_province")
+  @@index([slug], map: "idx_companies_slug")
+  @@map("companies")
+}
+
+model CompanyLocation {
+  id                Int                @id @default(autoincrement())
+  companyId         String             @map("company_id") @db.Uuid
+  provinceId        Int                @map("province_id") @db.SmallInt
+  districtId        Int?               @map("district_id")
+  address           String             @db.VarChar(500)
+  isHeadquarters    Boolean            @default(false) @map("is_headquarters")
+  lat               Decimal?           @db.Decimal(10, 7)
+  lng               Decimal?           @db.Decimal(10, 7)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  company           Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  province          Province           @relation(fields: [provinceId], references: [id])
+  district          District?          @relation(fields: [districtId], references: [id])
+
+  @@index([companyId], map: "idx_comploc_company")
+  @@index([provinceId], map: "idx_comploc_province")
+  @@map("company_locations")
+}
+
+model CompanyMember {
+  id                Int                @id @default(autoincrement())
+  companyId         String             @map("company_id") @db.Uuid
+  userId            String             @map("user_id") @db.Uuid
+  role              String             @default("recruiter") @db.VarChar(50)
+  isActive          Boolean            @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  company           Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, userId])
+  @@index([companyId], map: "idx_compmem_company")
+  @@index([userId], map: "idx_compmem_user")
+  @@map("company_members")
+}
+
+// ============================================================
+// 6. CANDIDATE PROFILES (Quản lý thông tin hồ sơ ứng viên)
+// ============================================================
+
+model CandidateProfile {
+  id                String             @id @default(uuid()) @db.Uuid
+  userId            String             @unique @map("user_id") @db.Uuid
+  fullName          String             @map("full_name") @db.VarChar(255)
+  headline          String?            @db.VarChar(255)
+  gender            GenderType?
+  dob               DateTime?          @db.Date
+  provinceId        Int?               @map("province_id") @db.SmallInt
+  districtId        Int?               @map("district_id")
+  address           String?            @db.VarChar(500)
+  linkedinUrl       String?            @map("linkedin_url") @db.VarChar(500)
+  githubUrl         String?            @map("github_url") @db.VarChar(500)
+  portfolioUrl      String?            @map("portfolio_url") @db.VarChar(500)
+  desiredJobTitle   String?            @map("desired_job_title") @db.VarChar(255)
+  desiredSalaryMin  Int?               @map("desired_salary_min")
+  desiredSalaryMax  Int?               @map("desired_salary_max")
+  desiredSalaryType SalaryType?        @default(monthly) @map("desired_salary_type")
+  experienceLevel   ExperienceLevel?   @map("experience_level")
+  isLooking         Boolean            @default(true) @map("is_looking")
+  isProfilePublic   Boolean            @default(true) @map("is_profile_public")
+  bio               String?            @db.Text
+  profileViews      Int                @default(0) @map("profile_views")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  province          Province?          @relation(fields: [provinceId], references: [id])
+  district          District?          @relation(fields: [districtId], references: [id])
+  
+  resumes           Resume[]
+  applications      Application[]
+  savedJobs         SavedJob[]
+  jobAlerts         JobAlert[]
+  conversations     Conversation[]
+
+  @@index([userId], map: "idx_candprof_user")
+  @@index([provinceId], map: "idx_candprof_province")
+  @@index([experienceLevel], map: "idx_candprof_level")
+  @@map("candidate_profiles")
+}
+
+// ============================================================
+// 7. RESUME / CV (Quản lý các bản CV chi tiết)
+// ============================================================
+
+model Resume {
+  id                String             @id @default(uuid()) @db.Uuid
+  candidateId       String             @map("candidate_id") @db.Uuid
+  title             String             @db.VarChar(255)
+  fileUrl           String?            @map("file_url") @db.VarChar(500)
+  isPrimary         Boolean            @default(false) @map("is_primary")
+  isPublic          Boolean            @default(true) @map("is_public")
+  viewCount         Int                @default(0) @map("view_count")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  candidate         CandidateProfile   @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  educations        ResumeEducation[]
+  experiences       ResumeExperience[]
+  skills            ResumeSkill[]
+  certifications    ResumeCertification[]
+  projects          ResumeProject[]
+  applications      Application[]
+
+  @@index([candidateId], map: "idx_resumes_candidate")
+  @@map("resumes")
+}
+
+model ResumeEducation {
+  id                Int                @id @default(autoincrement())
+  resumeId          String             @map("resume_id") @db.Uuid
+  schoolName        String             @map("school_name") @db.VarChar(255)
+  degree            DegreeType         @default(bachelor)
+  fieldOfStudy      String?            @map("field_of_study") @db.VarChar(255)
+  startDate         DateTime           @map("start_date") @db.Date
+  endDate           DateTime?          @map("end_date") @db.Date
+  isCurrent         Boolean            @default(false) @map("is_current")
+  gpa               Decimal?           @db.Decimal(3, 2)
+  description       String?            @db.Text
+  sortOrder         Int                @default(0) @map("sort_order") @db.SmallInt
+
+  resume            Resume             @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId], map: "idx_resumedu_resume")
+  @@map("resume_educations")
+}
+
+model ResumeExperience {
+  id                Int                @id @default(autoincrement())
+  resumeId          String             @map("resume_id") @db.Uuid
+  companyId         String?            @map("company_id") @db.Uuid
+  companyName       String             @map("company_name") @db.VarChar(255)
+  jobTitle          String             @map("job_title") @db.VarChar(255)
+  employmentType    JobType?           @default(full_time) @map("employment_type")
+  provinceId        Int?               @map("province_id") @db.SmallInt
+  startDate         DateTime           @map("start_date") @db.Date
+  endDate           DateTime?          @map("end_date") @db.Date
+  isCurrent         Boolean            @default(false) @map("is_current")
+  description       String?            @db.Text
+  sortOrder         Int                @default(0) @map("sort_order") @db.SmallInt
+
+  resume            Resume             @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  company           Company?           @relation(fields: [companyId], references: [id])
+  province          Province?          @relation(fields: [provinceId], references: [id])
+
+  @@index([resumeId], map: "idx_resumexp_resume")
+  @@map("resume_experiences")
+}
+
+model ResumeSkill {
+  id                Int                @id @default(autoincrement())
+  resumeId          String             @map("resume_id") @db.Uuid
+  skillId           Int                @map("skill_id")
+  level             SkillLevel?
+  years             Int?               @db.SmallInt
+
+  resume            Resume             @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  skill             Skill              @relation(fields: [skillId], references: [id])
+
+  @@unique([resumeId, skillId])
+  @@index([resumeId], map: "idx_resumeskill_resume")
+  @@index([skillId], map: "idx_resumeskill_skill")
+  @@map("resume_skills")
+}
+
+model ResumeCertification {
+  id                Int                @id @default(autoincrement())
+  resumeId          String             @map("resume_id") @db.Uuid
+  name              String             @db.VarChar(255)
+  issuer            String?            @db.VarChar(255)
+  issueDate         DateTime?          @map("issue_date") @db.Date
+  expireDate        DateTime?          @map("expire_date") @db.Date
+  credentialUrl     String?            @map("credential_url") @db.VarChar(500)
+  sortOrder         Int                @default(0) @map("sort_order") @db.SmallInt
+
+  resume            Resume             @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId], map: "idx_resumecert_resume")
+  @@map("resume_certifications")
+}
+
+model ResumeProject {
+  id                Int                @id @default(autoincrement())
+  resumeId          String             @map("resume_id") @db.Uuid
+  name              String             @db.VarChar(255)
+  role              String?            @db.VarChar(255)
+  startDate         DateTime?          @map("start_date") @db.Date
+  endDate           DateTime?          @map("end_date") @db.Date
+  url               String?            @db.VarChar(500)
+  description       String?            @db.Text
+  sortOrder         Int                @default(0) @map("sort_order") @db.SmallInt
+
+  resume            Resume             @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId], map: "idx_resumeproj_resume")
+  @@map("resume_projects")
+}
+
+// ============================================================
+// 8. JOBS (Quản lý các tin tuyển dụng việc làm)
+// ============================================================
+
+model Jobs {
+  id                String             @id @default(uuid()) @db.Uuid
+  companyId         String             @map("company_id") @db.Uuid
+  postedBy          String             @map("posted_by") @db.Uuid
+  categoryId        Int                @map("category_id")
+  title             String             @db.VarChar(255)
+  slug              String             @db.VarChar(300)
+  description       String             @db.Text
+  requirements      String?            @db.Text
+  benefits          String?            @db.Text
+  jobType           JobType            @default(full_time) @map("job_type")
+  experienceLevel   ExperienceLevel?   @map("experience_level")
+  quantity          Int                @default(1) @db.SmallInt
+  salaryMin         Int?               @map("salary_min")
+  salaryMax         Int?               @map("salary_max")
+  salaryType        SalaryType         @default(monthly) @map("salary_type")
+  salaryCurrency    String             @default("VND") @map("salary_currency") @db.Char(3)
+  isSalaryPublic    Boolean            @default(true) @map("is_salary_public")
+  provinceId        Int?               @map("province_id") @db.SmallInt
+  districtId        Int?               @map("district_id")
+  address           String?            @db.VarChar(500)
+  isRemote          Boolean            @default(false) @map("is_remote")
+  status            JobStatus          @default(draft)
+  publishedAt       DateTime?          @map("published_at") @db.Timestamptz
+  expiresAt         DateTime?          @map("expires_at") @db.Timestamptz
+  viewCount         Int                @default(0) @map("view_count")
+  applyCount        Int                @default(0) @map("apply_count")
+  saveCount         Int                @default(0) @map("save_count")
+  metaTitle         String?            @map("meta_title") @db.VarChar(255)
+  metaDescription   String?            @map("meta_description") @db.VarChar(500)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime?          @map("deleted_at") @db.Timestamptz
+
+  company           Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  poster            User               @relation("JobPoster", fields: [postedBy], references: [id])
+  category          JobCategory        @relation(fields: [categoryId], references: [id])
+  province          Province?          @relation(fields: [provinceId], references: [id])
+  district          District?          @relation(fields: [districtId], references: [id])
+  
+  jobSkills         JobSkill[]
+  jobTags           JobTag[]
+  applications      Application[]
+  savedJobs         SavedJob[]
+  conversations     Conversation[]
+  jobViews          JobView[]
+
+  @@unique([companyId, slug])
+  @@index([companyId], map: "idx_jobs_company")
+  @@index([categoryId], map: "idx_jobs_category")
+  @@index([provinceId], map: "idx_jobs_province")
+  @@index([status, publishedAt(sort: Desc)], map: "idx_jobs_status")
+  @@index([expiresAt], map: "idx_jobs_expires")
+  @@index([jobType], map: "idx_jobs_type")
+  @@index([experienceLevel], map: "idx_jobs_level")
+  @@index([salaryMin, salaryMax], map: "idx_jobs_salary")
+  @@index([publishedAt(sort: Desc)], map: "idx_jobs_published_at")
+  @@map("jobs")
+}
+
+model JobSkill {
+  id                Int                @id @default(autoincrement())
+  jobId             String             @map("job_id") @db.Uuid
+  skillId           Int                @map("skill_id")
+  isRequired        Boolean            @default(true) @map("is_required")
+
+  job               Jobs               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill             Skill              @relation(fields: [skillId], references: [id])
+
+  @@unique([jobId, skillId])
+  @@index([jobId], map: "idx_jobskills_job")
+  @@index([skillId], map: "idx_jobskills_skill")
+  @@map("job_skills")
+}
+
+model Tag {
+  id                Int                @id @default(autoincrement())
+  name              String             @unique @db.VarChar(100)
+  slug              String             @unique @db.VarChar(100)
+
+  jobTags           JobTag[]
+
+  @@map("tags")
+}
+
+model JobTag {
+  jobId             String             @map("job_id") @db.Uuid
+  tagId             Int                @map("tag_id")
+
+  job               Jobs               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  tag               Tag                @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([jobId, tagId])
+  @@index([jobId], map: "idx_jobtags_job")
+  @@index([tagId], map: "idx_jobtags_tag")
+  @@map("job_tags")
+}
+
+// ============================================================
+// 9. APPLICATIONS (Quản lý lượt nộp đơn ứng tuyển)
+// ============================================================
+
+model Application {
+  id                String             @id @default(uuid()) @db.Uuid
+  jobId             String             @map("job_id") @db.Uuid
+  candidateId       String             @map("candidate_id") @db.Uuid
+  resumeId          String?            @map("resume_id") @db.Uuid
+  coverLetter       String?            @map("cover_letter") @db.Text
+  status            ApplicationStatus  @default(pending)
+  source            String?            @db.VarChar(50)
+  appliedAt         DateTime           @default(now()) @map("applied_at") @db.Timestamptz
+  reviewedAt        DateTime?          @map("reviewed_at") @db.Timestamptz
+  reviewedBy        String?            @map("reviewed_by") @db.Uuid
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  job               Jobs               @relation(fields: [jobId], references: [id])
+  candidate         CandidateProfile   @relation(fields: [candidateId], references: [id])
+  resume            Resume?            @relation(fields: [resumeId], references: [id])
+  reviewer          User?              @relation("AppReviewer", fields: [reviewedBy], references: [id])
+  
+  notes             ApplicationNote[]
+  statusHistory     ApplicationStatusHistory[]
+
+  @@unique([jobId, candidateId])
+  @@index([jobId], map: "idx_apps_job")
+  @@index([candidateId], map: "idx_apps_candidate")
+  @@index([status], map: "idx_apps_status")
+  @@index([appliedAt(sort: Desc)], map: "idx_apps_applied_at")
+  @@index([jobId, status], map: "idx_apps_job_status")
+  @@map("applications")
+}
+
+model ApplicationNote {
+  id                Int                @id @default(autoincrement())
+  applicationId     String             @map("application_id") @db.Uuid
+  authorId          String             @map("author_id") @db.Uuid
+  content           String             @db.Text
+  isInternal        Boolean            @default(true) @map("is_internal")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  application       Application        @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  author            User               @relation(fields: [authorId], references: [id])
+
+  @@index([applicationId], map: "idx_appnotes_app")
+  @@map("application_notes")
+}
+
+model ApplicationStatusHistory {
+  id                Int                @id @default(autoincrement())
+  applicationId     String             @map("application_id") @db.Uuid
+  oldStatus         ApplicationStatus? @map("old_status")
+  newStatus         ApplicationStatus  @map("new_status")
+  changedBy         String             @map("changed_by") @db.Uuid
+  note              String?            @db.VarChar(500)
+  changedAt         DateTime           @default(now()) @map("changed_at") @db.Timestamptz
+
+  application       Application        @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  updater           User               @relation(fields: [changedBy], references: [id])
+
+  @@index([applicationId], map: "idx_apphistory_app")
+  @@map("application_status_history")
+}
+
+// ============================================================
+// 10. SAVED JOBS & JOB ALERTS (Việc làm đã lưu & Thông báo tự động)
+// ============================================================
+
+model SavedJob {
+  id                Int                @id @default(autoincrement())
+  candidateId       String             @map("candidate_id") @db.Uuid
+  jobId             String             @map("job_id") @db.Uuid
+  savedAt           DateTime           @default(now()) @map("saved_at") @db.Timestamptz
+
+  candidate         CandidateProfile   @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  job               Jobs               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([candidateId, jobId])
+  @@index([candidateId], map: "idx_saved_candidate")
+  @@index([jobId], map: "idx_saved_job")
+  @@index([savedAt(sort: Desc)], map: "idx_saved_at")
+  @@map("saved_jobs")
+}
+
+model JobAlert {
+  id                String             @id @default(uuid()) @db.Uuid
+  candidateId       String             @map("candidate_id") @db.Uuid
+  name              String?            @db.VarChar(255)
+  filters           Json               @default("{}")
+  frequency         String             @default("daily") @db.VarChar(20)
+  isActive          Boolean            @default(true) @map("is_active")
+  lastSentAt        DateTime?          @map("last_sent_at") @db.Timestamptz
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  candidate         CandidateProfile   @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId], map: "idx_alerts_candidate")
+  @@map("job_alerts")
+}
+
+// ============================================================
+// 11. MESSAGING (Hệ thống Chat / Trò chuyện giữa HR và Ứng viên)
+// ============================================================
+
+model Conversation {
+  id                String             @id @default(uuid()) @db.Uuid
+  jobId             String?            @map("job_id") @db.Uuid
+  companyId         String             @map("company_id") @db.Uuid
+  candidateId       String             @map("candidate_id") @db.Uuid
+  lastMessageAt     DateTime?          @map("last_message_at") @db.Timestamptz
+  lastMessage       String?            @map("last_message") @db.VarChar(500)
+  isArchived        Boolean            @default(false) @map("is_archived")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  job               Jobs?              @relation(fields: [jobId], references: [id])
+  company           Company            @relation(fields: [companyId], references: [id])
+  candidate         CandidateProfile   @relation(fields: [candidateId], references: [id])
+  messages          Message[]
+
+  @@unique([companyId, candidateId, jobId])
+  @@index([companyId], map: "idx_conv_company")
+  @@index([candidateId], map: "idx_conv_candidate")
+  @@index([lastMessageAt(sort: Desc)], map: "idx_conv_last")
+  @@map("conversations")
+}
+
+model Message {
+  id                String             @id @default(uuid()) @db.Uuid
+  conversationId    String             @map("conversation_id") @db.Uuid
+  senderId          String             @map("sender_id") @db.Uuid
+  content           String             @db.Text
+  status            MessageStatus      @default(sent)
+  attachmentUrl     String?            @map("attachment_url") @db.VarChar(500)
+  isDeleted         Boolean            @default(false) @map("is_deleted")
+  sentAt            DateTime           @default(now()) @map("sent_at") @db.Timestamptz
+  readAt            DateTime?          @map("read_at") @db.Timestamptz
+
+  conversation      Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender            User               @relation(fields: [senderId], references: [id])
+
+  @@index([conversationId, sentAt(sort: Desc)], map: "idx_messages_conv")
+  @@index([senderId], map: "idx_messages_sender")
+  @@map("messages")
+}
+
+// ============================================================
+// 12. COMPANY REVIEWS (Đánh giá môi trường Công ty)
+// ============================================================
+
+model CompanyReview {
+  id                String             @id @default(uuid()) @db.Uuid
+  companyId         String             @map("company_id") @db.Uuid
+  reviewerId        String             @map("reviewer_id") @db.Uuid
+  overallRating     Decimal            @map("overall_rating") @db.Decimal(3, 2)
+  cultureRating     Decimal?           @map("culture_rating") @db.Decimal(3, 2)
+  salaryRating      Decimal?           @map("salary_rating") @db.Decimal(3, 2)
+  managementRating  Decimal?           @map("management_rating") @db.Decimal(3, 2)
+  workLifeRating    Decimal?           @map("work_life_rating") @db.Decimal(3, 2)
+  title             String?            @db.VarChar(255)
+  pros              String?            @db.Text
+  cons              String?            @db.Text
+  advice            String?            @db.Text
+  jobTitle          String?            @map("job_title") @db.VarChar(255)
+  isCurrentEmployee Boolean?           @map("is_current_employee")
+  employmentStart   DateTime?          @map("employment_start") @db.Date
+  employmentEnd     DateTime?          @map("employment_end") @db.Date
+  isAnonymous       Boolean            @default(false) @map("is_anonymous")
+  isApproved        Boolean            @default(false) @map("is_approved")
+  approvedAt        DateTime?          @map("approved_at") @db.Timestamptz
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  company           Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reviewer          User               @relation(fields: [reviewerId], references: [id])
+
+  @@unique([companyId, reviewerId])
+  @@index([companyId], map: "idx_reviews_company")
+  @@index([overallRating(sort: Desc)], map: "idx_reviews_rating")
+  @@index([reviewerId], map: "idx_reviews_reviewer")
+  @@map("company_reviews")
+}
+
+// ============================================================
+// 13. SUBSCRIPTION PLANS & PAYMENTS (Gói dịch vụ doanh nghiệp)
+// ============================================================
+
+model SubscriptionPlan {
+  id                Int                    @id @default(autoincrement())
+  type              PlanType               @unique
+  name              String                 @db.VarChar(100)
+  priceMonthly      Int                    @default(0) @map("price_monthly")
+  priceYearly       Int                    @default(0) @map("price_yearly")
+  maxJobs           Int                    @default(1) @map("max_jobs")
+  maxResumes        Int                    @default(10) @map("max_resumes")
+  maxFeatured       Int                    @default(0) @map("max_featured")
+  canSeeProfile     Boolean                @default(false) @map("can_see_profile")
+  hasAnalytics      Boolean                @default(false) @map("has_analytics")
+  features          Json                   @default("[]")
+  isActive          Boolean                @default(true) @map("is_active")
+  createdAt         DateTime               @default(now()) @map("created_at") @db.Timestamptz
+
+  subscriptions     EmployerSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model EmployerSubscription {
+  id                String             @id @default(uuid()) @db.Uuid
+  companyId         String             @map("company_id") @db.Uuid
+  planId            Int                @map("plan_id")
+  billingPeriod     String             @default("monthly") @map("billing_period") @db.VarChar(10)
+  startedAt         DateTime           @default(now()) @map("started_at") @db.Timestamptz
+  expiresAt         DateTime           @map("expires_at") @db.Timestamptz
+  cancelledAt       DateTime?          @map("cancelled_at") @db.Timestamptz
+  autoRenew         Boolean            @default(true) @map("auto_renew")
+  jobsUsed          Int                @default(0) @map("jobs_used")
+  resumesViewed     Int                @default(0) @map("resumes_viewed")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  company           Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plan              SubscriptionPlan   @relation(fields: [planId], references: [id])
+  payments          Payment[]
+
+  @@index([companyId], map: "idx_subscriptions_company")
+  @@index([expiresAt], map: "idx_subscriptions_expires")
+  @@map("employer_subscriptions")
+}
+
+model Payment {
+  id                String             @id @default(uuid()) @db.Uuid
+  subscriptionId    String?            @map("subscription_id") @db.Uuid
+  companyId         String             @map("company_id") @db.Uuid
+  amount            BigInt
+  currency          String             @default("VND") @db.Char(3)
+  method            PaymentMethod
+  status            PaymentStatus      @default(pending)
+  gatewayTxnId      String?            @map("gateway_txn_id") @db.VarChar(255)
+  gatewayResponse   Json?              @map("gateway_response")
+  invoiceUrl        String?            @map("invoice_url") @db.VarChar(500)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  completedAt       DateTime?          @map("completed_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  subscription      EmployerSubscription? @relation(fields: [subscriptionId], references: [id])
+  company           Company            @relation(fields: [companyId], references: [id])
+
+  @@index([companyId], map: "idx_payments_company")
+  @@index([subscriptionId], map: "idx_payments_subscription")
+  @@index([status], map: "idx_payments_status")
+  @@index([createdAt(sort: Desc)], map: "idx_payments_created")
+  @@map("payments")
+}
+
+// ============================================================
+// 14. NOTIFICATIONS (Trung tâm Thông báo người dùng)
+// ============================================================
+
+model Notification {
+  id                String             @id @default(uuid()) @db.Uuid
+  userId            String             @map("user_id") @db.Uuid
+  type              NotificationType
+  title             String             @db.VarChar(255)
+  body              String?            @db.VarChar(500)
+  refType           String?            @map("ref_type") @db.VarChar(50)
+  refId             String?            @map("ref_id") @db.VarChar(36)
+  data              Json?
+  isRead            Boolean            @default(false) @map("is_read")
+  readAt            DateTime?          @map("read_at") @db.Timestamptz
+  isSentEmail       Boolean            @default(false) @map("is_sent_email")
+  isSentPush        Boolean            @default(false) @map("is_sent_push")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)], map: "idx_notifs_user")
+  @@index([userId, type], map: "idx_notifs_type")
+  @@map("notifications")
+}
+
+// ============================================================
+// 15. JOB VIEWS (Lịch sử xem việc làm để phân tích Analytics)
+// ============================================================
+
+model JobView {
+  id                BigInt             @id @default(autoincrement())
+  jobId             String             @map("job_id") @db.Uuid
+  userId            String?            @map("user_id") @db.Uuid
+  ipAddress         String?            @map("ip_address") @db.Inet
+  userAgent         String?            @map("user_agent") @db.VarChar(500)
+  source            String?            @db.VarChar(100)
+  viewedAt          DateTime           @default(now()) @map("viewed_at") @db.Timestamptz
+
+  job               Jobs               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user              User?              @relation(fields: [userId], references: [id])
+
+  @@index([jobId], map: "idx_jobviews_job")
+  @@index([jobId, viewedAt(sort: Desc)], map: "idx_jobviews_date")
+  @@map("job_views")
+}
+
+// ============================================================
+// 16. REPORTS (Báo cáo vi phạm & Điều hướng nội dung xấu)
+// ============================================================
+
+model Report {
+  id                String             @id @default(uuid()) @db.Uuid
+  reporterId        String             @map("reporter_id") @db.Uuid
+  type              ReportType
+  refType           String             @map("ref_type") @db.VarChar(50)
+  refId             String             @map("ref_id") @db.VarChar(36)
+  reason            String             @db.Text
+  status            ReportStatus       @default(pending)
+  reviewedBy        String?            @map("reviewed_by") @db.Uuid
+  resolutionNote    String?            @map("resolution_note") @db.Text
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  reviewedAt        DateTime?          @map("reviewed_at") @db.Timestamptz
+
+  reporter          User               @relation("Reporter", fields: [reporterId], references: [id])
+  reviewer          User?              @relation("ReportReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([status, createdAt(sort: Desc)], map: "idx_reports_status")
+  @@index([reporterId], map: "idx_reports_reporter")
+  @@index([refType, refId], map: "idx_reports_ref")
+  @@map("reports")
+}
+
+// ============================================================
+// 17. ADMIN AUDIT LOG (Nhật ký thao tác của Quản trị viên)
+// ============================================================
+
+model AdminLog {
+  id                BigInt             @id @default(autoincrement())
+  adminId           String             @map("admin_id") @db.Uuid
+  action            String             @db.VarChar(100)
+  targetType        String?            @map("target_type") @db.VarChar(50)
+  targetId          String?            @map("target_id") @db.VarChar(36)
+  oldValue          Json?              @map("old_value")
+  newValue          Json?              @map("new_value")
+  ipAddress         String?            @map("ip_address") @db.Inet
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  admin             User               @relation(fields: [adminId], references: [id])
+
+  @@index([adminId], map: "idx_adminlogs_admin")
+  @@index([targetType, targetId], map: "idx_adminlogs_target")
+  @@index([action, createdAt(sort: Desc)], map: "idx_adminlogs_action")
+  @@index([createdAt(sort: Desc)], map: "idx_adminlogs_created")
+  @@map("admin_logs")
+}
