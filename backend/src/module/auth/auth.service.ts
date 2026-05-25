@@ -11,11 +11,7 @@ import {
   ChangePasswordRequest,
 } from "./auth.request";
 import { AuthResponseDto } from "./auth.response";
-import {
-  getCache,
-  setCache,
-  deleteCache,
-} from "@/utils/cache";
+import { getCache, setCache, deleteCache } from "@/utils/cache";
 
 // Kết quả nội bộ — thêm refreshTokenExpiresAt để controller set cookie chính xác
 interface AuthResult {
@@ -52,7 +48,7 @@ export class AuthService implements IAuthService {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = await this.userRepo.create({
       ...dto,
-      password: hashedPassword,
+      passwordHash: hashedPassword,
       role: dto.role || "candidate",
     });
 
@@ -93,13 +89,13 @@ export class AuthService implements IAuthService {
     if (!refreshToken) throw new AppError("Không tìm thấy Refresh Token", 401);
 
     const refreshSecret = process.env.JWT_REFRESH_SECRET;
-    
+
     // 1. Giải mã token để lấy payload
     let decoded: any;
     try {
-        decoded = jwt.verify(refreshToken, refreshSecret as string);
+      decoded = jwt.verify(refreshToken, refreshSecret as string);
     } catch (err) {
-        throw new AppError("Refresh Token không hợp lệ hoặc đã hết hạn", 401);
+      throw new AppError("Refresh Token không hợp lệ hoặc đã hết hạn", 401);
     }
 
     const isRememberMe = !!decoded.rememberMe;
@@ -163,20 +159,25 @@ export class AuthService implements IAuthService {
     const user = await this.userRepo.findByEmail(dto.email);
 
     if (!user) throw new AppError("Người dùng không tồn tại", 404);
-    const checkChangePassword = await bcrypt.compare(dto.newPassword, user.passwordHash as string);
+    const checkChangePassword = await bcrypt.compare(
+      dto.newPassword,
+      user.passwordHash as string,
+    );
     if (checkChangePassword) {
       throw new AppError("Mật khẩu mới không được trùng với mật khẩu cũ", 400);
     }
 
     const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
     const userUpdate = await this.userRepo.updateByEmail(dto.email, {
-      password: hashedPassword,
+      passwordHash: hashedPassword,
     });
-    
+
     await Promise.all([
       this.refreshRepo.revokeAllByUser(userUpdate.id),
       this.otpRepo.deleteByEmail(dto.email),
       deleteCache(`otp:${dto.email}`),
+      // Xóa cache user detail — mật khẩu vừa được thay đổi
+      deleteCache(`users:id:${userUpdate.id}`),
     ]);
 
     const result = await this.generateAuthResult(userUpdate, false);
@@ -198,13 +199,16 @@ export class AuthService implements IAuthService {
       throw new AppError("Người dùng không tồn tại", 404);
     }
 
-    const isValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    const isValid = await bcrypt.compare(
+      dto.currentPassword,
+      user.passwordHash,
+    );
     if (!isValid) {
       throw new AppError("Mật khẩu hiện tại không chính xác", 401);
     }
 
     const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
-    await this.userRepo.updateById(userId, { password: hashedPassword });
+    await this.userRepo.updateById(userId, { passwordHash: hashedPassword });
 
     // Xóa cache refresh token cụ thể của user thay vì xóa của toàn hệ thống
     const userTokens = await this.refreshRepo.findByUserId(userId);
@@ -215,6 +219,8 @@ export class AuthService implements IAuthService {
     await Promise.all([
       this.refreshRepo.revokeAllByUser(userId),
       ...deleteCachePromises,
+      // Xóa cache user detail — mật khẩu vừa được đổi
+      deleteCache(`users:id:${userId}`),
     ]);
   }
 
@@ -230,7 +236,7 @@ export class AuthService implements IAuthService {
     const userIdStr = user.id.toString();
 
     const accessToken = jwt.sign(
-      { userId: userIdStr, role: user.role , rememberMe},
+      { userId: userIdStr, role: user.role, rememberMe },
       accessSecret,
       { expiresIn: "15m" },
     );
@@ -242,9 +248,13 @@ export class AuthService implements IAuthService {
     // Tính chính xác một lần, dùng lại nhất quán ở cả DB, Redis, và cookie
     const refreshTokenExpiresAt = new Date(Date.now() + refreshTokenTTL);
 
-    const refreshToken = jwt.sign({ userId: userIdStr , rememberMe }, refreshSecret, {
-      expiresIn: rememberMe ? "14d" : "1d",
-    });
+    const refreshToken = jwt.sign(
+      { userId: userIdStr, rememberMe },
+      refreshSecret,
+      {
+        expiresIn: rememberMe ? "14d" : "1d",
+      },
+    );
 
     await Promise.all([
       this.refreshRepo.createOrUpdate({

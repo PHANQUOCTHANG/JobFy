@@ -10,9 +10,9 @@ import {
   IRefreshTokenRepository,
   RefreshTokenRepository,
 } from "@/module/auth/refreshToken/refreshToken.repository";
+
 import { IUserRepository, UserRepository } from "@/module/user/user.repository";
 import { UserService } from "@/module/user/user.service";
-
 // User
 const userRepository: IUserRepository = new UserRepository(prisma);
 export const userService = new UserService(userRepository);
@@ -38,4 +38,3 @@ export const authService: IAuthService = new AuthService(
   otpRepository,
 );
 
-// export const imageService = new ImageService();

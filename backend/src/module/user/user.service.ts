@@ -42,7 +42,7 @@ export class UserService implements IUserService {
     // Tạo user mới
     const user = await this.userRepo.create({
       ...dto,
-      password: passwordHash,
+      passwordHash: passwordHash,
     });
 
     // Xóa cache danh sách (user mới được thêm)
@@ -52,7 +52,7 @@ export class UserService implements IUserService {
   }
 
   // Lấy danh sách người dùng (phân trang, tìm kiếm, lọc)
-  async findAll(query: any): Promise<any> {
+  async findAll(query: any): Promise<any> {      
     // Tạo cache key từ query parameters
     const cacheKey = `${this.CACHE_KEY}:list:${JSON.stringify(query)}`;
     const cached = await getCache<any>(cacheKey);

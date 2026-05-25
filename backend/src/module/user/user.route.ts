@@ -13,9 +13,9 @@ const router = Router();
 // [GET] danh sách & [POST] tạo user (chỉ ADMIN)
 router
   .route("/")
-  .get(requireRole("admin"), userCtrl.getUsers)
+  .get(requireRole("ADMIN"), userCtrl.getUsers)
   .post(
-    requireRole("admin"),
+    requireRole("ADMIN"),
     validationMiddleware(CreateUserSchema),
     userCtrl.createUser,
   );
@@ -23,15 +23,15 @@ router
 // [GET] chi tiết & [PATCH] cập nhật & [DELETE] xóa (chỉ ADMIN)
 router
   .route("/:id")
-  .get(requireRole("admin"), validationMiddleware(IdParamSchema, "params"), userCtrl.getUser)
+  .get(requireRole("ADMIN"), validationMiddleware(IdParamSchema, "params"), userCtrl.getUser)
   .patch(
-    requireRole("admin"),
+    requireRole("ADMIN"),
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateUserSchema),
     userCtrl.updateUser,
   )
   .delete(
-    requireRole("admin"),
+    requireRole("ADMIN"),
     validationMiddleware(IdParamSchema, "params"),
     userCtrl.deleteUser,
   );

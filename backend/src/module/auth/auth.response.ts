@@ -8,11 +8,11 @@ export class AuthResponseDto {
   rememberMe: boolean;
   user: {
     id: string;
-    fullName: string | null;
+    fullName: string;
     email: string;
     role: UserRole;
     phone?: string | null;
-    avatarUrl?: string | null;
+    avatar?: string | null;
   };
 
   constructor(
@@ -29,11 +29,11 @@ export class AuthResponseDto {
 
     this.user = {
       id: user.id,
-      fullName: user.candidateProfile?.fullName ?? null,
+      fullName: user.fullName,
       email: user.email,
       role: user.role,
       phone: user.phone,
-      avatarUrl: user.avatarUrl,
+      avatar: user.avatar,
     };
   }
 
