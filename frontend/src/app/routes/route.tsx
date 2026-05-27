@@ -1,6 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import { AdminLayout, ClientLayout, RootLayout } from "@/layouts";
+import {
+  AdminLayout,
+  ClientLayout,
+  RootLayout,
+  EmployerLayout,
+  CandidateLayout,
+} from "@/layouts";
 
 import ProtectedRoute from "@/app/routes/ProtectedRoute";
 import {
@@ -8,10 +14,25 @@ import {
   NotFoundPage,
   SettingsPage,
   UsersManagementPage,
+  CompanyListPage,
+  CompanyDetailPage,
+  CandidateProfilePage,
+  CandidatePublicPage,
+  JobSearchPage,
+  JobDetailPage,
+  MyApplicationsPage,
+  EmployerDashboardPage,
+  ManageCompanyPage,
+  ManageJobsPage,
+  ManageApplicationsPage,
+  EmployerSettingsPage,
+  CandidateDashboardPage,
+  SavedJobsPage,
+  JobAlertsPage,
 } from "@/pages";
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
-import { ADMIN_PATHS, CLIENT_PATHS } from "@/config/paths";
+import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS } from "@/config/paths";
 
 export const router = createBrowserRouter([
   {
@@ -39,38 +60,54 @@ export const router = createBrowserRouter([
 
           { path: CLIENT_PATHS.SETTINGS, element: <SettingsPage /> },
 
-          // Protected Routes
+          { path: CLIENT_PATHS.COMPANIES, element: <CompanyListPage /> },
           {
-            element: <ProtectedRoute />,
-            children: [
-              // { path: CLIENT_PATHS.PROFILE, element: <ProfilePage /> },
-              // {
-              //   path: CLIENT_PATHS.CLAIM_PROFILE,
-              //   element: <ClaimProfilePage />,
-              // },
-            ],
+            path: CLIENT_PATHS.COMPANY_DETAIL(":slug"),
+            element: <CompanyDetailPage />,
+          },
+
+          { path: CLIENT_PATHS.JOBS, element: <JobSearchPage /> },
+          {
+            path: CLIENT_PATHS.JOB_DETAIL(":slug"),
+            element: <JobDetailPage />,
+          },
+
+          {
+            path: CLIENT_PATHS.CANDIDATE_DETAIL(":id"),
+            element: <CandidatePublicPage />,
           },
         ],
       },
 
       // ===================================================
-      // 3. NHÓM ADMIN PORTAL
+      // 3. NHÓM CANDIDATE PORTAL
       // ===================================================
       {
-        path: ADMIN_PATHS.ADMIN,
-        element: <ProtectedRoute />,
+        path: CANDIDATE_PATHS.DASHBOARD,
+        // element: <ProtectedRoute />,
         children: [
           {
-            element: <AdminLayout />,
+            element: <CandidateLayout />,
             children: [
               {
-                path: ADMIN_PATHS.USERS,
-                element: <UsersManagementPage />,
+                index: true,
+                element: <CandidateDashboardPage />,
               },
-
               {
-                path: ADMIN_PATHS.SETTINGS,
-                element: <SettingsPage />,
+                path: CANDIDATE_PATHS.PROFILE,
+                element: <CandidateProfilePage />,
+              },
+              {
+                path: CANDIDATE_PATHS.MY_APPLICATIONS,
+                element: <MyApplicationsPage />,
+              },
+              {
+                path: CANDIDATE_PATHS.SAVED_JOBS,
+                element: <SavedJobsPage />,
+              },
+              {
+                path: CANDIDATE_PATHS.JOB_ALERTS,
+                element: <JobAlertsPage />,
               },
             ],
           },
@@ -78,7 +115,42 @@ export const router = createBrowserRouter([
       },
 
       // ===================================================
-      // 4. 404 NOT FOUND
+      // 4. NHÓM EMPLOYER PORTAL
+      // ===================================================
+      {
+        path: EMPLOYER_PATHS.DASHBOARD,
+        // element: <ProtectedRoute />,
+        children: [
+          {
+            element: <EmployerLayout />,
+            children: [
+              {
+                index: true,
+                element: <EmployerDashboardPage />,
+              },
+              {
+                path: EMPLOYER_PATHS.COMPANY_PROFILE,
+                element: <ManageCompanyPage />,
+              },
+              {
+                path: EMPLOYER_PATHS.JOBS,
+                element: <ManageJobsPage />,
+              },
+              {
+                path: EMPLOYER_PATHS.APPLICATIONS,
+                element: <ManageApplicationsPage />,
+              },
+              {
+                path: EMPLOYER_PATHS.SETTINGS,
+                element: <EmployerSettingsPage />,
+              },
+            ],
+          },
+        ],
+      },
+
+      // ===================================================
+      // 5. 404 NOT FOUND
       // ===================================================
       {
         path: "*",

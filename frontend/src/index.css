@@ -45,108 +45,92 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
    ================================================================ */
 @layer base {
   :root {
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* ============================================================
-       LIGHT MODE — "Cool Ivory" System
-       Nền: Off-white lạnh (220° hue, độ bão hòa thấp, độ sáng 97%)
-       Card: Trắng tinh (0 0% 100%) — nổi bật qua bóng đổ
-       ============================================================ */
+    /* Light Mode — Professional & Clean (Trust Blue) */
+    --background:      210 40% 98%;
+    --foreground:      222.2 47.4% 11.2%;
+    --surface-1:       0 0% 100%;
+    --surface-2:       210 40% 96.1%;
+    --surface-3:       214.3 31.8% 91.4%;
 
-    /* Core surfaces */
-    --background:      222 30% 96.5%;   /* Off-white lạnh, không phải xám trung tính */
-    --foreground:      222 32% 8%;      /* Gần đen, tint xanh nhẹ */
-    --surface-1:       224 28% 98%;     /* Gần trắng, hơi lạnh */
-    --surface-2:       222 25% 95%;     /* Layer giữa */
-    --surface-3:       220 22% 91%;     /* Layer dưới cùng */
-
-    /* Cards = trắng tinh để shadow tạo chiều sâu */
     --card:            0 0% 100%;
-    --card-foreground: 222 32% 8%;
+    --card-foreground: 222.2 47.4% 11.2%;
     --popover:         0 0% 100%;
-    --popover-foreground: 222 32% 8%;
+    --popover-foreground: 222.2 47.4% 11.2%;
 
-    /* Primary — saturated violet-indigo, dễ đọc trên nền sáng */
-    --primary:            258 90% 56%;   /* Bão hòa cao hơn v2 (85→90%), tối hơn 1 stop */
-    --primary-foreground: 0 0% 100%;
+    /* Primary: Trust Blue */
+    --primary:            221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
 
-    /* Secondary & Muted */
-    --secondary:            220 20% 94%;
-    --secondary-foreground: 222 25% 20%;
-    --muted:                220 20% 93%;
-    --muted-foreground:     220 14% 48%;  /* Rõ hơn một chút */
-    --accent:               220 18% 90%;
-    --accent-foreground:    222 25% 14%;
+    --secondary:            210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted:                210 40% 96.1%;
+    --muted-foreground:     215.4 16.3% 46.9%;
+    --accent:               210 40% 96.1%;
+    --accent-foreground:    222.2 47.4% 11.2%;
 
-    /* Functional */
-    --destructive:            4 86% 54%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive:            0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    /* Borders — gần như vô hình, depth từ shadow */
-    --border:        220 18% 90%;         /* Rất nhẹ */
-    --border-strong: 220 18% 78%;
-    --input:         0 0% 100%;           /* Input = trắng trên nền off-white */
-    --ring:          258 90% 56%;
-    --overlay:       222 32% 8%;
+    --border:        214.3 31.8% 91.4%;
+    --border-strong: 214.3 31.8% 85%;
+    --input:         214.3 31.8% 91.4%;
+    --ring:          221.2 83.2% 53.3%;
+    --overlay:       222.2 47.4% 11.2%;
 
-    /* Brand Spectrum — Light saturation boost */
-    --brand-25:   258 85% 98%;
-    --brand-50:   258 85% 96%;
-    --brand-100:  258 82% 91%;
-    --brand-200:  258 80% 82%;
-    --brand-300:  258 78% 72%;
-    --brand-400:  258 84% 63%;
-    --brand-500:  258 90% 56%;   /* = --primary light */
-    --brand-600:  258 88% 48%;
-    --brand-700:  258 85% 40%;
-    --brand-800:  258 82% 32%;
-    --brand-glow: 258 100% 66%;
-    --brand-halo: 258 100% 78%;
+    /* Brand Scale - Trust Blue */
+    --brand-25:   221 83% 98%;
+    --brand-50:   221 83% 96%;
+    --brand-100:  221 83% 91%;
+    --brand-200:  221 83% 82%;
+    --brand-300:  221 83% 72%;
+    --brand-400:  221 83% 63%;
+    --brand-500:  221.2 83.2% 53.3%;
+    --brand-600:  221 83% 48%;
+    --brand-700:  221 83% 40%;
+    --brand-800:  221 83% 32%;
+    --brand-glow: 221.2 83.2% 53.3%;
+    --brand-halo: 221 83% 78%;
 
-    /* Chromatic */
-    --wave-1: 258 88% 65%;  /* Tím xanh */
-    --wave-2: 320 76% 62%;  /* Hồng tím */
-    --wave-3: 188 90% 48%;  /* Xanh lơ */
-    --wave-4: 36 90% 58%;   /* Cam */
-    --wave-5: 142 70% 50%;  /* Xanh lá lục bảo */
-    --wave-6: 200 95% 60%;  /* Xanh bầu trời */
-    --wave-7: 48 95% 60%;   /* Vàng nắng */
-    --wave-8: 0 85% 65%;    /* Đỏ san hô */
-    --wave-9: 280 80% 60%;  /* Tím đậm */
-    --wave-10: 160 85% 45%; /* Xanh ngọc biển */
+    /* Wave defaults to keep components from breaking */
+    --wave-1: 221 83% 53%;
+    --wave-2: 210 100% 60%;
+    --wave-3: 190 100% 45%;
+    --wave-4: 36 90% 58%;
+    --wave-5: 142 70% 50%;
+    --wave-6: 200 95% 60%;
+    --wave-7: 48 95% 60%;
+    --wave-8: 0 85% 65%;
+    --wave-9: 280 80% 60%;
+    --wave-10: 160 85% 45%;
 
     /* Functional */
-    --success: 152 72% 36%;
+    --success: 142 72% 36%;
     --warning: 36  88% 50%;
     --error:   4   86% 54%;
-    --info:    210 88% 52%;
+    --info:    221.2 83.2% 53.3%;
 
-    /* Sidebar — tông ấm hơn background để phân biệt subtly */
-    --sidebar-background:         224 28% 98%;
-    --sidebar-foreground:         222 25% 25%;
-    --sidebar-primary:            258 90% 56%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:             220 18% 92%;
-    --sidebar-accent-foreground:  222 25% 16%;
-    --sidebar-border:             220 18% 90%;
-    --sidebar-ring:               258 90% 56%;
+    /* Sidebar */
+    --sidebar-background:         0 0% 100%;
+    --sidebar-foreground:         240 5.3% 26.1%;
+    --sidebar-primary:            240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent:             240 4.8% 95.9%;
+    --sidebar-accent-foreground:  240 5.9% 10%;
+    --sidebar-border:             220 13% 91%;
+    --sidebar-ring:               221.2 83.2% 53.3%;
 
-    /* ============================================================
-       LIGHT MODE — Shadow Multipliers
-       CSS custom props cho hệ thống shadow scale theo theme.
-       ============================================================ */
-    --shadow-color:      222 30% 15%;
-    --shadow-alpha-xs:   0.04;
-    --shadow-alpha-sm:   0.06;
-    --shadow-alpha-md:   0.09;
-    --shadow-alpha-lg:   0.13;
-    --shadow-alpha-xl:   0.18;
-    --shadow-brand-alpha: 0.22;
+    /* Shadow Multipliers */
+    --shadow-color:      222 47% 11%;
+    --shadow-alpha-xs:   0.02;
+    --shadow-alpha-sm:   0.04;
+    --shadow-alpha-md:   0.06;
+    --shadow-alpha-lg:   0.08;
+    --shadow-alpha-xl:   0.12;
+    --shadow-brand-alpha: 0.15;
 
-    /* ============================================================
-       LIGHT MODE — Glass opacity values
-       Light glass = opacity cao (80%+), blur mịn nhẹ.
-       ============================================================ */
+    /* Glass opacity values */
     --glass-bg-alpha:       0.82;
     --glass-frosted-alpha:  0.88;
     --glass-heavy-alpha:    0.94;
@@ -155,102 +139,84 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --glass-blur-mid:       blur(20px) saturate(160%);
     --glass-blur-heavy:     blur(32px) saturate(180%) brightness(1.02);
     --glass-blur-ultra:     blur(48px) saturate(200%) brightness(1.01);
-    --glass-border-alpha:   0.55;
-    --glass-inset-alpha:    0.10;  /* White inner highlight, nhẹ hơn dark mode */
+    --glass-border-alpha:   0.15;
+    --glass-inset-alpha:    0.10;
   }
 
-  /* ============================================================
-     DARK MODE — "Obsidian Abyss" System
-     ============================================================
-     Nền: Đen xanh sâu (228° hue, 35% sat, 3.5% light)
-     Surfaces: Tăng brightness từng layer (~1.5% mỗi bước)
-     Depth: Glow radiants + opacity masks, không phải solid borders
-     Primary: Brightness cao (76%+) + auto-glow
-     ============================================================ */
   .dark {
-    /* Core surfaces — Obsidian layering */
-    --background:      228 36% 3.5%;    /* Obsidian sâu: #060810 feel */
-    --foreground:      215 30% 93%;     /* Gần trắng, tint lạnh */
-    --surface-1:       228 32% 5.5%;    /* +2% light */
-    --surface-2:       228 28% 7.5%;    /* +2% light */
-    --surface-3:       228 25% 10%;     /* +2.5% light */
+    /* Dark Mode — Slate Dark */
+    --background:      222.2 84% 4.9%;
+    --foreground:      210 40% 98%;
+    --surface-1:       222.2 84% 6.9%;
+    --surface-2:       222.2 84% 8.9%;
+    --surface-3:       222.2 84% 10.9%;
 
-    /* Cards — không phải đen thuần, có blue tint tinh tế */
-    --card:            228 30% 6%;
-    --card-foreground: 215 28% 92%;
-    --popover:         228 32% 4.5%;
-    --popover-foreground: 215 28% 93%;
+    --card:            222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover:         222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Primary — luminous trong tối, tự phát sáng */
-    --primary:            258 80% 74%;   /* Sáng hơn (60→74%), bão hòa hơi thấp hơn */
-    --primary-foreground: 228 36% 4%;
+    --primary:            217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    /* Secondary & Muted */
-    --secondary:            228 22% 11%;
-    --secondary-foreground: 215 22% 80%;
-    --muted:                228 22% 9%;
-    --muted-foreground:     218 18% 48%;  /* Readable but subtle */
-    --accent:               228 22% 13%;
-    --accent-foreground:    215 24% 86%;
+    --secondary:            217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted:                217.2 32.6% 17.5%;
+    --muted-foreground:     215 20.2% 65.1%;
+    --accent:               217.2 32.6% 17.5%;
+    --accent-foreground:    210 40% 98%;
 
-    /* Functional */
-    --destructive:            4 62% 36%;
-    --destructive-foreground: 215 28% 93%;
+    --destructive:            0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
-    /* Borders — mỏng như sợi chỉ, white-alpha only */
-    --border:        228 25% 11%;
-    --border-strong: 228 22% 18%;
-    --input:         228 25% 10%;
-    --ring:          258 72% 66%;
-    --overlay:       228 36% 3.5%;
+    --border:        217.2 32.6% 17.5%;
+    --border-strong: 217.2 32.6% 25%;
+    --input:         217.2 32.6% 17.5%;
+    --ring:          224.3 76.3% 48%;
+    --overlay:       222.2 84% 4.9%;
 
-    /* Brand Dark — luminous, glow-ready */
-    --brand-25:   258 45% 7%;
-    --brand-50:   258 48% 11%;
-    --brand-100:  258 52% 17%;
-    --brand-200:  258 58% 27%;
-    --brand-300:  258 65% 44%;
-    --brand-400:  258 72% 60%;
-    --brand-500:  258 80% 74%;   /* = --primary dark */
-    --brand-600:  258 82% 79%;
-    --brand-700:  258 85% 83%;
-    --brand-800:  258 88% 88%;
-    --brand-glow: 258 100% 80%;  /* Glow mạnh hơn light mode */
-    --brand-halo: 258 100% 88%;
+    /* Brand Dark */
+    --brand-25:   217 91% 7%;
+    --brand-50:   217 91% 11%;
+    --brand-100:  217 91% 17%;
+    --brand-200:  217 91% 27%;
+    --brand-300:  217 91% 44%;
+    --brand-400:  217 91% 60%;
+    --brand-500:  217.2 91.2% 59.8%;
+    --brand-600:  217 91% 79%;
+    --brand-700:  217 91% 83%;
+    --brand-800:  217 91% 88%;
+    --brand-glow: 217.2 91.2% 59.8%;
+    --brand-halo: 217 91% 88%;
 
-    /* Chromatic Dark — vivid on dark */
-   --wave-1: 258 84% 76%;  /* Tím xanh nhạt hơn */
-    --wave-2: 320 78% 70%;  /* Hồng tím sáng */
-    --wave-3: 188 92% 60%;  /* Xanh lơ dịu */
-    --wave-4: 36 92% 65%;   /* Cam rực rỡ */
-    --wave-5: 142 70% 65%;  /* Xanh lá lục bảo sáng */
-    --wave-6: 200 95% 70%;  /* Xanh bầu trời pastel */
-    --wave-7: 48 95% 72%;   /* Vàng nắng sáng */
-    --wave-8: 0 85% 75%;    /* Đỏ san hô nhạt */
-    --wave-9: 280 80% 72%;  /* Tím sáng */
-    --wave-10: 160 85% 60%; /* Xanh ngọc biển sáng */
+    /* Wave defaults dark */
+    --wave-1: 217 91% 60%;
+    --wave-2: 210 100% 70%;
+    --wave-3: 190 100% 55%;
+    --wave-4: 36 90% 68%;
+    --wave-5: 142 70% 60%;
+    --wave-6: 200 95% 70%;
+    --wave-7: 48 95% 70%;
+    --wave-8: 0 85% 75%;
+    --wave-9: 280 80% 70%;
+    --wave-10: 160 85% 55%;
 
-    /* Functional Dark */
-    --success: 152 65% 50%;
+    --success: 142 65% 50%;
     --warning: 36  86% 60%;
     --error:   4   72% 60%;
     --info:    210 86% 64%;
 
-    /* Sidebar Dark */
-    --sidebar-background:         228 36% 3%;
-    --sidebar-foreground:         215 25% 86%;
-    --sidebar-primary:            258 80% 74%;
+    --sidebar-background:         240 5.9% 10%;
+    --sidebar-foreground:         240 4.8% 95.9%;
+    --sidebar-primary:            224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:             228 22% 9%;
-    --sidebar-accent-foreground:  215 24% 86%;
-    --sidebar-border:             228 25% 8%;
-    --sidebar-ring:               258 72% 66%;
+    --sidebar-accent:             240 3.7% 15.9%;
+    --sidebar-accent-foreground:  240 4.8% 95.9%;
+    --sidebar-border:             240 3.7% 15.9%;
+    --sidebar-ring:               217.2 91.2% 59.8%;
 
-    /* ============================================================
-       DARK MODE — Shadow Multipliers
-       Dark shadows = deeper, more blue-tinted
-       ============================================================ */
-    --shadow-color:      228 40% 2%;
+    /* Shadow Multipliers */
+    --shadow-color:      0 0% 0%;
     --shadow-alpha-xs:   0.20;
     --shadow-alpha-sm:   0.28;
     --shadow-alpha-md:   0.38;
@@ -258,11 +224,7 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --shadow-alpha-xl:   0.62;
     --shadow-brand-alpha: 0.30;
 
-    /* ============================================================
-       DARK MODE — Glass opacity values
-       Dark glass = opacity thấp (50-65%), focus on backdrop-filter.
-       Border = 1px white-alpha chỉ, không fill.
-       ============================================================ */
+    /* Glass opacity */
     --glass-bg-alpha:       0.52;
     --glass-frosted-alpha:  0.42;
     --glass-heavy-alpha:    0.72;
@@ -271,355 +233,8 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --glass-blur-mid:       blur(28px) saturate(200%);
     --glass-blur-heavy:     blur(48px) saturate(220%) brightness(0.96);
     --glass-blur-ultra:     blur(72px) saturate(250%) brightness(0.94);
-    --glass-border-alpha:   0.08;   /* White border rất mỏng */
-    --glass-inset-alpha:    0.06;   /* Inner white highlight */
-  }
-
-  /* ============================================================
-   THEME SYSTEM v4 — Skin Engine
-   17 skins production-grade
-   Each skin overrides: --primary, --brand-*, --wave-*, --ring
-   Light/Dark glass, shadow, surface auto-computed from mode.
-   ============================================================ */
-
-  /* ─── 1. TOKYO NIGHT — Neon Cyberpunk ─── */
-  [data-theme='tokyo'] {
-    --primary: 340 75% 55%;
-    --brand-glow: 340 85% 65%;
-    --wave-1: 340 72% 58%;
-    --wave-2: 280 65% 58%;
-    --wave-3: 195 85% 52%;
-    --ring: 340 80% 65%;
-    --background: 340 18% 98.5%;
-  }
-  .dark [data-theme='tokyo'],
-  [data-theme='tokyo'].dark {
-    --primary: 340 92% 70%;
-    --brand-glow: 340 100% 78%;
-    --wave-1: 340 88% 65%;
-    --wave-2: 280 72% 62%;
-    --wave-3: 195 90% 58%;
-    --background: 250 30% 4%;
-  }
-
-  /* ─── 2. SAHARA GOLD — Luxury Amber ─── */
-  [data-theme='sahara'] {
-    --primary: 38 88% 44%;
-    --brand-glow: 38 92% 54%;
-    --wave-1: 38 82% 50%;
-    --wave-2: 24 78% 46%;
-    --wave-3: 50 88% 57%;
-    --ring: 38 85% 52%;
-    --background: 38 18% 98%;
-  }
-  .dark [data-theme='sahara'],
-  [data-theme='sahara'].dark {
-    --primary: 38 96% 58%;
-    --brand-glow: 38 100% 68%;
-    --wave-1: 38 92% 54%;
-    --wave-2: 24 82% 50%;
-    --wave-3: 50 92% 62%;
-    --background: 22 24% 4%;
-  }
-
-  /* ─── 3. NORDIC ICE — Arctic Minimalist ─── */
-  [data-theme='nordic'] {
-    --primary: 199 88% 48%;
-    --brand-glow: 199 92% 58%;
-    --wave-1: 199 82% 55%;
-    --wave-2: 226 68% 52%;
-    --wave-3: 186 78% 56%;
-    --ring: 199 88% 60%;
-    --background: 210 18% 98%;
-  }
-  .dark [data-theme='nordic'],
-  [data-theme='nordic'].dark {
-    --primary: 199 95% 68%;
-    --brand-glow: 199 100% 78%;
-    --wave-1: 199 90% 65%;
-    --wave-2: 226 75% 62%;
-    --wave-3: 186 85% 65%;
-    --background: 220 30% 5%;
-  }
-
-  /* ─── 4. FOREST ZEN — Deep Organic ─── */
-  [data-theme='amazon'] {
-    --primary: 160 72% 34%;
-    --brand-glow: 160 68% 44%;
-    --wave-1: 160 65% 40%;
-    --wave-2: 142 62% 36%;
-    --wave-3: 180 68% 48%;
-    --ring: 160 68% 46%;
-    --background: 162 14% 98%;
-  }
-  .dark [data-theme='amazon'],
-  [data-theme='amazon'].dark {
-    --primary: 152 70% 58%;
-    --brand-glow: 152 84% 66%;
-    --wave-1: 152 68% 54%;
-    --wave-2: 142 64% 48%;
-    --wave-3: 180 72% 58%;
-    --background: 160 24% 4%;
-  }
-
-  /* ─── 5. CRIMSON ABYSS — Passion Ruby ─── */
-  [data-theme='crimson'] {
-    --primary: 351 82% 50%;
-    --brand-glow: 351 88% 60%;
-    --wave-1: 351 78% 52%;
-    --wave-2: 338 72% 46%;
-    --wave-3: 20 88% 58%;
-    --ring: 351 85% 62%;
-    --background: 351 12% 98.5%;
-  }
-  .dark [data-theme='crimson'],
-  [data-theme='crimson'].dark {
-    --primary: 351 90% 62%;
-    --brand-glow: 351 100% 72%;
-    --wave-1: 351 88% 60%;
-    --wave-2: 338 80% 54%;
-    --wave-3: 20 92% 65%;
-    --background: 0 20% 4%;
-  }
-
-  /* ─── 6. VAPORWAVE — 80s Dream ─── */
-  [data-theme='vapor'] {
-    --primary: 272 68% 58%;
-    --brand-glow: 272 74% 68%;
-    --wave-1: 272 64% 62%;
-    --wave-2: 196 78% 58%;
-    --wave-3: 322 72% 65%;
-    --ring: 272 72% 70%;
-    --background: 275 14% 98.5%;
-  }
-  .dark [data-theme='vapor'],
-  [data-theme='vapor'].dark {
-    --primary: 286 94% 74%;
-    --brand-glow: 286 100% 82%;
-    --wave-1: 286 90% 72%;
-    --wave-2: 196 88% 65%;
-    --wave-3: 322 82% 72%;
-    --background: 276 34% 5%;
-  }
-
-  /* ─── 7. MIDNIGHT SLATE — Steel Professional ─── */
-  [data-theme='slate'] {
-    --primary: 215 28% 48%;
-    --brand-glow: 215 34% 58%;
-    --wave-1: 215 24% 52%;
-    --wave-2: 222 18% 42%;
-    --wave-3: 200 28% 58%;
-    --ring: 215 30% 60%;
-    --background: 215 12% 98.5%;
-  }
-  .dark [data-theme='slate'],
-  [data-theme='slate'].dark {
-    --primary: 215 30% 78%;
-    --brand-glow: 215 34% 88%;
-    --wave-1: 215 28% 74%;
-    --wave-2: 222 22% 64%;
-    --wave-3: 200 30% 80%;
-    --background: 220 20% 6%;
-  }
-
-  /* ─── 8. ARCTIC LIGHT — Pure Obsidian Contrast ─── */
-  [data-theme='arctic'] {
-    --primary: 258 88% 52%;
-    --brand-glow: 258 92% 62%;
-    --wave-1: 258 82% 57%;
-    --wave-2: 234 68% 50%;
-    --wave-3: 282 78% 67%;
-    --ring: 258 86% 65%;
-    --background: 222 38% 99%;
-  }
-  .dark [data-theme='arctic'],
-  [data-theme='arctic'].dark {
-    --primary: 258 82% 72%;
-    --brand-glow: 258 88% 82%;
-    --wave-1: 258 80% 70%;
-    --wave-2: 234 72% 62%;
-    --wave-3: 282 82% 74%;
-    --background: 222 38% 5%;
-  }
-
-  /* ─── 9. DEEP OCEAN — Mysterious & Bold ─── */
-  [data-theme='ocean'] {
-    --primary: 217 92% 48%;
-    --brand-glow: 217 96% 58%;
-    --wave-1: 217 88% 52%;
-    --wave-2: 202 84% 46%;
-    --wave-3: 238 72% 58%;
-    --ring: 217 90% 60%;
-    --background: 220 22% 98%;
-  }
-  .dark [data-theme='ocean'],
-  [data-theme='ocean'].dark {
-    --primary: 213 100% 62%;
-    --brand-glow: 213 100% 72%;
-    --wave-1: 213 96% 60%;
-    --wave-2: 202 90% 54%;
-    --wave-3: 238 80% 66%;
-    --background: 222 48% 3%;
-  }
-
-  /* ─── 10. ROSE GOLD — Elegant Feminine ─── */
-  [data-theme='rose'] {
-    --primary: 348 68% 58%;
-    --brand-glow: 348 72% 68%;
-    --wave-1: 348 64% 62%;
-    --wave-2: 12 62% 66%;
-    --wave-3: 328 54% 62%;
-    --ring: 348 68% 70%;
-    --background: 350 22% 98.5%;
-  }
-  .dark [data-theme='rose'],
-  [data-theme='rose'].dark {
-    --primary: 348 82% 74%;
-    --brand-glow: 348 92% 82%;
-    --wave-1: 348 80% 72%;
-    --wave-2: 12 70% 74%;
-    --wave-3: 328 62% 70%;
-    --background: 350 32% 4%;
-  }
-
-  /* ─── 11. NEON LIME — High Energy ─── */
-  [data-theme='lime'] {
-    --primary: 84 92% 36%;
-    --brand-glow: 84 96% 46%;
-    --wave-1: 84 82% 42%;
-    --wave-2: 108 72% 36%;
-    --wave-3: 66 92% 48%;
-    --ring: 84 90% 48%;
-    --background: 84 22% 98%;
-  }
-  .dark [data-theme='lime'],
-  [data-theme='lime'].dark {
-    --primary: 82 92% 62%;
-    --brand-glow: 82 100% 72%;
-    --wave-1: 82 90% 60%;
-    --wave-2: 108 80% 54%;
-    --wave-3: 66 94% 66%;
-    --background: 100 28% 3%;
-  }
-
-  /* ─── 12. OBSIDIAN MONO — Ghostly Minimalist ─── */
-  [data-theme='mono'] {
-    --primary: 0 0% 22%;
-    --brand-glow: 0 0% 42%;
-    --wave-1: 0 0% 32%;
-    --wave-2: 0 0% 17%;
-    --wave-3: 0 0% 52%;
-    --ring: 0 0% 45%;
-    --background: 0 0% 98%;
-  }
-  .dark [data-theme='mono'],
-  [data-theme='mono'].dark {
-    --primary: 0 0% 92%;
-    --brand-glow: 0 0% 100%;
-    --wave-1: 0 0% 88%;
-    --wave-2: 0 0% 70%;
-    --wave-3: 0 0% 96%;
-    --background: 0 0% 2%;
-  }
-
-  /* ─── 13. AURORA BOREALIS — Northern Lights ─── */
-  [data-theme='aurora'] {
-    --primary: 168 88% 42%;
-    --brand-glow: 168 92% 52%;
-    --wave-1: 168 84% 46%;
-    --wave-2: 244 72% 60%;
-    --wave-3: 186 90% 52%;
-    --ring: 168 86% 54%;
-    --background: 168 16% 98%;
-  }
-  .dark [data-theme='aurora'],
-  [data-theme='aurora'].dark {
-    --primary: 168 90% 58%;
-    --brand-glow: 168 96% 68%;
-    --wave-1: 168 88% 56%;
-    --wave-2: 244 80% 68%;
-    --wave-3: 186 94% 62%;
-    --background: 200 36% 3%;
-  }
-
-  /* ─── 14. EMBER FORGE — Industrial Fire ─── */
-  [data-theme='ember'] {
-    --primary: 22 96% 50%;
-    --brand-glow: 22 100% 60%;
-    --wave-1: 22 92% 52%;
-    --wave-2: 0 88% 52%;
-    --wave-3: 44 96% 54%;
-    --ring: 22 94% 62%;
-    --background: 22 14% 98%;
-  }
-  .dark [data-theme='ember'],
-  [data-theme='ember'].dark {
-    --primary: 22 100% 64%;
-    --brand-glow: 22 100% 74%;
-    --wave-1: 22 96% 62%;
-    --wave-2: 0 92% 60%;
-    --wave-3: 44 100% 62%;
-    --background: 15 30% 4%;
-  }
-
-  /* ─── 15. GALAXY CORE — Deep Space Indigo ─── */
-  [data-theme='galaxy'] {
-    --primary: 234 80% 62%;
-    --brand-glow: 234 84% 72%;
-    --wave-1: 234 76% 66%;
-    --wave-2: 249 74% 54%;
-    --wave-3: 218 72% 80%;
-    --ring: 234 80% 74%;
-    --background: 238 28% 98.5%;
-  }
-  .dark [data-theme='galaxy'],
-  [data-theme='galaxy'].dark {
-    --primary: 234 78% 76%;
-    --brand-glow: 234 84% 86%;
-    --wave-1: 234 76% 74%;
-    --wave-2: 249 72% 68%;
-    --wave-3: 218 68% 84%;
-    --background: 240 52% 3%;
-  }
-
-  /* ─── 16. MATCHA STONE — Japanese Zen ─── */
-  [data-theme='matcha'] {
-    --primary: 142 52% 48%;
-    --brand-glow: 142 56% 58%;
-    --wave-1: 142 48% 52%;
-    --wave-2: 160 48% 42%;
-    --wave-3: 120 44% 62%;
-    --ring: 142 52% 60%;
-    --background: 142 14% 98%;
-  }
-  .dark [data-theme='matcha'],
-  [data-theme='matcha'].dark {
-    --primary: 142 60% 66%;
-    --brand-glow: 142 68% 74%;
-    --wave-1: 142 58% 64%;
-    --wave-2: 160 54% 58%;
-    --wave-3: 120 52% 72%;
-    --background: 152 22% 4%;
-  }
-
-  /* ─── 17. DUSK OPAL — Sunset Iridescent ─── */
-  [data-theme='dusk'] {
-    --primary: 292 78% 62%;
-    --brand-glow: 292 82% 72%;
-    --wave-1: 292 74% 66%;
-    --wave-2: 38 92% 52%;
-    --wave-3: 348 80% 58%;
-    --ring: 292 76% 72%;
-    --background: 290 16% 98.5%;
-  }
-  .dark [data-theme='dusk'],
-  [data-theme='dusk'].dark {
-    --primary: 292 82% 76%;
-    --brand-glow: 292 88% 84%;
-    --wave-1: 292 80% 74%;
-    --wave-2: 38 96% 64%;
-    --wave-3: 348 86% 68%;
-    --background: 280 36% 4%;
+    --glass-border-alpha:   0.08;
+    --glass-inset-alpha:    0.06;
   }
 }
 

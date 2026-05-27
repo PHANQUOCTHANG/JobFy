@@ -1,0 +1,22 @@
+import api from '@/lib/axios';
+import { Company, CompanyLocation, CompanyReview } from '../types';
+
+export const getCompanies = async (params?: Record<string, any>): Promise<Company[]> => {
+  const response = await api.get('/companies', { params });
+  return response.data?.data || response.data;
+};
+
+export const getCompanyBySlug = async (slug: string): Promise<Company> => {
+  const response = await api.get(`/companies/${slug}`);
+  return response.data?.data || response.data;
+};
+
+export const getCompanyLocations = async (companyId: string): Promise<CompanyLocation[]> => {
+  const response = await api.get(`/companies/${companyId}/locations`);
+  return response.data?.data || response.data;
+};
+
+export const getCompanyReviews = async (companyId: string): Promise<CompanyReview[]> => {
+  const response = await api.get(`/companies/${companyId}/reviews`);
+  return response.data?.data || response.data;
+};
