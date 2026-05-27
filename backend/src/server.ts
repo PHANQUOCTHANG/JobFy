@@ -34,7 +34,7 @@ app.use(globalErrorHandler);
 
 async function startServer() {
   // 1. Connect redis trước
-  await connectRedis();
+  // await connectRedis();
 
   // 2. Tạo http server và khởi động socket + worker sau
   const httpServer = http.createServer(app);
