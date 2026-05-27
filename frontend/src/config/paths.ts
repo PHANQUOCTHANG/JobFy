@@ -34,7 +34,23 @@ export const CLIENT_PATHS = {
   TRACK_DETAIL: (id: string) => `/tracks/${id}`, // Hàm tạo link động
   // User
   PROFILE: "/profile",
+  CANDIDATE_DETAIL: (id: string) => `/candidates/${id}`,
+  // Companies
+  COMPANIES: "companies",
+  COMPANY_DETAIL: (slug: string) => `/companies/${slug}`,
+  // Jobs
+  JOBS: "jobs",
+  JOB_DETAIL: (slug: string) => `/jobs/${slug}`,
 } as const;
+
+export const CANDIDATE_PATHS = {
+  DASHBOARD: "/candidate",
+  PROFILE: "profile",
+  MY_APPLICATIONS: "applications",
+  SAVED_JOBS: "saved-jobs",
+  JOB_ALERTS: "job-alerts",
+} as const;
+
 export const ADMIN_PATHS = {
   ADMIN: "/admin",
   USERS: "users",
@@ -50,4 +66,11 @@ export const ADMIN_PATHS = {
   SETTINGS: "settings",
   // Track
   UPLOAD: "upload",
+} as const;
+export const EMPLOYER_PATHS = {
+  DASHBOARD: "/employer",
+  COMPANY_PROFILE: "company",
+  JOBS: "jobs",
+  APPLICATIONS: "applications",
+  SETTINGS: "settings",
 } as const;
