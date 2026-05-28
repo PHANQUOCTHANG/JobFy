@@ -1,0 +1,151 @@
+tags:
+  name: JobCategories
+  description: Quản lý danh mục việc làm
+
+components:
+  schemas:
+    CreateJobCategoryRequestDto:
+      type: object
+      required:
+        - name
+        - industryId
+      properties:
+        industryId:
+          type: number
+          example: 1
+        parentId:
+          type: number
+          nullable: true
+          example: null
+        name:
+          type: string
+          example: "Lập trình Backend"
+        description:
+          type: string
+          example: "Các công việc liên quan đến Backend"
+        isActive:
+          type: boolean
+          example: true
+        sortOrder:
+          type: number
+          example: 1
+    
+    JobCategoryResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+        industryId:
+          type: number
+        parentId:
+          type: number
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        isActive:
+          type: boolean
+        sortOrder:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+paths:
+  /api/v1/job-categories:
+    get:
+      summary: Lấy danh sách danh mục việc làm
+      tags: [JobCategories]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: isActive
+          schema:
+            type: boolean
+        - in: query
+          name: industryId
+          schema:
+            type: number
+        - in: query
+          name: parentId
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo mới danh mục (Admin)
+      tags: [JobCategories]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobCategoryRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/job-categories/{id}:
+    get:
+      summary: Xem chi tiết danh mục
+      tags: [JobCategories]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+    put:
+      summary: Cập nhật danh mục (Admin)
+      tags: [JobCategories]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobCategoryRequestDto'
+      responses:
+        200:
+          description: Thành công
+    delete:
+      summary: Xóa danh mục (Admin)
+      tags: [JobCategories]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Xóa thành công

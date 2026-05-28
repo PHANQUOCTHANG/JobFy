@@ -1,0 +1,134 @@
+tags:
+  name: Industries
+  description: Quản lý ngành nghề
+
+components:
+  schemas:
+    CreateIndustryRequestDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: "Công nghệ thông tin"
+        iconUrl:
+          type: string
+          example: "https://example.com/icon.png"
+        isActive:
+          type: boolean
+          example: true
+        sortOrder:
+          type: number
+          example: 1
+    
+    IndustryResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: "Công nghệ thông tin"
+        slug:
+          type: string
+          example: "cong-nghe-thong-tin"
+        iconUrl:
+          type: string
+        isActive:
+          type: boolean
+        sortOrder:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+paths:
+  /api/v1/industries:
+    get:
+      summary: Lấy danh sách ngành nghề
+      tags: [Industries]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: isActive
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo mới ngành nghề (Admin)
+      tags: [Industries]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIndustryRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/industries/{id}:
+    get:
+      summary: Xem chi tiết ngành nghề
+      tags: [Industries]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+    put:
+      summary: Cập nhật ngành nghề (Admin)
+      tags: [Industries]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIndustryRequestDto'
+      responses:
+        200:
+          description: Thành công
+    delete:
+      summary: Xóa ngành nghề (Admin)
+      tags: [Industries]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Xóa thành công
