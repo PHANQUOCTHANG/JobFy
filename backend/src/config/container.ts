@@ -89,3 +89,44 @@ export const companyService: ICompanyService = new CompanyService(
   userRepository
 );
 
+// Candidate Profile
+import { ICandidateProfileRepository, CandidateProfileRepository } from "@/module/candidate-profile/candidate-profile.repository";
+import { ICandidateProfileService, CandidateProfileService } from "@/module/candidate-profile/candidate-profile.service";
+
+const candidateProfileRepository: ICandidateProfileRepository = new CandidateProfileRepository(prisma);
+export const candidateProfileService: ICandidateProfileService = new CandidateProfileService(
+  candidateProfileRepository,
+  userRepository
+);
+
+// Resume
+import { IResumeRepository, ResumeRepository } from "@/module/resume/resume.repository";
+import { ResumeService } from "@/module/resume/resume.service";
+
+const resumeRepository: IResumeRepository = new ResumeRepository(prisma);
+export const resumeService: ResumeService = new ResumeService(
+  resumeRepository,
+  candidateProfileRepository
+);
+
+// Job
+import { IJobRepository, JobRepository } from "@/module/job/job.repository";
+import { JobService } from "@/module/job/job.service";
+
+const jobRepository: IJobRepository = new JobRepository(prisma);
+export const jobService: JobService = new JobService(
+  jobRepository,
+  companyRepository
+);
+
+// Application
+import { IApplicationRepository, ApplicationRepository } from "@/module/application/application.repository";
+import { ApplicationService } from "@/module/application/application.service";
+
+const applicationRepository: IApplicationRepository = new ApplicationRepository(prisma);
+export const applicationService: ApplicationService = new ApplicationService(
+  applicationRepository,
+  jobRepository,
+  candidateProfileRepository
+);
+

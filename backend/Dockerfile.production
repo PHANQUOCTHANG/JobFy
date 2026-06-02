@@ -1,0 +1,62 @@
+# ─────────────────────────────────────────────
+# Stage 1: Builder
+# Cài deps + compile TypeScript → dist/
+# ─────────────────────────────────────────────
+FROM node:20-alpine AS builder
+
+# Prisma cần openssl trên Alpine
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+
+# Copy package files (tận dụng Docker layer cache)
+COPY package*.json ./
+
+# Copy Prisma schema trước khi npm install
+# vì postinstall chạy "prisma generate" cần schema.prisma
+COPY prisma ./prisma
+COPY prisma.config.ts ./
+
+# Cài toàn bộ deps (bao gồm devDeps để build TypeScript)
+RUN npm ci
+
+# Copy source code
+COPY tsconfig.json ./
+COPY src ./src
+
+# Compile TypeScript → dist/
+RUN npm run build
+
+# ─────────────────────────────────────────────
+# Stage 2: Production Runtime
+# Chỉ copy những gì cần thiết → image nhỏ hơn
+# ─────────────────────────────────────────────
+FROM node:20-alpine AS production
+
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Copy Prisma schema (prisma generate cần chạy lại trong runtime)
+COPY prisma ./prisma
+COPY prisma.config.ts ./
+
+# Chỉ cài production deps (bỏ qua devDeps)
+RUN npm ci --omit=dev
+
+# Copy compiled code từ builder stage
+COPY --from=builder /app/dist ./dist
+
+# Tạo user non-root để bảo mật
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+USER nodejs
+
+EXPOSE 5000
+
+ENV NODE_ENV=production
+
+CMD ["node", "dist/server.js"]

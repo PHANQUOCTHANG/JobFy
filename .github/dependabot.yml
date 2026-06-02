@@ -1,0 +1,75 @@
+version: 2
+
+updates:
+  # ─────────────────────────────────────────────
+  # Backend dependencies (npm)
+  # ─────────────────────────────────────────────
+  - package-ecosystem: 'npm'
+    directory: '/backend'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Asia/Ho_Chi_Minh'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'backend'
+    commit-message:
+      prefix: 'chore(backend)'
+    # Gộp các bản patch nhỏ thành 1 PR thay vì nhiều PR lẻ
+    groups:
+      prisma:
+        patterns:
+          - 'prisma'
+          - '@prisma/*'
+      types:
+        patterns:
+          - '@types/*'
+      socket-io:
+        patterns:
+          - 'socket.io'
+          - 'socket.io-*'
+
+  # ─────────────────────────────────────────────
+  # Frontend dependencies (npm)
+  # ─────────────────────────────────────────────
+  - package-ecosystem: 'npm'
+    directory: '/frontend'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Asia/Ho_Chi_Minh'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'frontend'
+    commit-message:
+      prefix: 'chore(frontend)'
+    groups:
+      radix-ui:
+        patterns:
+          - '@radix-ui/*'
+      tanstack:
+        patterns:
+          - '@tanstack/*'
+      types:
+        patterns:
+          - '@types/*'
+
+  # ─────────────────────────────────────────────
+  # GitHub Actions versions
+  # ─────────────────────────────────────────────
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Asia/Ho_Chi_Minh'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+    commit-message:
+      prefix: 'chore(ci)'
