@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, Menu, Search, X, Command } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
+
 import UserDropdown from "@/features/user/components/UserDropdown";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
@@ -159,9 +159,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
 
         {/* Divider */}
         <div className="h-5 w-px bg-border/60 mx-1" />
-
-        {/* Theme toggle */}
-        <ModeToggle />
 
         {/* User dropdown */}
         {user && (

@@ -15,7 +15,7 @@ import { RouterProvider } from "react-router-dom";
 import { router } from "@/app/routes/route";
 
 // --- Components ---
-import { RadioLoader } from "@/components/ui/MusicLoadingEffects";
+import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import { AppProviders } from "./AppProvider";
 
 // ============================================================================
@@ -31,7 +31,7 @@ export const AppWithRouter = () => (
      */}
     <Suspense
       fallback={
-        <RadioLoader glass={false} fullscreen text="Đang tải tài nguyên..." />
+        <ThemedLoader />
       }
     >
       <RouterProvider router={router} />

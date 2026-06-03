@@ -7,15 +7,14 @@ const NODE_ENV = (import.meta.env.MODE ||
 export const env = {
   API_URL:
     (import.meta.env.VITE_API_URL as string) ||
-    "https://tvp-backend.fly.dev/api",
-  APP_NAME: (import.meta.env.VITE_APP_NAME as string) || "Music App",
+    "https://api.canco.vn/api",
+  APP_NAME: (import.meta.env.VITE_APP_NAME as string) || "JobFy",
   NODE_ENV,
   SOCKET_URL:
     (import.meta.env.VITE_SOCKET_URL as string) ||
-    "https://tvp-backend.fly.dev",
+    "https://api.canco.vn",
   CDN_DOMAIN:
-    (import.meta.env.VITE_CDN_DOMAIN as string) || "https://cdn.tvpmusic.site",
-  // Cấu hình upload (nếu cần check size ở frontend)
+    (import.meta.env.VITE_CDN_DOMAIN as string) || "https://cdn.canco.vn",
   MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
 };
 

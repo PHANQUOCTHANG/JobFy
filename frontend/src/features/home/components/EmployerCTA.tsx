@@ -1,0 +1,86 @@
+import { Building2, CheckCircle2, ArrowRight } from "lucide-react";
+import { Reveal } from "./Reveal";
+
+export function EmployerCTA() {
+  return (
+    <section className="relative bg-[#D44E2B] text-white overflow-hidden py-24 px-5 lg:px-10">
+      {/* Diagonal Stripes Background */}
+      <div 
+        className="absolute inset-0 opacity-10 pointer-events-none" 
+        style={{ 
+          backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 10px, #ffffff 10px, #ffffff 11px)",
+          backgroundSize: "20px 20px" 
+        }} 
+      />
+
+      <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+        
+        {/* Left Content */}
+        <Reveal>
+          <div className="inline-flex items-center gap-2 text-white/80 font-bold text-[12px] uppercase tracking-widest mb-8">
+            <Building2 size={16} /> DÀNH CHO NHÀ TUYỂN DỤNG
+          </div>
+          
+          <h2 className="text-[3rem] lg:text-[4.5rem] font-black leading-[1.05] mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Tìm nhân tài<br />
+            xứng tầm<br />
+            doanh nghiệp.
+          </h2>
+          
+          <p className="text-white/90 text-[17px] leading-relaxed mb-10 max-w-lg">
+            Tiếp cận 2 triệu+ ứng viên chất lượng cao với bộ lọc AI thông minh. Đăng tin tuyển dụng miễn phí 30 ngày đầu — không cần thẻ tín dụng.
+          </p>
+          
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+            {[
+              "Không cần thẻ tín dụng", 
+              "Miễn phí 30 ngày", 
+              "Hỗ trợ 24/7", 
+              "2M+ ứng viên"
+            ].map((text, i) => (
+              <div key={i} className="flex items-center gap-2 text-[14px] font-medium">
+                <CheckCircle2 size={16} className="text-white" /> {text}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Right Card */}
+        <Reveal delay={150}>
+          <div className="bg-[#9B3B26] rounded-3xl p-10 lg:p-12 shadow-2xl relative border border-white/5">
+            <h3 className="text-[28px] font-black mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Bắt đầu tuyển dụng
+            </h3>
+            <p className="text-white/80 text-[14px] mb-8">
+              Miễn phí 30 ngày đầu - Không cần thanh toán
+            </p>
+
+            <div className="flex flex-col gap-4 mb-12">
+              <button className="bg-white hover:bg-gray-50 text-[#D44E2B] font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all w-full text-[15px]">
+                Đăng tin tuyển dụng miễn phí <ArrowRight size={18} />
+              </button>
+              <button className="bg-[#7A2E1E] hover:bg-[#68271A] border border-white/10 text-white font-bold py-4 px-6 rounded-xl transition-all w-full text-[15px]">
+                Xem bảng giá dịch vụ
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-y-8 gap-x-4">
+              {[
+                { val: "2M+", label: "Ứng viên" },
+                { val: "3x", label: "Hiệu quả" },
+                { val: "48h", label: "Tuyển nhanh" },
+                { val: "99%", label: "Hài lòng" }
+              ].map(stat => (
+                <div key={stat.label} className="text-center">
+                  <div className="text-[32px] font-black mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>{stat.val}</div>
+                  <div className="text-[12px] text-white/70">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+      </div>
+    </section>
+  );
+}

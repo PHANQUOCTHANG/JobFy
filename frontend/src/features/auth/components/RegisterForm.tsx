@@ -7,117 +7,79 @@ import {
   User,
   CheckCircle2,
   XCircle,
-  Music4,
   Disc,
-  ShieldCheck,
   AlertCircle,
+  Briefcase,
+  ChevronLeft
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
-
-// Import Hook
 import { useRegister } from "../hooks/useRegister";
 
-const AnimatedBackground = () => (
-  <div className="fixed inset-0 z-0 overflow-hidden bg-[#08080a]">
-    <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-indigo-500/10 rounded-full blur-[120px] animate-blob mix-blend-screen" />
-    <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-purple-500/10 rounded-full blur-[120px] animate-blob animation-delay-2000 mix-blend-screen" />
-    <div className="absolute bottom-[-20%] left-[20%] w-[50vw] h-[50vw] bg-pink-500/10 rounded-full blur-[120px] animate-blob animation-delay-4000 mix-blend-screen" />
-    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 brightness-100 contrast-150"></div>
+const BackgroundPattern = () => (
+  <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+    {/* Grid */}
+    <div className="absolute inset-0" style={{
+      backgroundImage: "linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)",
+      backgroundSize: "64px 64px",
+    }} />
+    {/* Glows */}
+    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#D44E2B]/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3" />
+    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#E8A83A]/10 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4" />
+    {/* Noise */}
+    <div className="absolute inset-0 opacity-[0.03]" style={{
+      backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
+    }} />
   </div>
 );
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "neon" | "ghost";
-  isLoading?: boolean;
-}
-
-const Button: React.FC<ButtonProps> = ({
-  children,
-  className,
-  variant = "neon",
-  isLoading,
-  ...props
-}) => {
-  const baseStyles =
-    "relative group w-full h-11 rounded-2xl font-semibold text-sm transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden";
-
-  const variants = {
-    neon: "bg-white text-black hover:bg-gray-100 shadow-lg shadow-white/5 border border-transparent",
-    ghost: "bg-transparent text-gray-400 hover:text-white hover:bg-white/5",
+const Button = ({ children, className, isLoading, variant = "primary", ...props }: any) => {
+  const base = "relative group w-full h-12 rounded-xl font-bold text-[14.5px] transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2";
+  const variants: any = {
+    primary: "bg-[#D44E2B] hover:bg-[#BF3F1E] text-white shadow-lg shadow-[#D44E2B]/20",
+    outline: "bg-white border-2 border-[#E8E2D8] hover:border-[#111018] text-[#111018]",
   };
-
   return (
-    <button className={cn(baseStyles, variants[variant], className)} {...props}>
-      <span className="relative flex items-center justify-center gap-2">
-        {isLoading && <Disc className="animate-spin h-4 w-4" />}
-        {children}
-      </span>
+    <button className={cn(base, variants[variant], className)} {...props}>
+      {isLoading && <Disc className="animate-spin h-4 w-4" />}
+      {children}
     </button>
   );
 };
 
-// --- INPUT COMPONENT (Chuẩn React Hook Form) ---
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  icon: React.ElementType;
-  error?: boolean;
-}
-
-const InputField = React.forwardRef<HTMLInputElement, InputProps>(
+const InputField = React.forwardRef<HTMLInputElement, any>(
   ({ icon: Icon, className, error, ...props }, ref) => (
     <div className="relative group w-full">
-      {/* Glow Effect nền sau: Đỏ khi lỗi, Tím khi focus */}
-      <div
-        className={cn(
-          "absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-500",
-          error && "from-red-500/30 to-red-500/30 opacity-100"
-        )}
-      />
-
-      <div className="relative w-full">
-        {/* Icon trái: Đỏ khi lỗi */}
-        <div
-          className={cn(
-            "absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors duration-300",
-            error
-              ? "text-red-400"
-              : "text-gray-400 group-focus-within:text-white"
-          )}
-        >
-          <Icon className="w-4 h-4" />
-        </div>
-
-        <input
-          ref={ref}
-          className={cn(
-            "w-full h-12 bg-white/5 hover:bg-white/10 rounded-2xl border pl-11 pr-4 outline-none placeholder:text-gray-500 text-sm font-medium transition-all duration-300 shadow-inner shadow-black/20 backdrop-blur-sm",
-            // Logic viền:
-            error
-              ? "border-red-500/50 focus:border-red-500 text-red-100 placeholder:text-red-300/30"
-              : "border-white/5 focus:border-white/20 text-white",
-            className
-          )}
-          {...props}
-        />
-
-        {/* Icon cảnh báo lỗi bên phải */}
-        {error && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 animate-in fade-in zoom-in duration-300">
-            <AlertCircle className="w-4 h-4" />
-          </div>
-        )}
+      <div className={cn(
+        "absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-300",
+        error ? "text-red-500" : "text-[#9B8E7F] group-focus-within:text-[#D44E2B]"
+      )}>
+        <Icon size={18} />
       </div>
+      <input
+        ref={ref}
+        className={cn(
+          "w-full h-13 bg-white hover:bg-gray-50 focus:bg-white rounded-xl border pl-11 pr-4 outline-none placeholder:text-[#9B8E7F] text-[14.5px] text-[#111018] font-medium transition-all duration-300",
+          error ? "border-red-500 focus:border-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.1)]" 
+                : "border-[#E8E2D8] focus:border-[#D44E2B] focus:shadow-[0_0_0_4px_rgba(212,78,43,0.1)]",
+          className
+        )}
+        style={{ height: "52px" }}
+        {...props}
+      />
+      {error && (
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 animate-in fade-in zoom-in duration-300">
+          <AlertCircle size={16} />
+        </div>
+      )}
     </div>
   )
 );
 InputField.displayName = "InputField";
-export default function RegisterPage() {
-  // 1. Gọi Hook để lấy logic
+
+export default function RegisterForm() {
   const {
-    form: {
-      register,
-      formState: { errors, isSubmitting },
-    }, // Destructuring form state
+    form: { register, formState: { errors, isSubmitting } },
     onSubmit,
     showPassword,
     toggleShowPassword,
@@ -132,273 +94,168 @@ export default function RegisterPage() {
   } = useRegister();
 
   return (
-    <>
-      <style>{`
-        /* ... (Giữ nguyên phần CSS animation của bạn) ... */
-        @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
-        .animate-blob { animation: blob 10s infinite; }
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
-        .animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
-            -webkit-text-fill-color: white !important;
-            -webkit-box-shadow: 0 0 0 0 transparent inset !important;
-            transition: background-color 9999s ease-in-out 0s;
-        }
-      `}</style>
+    <div className="min-h-screen w-full flex flex-row-reverse bg-[#F7F4EE] text-[#111018]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+      
+      {/* RIGHT COLUMN: Visuals */}
+      <div className="hidden lg:flex w-[45%] relative flex-col justify-between p-12 bg-[#111018] text-white overflow-hidden">
+        <BackgroundPattern />
+        
+        <div className="relative z-10 flex justify-end">
+          <Link to="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <span className="text-[26px] font-black tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Job<span className="text-[#E8A83A]">Fy</span>
+            </span>
+            <div className="w-10 h-10 bg-[#D44E2B] rounded-xl flex items-center justify-center shadow-lg shadow-[#D44E2B]/20">
+              <Briefcase size={20} className="text-white" strokeWidth={2.5} />
+            </div>
+          </Link>
+        </div>
 
-      <div className="min-h-screen w-full bg-[#08080a] text-white font-sans relative selection:bg-indigo-500/30">
-        <AnimatedBackground />
+        <div className="relative z-10 mb-20">
+          <h1 className="text-[3.5rem] font-black leading-[1.1] mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Khám phá<br />
+            <em className="not-italic text-[#E8A83A]">hàng nghìn</em><br />
+            cơ hội mới.
+          </h1>
+          <p className="text-[#9B8E7F] text-[17px] leading-relaxed max-w-md">
+            Tạo tài khoản miễn phí để sử dụng bộ công cụ tạo CV AI, nhận gợi ý việc làm chính xác và theo dõi quá trình ứng tuyển dễ dàng.
+          </p>
+        </div>
 
-        <div className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden">
-          <div className="min-h-full w-full flex flex-col items-center justify-center p-4 py-8 relative z-10">
-            <div className="w-full max-w-[900px] flex flex-col lg:flex-row gap-6 lg:gap-8 items-center justify-center">
-              {/* FORM CONTAINER */}
-              <div className="w-full max-w-[420px] bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 shadow-2xl relative overflow-hidden animate-fade-in-up shrink-0">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent blur-sm" />
-
-                <div className="mb-6 text-center lg:text-left">
-                  <div className="flex items-center justify-center lg:justify-start gap-2 mb-3">
-                    <div className="h-7 w-7 rounded-full bg-white text-black flex items-center justify-center font-bold shadow-md">
-                      M
-                    </div>
-                    <span className="font-bold tracking-widest text-xs uppercase text-gray-400">
-                      MusicHub
-                    </span>
-                  </div>
-                  <h1 className="text-3xl font-bold mb-1 tracking-tight">
-                    Join the Vibe.
-                  </h1>
-                  <p className="text-gray-400 text-sm">
-                    Unlock your exclusive music journey.
-                  </p>
-                </div>
-
-                {/* FORM BẮT ĐẦU TỪ ĐÂY - Dùng onSubmit từ Hook */}
-                <form onSubmit={onSubmit} className="space-y-3">
-                  {/* USERNAME / FULLNAME */}
-                  {/* Lưu ý: name phải khớp với schema (username hoặc fullName) */}
-                  <div>
-                    <InputField
-                      icon={User}
-                      placeholder="Full Name"
-                      error={!!errors.fullName}
-                      {...register("fullName")}
-                    />
-                    {errors.fullName && (
-                      <p className="text-red-400 text-xs mt-1 ml-2">
-                        {errors.fullName.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* EMAIL */}
-                  <div>
-                    <InputField
-                      icon={Mail}
-                      type="email"
-                      placeholder="Email Address"
-                      error={!!errors.email}
-                      {...register("email")}
-                    />
-                    {errors.email && (
-                      <p className="text-red-400 text-xs mt-1 ml-2">
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* PASSWORD */}
-                  <div className="space-y-3">
-                    <div className="relative">
-                      <InputField
-                        icon={Lock}
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        error={!!errors.password}
-                        {...register("password")}
-                        // Kết nối sự kiện focus để hiện checklist
-                        onFocus={() => setIsFocused(true)}
-                      />
-                      <button
-                        type="button"
-                        onClick={toggleShowPassword}
-                        className="absolute right-4 top-3.5 text-gray-500 hover:text-white transition-colors z-20"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                    {errors.password && (
-                      <p className="text-red-400 text-xs mt-1 ml-2">
-                        {errors.password.message}
-                      </p>
-                    )}
-
-                    {/* CHECKLIST UI (Logic hiển thị lấy từ Hook) */}
-                    <div
-                      className={cn(
-                        "overflow-hidden transition-all duration-500 ease-in-out bg-black/20 rounded-2xl",
-                        isFocused || passwordValue
-                          ? "max-h-[300px] opacity-100 p-3"
-                          : "max-h-0 opacity-0 p-0"
-                      )}
-                    >
-                      <div className="flex justify-between items-center mb-2 px-1">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                          Strength
-                        </span>
-                        <span
-                          className={cn(
-                            "text-[10px] font-bold uppercase transition-colors duration-300",
-                            strengthInfo.textColor
-                          )}
-                        >
-                          {passwordValue ? strengthInfo.label : ""}
-                        </span>
-                      </div>
-
-                      <div className="flex gap-1 h-1 mb-3 w-full bg-gray-800/50 rounded-full overflow-hidden">
-                        {[1, 2, 3, 4].map((step) => (
-                          <div
-                            key={step}
-                            className={cn(
-                              "flex-1 transition-all duration-500 ease-out",
-                              strengthScore >= step
-                                ? strengthInfo.color
-                                : "bg-transparent"
-                            )}
-                          />
-                        ))}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        {requirementsStatus.map((req) => (
-                          <div
-                            key={req.id}
-                            className="flex items-center gap-2 text-xs transition-colors duration-300"
-                          >
-                            {req.met ? (
-                              <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
-                            ) : (
-                              <div className="w-3 h-3 rounded-full border border-gray-600/50 shrink-0" />
-                            )}
-                            <span
-                              className={
-                                req.met ? "text-gray-200" : "text-gray-500"
-                              }
-                            >
-                              {req.label}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* CONFIRM PASSWORD */}
-                    <div className="relative">
-                      <InputField
-                        icon={Lock}
-                        type="password"
-                        placeholder="Confirm Password"
-                        error={!!errors.confirmPassword}
-                        {...register("confirmPassword")}
-                      />
-                      {confirmPasswordValue.length > 0 &&
-                        !errors.confirmPassword && (
-                          <div className="absolute right-4 top-3.5">
-                            {isMatch ? (
-                              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                            ) : (
-                              <XCircle className="w-4 h-4 text-red-500" />
-                            )}
-                          </div>
-                        )}
-                    </div>
-                    {errors.confirmPassword && (
-                      <p className="text-red-400 text-xs mt-1 ml-2">
-                        {errors.confirmPassword.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* SUBMIT */}
-                  <div className="pt-2">
-                    <Button
-                      type="submit"
-                      isLoading={isSubmitting}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Creating Account..." : "Create Account"}
-                    </Button>
-                  </div>
-                </form>
-
-                <div className="mt-6 text-center">
-                  <p className="text-gray-500 text-xs">
-                    Already have an account?{" "}
-                    <Link
-                      to="/login"
-                      className="text-white font-medium hover:underline decoration-indigo-500 underline-offset-2 transition-all"
-                    >
-                      Log in
-                    </Link>
-                  </p>
-                </div>
-              </div>
-
-              {/* RIGHT SIDE: VISUALS (Giữ nguyên) */}
-              <div className="hidden lg:flex flex-col justify-center items-center animate-fade-in-up animation-delay-2000">
-                {/* ... (Giữ nguyên code UI phần hình ảnh bên phải) ... */}
-                <div className="relative w-80 h-80">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full blur-[60px] opacity-20 animate-pulse"></div>
-                  <div className="absolute top-4 left-4 right-4 z-10 p-6 border border-white/10 bg-white/5 backdrop-blur-xl rounded-[2rem] shadow-2xl transform transition-transform hover:-translate-y-1 duration-500">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                        <Music4 className="text-white w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-lg text-white">
-                          Hi-Fi Audio
-                        </h3>
-                        <p className="text-gray-400 text-xs">
-                          Lossless streaming quality
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="h-1.5 bg-white/5 rounded-full w-full overflow-hidden">
-                        <div className="h-full bg-indigo-400 w-2/3 rounded-full"></div>
-                      </div>
-                      <div className="flex justify-between text-[10px] text-gray-500 font-mono">
-                        <span>FLAC</span>
-                        <span>24-bit / 192kHz</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 left-8 z-20 p-5 border border-white/10 bg-[#121214]/90 backdrop-blur-xl rounded-[2rem] shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck className="text-emerald-400 w-6 h-6" />
-                      <div>
-                        <div className="font-bold text-white text-sm">
-                          Ad-free Experience
-                        </div>
-                        <div className="text-[10px] text-gray-400">
-                          Uninterrupted listening
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <div className="relative z-10 flex items-center gap-8 border-t border-white/10 pt-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#D44E2B]/20 flex items-center justify-center">
+              <CheckCircle2 size={18} className="text-[#D44E2B]" />
+            </div>
+            <div>
+              <p className="text-[14px] font-bold text-white">Miễn phí 100%</p>
+              <p className="text-[12px] text-[#9B8E7F]">Dành cho ứng viên</p>
+            </div>
+          </div>
+          <div className="w-px h-10 bg-white/10" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#E8A83A]/20 flex items-center justify-center">
+              <CheckCircle2 size={18} className="text-[#E8A83A]" />
+            </div>
+            <div>
+              <p className="text-[14px] font-bold text-white">Bảo mật tuyệt đối</p>
+              <p className="text-[12px] text-[#9B8E7F]">Thông tin cá nhân</p>
             </div>
           </div>
         </div>
       </div>
-    </>
+
+      {/* LEFT COLUMN: Register Form */}
+      <div className="w-full lg:w-[55%] flex items-center justify-center p-6 sm:p-12 relative">
+        <Link to="/" className="absolute top-8 left-8 lg:hidden flex items-center gap-2 text-[#111018]">
+          <div className="w-8 h-8 bg-[#D44E2B] rounded-lg flex items-center justify-center">
+            <Briefcase size={16} className="text-white" />
+          </div>
+          <span className="text-xl font-black" style={{ fontFamily: "'Playfair Display', serif" }}>JobFy</span>
+        </Link>
+        <Link to="/" className="absolute top-8 left-8 hidden lg:flex items-center gap-1.5 text-[13px] font-bold text-[#6B6059] hover:text-[#D44E2B] transition-colors">
+          <ChevronLeft size={16} /> Quay lại trang chủ
+        </Link>
+
+        <div className="w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-700 mt-12 lg:mt-0">
+          <div className="mb-10 text-center lg:text-left">
+            <h2 className="text-[2.2rem] font-black mb-3 text-[#111018]" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Tạo tài khoản
+            </h2>
+            <p className="text-[#6B6059] text-[15px]">
+              Chỉ mất 1 phút để bắt đầu hành trình của bạn.
+            </p>
+          </div>
+
+          <form onSubmit={onSubmit} className="space-y-5">
+            <div>
+              <p className="text-[13px] font-bold text-[#111018] mb-2">Họ và tên</p>
+              <InputField icon={User} placeholder="Nguyễn Văn A" error={!!errors.fullName} {...register("fullName")} />
+              {errors.fullName && <p className="text-red-500 text-[12px] mt-1.5 font-medium">{errors.fullName.message}</p>}
+            </div>
+
+            <div>
+              <p className="text-[13px] font-bold text-[#111018] mb-2">Email của bạn</p>
+              <InputField icon={Mail} type="email" placeholder="name@example.com" error={!!errors.email} {...register("email")} />
+              {errors.email && <p className="text-red-500 text-[12px] mt-1.5 font-medium">{errors.email.message}</p>}
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <p className="text-[13px] font-bold text-[#111018] mb-2">Mật khẩu</p>
+                <div className="relative">
+                  <InputField 
+                    icon={Lock} 
+                    type={showPassword ? "text" : "password"} 
+                    placeholder="••••••••" 
+                    error={!!errors.password} 
+                    {...register("password")} 
+                    onFocus={() => setIsFocused(true)}
+                  />
+                  <button type="button" onClick={toggleShowPassword} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9B8E7F] hover:text-[#111018] transition-colors z-20">
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-red-500 text-[12px] mt-1.5 font-medium">{errors.password.message}</p>}
+              </div>
+
+              {/* Password Strength Meter */}
+              <div className={cn(
+                "overflow-hidden transition-all duration-500 ease-in-out bg-white border border-[#E8E2D8] rounded-xl shadow-sm",
+                (isFocused || passwordValue) ? "max-h-[300px] opacity-100 p-4 mt-2" : "max-h-0 opacity-0 p-0 border-transparent mt-0"
+              )}>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[11px] font-bold text-[#6B6059] uppercase tracking-wider">Độ mạnh mật khẩu</span>
+                  <span className={cn("text-[11px] font-bold uppercase transition-colors duration-300", strengthInfo.textColor)}>
+                    {passwordValue ? strengthInfo.label : ""}
+                  </span>
+                </div>
+                <div className="flex gap-1 h-1.5 mb-4 w-full bg-[#F7F4EE] rounded-full overflow-hidden">
+                  {[1, 2, 3, 4].map((step) => (
+                    <div key={step} className={cn("flex-1 transition-all duration-500 ease-out", strengthScore >= step ? strengthInfo.color : "bg-transparent")} />
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {requirementsStatus.map((req: any) => (
+                    <div key={req.id} className="flex items-center gap-2 text-[12.5px] transition-colors duration-300">
+                      {req.met ? (
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+                      ) : (
+                        <div className="w-3.5 h-3.5 rounded-full border border-[#E8E2D8] shrink-0" />
+                      )}
+                      <span className={req.met ? "text-[#111018] font-medium" : "text-[#9B8E7F]"}>{req.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[13px] font-bold text-[#111018] mb-2 mt-4">Xác nhận mật khẩu</p>
+                <div className="relative">
+                  <InputField icon={Lock} type="password" placeholder="••••••••" error={!!errors.confirmPassword} {...register("confirmPassword")} />
+                  {confirmPasswordValue.length > 0 && !errors.confirmPassword && (
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                      {isMatch ? <CheckCircle2 size={18} className="text-[#10B981]" /> : <XCircle size={18} className="text-red-500" />}
+                    </div>
+                  )}
+                </div>
+                {errors.confirmPassword && <p className="text-red-500 text-[12px] mt-1.5 font-medium">{errors.confirmPassword.message}</p>}
+              </div>
+            </div>
+
+            <Button type="submit" isLoading={isSubmitting} disabled={isSubmitting} className="mt-6">
+              {isSubmitting ? "Đang tạo tài khoản..." : "Đăng ký miễn phí"}
+            </Button>
+          </form>
+
+          <p className="text-center text-[14px] text-[#6B6059] mt-10">
+            Đã có tài khoản?{" "}
+            <Link to="/login" className="font-bold text-[#D44E2B] hover:text-[#BF3F1E] hover:underline underline-offset-4 transition-all">
+              Đăng nhập
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
