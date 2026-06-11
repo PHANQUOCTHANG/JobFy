@@ -6,7 +6,7 @@ import authApi from "@/features/auth/api/authApi";
 
 import { useAppDispatch } from "@/store/hooks";
 import { persistor } from "@/store/store";
-import { WaveformLoader } from "@/components/ui/MusicLoadingEffects";
+import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import { logout } from "@/features/auth";
 
 const LogoutPage = () => {
@@ -41,7 +41,7 @@ const LogoutPage = () => {
     handleLogout();
   }, [dispatch, navigate]);
 
-  return <WaveformLoader glass={false} fullscreen text="Đang đăng xuất..." />;
+  return <ThemedLoader />;
 };
 
 export default LogoutPage;

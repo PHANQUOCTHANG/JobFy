@@ -4,7 +4,7 @@ import authApi from "@/features/auth/api/authApi";
 
 import { toast } from "sonner";
 import { useAppDispatch } from "@/store/hooks";
-import { WaveformLoader } from "@/components/ui/MusicLoadingEffects";
+import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import { login } from "@/features/auth";
 
 const GoogleCallbackPage = () => {
@@ -53,11 +53,7 @@ const GoogleCallbackPage = () => {
   }, [searchParams, dispatch, navigate]);
 
   return (
-    <WaveformLoader
-      glass={false}
-      fullscreen
-      text="Đang đăng nhập với Google..."
-    />
+    <ThemedLoader />
   );
 };
 

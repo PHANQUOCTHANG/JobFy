@@ -2194,4 +2194,19 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
   .btn-xl  { padding: 0.9375rem 2rem;    font-size: 1.0625rem; border-radius: var(--radius-2xl); }
   .btn-icon    { padding: 0.5rem;   border-radius: var(--radius-lg); aspect-ratio: 1 / 1; }
   .btn-icon-sm { padding: 0.375rem; border-radius: var(--radius-md); aspect-ratio: 1 / 1; }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-100% - 3rem)); }
+  }
+
+  @keyframes floatA {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes floatB {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
 }

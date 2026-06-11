@@ -1,4 +1,4 @@
-import { WaveformLoader } from "@/components/ui/MusicLoadingEffects";
+import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import MusicResult from "@/components/ui/Result";
 import { useAppSelector } from "@/store/hooks";
 import { AlertCircle, LogInIcon } from "lucide-react";
@@ -17,7 +17,7 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
   const { token, user, isAuthChecking } = useAppSelector((state) => state.auth);
   // 1️⃣ Đang xác thực (ví dụ đang gọi refreshToken)
   if (isAuthChecking) {
-    return <WaveformLoader glass={false} text="Đang xác thực..." fullscreen />;
+    return <ThemedLoader />;
   }
 
   // 2️⃣ Chưa đăng nhập → yêu cầu login

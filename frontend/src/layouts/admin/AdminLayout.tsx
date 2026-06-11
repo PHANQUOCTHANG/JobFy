@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { usePlayerPadding } from "@/hooks/usePlayerPadding";
 import { cn } from "@/lib/utils";
 import Sidebar from "@/layouts/admin/components/Sidebar";
 import Header from "@/layouts/admin/components/Header";
@@ -8,7 +7,7 @@ import Header from "@/layouts/admin/components/Header";
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const paddingProps = usePlayerPadding(20);
+
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
   return (
@@ -37,10 +36,8 @@ const AdminLayout = () => {
         {/* SCROLLABLE AREA */}
         <main
           className={cn(
-            "flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 scroll-smooth bg-muted/20", // Thêm bg-muted/20 để tách biệt với header/sidebar trắng
-            paddingProps.className,
+            "flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 scroll-smooth bg-muted/20"
           )}
-          style={paddingProps.style}
         >
           {/* Max width container để nội dung không bị bè ra quá rộng trên màn hình 4k */}
           <div className="mx-auto max-w-7xl animate-fade-in">
