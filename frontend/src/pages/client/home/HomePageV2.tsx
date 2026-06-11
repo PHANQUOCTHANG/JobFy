@@ -28,10 +28,10 @@ export default function HomePageV2() {
   }
 
   return (
-    <div className="bg-[#F7F4EE] text-[#111018]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+    <div className="bg-[#F4F6FA] text-[#0F172A]" style={{ fontFamily: "'Manrope', sans-serif" }}>
       {/* Announcement Bar */}
       {annoBar && (
-        <div className="bg-[#D44E2B] text-white text-center py-2.5 px-10 text-[13px] font-medium relative">
+        <div className="bg-[#1A56DB] text-white text-center py-2.5 px-10 text-[13px] font-medium relative">
           🎉&nbsp;<strong>AI Match ra mắt</strong> — Tự động ghép việc làm phù hợp với hồ sơ của bạn. &nbsp;
           <a href="#" className="underline font-bold hover:no-underline">Thử ngay →</a>
           <button onClick={() => setAnnoBar(false)}
