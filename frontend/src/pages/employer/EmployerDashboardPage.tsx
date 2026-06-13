@@ -1,300 +1,373 @@
-import React from "react";
-import {
-  Calendar,
-  FileText,
-  Eye,
-  Briefcase,
-  PieChart,
-  TrendingUp,
-  MoreVertical,
-  MoreHorizontal
-} from "lucide-react";
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const EmployerDashboardPage = () => {
+  useEffect(() => {
+    // Advanced micro-interaction for cards
+    const cards = Array.from(document.querySelectorAll(".interactive-card"));
+    
+    const mouseMove = (e: Event) => {
+      const mouseEvent = e as MouseEvent;
+      const el = mouseEvent.currentTarget as HTMLElement;
+      const rect = el.getBoundingClientRect();
+      const x = mouseEvent.clientX - rect.left;
+      const y = mouseEvent.clientY - rect.top;
+      el.style.setProperty("--mouse-x", `${x}px`);
+      el.style.setProperty("--mouse-y", `${y}px`);
+    };
+
+    const down = (e: Event) => {
+      const el = e.currentTarget as HTMLElement;
+      el.style.transform = "scale(0.98)";
+    };
+    const up = (e: Event) => {
+      const el = e.currentTarget as HTMLElement;
+      el.style.transform = "scale(1)";
+    };
+
+    cards.forEach((card) => {
+      card.addEventListener("mousemove", mouseMove);
+      card.addEventListener("mousedown", down);
+      card.addEventListener("mouseup", up);
+      card.addEventListener("mouseleave", up);
+    });
+
+    return () => {
+      cards.forEach((card) => {
+        card.removeEventListener("mousemove", mouseMove);
+        card.removeEventListener("mousedown", down);
+        card.removeEventListener("mouseup", up);
+        card.removeEventListener("mouseleave", up);
+      });
+    };
+  }, []);
+
   return (
-    <div className="space-y-8 pb-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">Tổng quan Bảng điều khiển</h2>
-          <p className="text-lg text-muted-foreground mt-1">Theo dõi hiệu suất tuyển dụng và tiến trình xử lý.</p>
-        </div>
-        <div className="flex gap-3">
-          <button className="px-4 py-2 border border-border text-primary text-sm font-medium rounded-lg hover:bg-accent transition-colors flex items-center gap-2">
-            <Calendar className="size-[18px]" />
-            30 ngày qua
-          </button>
-        </div>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Metric 1 */}
-        <div className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <FileText className="size-10 text-primary" />
+    <>
+      <div className="p-6 md:p-8 lg:p-10 max-w-container_max_width mx-auto w-full space-y-10 flex-1">
+        {/* Header Section */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="space-y-1">
+            <h2 className="text-3xl lg:text-4xl font-black text-[#0F172A] tracking-tight">
+              Tổng quan Hiệu suất
+            </h2>
+            <p className="text-[#64748B] text-[15px] font-medium">
+              Dữ liệu thống kê từ ngày <span className="text-[#0F172A] font-bold">01/10/2023</span> đến hôm nay
+            </p>
           </div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Hồ sơ mới</p>
-          <div className="flex items-end gap-3">
-            <h3 className="text-3xl font-bold text-foreground">24</h3>
-            <span className="text-[11px] font-medium text-emerald-600 bg-emerald-500/10 px-2 py-1 rounded-full flex items-center gap-1 mb-1">
-              <TrendingUp className="size-3" />
-              +12% tuần
-            </span>
-          </div>
-        </div>
-
-        {/* Metric 2 */}
-        <div className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Eye className="size-10 text-primary" />
-          </div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Lượt xem tin</p>
-          <div className="flex items-end gap-3">
-            <h3 className="text-3xl font-bold text-foreground">1,240</h3>
-          </div>
-        </div>
-
-        {/* Metric 3 */}
-        <div className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Briefcase className="size-10 text-primary" />
-          </div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Tin đang mở</p>
-          <div className="flex items-end gap-3">
-            <h3 className="text-3xl font-bold text-foreground">8</h3>
-          </div>
-        </div>
-
-        {/* Metric 4 */}
-        <div className="bg-card p-6 rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <PieChart className="size-10 text-primary" />
-          </div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Hạn mức tin</p>
-          <div className="flex items-end gap-3">
-            <h3 className="text-3xl font-bold text-foreground">2/10</h3>
-          </div>
-          <div className="w-full bg-muted h-1.5 rounded-full mt-4 overflow-hidden">
-            <div className="bg-primary h-full rounded-full" style={{ width: "20%" }}></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Analytics Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Line Chart Mockup */}
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl shadow-sm p-6 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-foreground">Xu hướng ứng tuyển</h3>
-            <button className="text-muted-foreground hover:text-primary transition-colors">
-              <MoreVertical className="size-5" />
+          <div className="flex flex-wrap gap-3 w-full md:w-auto">
+            <button className="flex-1 md:flex-none px-4 py-2.5 bg-white border-2 border-[#E2E8F0] hover:border-[#CBD5E1] rounded-xl flex items-center justify-center gap-2 text-[#475569] hover:text-[#0F172A] transition-all font-bold shadow-sm">
+              <span className="material-symbols-outlined text-[20px]">calendar_today</span>
+              30 ngày qua
+            </button>
+            <button className="flex-1 md:flex-none px-5 py-2.5 bg-[#00307c] text-white rounded-xl flex items-center justify-center gap-2 hover:bg-[#002568] hover:shadow-[0_8px_20px_-6px_rgba(0,48,124,0.4)] transition-all duration-300 font-bold">
+              <span className="material-symbols-outlined text-[20px]">file_download</span>
+              Xuất báo cáo
             </button>
           </div>
-          <div className="flex-1 min-h-[250px] relative border-b border-l border-border/50 ml-8 pb-4">
-            {/* Grid Lines */}
-            <div className="absolute w-full h-full flex flex-col justify-between opacity-10">
-              <div className="w-full border-t border-border"></div>
-              <div className="w-full border-t border-border"></div>
-              <div className="w-full border-t border-border"></div>
-              <div className="w-full border-t border-border"></div>
+        </header>
+
+        {/* Key Metrics Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Total CVs */}
+          <div className="interactive-card bg-white p-6 rounded-2xl border border-[#F1F5F9] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,48,124,0.12)] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white to-[#F8FAFC] opacity-50 pointer-events-none" />
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-5">
+                <div className="w-12 h-12 bg-blue-50 text-[#00307c] rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-[#00307c] group-hover:text-white transition-all duration-300">
+                  <span className="material-symbols-outlined text-[24px]">description</span>
+                </div>
+                <div className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-bold">
+                  <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                  +12%
+                </div>
+              </div>
+              <p className="text-[#64748B] text-[13px] font-bold uppercase tracking-wider mb-1">Tổng CV đã nhận</p>
+              <p className="text-3xl font-black text-[#0F172A] tracking-tight">1,284</p>
             </div>
-            {/* Mock Line Chart SVG */}
-            <svg className="absolute bottom-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
-              {/* Area */}
-              <path className="opacity-20 text-primary" d="M0,100 L0,80 Q10,70 20,85 T40,60 T60,75 T80,40 T100,50 L100,100 Z" fill="currentColor"></path>
-              {/* Line */}
-              <path className="text-primary drop-shadow-md" d="M0,80 Q10,70 20,85 T40,60 T60,75 T80,40 T100,50" fill="none" stroke="currentColor" strokeWidth="2"></path>
-              {/* Data Points */}
-              <circle className="text-primary hover:r-4 transition-all cursor-pointer" cx="20" cy="85" fill="currentColor" r="3"></circle>
-              <circle className="text-primary hover:r-4 transition-all cursor-pointer" cx="40" cy="60" fill="currentColor" r="3"></circle>
-              <circle className="text-primary hover:r-4 transition-all cursor-pointer" cx="60" cy="75" fill="currentColor" r="3"></circle>
-              <circle className="text-primary hover:r-4 transition-all cursor-pointer" cx="80" cy="40" fill="currentColor" r="3"></circle>
-              <circle className="text-primary hover:r-4 transition-all cursor-pointer" cx="100" cy="50" fill="currentColor" r="3"></circle>
-            </svg>
-            {/* Y Axis Labels */}
-            <div className="absolute -left-8 h-full flex flex-col justify-between text-[11px] font-medium text-muted-foreground pb-4">
-              <span>40</span>
-              <span>30</span>
-              <span>20</span>
-              <span>10</span>
+            <div className="absolute bottom-0 left-0 w-full h-1.5 bg-[#F1F5F9]">
+              <div className="h-full bg-[#00307c] transition-all duration-1000 ease-out" style={{ width: "70%" }} />
             </div>
-            {/* X Axis Labels */}
-            <div className="absolute -bottom-6 w-full flex justify-between text-[11px] font-medium text-muted-foreground">
-              <span>T1</span>
-              <span>T2</span>
-              <span>T3</span>
-              <span>T4</span>
-              <span>Hiện tại</span>
+          </div>
+
+          {/* Conversion Rate */}
+          <div className="interactive-card bg-white p-6 rounded-2xl border border-[#F1F5F9] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(16,185,129,0.12)] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white to-[#F8FAFC] opacity-50 pointer-events-none" />
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-5">
+                <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                  <span className="material-symbols-outlined text-[24px]">sync_alt</span>
+                </div>
+                <div className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-bold">
+                  <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                  +3.5%
+                </div>
+              </div>
+              <p className="text-[#64748B] text-[13px] font-bold uppercase tracking-wider mb-1">Tỉ lệ Chuyển đổi</p>
+              <p className="text-3xl font-black text-[#0F172A] tracking-tight">24.8%</p>
+            </div>
+            <div className="absolute bottom-0 left-0 w-full h-1.5 bg-[#F1F5F9]">
+              <div className="h-full bg-emerald-500 transition-all duration-1000 ease-out" style={{ width: "24.8%" }} />
+            </div>
+          </div>
+
+          {/* Interview Success */}
+          <div className="interactive-card bg-white p-6 rounded-2xl border border-[#F1F5F9] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(245,158,11,0.12)] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white to-[#F8FAFC] opacity-50 pointer-events-none" />
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-5">
+                <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                  <span className="material-symbols-outlined text-[24px]">task_alt</span>
+                </div>
+                <div className="flex items-center gap-1 px-2.5 py-1 bg-rose-50 text-rose-600 rounded-lg text-sm font-bold">
+                  <span className="material-symbols-outlined text-[16px]">trending_down</span>
+                  -1.2%
+                </div>
+              </div>
+              <p className="text-[#64748B] text-[13px] font-bold uppercase tracking-wider mb-1">Phỏng vấn Đạt</p>
+              <p className="text-3xl font-black text-[#0F172A] tracking-tight">18.2%</p>
+            </div>
+            <div className="absolute bottom-0 left-0 w-full h-1.5 bg-[#F1F5F9]">
+              <div className="h-full bg-amber-500 transition-all duration-1000 ease-out" style={{ width: "18.2%" }} />
+            </div>
+          </div>
+
+          {/* Recruitment Cost */}
+          <div className="interactive-card bg-white p-6 rounded-2xl border border-[#F1F5F9] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(99,102,241,0.12)] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white to-[#F8FAFC] opacity-50 pointer-events-none" />
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-5">
+                <div className="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                  <span className="material-symbols-outlined text-[24px]">payments</span>
+                </div>
+                <div className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-bold">
+                  <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+                  -5%
+                </div>
+              </div>
+              <p className="text-[#64748B] text-[13px] font-bold uppercase tracking-wider mb-1">Chi phí/Tuyển dụng</p>
+              <p className="text-3xl font-black text-[#0F172A] tracking-tight">4.2M</p>
+            </div>
+            <div className="absolute bottom-0 left-0 w-full h-1.5 bg-[#F1F5F9]">
+              <div className="h-full bg-indigo-500 transition-all duration-1000 ease-out" style={{ width: "60%" }} />
             </div>
           </div>
         </div>
 
-        {/* Funnel Chart Mockup */}
-        <div className="bg-card border border-border rounded-xl shadow-sm p-6 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-foreground">Phễu tuyển dụng</h3>
-            <span className="text-[11px] font-medium bg-accent text-foreground px-2 py-1 rounded-md">YTD</span>
+        {/* Main Dashboard Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Recruitment Funnel */}
+          <div className="lg:col-span-8 bg-white rounded-3xl border border-[#F1F5F9] p-8 flex flex-col shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h3 className="text-xl font-black text-[#0F172A]">Phễu Tuyển Dụng Tổng Thể</h3>
+                <p className="text-[#64748B] text-sm mt-1 font-medium">Theo dõi tỉ lệ chuyển đổi qua từng vòng</p>
+              </div>
+              <button className="w-10 h-10 flex items-center justify-center hover:bg-[#F8FAFC] rounded-full transition-colors text-[#64748B]">
+                <span className="material-symbols-outlined">more_vert</span>
+              </button>
+            </div>
+            
+            <div className="flex-1 flex flex-col gap-3">
+              {[
+                { label: "Ứng tuyển", count: "1,284", width: "100%", bg: "bg-[#00307c]", ml: "0%" },
+                { label: "Sơ loại hồ sơ", count: "842", width: "95%", bg: "bg-blue-700", ml: "5%", rate: "65%" },
+                { label: "Phỏng vấn", count: "312", width: "90%", bg: "bg-blue-600", ml: "10%", rate: "37%" },
+                { label: "Mời làm việc", count: "58", width: "85%", bg: "bg-blue-500", ml: "15%", rate: "18%" },
+                { label: "Tuyển thành công", count: "46", width: "80%", bg: "bg-emerald-500", ml: "20%", rate: "79%" },
+              ].map((step, idx) => (
+                <div key={idx} className="relative flex items-center group/funnel" style={{ marginLeft: step.ml }}>
+                  <div 
+                    className={`funnel-step h-[68px] ${step.bg} flex items-center justify-between px-8 text-white shadow-md transition-all duration-300 group-hover/funnel:scale-[1.01] cursor-pointer`}
+                    style={{ width: step.width }}
+                  >
+                    <span className="text-[15px] font-bold">{step.label}</span>
+                    <span className="text-xl font-black tracking-tight">{step.count}</span>
+                  </div>
+                  {step.rate && (
+                    <span className="absolute -left-12 text-[13px] font-black text-[#64748B]">
+                      {step.rate}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="flex-1 flex flex-col gap-3 justify-center">
-            {/* Funnel Stage 1 */}
-            <div className="flex items-center gap-4 group cursor-pointer">
-              <div className="w-24 text-right text-xs font-semibold text-muted-foreground group-hover:text-primary transition-colors">Chờ duyệt</div>
-              <div className="flex-1 h-10 bg-primary/10 rounded-r-lg relative overflow-hidden group-hover:bg-primary/20 transition-colors" style={{ width: "100%" }}>
-                <div className="absolute inset-y-0 left-0 bg-primary w-2"></div>
-                <div className="absolute inset-0 flex items-center px-4 font-bold text-primary text-sm">150</div>
+
+          {/* Right Column */}
+          <div className="lg:col-span-4 flex flex-col gap-8">
+            {/* CVs by Source */}
+            <div className="bg-white rounded-3xl border border-[#F1F5F9] p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+              <h3 className="text-xl font-black text-[#0F172A] mb-8">Nguồn CV Hàng Đầu</h3>
+              <div className="space-y-7">
+                {[
+                  { label: "LinkedIn", percent: "45%", width: "45%", color: "bg-[#0A66C2]" },
+                  { label: "Quảng cáo Facebook", percent: "25%", width: "25%", color: "bg-[#1877F2]" },
+                  { label: "Giới thiệu (Referral)", percent: "18%", width: "18%", color: "bg-emerald-500" },
+                  { label: "Trang Tuyển dụng", percent: "12%", width: "12%", color: "bg-amber-500" },
+                ].map((source, idx) => (
+                  <div key={idx} className="space-y-2 group/source">
+                    <div className="flex justify-between text-[14px] font-semibold text-[#0F172A]">
+                      <span>{source.label}</span>
+                      <span className="text-[#64748B]">{source.percent}</span>
+                    </div>
+                    <div className="h-2.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${source.color} rounded-full transition-all duration-1000 ease-out group-hover/source:brightness-110`} 
+                        style={{ width: source.width }} 
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            {/* Funnel Stage 2 */}
-            <div className="flex items-center gap-4 group cursor-pointer">
-              <div className="w-24 text-right text-xs font-semibold text-muted-foreground group-hover:text-primary transition-colors">Đang xem xét</div>
-              <div className="flex-1 h-10 bg-primary/10 rounded-r-lg relative overflow-hidden group-hover:bg-primary/20 transition-colors" style={{ width: "75%" }}>
-                <div className="absolute inset-y-0 left-0 bg-primary w-2 opacity-80"></div>
-                <div className="absolute inset-0 flex items-center px-4 font-bold text-primary text-sm">85</div>
+
+            {/* AI Suggestion */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-3xl border border-indigo-100 p-8 shadow-[0_8px_30px_-12px_rgba(99,102,241,0.15)] group">
+              <div className="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full blur-[50px] opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      auto_awesome
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+                    AI Đề xuất
+                  </h3>
+                </div>
+                <p className="text-[15px] text-[#475569] leading-relaxed font-medium">
+                  Nguồn <strong className="text-[#0F172A]">Giới thiệu (Referral)</strong> có tỷ lệ chuyển đổi cao nhất (32%). 
+                  Đề xuất tăng 20% mức thưởng nội bộ để tối ưu chi phí tuyển dụng trong quý này.
+                </p>
+                <button className="mt-5 text-[14px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 group-hover:gap-2 transition-all">
+                  Xem phân tích chi tiết <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
               </div>
-              <div className="w-10 text-[11px] text-muted-foreground">56%</div>
             </div>
-            {/* Funnel Stage 3 */}
-            <div className="flex items-center gap-4 group cursor-pointer">
-              <div className="w-24 text-right text-xs font-semibold text-muted-foreground group-hover:text-primary transition-colors">Đã phỏng vấn</div>
-              <div className="flex-1 h-10 bg-primary/10 rounded-r-lg relative overflow-hidden group-hover:bg-primary/20 transition-colors" style={{ width: "45%" }}>
-                <div className="absolute inset-y-0 left-0 bg-primary w-2 opacity-60"></div>
-                <div className="absolute inset-0 flex items-center px-4 font-bold text-primary text-sm">32</div>
+          </div>
+
+          {/* Recent Job Posts Table */}
+          <div className="lg:col-span-12 bg-white rounded-3xl border border-[#F1F5F9] overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+            <div className="px-8 py-6 border-b border-[#F1F5F9] flex justify-between items-center bg-white">
+              <div>
+                <h3 className="text-xl font-black text-[#0F172A]">Chiến dịch đang chạy</h3>
+                <p className="text-[#64748B] text-sm mt-1 font-medium">Trạng thái các tin tuyển dụng nổi bật</p>
               </div>
-              <div className="w-10 text-[11px] text-muted-foreground">37%</div>
+              <button className="px-4 py-2 text-[14px] font-bold text-[#00307c] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                Xem tất cả
+              </button>
             </div>
-            {/* Funnel Stage 4 */}
-            <div className="flex items-center gap-4 group cursor-pointer">
-              <div className="w-24 text-right text-xs font-semibold text-muted-foreground group-hover:text-emerald-500 transition-colors">Đề nghị</div>
-              <div className="flex-1 h-10 bg-emerald-500/10 rounded-r-lg relative overflow-hidden group-hover:bg-emerald-500/20 transition-colors" style={{ width: "20%" }}>
-                <div className="absolute inset-y-0 left-0 bg-emerald-500 w-2"></div>
-                <div className="absolute inset-0 flex items-center px-4 font-bold text-emerald-600 text-sm">8</div>
-              </div>
-              <div className="w-10 text-[11px] text-muted-foreground">25%</div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[900px]">
+                <thead>
+                  <tr className="bg-[#F8FAFC] border-b border-[#F1F5F9]">
+                    <th className="px-8 py-4 text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Vị trí công việc</th>
+                    <th className="px-8 py-4 text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Trạng thái</th>
+                    <th className="px-8 py-4 text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Lượt xem</th>
+                    <th className="px-8 py-4 text-[12px] font-bold text-[#64748B] uppercase tracking-wider">CV Đã nhận</th>
+                    <th className="px-8 py-4 text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Tiến độ</th>
+                    <th className="px-8 py-4"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#F1F5F9]">
+                  {[
+                    {
+                      title: "Senior Frontend Developer", loc: "Hà Nội • Toàn thời gian", icon: "terminal", iconColor: "text-blue-600 bg-blue-50",
+                      status: "Đang tuyển", statusColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
+                      views: "1,240", cvs: "142",
+                      progress: "85%", progressColor: "bg-emerald-500"
+                    },
+                    {
+                      title: "Marketing Manager", loc: "TP. HCM • Toàn thời gian", icon: "campaign", iconColor: "text-purple-600 bg-purple-50",
+                      status: "Tạm dừng", statusColor: "text-amber-700 bg-amber-50 border-amber-200",
+                      views: "856", cvs: "84",
+                      progress: "40%", progressColor: "bg-amber-500"
+                    },
+                    {
+                      title: "UI/UX Designer", loc: "Từ xa • Tự do", icon: "palette", iconColor: "text-pink-600 bg-pink-50",
+                      status: "Đang tuyển", statusColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
+                      views: "3,120", cvs: "210",
+                      progress: "92%", progressColor: "bg-emerald-500"
+                    }
+                  ].map((job, idx) => (
+                    <tr key={idx} className="hover:bg-[#F8FAFC] transition-colors group/row cursor-pointer">
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${job.iconColor}`}>
+                            <span className="material-symbols-outlined">{job.icon}</span>
+                          </div>
+                          <div>
+                            <p className="text-[15px] font-bold text-[#0F172A] group-hover/row:text-[#00307c] transition-colors">{job.title}</p>
+                            <p className="text-[13px] text-[#64748B] font-medium mt-0.5">{job.loc}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5">
+                        <span className={`px-3 py-1.5 text-[12px] font-bold rounded-lg border ${job.statusColor}`}>
+                          {job.status}
+                        </span>
+                      </td>
+                      <td className="px-8 py-5 text-[15px] font-bold text-[#475569]">{job.views}</td>
+                      <td className="px-8 py-5 text-[15px] font-bold text-[#0F172A]">{job.cvs}</td>
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 h-2 bg-[#F1F5F9] rounded-full min-w-[100px]">
+                            <div className={`h-full ${job.progressColor} rounded-full`} style={{ width: job.progress }} />
+                          </div>
+                          <span className="text-[13px] font-bold text-[#475569]">{job.progress}</span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5 text-right">
+                        <button className="w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 hover:bg-white hover:shadow-md transition-all text-[#64748B] hover:text-[#00307c]">
+                          <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Recent Activity Table */}
-      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-border flex justify-between items-center">
-          <h3 className="text-xl font-semibold text-foreground">Hồ sơ gần đây</h3>
-          <a className="text-primary text-sm font-medium hover:underline" href="#">Xem tất cả</a>
+      <footer className="py-6 px-6 md:px-10 bg-transparent flex flex-col md:flex-row justify-between items-center text-[#64748B] text-[13px] font-medium gap-4">
+        <p>© 2024 JobFy Enterprise. All rights reserved.</p>
+        <div className="flex gap-6">
+          <Link className="hover:text-[#0F172A] transition-colors" to="#">Điều khoản dịch vụ</Link>
+          <Link className="hover:text-[#0F172A] transition-colors" to="#">Chính sách bảo mật</Link>
+          <Link className="hover:text-[#0F172A] transition-colors" to="#">Hỗ trợ 24/7</Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-muted/30 border-b border-border">
-                <th className="py-3 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider sticky top-0">Ứng viên</th>
-                <th className="py-3 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider sticky top-0">Vị trí ứng tuyển</th>
-                <th className="py-3 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider sticky top-0">Trạng thái</th>
-                <th className="py-3 px-6 text-xs font-semibold text-muted-foreground uppercase tracking-wider sticky top-0">Ngày</th>
-                <th className="py-3 px-6 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider sticky top-0">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm font-medium">
-              {/* Row 1 */}
-              <tr className="border-b border-border hover:bg-accent/50 transition-colors group">
-                <td className="py-4 px-6">
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">
-                      JD
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Jane Doe</p>
-                      <p className="text-[11px] text-muted-foreground font-normal">jane.doe@example.com</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="py-4 px-6 text-foreground">Senior Frontend Engineer</td>
-                <td className="py-4 px-6">
-                  <span className="bg-muted text-foreground px-3 py-1 rounded-full text-[11px] font-medium inline-flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-primary"></span>
-                    Đang xem xét
-                  </span>
-                </td>
-                <td className="py-4 px-6 text-muted-foreground">2 giờ trước</td>
-                <td className="py-4 px-6 text-right">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
-                    <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors">
-                      <Eye className="size-5" />
-                    </button>
-                    <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors">
-                      <MoreHorizontal className="size-5" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              {/* Row 2 */}
-              <tr className="border-b border-border hover:bg-accent/50 transition-colors group">
-                <td className="py-4 px-6">
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-bold">
-                      MS
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Michael Smith</p>
-                      <p className="text-[11px] text-muted-foreground font-normal">m.smith@example.com</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="py-4 px-6 text-foreground">Product Manager</td>
-                <td className="py-4 px-6">
-                  <span className="bg-emerald-500/10 text-emerald-600 px-3 py-1 rounded-full text-[11px] font-medium inline-flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-emerald-500"></span>
-                    Đã phỏng vấn
-                  </span>
-                </td>
-                <td className="py-4 px-6 text-muted-foreground">Hôm qua</td>
-                <td className="py-4 px-6 text-right">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
-                    <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors">
-                      <Eye className="size-5" />
-                    </button>
-                    <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors">
-                      <MoreHorizontal className="size-5" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              {/* Row 3 */}
-              <tr className="hover:bg-accent/50 transition-colors group">
-                <td className="py-4 px-6">
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-muted text-foreground flex items-center justify-center font-bold">
-                      AL
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Anna Lee</p>
-                      <p className="text-[11px] text-muted-foreground font-normal">anna.l@example.com</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="py-4 px-6 text-foreground">UX Designer</td>
-                <td className="py-4 px-6">
-                  <span className="bg-border/30 text-foreground px-3 py-1 rounded-full text-[11px] font-medium inline-flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-muted-foreground"></span>
-                    Chờ duyệt
-                  </span>
-                </td>
-                <td className="py-4 px-6 text-muted-foreground">12 Th10, 2023</td>
-                <td className="py-4 px-6 text-right">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
-                    <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors">
-                      <Eye className="size-5" />
-                    </button>
-                    <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors">
-                      <MoreHorizontal className="size-5" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+      </footer>
+
+      <style>{`
+        .funnel-step { 
+          clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%, 5% 50%); 
+        }
+        .funnel-step:first-child { 
+          clip-path: polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%); 
+        }
+        .interactive-card::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          padding: 2px;
+          background: radial-gradient(
+            800px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+            rgba(0, 48, 124, 0.06),
+            transparent 40%
+          );
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          pointer-events: none;
+        }
+      `}</style>
+    </>
   );
 };
 
