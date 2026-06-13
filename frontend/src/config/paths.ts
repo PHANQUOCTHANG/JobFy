@@ -50,8 +50,12 @@ export const ADMIN_PATHS = {
 
 export const EMPLOYER_PATHS = {
   DASHBOARD: "/employer",
+  LOGIN: "login",
+  REGISTER: "register",
   COMPANY_PROFILE: "company",
   JOBS: "jobs",
   APPLICATIONS: "applications",
+  TEAM: "team",
+  BILLING: "billing",
   SETTINGS: "settings",
 } as const;

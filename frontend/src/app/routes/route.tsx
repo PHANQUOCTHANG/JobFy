@@ -29,6 +29,8 @@ import {
   CandidateDashboardPage,
   SavedJobsPage,
   JobAlertsPage,
+  EmployerRegisterPage,
+  EmployerLoginPage,
 } from "@/pages";
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
@@ -119,9 +121,17 @@ export const router = createBrowserRouter([
       // ===================================================
       {
         path: EMPLOYER_PATHS.DASHBOARD,
-        // element: <ProtectedRoute />,
         children: [
           {
+            path: EMPLOYER_PATHS.REGISTER,
+            element: <EmployerRegisterPage />
+          },
+          {
+            path: EMPLOYER_PATHS.LOGIN,
+            element: <EmployerLoginPage />
+          },
+          {
+            // element: <ProtectedRoute />,
             element: <EmployerLayout />,
             children: [
               {

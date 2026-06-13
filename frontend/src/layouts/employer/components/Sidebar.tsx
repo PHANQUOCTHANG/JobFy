@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/hooks/useTheme";
 import { EMPLOYER_PATHS } from "@/config/paths";
 import { cn } from "@/lib/utils";
 import {
@@ -18,51 +18,36 @@ import {
 } from "lucide-react";
 import Avatar, { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const sidebarGroups = [
+import {
+  CreditCard,
+  Plus
+} from "lucide-react";
+
+const sidebarItems = [
   {
-    title: "Overview",
-    items: [
-      {
-        label: "Dashboard",
-        path: `${EMPLOYER_PATHS.DASHBOARD}`,
-        icon: LayoutDashboard,
-      },
-    ],
+    label: "Bảng điều khiển",
+    path: `${EMPLOYER_PATHS.DASHBOARD}`,
+    icon: LayoutDashboard,
   },
   {
-    title: "Recruitment",
-    items: [
-      {
-        label: "Tin tuyển dụng",
-        path: `${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.JOBS}`,
-        icon: Briefcase,
-      },
-      {
-        label: "Quản lý Ứng viên",
-        path: `${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.APPLICATIONS}`,
-        icon: Users,
-      },
-    ],
+    label: "Hồ sơ công ty",
+    path: `${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.COMPANY_PROFILE}`,
+    icon: Building,
   },
   {
-    title: "Company",
-    items: [
-      {
-        label: "Hồ sơ công ty",
-        path: `${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.COMPANY_PROFILE}`,
-        icon: Building,
-      },
-    ],
+    label: "Quản lý tin tuyển dụng",
+    path: `${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.JOBS}`,
+    icon: Briefcase,
   },
   {
-    title: "System",
-    items: [
-      {
-        label: "Cài đặt",
-        path: `${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.SETTINGS}`,
-        icon: Settings,
-      },
-    ],
+    label: "Thành viên nhóm",
+    path: `${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.TEAM}`,
+    icon: Users,
+  },
+  {
+    label: "Thanh toán",
+    path: `${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.BILLING}`,
+    icon: CreditCard,
   },
 ];
 
@@ -107,7 +92,7 @@ const Logo = memo(({ collapsed }: { collapsed: boolean }) => (
           JobFy<span className="text-primary">.</span>
         </span>
         <span className="text-[10px] font-medium tracking-widest uppercase text-muted-foreground/60 mt-0.5">
-          Employer
+          Nhà tuyển dụng
         </span>
       </div>
     )}
@@ -249,40 +234,34 @@ const Sidebar: React.FC<SidebarProps> = ({
         className="flex-1 overflow-y-auto px-3 py-4 no-scrollbar"
         aria-label="Employer navigation"
       >
-        <div className="flex flex-col gap-6">
-          {sidebarGroups.map((group) => (
-            <div key={group.title} className="flex flex-col gap-0.5">
-              {!isCollapsed && (
-                <p className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-sidebar-foreground/35 select-none">
-                  {group.title}
-                </p>
-              )}
-              {isCollapsed && (
-                <div className="w-5 mx-auto mb-2 h-px bg-sidebar-border/50" />
-              )}
+        <div className="flex flex-col gap-1">
+          {sidebarItems.map((item) => {
+            const isActive =
+              item.path === EMPLOYER_PATHS.DASHBOARD
+                ? location.pathname === item.path
+                : location.pathname.startsWith(item.path);
 
-              {group.items.map((item) => {
-                const isActive =
-                  item.path === EMPLOYER_PATHS.DASHBOARD
-                    ? location.pathname === item.path
-                    : location.pathname.startsWith(item.path);
-
-                return (
-                  <NavItem
-                    key={item.label}
-                    label={item.label}
-                    path={item.path}
-                    icon={item.icon}
-                    isActive={isActive}
-                    isCollapsed={isCollapsed}
-                    onClick={() => navigate(item.path)}
-                  />
-                );
-              })}
-            </div>
-          ))}
+            return (
+              <NavItem
+                key={item.label}
+                label={item.label}
+                path={item.path}
+                icon={item.icon}
+                isActive={isActive}
+                isCollapsed={isCollapsed}
+                onClick={() => navigate(item.path)}
+              />
+            );
+          })}
         </div>
       </nav>
+
+      <div className={cn("px-4 py-4 border-t border-sidebar-border shrink-0", isCollapsed ? "hidden" : "block")}>
+        <button className="w-full bg-primary text-primary-foreground text-sm font-medium py-3 rounded-full shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+          <Plus className="size-4" />
+          Đăng tin tuyển dụng
+        </button>
+      </div>
 
       <div
         className={cn(
