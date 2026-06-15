@@ -1,7 +1,7 @@
 import { SavedJobRepository } from "./saved-job.repository";
 import { SavedJobPaginationParams } from "./saved-job.type";
-import prisma from "@/config/prisma";
-import { NotFoundError, BadRequestError } from "@/error/custom.error";
+import prisma from "@/lib/prisma";
+import { NotFoundError, BadRequestError } from "@/error";
 
 export class SavedJobService {
   private repository: SavedJobRepository;

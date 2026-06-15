@@ -37,7 +37,7 @@ export const cancelSubscription = catchAsync(async (req: Request, res: Response)
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const sub = await subscriptionService.cancelSubscription(id, userId);
+  const sub = await subscriptionService.cancelSubscription(id as string, userId);
   sendResponse(res, 200, "Subscription cancelled", toSubscriptionResponse(sub));
 });
 

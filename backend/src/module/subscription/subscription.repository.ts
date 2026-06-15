@@ -1,4 +1,4 @@
-import prisma from "@/config/prisma";
+import prisma from "@/lib/prisma";
 import { CreateSubscriptionPayload, CreatePaymentPayload, PaymentPaginationParams } from "./subscription.type";
 
 export class SubscriptionRepository {

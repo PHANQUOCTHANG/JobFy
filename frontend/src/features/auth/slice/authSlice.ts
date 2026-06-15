@@ -69,12 +69,32 @@ export const loginUser = createAsyncThunk(
       return res.data; // { accessToken, user }
     } catch (error: unknown) {
       const e: any = error;
-      const payload = e?.response?.data ?? {
-        message: e?.message ?? "Login failed",
-      };
-      return rejectWithValue(payload);
+      // Ưu tiên lấy data từ server response để giữ errorCode, field, data, details
+      const serverPayload = e?.response?.data;
+      if (serverPayload) {
+        return rejectWithValue({
+          ...serverPayload,
+          // Bổ sung statusCode từ HTTP status nếu server không trả
+          statusCode: serverPayload.statusCode ?? e?.response?.status,
+        });
+      }
+      // Lỗi mạng / không có response
+      return rejectWithValue({ message: e?.message ?? "Login failed" });
     }
   },
+);
+
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { dispatch }) => {
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error("Logout API failed:", error);
+    }
+    // Gọi action auth/logout để trigger rootReducer xóa sạch localStorage và state
+    dispatch({ type: "auth/logout" });
+  }
 );
 // =================================================================
 // 3. Slice Logic
@@ -136,6 +156,12 @@ const authSlice = createSlice({
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.token = action.payload.accessToken;
       state.user = action.payload.user;
+      state.isAuthChecking = false;
+    });
+    // --- Logout User ---
+    builder.addCase(logoutUser.fulfilled, (state) => {
+      state.token = null;
+      state.user = null;
       state.isAuthChecking = false;
     });
   },

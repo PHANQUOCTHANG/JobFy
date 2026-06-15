@@ -1,4 +1,4 @@
-import prisma from "@/config/prisma";
+import prisma from "@/lib/prisma";
 import { SavedJobPaginationParams } from "./saved-job.type";
 
 export class SavedJobRepository {

@@ -54,7 +54,7 @@ export class ApplicationService {
     
     // In real app: check if userId belongs to company that posted the job
     
-    const updated = await this.appRepo.updateStatus(id, dto.status, userId, dto.note);
+    const updated = await this.appRepo.updateStatus(id, dto.status, userId, dto.note ?? undefined);
     return ApplicationResponseDto.from(updated);
   }
 

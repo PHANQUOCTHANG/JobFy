@@ -29,11 +29,13 @@ export class AuthResponseDto {
 
     this.user = {
       id: user.id,
-      fullName: user.fullName,
+      // fullName nằm trong CandidateProfile, không phải trực tiếp trên User
+      fullName: user.candidateProfile?.fullName ?? user.fullName ?? "",
       email: user.email,
       role: user.role,
-      phone: user.phone,
-      avatar: user.avatar,
+      phone: user.phone ?? null,
+      // Prisma field là avatarUrl, không phải avatar
+      avatar: user.avatarUrl ?? user.avatar ?? null,
     };
   }
 
@@ -45,5 +47,17 @@ export class AuthResponseDto {
     rememberMe: boolean,
   ): AuthResponseDto {
     return new AuthResponseDto(user, accessToken, refreshToken, refreshTokenExpiresAt, rememberMe);
+  }
+
+  static fromUser(user: any) {
+    return {
+      id: user.id,
+      fullName: user.candidateProfile?.fullName ?? user.fullName ?? "",
+      email: user.email,
+      role: user.role,
+      phone: user.phone ?? null,
+      avatar: user.avatarUrl ?? user.avatar ?? null,
+      status: user.status,
+    };
   }
 }

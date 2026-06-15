@@ -30,11 +30,11 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
               className={cn(
                 "flex items-center gap-2 px-6 py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors",
                 isActive 
-                  ? "border-[#1A56DB] text-[#1A56DB] bg-white" 
+                  ? "border-[#4F46E5] text-[#4F46E5] bg-white" 
                   : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100/50"
               )}
             >
-              <Icon size={18} className={isActive ? "text-[#1A56DB]" : "text-slate-400"} />
+              <Icon size={18} className={isActive ? "text-[#4F46E5]" : "text-slate-400"} />
               {tab.label}
             </button>
           );

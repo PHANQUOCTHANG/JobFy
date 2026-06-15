@@ -7,3 +7,4 @@ export * from "./companies";
 export * from "./candidates";
 export * from "./jobs";
 export * from "./applications";
+export * from "./cv";

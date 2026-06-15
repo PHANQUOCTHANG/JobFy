@@ -1,6 +1,6 @@
 import { NotificationRepository } from "./notification.repository";
 import { CreateNotificationPayload, NotificationPaginationParams } from "./notification.type";
-import { NotFoundError, ForbiddenError } from "@/error/custom.error";
+import { NotFoundError, ForbiddenError } from "@/error";
 
 export class NotificationService {
   private repository: NotificationRepository;

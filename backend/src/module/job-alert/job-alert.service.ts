@@ -1,7 +1,7 @@
 import { JobAlertRepository } from "./job-alert.repository";
 import { CreateJobAlertPayload, UpdateJobAlertPayload, PaginationParams } from "./job-alert.type";
-import { NotFoundError, ForbiddenError, BadRequestError } from "@/error/custom.error";
-import prisma from "@/config/prisma";
+import { NotFoundError, ForbiddenError, BadRequestError } from "@/error";
+import prisma from "@/lib/prisma";
 
 export class JobAlertService {
   private repository: JobAlertRepository;

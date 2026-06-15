@@ -302,18 +302,21 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               </div>
             </div>
             
-            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#F1F5F9]">
-              <img alt="Office" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0AZQt-t4Bm1kQWLbRYqjc4Ccj6zidLQvu1NkPjxFSGlXuKVJu0ne4yQst7niBFbFKZbsIJhLFhq5naNAbikUQmk8H_0tZ17tOYM2O0BQit8P5IEFccMW_O909ljf6g7MivYsbvAyOqYFeQTJP_lm2i7o6GxfMopU2tkEs_fZvVidsCRfdcwMvoWgI9nZWRX8DEdIzuQUBK4Co1oMX72XhZX8XgjOJdrls5xWQsV444JYAeahE5FPWJZ_w-zWrW4g98eI1BPmDSts"/>
-              <div className="absolute inset-0 bg-[#0F172A]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
-                <button type="button" className="p-2 bg-white rounded-full text-[#64748B] hover:text-rose-600 shadow-sm"><span className="material-symbols-outlined text-[20px]">delete</span></button>
-              </div>
-            </div>
-
-            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#F1F5F9]">
-              <img alt="Meeting" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCncLB1pEY5uAKWbTQ1yPUhE1j2Y8yWBtR_4q9ywCdOhCZOFmA8a3y--1m9gmMvGzvQPpADz25pIR0MHlom3r6UgoxtU1MrbG4hDIyU10VRfDr096_V928wE9zEHX719B-OU9071tcJh87kn66IykS_p7ncBDCBPMk7qsSMZ970e70mcunZe1s4kYZzNIDvGI6lD4JlyTGD_QFPwMEbnNTBD_ti3SCfoMSZ293Ub6nXjp511zOMPJ082vEDjWSvhyRuLvZo3NJtVRI"/>
-              <div className="absolute inset-0 bg-[#0F172A]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
-                <button type="button" className="p-2 bg-white rounded-full text-[#64748B] hover:text-rose-600 shadow-sm"><span className="material-symbols-outlined text-[20px]">delete</span></button>
-              </div>
+            {/* NÚT SUBMIT */}
+            <div className="flex justify-end pt-4 border-t border-slate-100">
+              <Button type="submit" disabled={isPending} className="px-8 bg-[#4F46E5] hover:bg-[#4338CA]">
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang lưu...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Lưu thông tin công ty
+                  </>
+                )}
+              </Button>
             </div>
             
             <div className="aspect-square border-2 border-dashed border-[#CBD5E1] rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[#00307c] hover:bg-blue-50 transition-all cursor-pointer group bg-[#F8FAFC]">

@@ -12,6 +12,7 @@ import {
 } from "./auth.request";
 import { AuthResponseDto } from "./auth.response";
 import { getCache, setCache, deleteCache } from "@/utils/cache";
+import { emailService } from "@/config/container";
 
 // Kết quả nội bộ — thêm refreshTokenExpiresAt để controller set cookie chính xác
 interface AuthResult {
@@ -22,12 +23,15 @@ interface AuthResult {
   rememberMe: boolean;
 }
 
+import { IOtpService } from "@/module/auth/otp/otp.service";
+
 export interface IAuthService {
-  register(dto: RegisterRequest): Promise<AuthResponseDto>;
+  register(dto: RegisterRequest): Promise<{ message: string }>;
+  verifyAccount(email: string, otp: string): Promise<AuthResponseDto>;
   login(dto: LoginRequest): Promise<AuthResponseDto>;
   refresh(refreshToken: string): Promise<AuthResponseDto>;
   logout(refreshToken: string, accessToken?: string): Promise<void>;
-  resetPassword(dto: ResetPasswordRequest): Promise<AuthResponseDto>;
+  resetPassword(dto: ResetPasswordRequest): Promise<void>;
   changePassword(userId: string, dto: ChangePasswordRequest): Promise<void>;
 }
 
@@ -39,19 +43,43 @@ export class AuthService implements IAuthService {
     private readonly userRepo: IUserRepository,
     private readonly refreshRepo: IRefreshTokenRepository,
     private readonly otpRepo: IOtpRepository,
+    private readonly otpService: IOtpService,
   ) {}
 
-  async register(dto: RegisterRequest): Promise<AuthResponseDto> {
+  async register(dto: RegisterRequest): Promise<{ message: string }> {
     const existed = await this.userRepo.findByEmail(dto.email);
     if (existed) throw new AppError("Email đã tồn tại trên hệ thống", 409);
 
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const user = await this.userRepo.create({
+    const hashedPassword = await bcrypt.hash(dto.password, 12);
+    await this.userRepo.create({
       ...dto,
       passwordHash: hashedPassword,
       role: dto.role || "candidate",
     });
 
+    // Thay vì generate Auth Result, gửi OTP để người dùng xác nhận
+    await this.otpService.send(dto.email, "VERIFY_ACCOUNT");
+    return { message: "Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản." };
+  }
+
+  async verifyAccount(email: string, otp: string): Promise<AuthResponseDto> {
+    const user = await this.userRepo.findByEmail(email);
+    if (!user) throw new AppError("Người dùng không tồn tại", 404);
+
+    if (user.status === "active") throw new AppError("Tài khoản đã được xác thực trước đó", 400);
+
+    // Xác thực OTP
+    await this.otpService.verify(email, otp, "VERIFY_ACCOUNT");
+
+    // Cập nhật trạng thái người dùng
+    await this.userRepo.updateById(user.id, {
+      status: "active",
+      emailVerified: true,
+    });
+    user.status = "active";
+    user.emailVerified = true;
+
+    // Đăng nhập luôn cho user sau khi xác minh xong
     const result = await this.generateAuthResult(user, false);
     return AuthResponseDto.from(
       result.user,
@@ -63,17 +91,34 @@ export class AuthService implements IAuthService {
   }
 
   async login(dto: LoginRequest): Promise<AuthResponseDto> {
+    // 1. Tìm user theo email
     const user = await this.userRepo.findByEmail(dto.email);
-    if (!user || !user.passwordHash || user.role !== dto.role) {
+    if (!user || !user.passwordHash) {
       throw new AppError("Email hoặc mật khẩu không chính xác", 401);
     }
 
+    // 2. Kiểm tra mật khẩu
     const isValid = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!isValid)
+    if (!isValid) {
       throw new AppError("Email hoặc mật khẩu không chính xác", 401);
+    }
 
-    if (user.status === "inactive" || user.status === "banned")
-      throw new AppError("Tài khoản đã bị khóa hoặc tạm dừng", 403);
+    // 3. Kiểm tra trạng thái tài khoản
+    if (user.status === "inactive") {
+      throw new AppError("Tài khoản đã bị tạm khóa", 403);
+    }
+    if (user.status === "banned") {
+      const banError = new AppError("Tài khoản đã bị cấm vĩnh viễn", 403);
+      (banError as any).errorCode = "ACCOUNT_LOCKED";
+      throw banError;
+    }
+    if (user.status === "pending_verification") {
+      const unverifiedError = new AppError("Tài khoản chưa được xác thực", 403);
+      (unverifiedError as any).errorCode = "UNVERIFIED_ACCOUNT";
+      (unverifiedError as any).data = { email: user.email };
+      throw unverifiedError;
+    }
+
 
     const result = await this.generateAuthResult(user, dto.rememberMe);
     return AuthResponseDto.from(
@@ -150,44 +195,44 @@ export class AuthService implements IAuthService {
     }
   }
 
-  async resetPassword(dto: ResetPasswordRequest): Promise<AuthResponseDto> {
-    const record = await this.otpRepo.findValidByEmail(dto.email);
-    if (!record || !record.verified) {
-      throw new AppError("Mã OTP không hợp lệ hoặc chưa được xác thực", 400);
+  async resetPassword(dto: ResetPasswordRequest): Promise<void> {
+    const resetSecret = process.env.JWT_RESET_SECRET;
+    let decoded: any;
+    try {
+      decoded = jwt.verify(dto.verificationToken, resetSecret as string);
+    } catch {
+      throw new AppError("Token xác thực không hợp lệ hoặc đã hết hạn", 400);
     }
 
-    const user = await this.userRepo.findByEmail(dto.email);
+    if (decoded.scope !== "reset_password") {
+      throw new AppError("Token không có quyền đặt lại mật khẩu", 403);
+    }
 
+    const user = await this.userRepo.findById(decoded.userId);
     if (!user) throw new AppError("Người dùng không tồn tại", 404);
-    const checkChangePassword = await bcrypt.compare(
-      dto.newPassword,
-      user.passwordHash as string,
-    );
-    if (checkChangePassword) {
-      throw new AppError("Mật khẩu mới không được trùng với mật khẩu cũ", 400);
+
+    if (user.passwordHash) {
+      const isSame = await bcrypt.compare(dto.newPassword, user.passwordHash);
+      if (isSame) throw new AppError("Mật khẩu mới không được trùng với mật khẩu cũ", 400);
     }
 
-    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
-    const userUpdate = await this.userRepo.updateByEmail(dto.email, {
-      passwordHash: hashedPassword,
-    });
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 12);
+    await this.userRepo.updateById(user.id, { passwordHash: hashedPassword });
+
+    const userTokens = await this.refreshRepo.findByUserId(user.id);
+    const deleteCachePromises = userTokens.map((t) =>
+      deleteCache(`${this.CACHE_KEY_REFRESH}${t.token}`),
+    );
 
     await Promise.all([
-      this.refreshRepo.revokeAllByUser(userUpdate.id),
-      this.otpRepo.deleteByEmail(dto.email),
-      deleteCache(`otp:${dto.email}`),
-      // Xóa cache user detail — mật khẩu vừa được thay đổi
-      deleteCache(`users:id:${userUpdate.id}`),
+      this.refreshRepo.revokeAllByUser(user.id),
+      this.otpRepo.deleteByEmail(user.email),
+      deleteCache(`otp:${user.email}`),
+      deleteCache(`users:id:${user.id}`),
+      ...deleteCachePromises,
     ]);
 
-    const result = await this.generateAuthResult(userUpdate, false);
-    return AuthResponseDto.from(
-      result.user,
-      result.accessToken,
-      result.refreshToken,
-      result.refreshTokenExpiresAt,
-      result.rememberMe,
-    );
+    await emailService.sendPasswordResetConfirmation(user.email, user.candidateProfile?.fullName || user.email);
   }
 
   async changePassword(
@@ -207,7 +252,7 @@ export class AuthService implements IAuthService {
       throw new AppError("Mật khẩu hiện tại không chính xác", 401);
     }
 
-    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 12);
     await this.userRepo.updateById(userId, { passwordHash: hashedPassword });
 
     // Xóa cache refresh token cụ thể của user thay vì xóa của toàn hệ thống

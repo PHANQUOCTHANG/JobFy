@@ -100,8 +100,8 @@ const Logo = memo(({ collapsed }: { collapsed: boolean }) => (
       className={cn(
         "relative flex items-center justify-center rounded-xl shrink-0",
         "size-9 transition-all duration-300",
-        "bg-[#1A56DB]/10 border border-[#1A56DB]/20",
-        "group-hover:bg-[#1A56DB]/15 group-hover:scale-105",
+        "bg-[#4F46E5]/10 border border-[#4F46E5]/20",
+        "group-hover:bg-[#4F46E5]/15 group-hover:scale-105",
       )}
     >
       <Avatar className="size-full rounded-xl">
@@ -111,11 +111,11 @@ const Logo = memo(({ collapsed }: { collapsed: boolean }) => (
           aria-hidden="true"
           className="object-cover p-0.5"
         />
-        <AvatarFallback className="bg-transparent font-black text-[#1A56DB] text-xs">
+        <AvatarFallback className="bg-transparent font-black text-[#4F46E5] text-xs">
           CC
         </AvatarFallback>
       </Avatar>
-      <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-[#1A56DB] border-2 border-sidebar" />
+      <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-[#4F46E5] border-2 border-sidebar" />
     </div>
 
     {!collapsed && (
@@ -155,7 +155,7 @@ const NavItem = memo(
         isCollapsed ? "justify-center w-10 h-10 mx-auto px-0" : "px-3 py-2.5",
         isActive
           ? [
-              "bg-[#1A56DB]/10 text-[#1A56DB]",
+              "bg-[#4F46E5]/10 text-[#4F46E5]",
               "shadow-[inset_0_1px_0_rgba(212,78,43,0.12),inset_0_-1px_0_rgba(212,78,43,0.06)]",
             ]
           : [
@@ -168,20 +168,20 @@ const NavItem = memo(
         <span
           className={cn(
             "absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full",
-            "bg-gradient-to-b from-[#1A56DB] to-[#F59E0B]",
+            "bg-gradient-to-b from-[#4F46E5] to-[#F59E0B]",
           )}
         />
       )}
       {isActive && isCollapsed && (
-        <span className="absolute inset-0 rounded-xl ring-1 ring-[#1A56DB]/30 bg-[#1A56DB]/10" />
+        <span className="absolute inset-0 rounded-xl ring-1 ring-[#4F46E5]/30 bg-[#4F46E5]/10" />
       )}
 
       <Icon
         className={cn(
           "size-[18px] shrink-0 transition-all duration-200",
           isActive
-            ? "text-[#1A56DB]"
-            : "text-sidebar-foreground/50 group-hover:text-[#1A56DB] group-hover:scale-110",
+            ? "text-[#4F46E5]"
+            : "text-sidebar-foreground/50 group-hover:text-[#4F46E5] group-hover:scale-110",
         )}
       />
       {!isCollapsed && <span className="truncate tracking-tight">{label}</span>}
@@ -253,7 +253,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <X className="size-4" />
           </button>
         )}
-        <div className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#1A56DB]/20 to-transparent" />
+        <div className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#4F46E5]/20 to-transparent" />
       </div>
 
       <nav

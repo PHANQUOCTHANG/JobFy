@@ -1,4 +1,5 @@
 import AppError from "@/utils/appError";
+import { Prisma } from "@prisma/client";
 import { CandidateProfileQuery } from "./candidate-profile.type";
 import { ICandidateProfileRepository } from "./candidate-profile.repository";
 import { IUserRepository } from "@/module/user/user.repository";
@@ -39,7 +40,7 @@ export class CandidateProfileService implements ICandidateProfileService {
     const dobDate = dto.dob ? new Date(dto.dob) : undefined;
 
     const profile = await this.profileRepo.create({
-      user: { connect: { id: userId } },
+      userId,
       fullName: dto.fullName,
       headline: dto.headline,
       gender: dto.gender,
@@ -114,7 +115,7 @@ export class CandidateProfileService implements ICandidateProfileService {
     if (!profile) throw new AppError("Bạn chưa có hồ sơ ứng viên", 404);
 
     const dobDate = dto.dob ? new Date(dto.dob) : undefined;
-    const updateData: any = { ...dto };
+    const updateData: Prisma.CandidateProfileUncheckedUpdateInput = { ...dto };
     if (dobDate !== undefined) updateData.dob = dobDate;
 
     const updated = await this.profileRepo.updateById(profile.id, updateData);

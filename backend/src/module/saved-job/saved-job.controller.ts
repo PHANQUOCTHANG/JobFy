@@ -32,7 +32,7 @@ export const saveJob = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;
-  const saved = await savedJobService.saveJob(userId, jobId);
+  const saved = await savedJobService.saveJob(userId, jobId as string);
   sendResponse(res, 201, "Job saved successfully");
 });
 
@@ -41,7 +41,7 @@ export const unsaveJob = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;
-  await savedJobService.unsaveJob(userId, jobId);
+  await savedJobService.unsaveJob(userId, jobId as string);
   sendResponse(res, 200, "Job removed from saved list");
 });
 
@@ -50,6 +50,6 @@ export const checkIsSaved = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;
-  const result = await savedJobService.isSaved(userId, jobId);
+  const result = await savedJobService.isSaved(userId, jobId as string);
   sendResponse(res, 200, "Success", result);
 });

@@ -4,12 +4,11 @@ export const AUTH_PATHS = {
   LOGIN: "/login",
   REGISTER: "/register",
   LOGOUT: "/logout",
-  VERIFY_OTP: "/verify-otp",
   FORGOT_PASSWORD: "/forgot-password",
   AUTH_GOOGLE: "/auth/google",
   AUTH_FACEBOOK: "/auth/facebook",
   FORCE_CHANGE_PASSWORD: "/force-change-password",
-  RESET_PASSWORD: (token: string) => `/reset-password/${token}`,
+  VERIFY_ACCOUNT: "/verify-account",
 } as const;
 
 export const CLIENT_PATHS = {
@@ -26,6 +25,12 @@ export const CLIENT_PATHS = {
   // Jobs
   JOBS: "jobs",
   JOB_DETAIL: (slug: string) => `/jobs/${slug}`,
+  // CV
+  CV: "cv",
+  CV_EDITOR: (id: string) => `cv/editor/${id}`,
+  MY_CVS: "cv/my-cvs",
+  CV_UPLOAD: "cv/upload",
+  COVER_LETTER: "cv/cover-letter",
 } as const;
 
 export const CANDIDATE_PATHS = {

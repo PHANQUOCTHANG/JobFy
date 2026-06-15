@@ -32,7 +32,7 @@ export const getDashboardStats = catchAsync(async (req: Request, res: Response) 
 });
 
 export const getJobViewStats = catchAsync(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
-  const stats = await adminService.getJobViewStats(jobId);
+  const { id } = req.params;
+  const stats = await adminService.getJobViewStats(String(id));
   sendResponse(res, 200, "Success", stats);
 });

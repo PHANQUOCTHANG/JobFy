@@ -14,7 +14,7 @@ export function JobAlert() {
             {/* Left Content */}
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 bg-[#0F172A] rounded-2xl flex items-center justify-center flex-shrink-0">
-                <Bell size={28} className="text-[#1A56DB]" />
+                <Bell size={28} className="text-[#4F46E5]" />
               </div>
               <div>
                 <h3 className="text-[2rem] font-black text-white mb-2 tracking-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -35,10 +35,10 @@ export function JobAlert() {
                   placeholder="Email của bạn"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full bg-transparent border border-white/20 focus:border-[#1A56DB] rounded-xl pl-11 pr-4 py-4 text-[14px] text-white outline-none transition-all placeholder:text-[#64748B]"
+                  className="w-full bg-transparent border border-white/20 focus:border-[#4F46E5] rounded-xl pl-11 pr-4 py-4 text-[14px] text-white outline-none transition-all placeholder:text-[#64748B]"
                 />
               </div>
-              <button type="submit" className="bg-[#1A56DB] hover:bg-[#1447C0] text-white font-bold px-7 py-4 rounded-xl flex items-center gap-2 transition-all whitespace-nowrap">
+              <button type="submit" className="bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold px-7 py-4 rounded-xl flex items-center gap-2 transition-all whitespace-nowrap">
                 <Send size={16} /> Đăng ký
               </button>
             </form>
