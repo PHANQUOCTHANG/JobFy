@@ -46,7 +46,10 @@ export function globalErrorHandler(
   }
   // Prisma Validation Error
   else if (err instanceof Prisma.PrismaClientValidationError) {
-    error = new AppError("Dữ liệu gửi lên không hợp lệ", 400);
+    // Trích xuất dòng cuối cùng của lỗi để biết chính xác trường nào không hợp lệ
+    const lines = err.message.trim().split('\n');
+    const specificError = lines[lines.length - 1] || "Dữ liệu gửi lên không hợp lệ";
+    error = new AppError(specificError.trim(), 400);
   }
   // Chuẩn hoá lỗi không xác định thành AppError
   else if (!(err instanceof AppError)) {

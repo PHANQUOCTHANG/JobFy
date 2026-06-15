@@ -8,12 +8,30 @@ const adminService = new AdminService();
 
 export const getLogs = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, action, adminId } = req.query;
+
+  // Express typings allow ParsedQs; normalize to plain string for service layer.
+  // Narrow ParsedQs | string | string[] to plain string at runtime.
+  const normalizedAction = Array.isArray(action)
+    ? action[0]
+    : typeof action === "string"
+      ? action
+      : undefined;
+  const normalizedAdminId = Array.isArray(adminId)
+    ? adminId[0]
+    : typeof adminId === "string"
+      ? adminId
+      : undefined;
+
+
   const result = await adminService.getLogs({
     page: page ? Number(page) : undefined,
     limit: limit ? Number(limit) : undefined,
-    action: action as string,
-    adminId: adminId as string
+    action: normalizedAction as string | undefined,
+    adminId: normalizedAdminId as string | undefined
   });
+
+
+
 
   sendResponse(res, 200, "Success", {
     data: toAdminLogListResponse(result.data),
@@ -33,6 +51,9 @@ export const getDashboardStats = catchAsync(async (req: Request, res: Response) 
 
 export const getJobViewStats = catchAsync(async (req: Request, res: Response) => {
   const { jobId } = req.params;
-  const stats = await adminService.getJobViewStats(jobId);
+  const normalizedJobId = Array.isArray(jobId) ? jobId[0] : jobId;
+  if (!normalizedJobId) return res.status(400).json({ message: "Invalid jobId" });
+  const stats = await adminService.getJobViewStats(normalizedJobId);
   sendResponse(res, 200, "Success", stats);
 });
+

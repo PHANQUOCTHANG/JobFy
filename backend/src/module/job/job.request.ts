@@ -31,21 +31,22 @@ const jobBase = z.object({
     skillId: z.number().int().positive(),
     isRequired: z.boolean().default(true)
   })).optional()
-}).refine(
-  (data) => {
-    if (data.salaryMin && data.salaryMax) {
-      return data.salaryMin <= data.salaryMax;
-    }
-    return true;
-  },
-  {
-    message: "Lương tối đa phải lớn hơn hoặc bằng lương tối thiểu",
-    path: ["salaryMax"],
-  }
-);
+});
 
-export const CreateJobSchema = jobBase;
-export const UpdateJobSchema = jobBase.partial();
+const salaryRefinement = (data: { salaryMin?: number | null; salaryMax?: number | null }) => {
+  if (data.salaryMin != null && data.salaryMax != null) {
+    return data.salaryMin <= data.salaryMax;
+  }
+  return true;
+};
+
+const salaryRefinementOptions = {
+  message: "Lương tối đa phải lớn hơn hoặc bằng lương tối thiểu",
+  path: ["salaryMax"],
+};
+
+export const CreateJobSchema = jobBase.refine(salaryRefinement, salaryRefinementOptions);
+export const UpdateJobSchema = jobBase.partial().refine(salaryRefinement, salaryRefinementOptions);
 
 export const IdParamSchema = z.object({
   id: z.string().uuid("ID không hợp lệ"),

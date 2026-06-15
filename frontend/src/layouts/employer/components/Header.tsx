@@ -8,7 +8,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, isAuthChecking } = useAppSelector((state) => state.auth);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [hasNotif, setHasNotif] = useState(true);
@@ -98,12 +98,22 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
         {/* Profile */}
         <div className="flex items-center gap-3 pl-2 sm:pl-0">
           <div className="hidden lg:flex flex-col items-end justify-center">
-            <p className="text-[14px] font-bold text-[#0F172A] leading-tight">
-              {user ? user.fullName : "Nguyễn Minh"}
-            </p>
-            <p className="text-[12px] font-semibold text-[#64748B] leading-tight mt-0.5">
-              Chuyên viên Tuyển dụng
-            </p>
+            {user ? (
+              <>
+                <p className="text-[14px] font-bold text-[#0F172A] leading-tight">
+                  {user.fullName || user.email || "Nhà tuyển dụng"}
+                </p>
+                <p className="text-[12px] font-semibold text-[#64748B] leading-tight mt-0.5">
+                  Chuyên viên Tuyển dụng
+                </p>
+              </>
+            ) : isAuthChecking ? (
+              <div className="h-4 w-24 animate-pulse bg-slate-200 rounded-md" />
+            ) : (
+              <p className="text-[14px] font-bold text-[#0F172A] leading-tight">
+                Khách
+              </p>
+            )}
           </div>
           <div className="relative group cursor-pointer ml-1">
             <div className="absolute inset-0 bg-[#00307c] rounded-full opacity-0 group-hover:opacity-20 scale-110 transition-all duration-300" />

@@ -46,10 +46,14 @@ export class AuthService implements IAuthService {
     if (existed) throw new AppError("Email đã tồn tại trên hệ thống", 409);
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    // Tách các trường không thuộc bảng User để tránh lỗi Prisma khi create User
+    // Loại bỏ password thô để đảm bảo an toàn
+    const { password, companyName, provinceId, districtId, ...userData } = dto;
+
     const user = await this.userRepo.create({
-      ...dto,
-      passwordHash: hashedPassword,
-      role: dto.role || "candidate",
+      ...userData,
+      password: hashedPassword, // Repo đang mong đợi hash nằm trong key 'password'
     });
 
     const result = await this.generateAuthResult(user, false);
@@ -64,17 +68,23 @@ export class AuthService implements IAuthService {
 
   async login(dto: LoginRequest): Promise<AuthResponseDto> {
     const user = await this.userRepo.findByEmail(dto.email);
-    if (!user || !user.passwordHash || user.role !== dto.role) {
+    if (!user || !user.passwordHash) {
       throw new AppError("Email hoặc mật khẩu không chính xác", 401);
+    }
+
+    // Phân luồng: Kiểm tra xem user có đăng nhập đúng cổng dành cho Role của mình không
+    if (dto.role && user.role !== dto.role) {
+      const portalName = dto.role === "employer" ? "Nhà tuyển dụng" : "Ứng viên";
+      throw new AppError(`Tài khoản này thuộc vai trò ${user.role}, không thể đăng nhập vào cổng ${portalName}`, 403);
     }
 
     const isValid = await bcrypt.compare(dto.password, user.passwordHash);
     if (!isValid)
       throw new AppError("Email hoặc mật khẩu không chính xác", 401);
 
-    if (user.status === "inactive" || user.status === "banned")
-      throw new AppError("Tài khoản đã bị khóa hoặc tạm dừng", 403);
-
+    if (user.status === "banned")
+      throw new AppError("Tài khoản của bạn đã bị khóa vĩnh viễn", 403);
+    
     const result = await this.generateAuthResult(user, dto.rememberMe);
     return AuthResponseDto.from(
       result.user,

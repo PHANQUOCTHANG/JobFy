@@ -1,67 +1,89 @@
 tags:
   - name: Auth
-    description: APIs for authentication and authorization
+    description: Hệ thống xác thực và phân quyền (Đăng ký, Đăng nhập, Quên mật khẩu)
 
 paths:
   /api/v1/auth/register:
     post:
-      summary: Đăng ký tài khoản mới
+      summary: Đăng ký tài khoản (Hỗ trợ Employer và Candidate)
       tags: [Auth]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
-                - password
-                - name
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-                  minLength: 6
-                name:
-                  type: string
-                phone:
-                  type: string
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              employer_registration:
+                summary: Đăng ký cho Nhà tuyển dụng (Employer)
+                value:
+                  fullName: "Nguyễn Văn Tuyển"
+                  email: "hr@company.com"
+                  password: "Password123@"
+                  phone: "0987654321"
+                  role: "employer"
+                  companyName: "Công ty Công nghệ JobFy"
+                  provinceId: "pro_123"
+                  districtId: "dis_456"
+              candidate_registration:
+                summary: Đăng ký cho Ứng viên (Candidate)
+                value:
+                  fullName: "Trần Văn Ứng"
+                  email: "candidate@gmail.com"
+                  password: "Password123@"
+                  role: "candidate"
       responses:
         "201":
           description: Đăng ký thành công
         "400":
-          description: Dữ liệu không hợp lệ hoặc email đã tồn tại
+          description: Dữ liệu không hợp lệ (Ví dụ thiếu companyName khi chọn role employer)
+        "409":
+          description: Email đã tồn tại trên hệ thống
 
   /api/v1/auth/login:
     post:
-      summary: Đăng nhập
+      summary: Đăng nhập hệ thống
+      description: |
+        Người dùng đăng nhập bằng Email và Password. 
+        **Lưu ý:** Hệ thống kiểm tra vai trò (role). Nếu dùng tài khoản Candidate đăng nhập vào cổng Employer, server sẽ trả về lỗi 403.
       tags: [Auth]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              employer_login:
+                summary: Đăng nhập cổng Nhà tuyển dụng
+                value:
+                  email: "hr@company.com"
+                  password: "Password123@"
+                  role: "employer"
+                  rememberMe: true
+              candidate_login:
+                summary: Đăng nhập luồng Ứng viên
+                value:
+                  email: "candidate@gmail.com"
+                  password: "Password123@"
+                  role: "candidate"
+                  rememberMe: false
       responses:
         "200":
-          description: Đăng nhập thành công
+          description: Đăng nhập thành công, trả về AccessToken và set HttpOnly Cookie cho RefreshToken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
         "401":
           description: Sai email hoặc mật khẩu
+        "403":
+          description: Tài khoản bị khóa vĩnh viễn (banned) hoặc đăng nhập không đúng vai trò (Portal mismatch)
 
   /api/v1/auth/refresh-token:
     post:
-      summary: Làm mới Access Token
+      summary: Làm mới Access Token khi hết hạn
+      description: Tự động lấy Refresh Token từ Cookie để cấp mới Access Token.
       tags: [Auth]
       responses:
         "200":
@@ -72,6 +94,7 @@ paths:
   /api/v1/auth/logout:
     post:
       summary: Đăng xuất
+      description: Thu hồi Refresh Token trong Database và xóa Cookie ở trình duyệt.
       tags: [Auth]
       responses:
         "200":
@@ -86,16 +109,12 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
-              properties:
-                email:
-                  type: string
-                  format: email
+              $ref: '#/components/schemas/ForgotPasswordRequest'
       responses:
         "200":
           description: Gửi OTP thành công
+        "404":
+          description: Email không tồn tại
 
   /api/v1/auth/forgot-password/verify-otp:
     post:
@@ -106,16 +125,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
-                - otp
-              properties:
-                email:
-                  type: string
-                  format: email
-                otp:
-                  type: string
+              $ref: '#/components/schemas/VerifyOtpRequest'
       responses:
         "200":
           description: Xác thực OTP thành công
@@ -131,20 +141,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - email
-                - otp
-                - newPassword
-              properties:
-                email:
-                  type: string
-                  format: email
-                otp:
-                  type: string
-                newPassword:
-                  type: string
-                  minLength: 6
+              $ref: '#/components/schemas/ResetPasswordRequest'
       responses:
         "200":
           description: Đặt lại mật khẩu thành công
@@ -160,20 +157,120 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - oldPassword
-                - newPassword
-              properties:
-                oldPassword:
-                  type: string
-                newPassword:
-                  type: string
-                  minLength: 6
+              $ref: '#/components/schemas/ChangePasswordRequest'
       responses:
         "200":
           description: Đổi mật khẩu thành công
         "401":
           description: Unauthorized
         "400":
-          description: Mật khẩu cũ không đúng
+          description: Mật khẩu hiện tại không chính xác hoặc mật khẩu mới trùng mật khẩu cũ
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [fullName, email, password, role]
+      properties:
+        fullName:
+          type: string
+          example: "Nguyễn Văn Tuyển"
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        phone:
+          type: string
+          pattern: '^[0-9]+$'
+        role:
+          type: string
+          enum: [employer, candidate]
+        companyName:
+          type: string
+          description: "Bắt buộc nếu role là employer"
+        provinceId:
+          type: string
+          description: "ID Tỉnh/Thành phố (Dành cho Employer)"
+        districtId:
+          type: string
+          description: "ID Quận/Huyện (Dành cho Employer)"
+
+    LoginRequest:
+      type: object
+      required: [email, password, role]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        role:
+          type: string
+          enum: [admin, employer, candidate]
+        rememberMe:
+          type: boolean
+          default: false
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+            user:
+              type: object
+              properties:
+                id: { type: string }
+                email: { type: string }
+                role: { type: string }
+                fullName: { type: string }
+
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    VerifyOtpRequest:
+      type: object
+      required: [email, otp]
+      properties:
+        email:
+          type: string
+          format: email
+        otp:
+          type: string
+          minLength: 6
+          maxLength: 6
+
+    ResetPasswordRequest:
+      type: object
+      required: [email, otp, newPassword]
+      properties:
+        email: { type: string, format: email }
+        otp: { type: string }
+        newPassword: { type: string, minLength: 8 }
+
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword, confirmPassword]
+      properties:
+        currentPassword: { type: string }
+        newPassword: { type: string, minLength: 8 }
+        confirmPassword: { type: string }

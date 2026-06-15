@@ -20,22 +20,23 @@ const candidateProfileBase = z.object({
   isLooking: z.boolean().default(true),
   isProfilePublic: z.boolean().default(true),
   bio: z.string().max(2000).nullable().optional(),
-}).refine(
-  (data) => {
-    if (data.desiredSalaryMin && data.desiredSalaryMax) {
-      return data.desiredSalaryMin <= data.desiredSalaryMax;
-    }
-    return true;
-  },
-  {
-    message: "Lương tối đa phải lớn hơn hoặc bằng lương tối thiểu",
-    path: ["desiredSalaryMax"],
+});
+
+const salaryRefinement = (data: { desiredSalaryMin?: number | null; desiredSalaryMax?: number | null }) => {
+  if (data.desiredSalaryMin != null && data.desiredSalaryMax != null) {
+    return data.desiredSalaryMin <= data.desiredSalaryMax;
   }
-);
+  return true;
+};
 
-export const CreateCandidateProfileSchema = candidateProfileBase;
+const salaryRefinementOptions = {
+  message: "Lương tối đa phải lớn hơn hoặc bằng lương tối thiểu",
+  path: ["desiredSalaryMax"],
+};
 
-export const UpdateCandidateProfileSchema = candidateProfileBase.partial();
+export const CreateCandidateProfileSchema = candidateProfileBase.refine(salaryRefinement, salaryRefinementOptions);
+
+export const UpdateCandidateProfileSchema = candidateProfileBase.partial().refine(salaryRefinement, salaryRefinementOptions);
 
 export type CreateCandidateProfileRequestDto = z.infer<typeof CreateCandidateProfileSchema>;
 export type UpdateCandidateProfileRequestDto = z.infer<typeof UpdateCandidateProfileSchema>;

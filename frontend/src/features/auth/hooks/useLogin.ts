@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/store/hooks";
-import { loginUser } from "../slice/authSlice";
+import { loginUser } from "../types/authSlice";
 import { loginSchema, type LoginInput } from "../schemas/auth.schema";
 
 export const useLogin = () => {

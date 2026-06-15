@@ -1,7 +1,10 @@
 import React, { memo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { EMPLOYER_PATHS } from "@/config/paths";
 import { cn } from "@/lib/utils";
+import { useAppDispatch } from "@/store/hooks";
+import { logoutUser } from "@/features/auth/types/authSlice";
+import { toast } from "sonner";
 
 const sidebarItems = [
   {
@@ -44,6 +47,19 @@ const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed,
 }) => {
   const location = useLocation();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    toast.promise(dispatch(logoutUser()).unwrap(), {
+      loading: 'Đang đăng xuất...',
+      success: () => {
+        navigate('/employer/login', { replace: true });
+        return 'Đã đăng xuất thành công';
+      },
+      error: 'Có lỗi xảy ra khi đăng xuất',
+    });
+  };
 
   return (
     <>
@@ -170,6 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </Link>
           
           <button
+            onClick={handleLogout}
             className={cn(
               "w-full flex items-center py-3 text-[#64748B] hover:bg-[#FEF2F2] hover:text-[#DC2626] rounded-xl transition-all duration-200 group",
               isCollapsed ? "justify-center px-0" : "px-4"

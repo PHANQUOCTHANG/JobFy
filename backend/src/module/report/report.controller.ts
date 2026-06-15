@@ -42,7 +42,10 @@ export const updateReportStatus = catchAsync(async (req: Request, res: Response)
   if (!adminId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const report = await reportService.updateReportStatus(id, {
+  const reportId = Array.isArray(id) ? id[0] : id;
+  if (!reportId) return res.status(400).json({ message: "Invalid id" });
+  const report = await reportService.updateReportStatus(reportId, {
+
     ...req.body,
     reviewedBy: adminId
   });

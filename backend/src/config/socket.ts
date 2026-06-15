@@ -23,8 +23,16 @@ export const initSocket = (httpServer: HttpServer) => {
   });
 
   io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
+    let token = socket.handshake.auth.token;
+
     try {
+      if (!token) throw new Error("No token provided");
+
+      // Loại bỏ tiền tố "Bearer " nếu có để lấy JWT nguyên bản
+      if (token.startsWith("Bearer ")) {
+        token = token.slice(7);
+      }
+
       const payload = verifyToken(token);
       socket.data.userId = payload.userId;
       socket.data.role = payload.role;

@@ -12,7 +12,7 @@ export interface ICandidateProfileRepository {
 }
 
 export class CandidateProfileRepository implements ICandidateProfileRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaClient) { }
 
   async create(data: Prisma.CandidateProfileCreateInput): Promise<CandidateProfile> {
     return this.prisma.candidateProfile.create({ data });

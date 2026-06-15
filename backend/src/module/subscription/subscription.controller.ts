@@ -37,9 +37,12 @@ export const cancelSubscription = catchAsync(async (req: Request, res: Response)
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const sub = await subscriptionService.cancelSubscription(id, userId);
+  const subscriptionId = Array.isArray(id) ? id[0] : id;
+  if (!subscriptionId) return res.status(400).json({ message: "Invalid id" });
+  const sub = await subscriptionService.cancelSubscription(subscriptionId, userId);
   sendResponse(res, 200, "Subscription cancelled", toSubscriptionResponse(sub));
 });
+
 
 export const getPayments = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;

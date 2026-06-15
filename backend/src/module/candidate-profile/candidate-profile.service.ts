@@ -26,7 +26,7 @@ export class CandidateProfileService implements ICandidateProfileService {
   constructor(
     private readonly profileRepo: ICandidateProfileRepository,
     private readonly userRepo: IUserRepository
-  ) {}
+  ) { }
 
   async create(userId: string, dto: CreateCandidateProfileRequestDto): Promise<CandidateProfileResponseDto> {
     const user = await this.userRepo.findById(userId);
@@ -44,8 +44,8 @@ export class CandidateProfileService implements ICandidateProfileService {
       headline: dto.headline,
       gender: dto.gender,
       dob: dobDate,
-      provinceId: dto.provinceId,
-      districtId: dto.districtId,
+      province: dto.provinceId ? { connect: { id: dto.provinceId } } : undefined,
+      district: dto.districtId ? { connect: { id: dto.districtId } } : undefined,
       address: dto.address,
       linkedinUrl: dto.linkedinUrl,
       githubUrl: dto.githubUrl,
@@ -114,8 +114,16 @@ export class CandidateProfileService implements ICandidateProfileService {
     if (!profile) throw new AppError("Bạn chưa có hồ sơ ứng viên", 404);
 
     const dobDate = dto.dob ? new Date(dto.dob) : undefined;
-    const updateData: any = { ...dto };
+    const { provinceId, districtId, ...restDto } = dto;
+    const updateData: any = { ...restDto };
+    
     if (dobDate !== undefined) updateData.dob = dobDate;
+    if (provinceId !== undefined) {
+      updateData.province = provinceId ? { connect: { id: provinceId } } : { disconnect: true };
+    }
+    if (districtId !== undefined) {
+      updateData.district = districtId ? { connect: { id: districtId } } : { disconnect: true };
+    }
 
     const updated = await this.profileRepo.updateById(profile.id, updateData);
     if (!updated) throw new AppError("Cập nhật thất bại", 500);

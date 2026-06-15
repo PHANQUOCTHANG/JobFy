@@ -37,6 +37,9 @@ import {
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
 import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS } from "@/config/paths";
+import EmployerForgotPasswordPage from "@/pages/employer/EmployerForgotPasswordPage";
+import EmployerVerifyOtpPage from "@/pages/employer/EmployerVerifyOtpPage";
+import EmployerResetPasswordPage from "@/pages/employer/EmployerResetPasswordPage";
 
 export const router = createBrowserRouter([
   {
@@ -131,6 +134,18 @@ export const router = createBrowserRouter([
           {
             path: EMPLOYER_PATHS.LOGIN,
             element: <EmployerLoginPage />
+          },
+          {
+            path: "forgot-password",
+            element: <EmployerForgotPasswordPage />
+          },
+          {
+            path: "verify-otp",
+            element: <EmployerVerifyOtpPage />
+          },
+          {
+            path: "reset-password",
+            element: <EmployerResetPasswordPage />
           },
           {
             // element: <ProtectedRoute />,
