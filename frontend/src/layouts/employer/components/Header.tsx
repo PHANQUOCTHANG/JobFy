@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, Menu, Search, X, Command } from "lucide-react";
-
 import UserDropdown from "@/features/user/components/UserDropdown";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
@@ -16,206 +14,138 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
   const [hasNotif, setHasNotif] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input khi mở search
+  // Focus input khi mở search trên mobile
   useEffect(() => {
     if (searchOpen) inputRef.current?.focus();
   }, [searchOpen]);
 
-  // Đóng search khi nhấn Escape
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setSearchOpen(false);
-        setSearchValue("");
-      }
-      // ⌘K / Ctrl+K để mở
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setSearchOpen((v) => !v);
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, []);
-
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between",
-        "border-b border-border",
-        "bg-background/80 backdrop-blur-xl",
-        "px-4 lg:px-6",
-        "transition-all duration-300",
-      )}
-    >
+    <header className="flex justify-between items-center w-full px-6 md:px-10 py-3 h-[76px] sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-[#F1F5F9] shadow-[0_4px_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300">
+      
       {/* ── LEFT ── */}
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        {/* Mobile menu trigger */}
+      <div className="flex items-center gap-6 flex-1">
+        {/* Mobile menu toggle */}
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className={cn(
-            "lg:hidden flex items-center justify-center size-9 rounded-xl shrink-0",
-            "text-muted-foreground hover:text-foreground",
-            "hover:bg-muted/70 transition-all duration-150 active:scale-95",
-          )}
-          aria-label="Open menu"
+          className="lg:hidden w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-full transition-colors focus:ring-2 focus:ring-primary/20"
         >
-          <Menu className="size-5" />
+          <span className="material-symbols-outlined text-[24px]">menu</span>
         </button>
 
-        {/* Search bar — desktop */}
-        <div className="hidden md:flex relative w-full max-w-xs lg:max-w-sm">
-          <div
-            className={cn(
-              "flex items-center w-full gap-2 px-3 rounded-xl cursor-text",
-              "bg-muted/50 border border-transparent",
-              "hover:bg-muted/70 hover:border-border/50",
-              "focus-within:bg-background focus-within:border-border focus-within:shadow-[0_0_0_3px_hsl(var(--ring)/0.12)]",
-              "transition-all duration-200 h-9",
-            )}
-            onClick={() => inputRef.current?.focus()}
+        {/* Search Desktop */}
+        <div className="relative w-full max-w-[480px] hidden md:block group">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] group-focus-within:text-[#00307c] transition-colors duration-300">
+            search
+          </span>
+          <input
+            type="text"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="w-full pl-12 pr-12 py-3 bg-[#F8FAFC] border-2 border-transparent hover:bg-[#F1F5F9] focus:bg-white rounded-xl focus:ring-0 focus:border-[#00307c]/20 focus:shadow-[0_0_0_4px_rgba(0,48,124,0.05)] text-[14.5px] font-medium text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all duration-300"
+            placeholder="Tìm kiếm ứng viên, công việc, chiến dịch..."
+          />
+          {searchValue && (
+            <button
+              onClick={() => setSearchValue("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded-full text-[#94A3B8] hover:bg-[#E2E8F0] hover:text-[#475569] transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          )}
+          {/* Keyboard Shortcut Hint */}
+          {!searchValue && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:flex items-center gap-1 opacity-60">
+              <kbd className="px-1.5 py-0.5 text-[10px] font-black bg-white border border-[#E2E8F0] rounded shadow-sm text-[#64748B]">⌘</kbd>
+              <kbd className="px-1.5 py-0.5 text-[10px] font-black bg-white border border-[#E2E8F0] rounded shadow-sm text-[#64748B]">K</kbd>
+            </div>
+          )}
+        </div>
+
+        {/* Search Mobile Toggle */}
+        <button
+          className="md:hidden w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-full transition-colors ml-auto"
+          onClick={() => setSearchOpen(true)}
+        >
+          <span className="material-symbols-outlined text-[24px]">search</span>
+        </button>
+      </div>
+
+      {/* ── RIGHT ── */}
+      <div className="flex items-center gap-2 md:gap-5">
+        <div className="hidden sm:flex items-center border-r border-[#E2E8F0] pr-5 gap-2">
+          {/* Notification */}
+          <button
+            onClick={() => setHasNotif(false)}
+            className="relative w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300"
           >
-            <Search className="size-3.5 text-muted-foreground/60 shrink-0" />
+            <span className="material-symbols-outlined text-[22px]">notifications</span>
+            {hasNotif && (
+              <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white shadow-sm animate-pulse" />
+            )}
+          </button>
+          
+          {/* Chat */}
+          <button className="w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300">
+            <span className="material-symbols-outlined text-[22px]">chat_bubble</span>
+          </button>
+          
+          {/* Settings */}
+          <button className="w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300">
+            <span className="material-symbols-outlined text-[22px]">settings</span>
+          </button>
+        </div>
+
+        {/* Profile */}
+        <div className="flex items-center gap-3 pl-2 sm:pl-0">
+          <div className="hidden lg:flex flex-col items-end justify-center">
+            <p className="text-[14px] font-bold text-[#0F172A] leading-tight">
+              {user ? user.fullName : "Nguyễn Minh"}
+            </p>
+            <p className="text-[12px] font-semibold text-[#64748B] leading-tight mt-0.5">
+              Chuyên viên Tuyển dụng
+            </p>
+          </div>
+          <div className="relative group cursor-pointer ml-1">
+            <div className="absolute inset-0 bg-[#00307c] rounded-full opacity-0 group-hover:opacity-20 scale-110 transition-all duration-300" />
+            {user ? (
+              <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm z-10">
+                <UserDropdown user={user} />
+              </div>
+            ) : (
+              <img
+                alt="Recruiter Profile"
+                className="relative w-11 h-11 rounded-full border-2 border-white shadow-sm object-cover z-10"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0flmfLF6dGXpPZit5NUJS54piK-OMpKkYNXdrfL3IuwmsWim1R7uEra-ellyOKpXnJT-YaxqqOK4RtCZEK1CjWzDVsQxKJkyqK_MCcFF0aTy6gKiyTbH0suwx-GnoJKOQK4iyV-32q6hSU0_Ap4i8EecEKwiSv86hiiTTcYNzYi9_t_uCul1vaGGUKPoIuWSz1x8_FvgfTczRiRyW1rww2de8RnPQIQnZZjZTDu0WtuCsQxBZex3AM40HJjh6uYYL3sHKSbaZf3U"
+              />
+            )}
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full z-20" />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Mobile fullscreen search overlay ── */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-white/95 backdrop-blur-xl md:hidden animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="flex items-center gap-3 h-[76px] px-6 border-b border-[#F1F5F9] bg-white">
+            <span className="material-symbols-outlined text-[#64748B]">search</span>
             <input
               ref={inputRef}
               type="text"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Tìm kiếm ứng viên, tin tuyển dụng..."
-              className={cn(
-                "flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50",
-                "outline-none border-none",
-              )}
-            />
-            {searchValue ? (
-              <button
-                onClick={() => setSearchValue("")}
-                className="size-4 rounded-full bg-muted-foreground/20 hover:bg-muted-foreground/30 flex items-center justify-center transition-colors"
-              >
-                <X className="size-2.5 text-muted-foreground" />
-              </button>
-            ) : (
-              /* ⌘K hint */
-              <div className="flex items-center gap-0.5 shrink-0">
-                <kbd
-                  className={cn(
-                    "inline-flex items-center justify-center",
-                    "size-5 rounded text-[10px] font-medium",
-                    "bg-muted text-muted-foreground/60 border border-border/60",
-                  )}
-                >
-                  <Command className="size-2.5" />
-                </kbd>
-                <kbd
-                  className={cn(
-                    "inline-flex items-center justify-center",
-                    "px-1.5 h-5 rounded text-[10px] font-medium",
-                    "bg-muted text-muted-foreground/60 border border-border/60",
-                  )}
-                >
-                  K
-                </kbd>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile search trigger */}
-        <button
-          className={cn(
-            "md:hidden flex items-center justify-center size-9 rounded-xl shrink-0",
-            "text-muted-foreground hover:text-foreground hover:bg-muted/70",
-            "transition-all duration-150 active:scale-95",
-          )}
-          onClick={() => setSearchOpen(true)}
-          aria-label="Search"
-        >
-          <Search className="size-4" />
-        </button>
-      </div>
-
-      {/* ── RIGHT ── */}
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        {/* Notification bell */}
-        <button
-          onClick={() => setHasNotif(false)}
-          className={cn(
-            "relative flex items-center justify-center size-9 rounded-xl",
-            "text-muted-foreground hover:text-foreground",
-            "hover:bg-muted/70 transition-all duration-150 active:scale-95",
-          )}
-          aria-label={hasNotif ? "Thông báo mới" : "Thông báo"}
-        >
-          <Bell className="size-4.5" />
-          {hasNotif && (
-            <>
-              {/* Pulse ring */}
-              <span className="absolute top-2 right-2 size-2 rounded-full bg-destructive">
-                <span className="absolute inset-0 rounded-full bg-destructive animate-ping opacity-75" />
-              </span>
-            </>
-          )}
-        </button>
-
-        {/* Divider */}
-        <div className="h-5 w-px bg-border/60 mx-1" />
-
-        {/* User dropdown */}
-        {user && (
-          <div className="ml-1">
-            <UserDropdown user={user} />
-          </div>
-        )}
-      </div>
-
-      {/* ── Mobile fullscreen search overlay ── */}
-      {searchOpen && (
-        <div
-          className={cn(
-            "fixed inset-0 z-50 flex flex-col",
-            "bg-background/95 backdrop-blur-xl",
-            "md:hidden animate-fade-in",
-          )}
-        >
-          <div className="flex items-center gap-3 h-16 px-4 border-b border-border">
-            <Search className="size-4 text-muted-foreground shrink-0" />
-            <input
-              autoFocus
-              type="text"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              placeholder="Tìm kiếm ứng viên, tin tuyển dụng..."
-              className={cn(
-                "flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50",
-                "outline-none border-none",
-              )}
+              className="flex-1 bg-transparent text-[16px] font-medium text-[#0F172A] placeholder:text-[#94A3B8] outline-none border-none"
             />
             <button
               onClick={() => {
                 setSearchOpen(false);
                 setSearchValue("");
               }}
-              className={cn(
-                "flex items-center justify-center size-8 rounded-lg shrink-0",
-                "text-muted-foreground hover:text-foreground hover:bg-muted/70",
-                "transition-all duration-150",
-              )}
+              className="w-10 h-10 flex items-center justify-center text-[#64748B] hover:bg-[#F1F5F9] rounded-full transition-colors"
             >
-              <X className="size-4" />
+              <span className="material-symbols-outlined text-[22px]">close</span>
             </button>
           </div>
-
-          {/* Search empty state */}
-          {!searchValue && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center p-8">
-              <div className="size-12 rounded-2xl bg-muted/50 flex items-center justify-center">
-                <Search className="size-5 text-muted-foreground/50" />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Nhập từ khoá để tìm kiếm
-              </p>
-            </div>
-          )}
         </div>
       )}
     </header>

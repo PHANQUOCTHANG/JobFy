@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -55,7 +54,6 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
   });
 
   const onSubmit = (data: CompanyProfileInput) => {
-    // Clean empty strings to undefined to match Partial<Company>
     const cleanedData: Partial<Company> = {
       ...data,
       foundedYear: data.foundedYear === "" ? undefined : data.foundedYear,
@@ -68,222 +66,74 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          
-          {/* Cover & Logo Preview Section */}
-          <div className="relative w-full h-48 bg-slate-100 mb-16">
-            {form.watch("coverUrl") ? (
-              <img src={form.watch("coverUrl")} alt="Cover" className="w-full h-full object-cover" />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        
+        {/* ACTION HEADER FOR FORM - Since it's sticky, we can just put the submit button prominently here or at bottom */}
+        <div className="flex justify-end mb-4">
+          <button 
+            type="submit" 
+            disabled={isPending}
+            className="px-6 py-2.5 bg-gradient-to-r from-[#00307c] to-[#0047b3] text-white rounded-xl font-bold shadow-[0_8px_20px_-6px_rgba(0,48,124,0.4)] hover:-translate-y-0.5 hover:shadow-lg transition-all flex items-center gap-2"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Đang lưu...
+              </>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm bg-slate-50 border-b border-slate-200">
-                Ảnh bìa công ty
+              <>
+                <span className="material-symbols-outlined text-[20px]">save</span>
+                Lưu thay đổi
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Brand Identity Section */}
+        <section className="bg-white border border-[#F1F5F9] rounded-3xl overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+          <div className="h-48 relative bg-[#F8FAFC] group">
+            {form.watch("coverUrl") ? (
+              <img alt="Company Cover" className="w-full h-full object-cover opacity-80" src={form.watch("coverUrl")} />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-[#64748B]">
+                <span className="material-symbols-outlined text-4xl opacity-20">image</span>
               </div>
             )}
-            
-            <div className="absolute -bottom-10 left-8">
-              <div className="w-24 h-24 bg-white rounded-xl border-4 border-white shadow-md overflow-hidden flex items-center justify-center">
+            <button type="button" className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-[#0F172A] text-[13px] font-bold flex items-center gap-2 hover:bg-white shadow-sm transition-all border border-white/50">
+              <span className="material-symbols-outlined text-[18px]">edit</span>
+              Thay đổi ảnh bìa
+            </button>
+          </div>
+          <div className="px-8 pb-8 relative">
+            <div className="relative -top-12 flex flex-col md:flex-row md:items-end gap-6">
+              <div className="w-28 h-28 rounded-2xl bg-white p-2 shadow-lg border border-[#F1F5F9] relative group">
                 {form.watch("logoUrl") ? (
-                  <img src={form.watch("logoUrl")} alt="Logo" className="w-full h-full object-contain" />
+                  <img alt="Logo" className="w-full h-full object-contain rounded-xl" src={form.watch("logoUrl")} />
                 ) : (
-                  <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs text-center p-2 font-medium">
-                    Logo
+                  <div className="w-full h-full bg-[#F8FAFC] rounded-xl flex items-center justify-center text-[#94A3B8]">
+                    <span className="material-symbols-outlined text-3xl">domain</span>
                   </div>
                 )}
+                <button type="button" className="absolute inset-0 bg-[#0F172A]/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                  <span className="material-symbols-outlined text-white text-[28px]">photo_camera</span>
+                </button>
+              </div>
+              <div className="flex-1 mb-2">
+                <h3 className="text-[20px] font-black text-[#0F172A]">Nhận diện thương hiệu</h3>
+                <p className="text-[13px] font-medium text-[#64748B] italic mt-1">Kích thước khuyên dùng cho logo: 400x400px. Định dạng: PNG, SVG.</p>
               </div>
             </div>
-          </div>
-
-          <div className="p-6 sm:p-8 pt-0 space-y-10">
-            {/* THÔNG TIN CƠ BẢN */}
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
-                Thông tin cơ bản
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Tên công ty <span className="text-red-500">*</span></FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ví dụ: Công ty Cổ phần Công nghệ JobFy" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="taxCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mã số thuế</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Nhập mã số thuế" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="foundedYear"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Năm thành lập</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="Ví dụ: 2020" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="size"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Quy mô nhân sự</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Chọn quy mô" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="1_10">1 - 10 nhân viên</SelectItem>
-                          <SelectItem value="11_50">11 - 50 nhân viên</SelectItem>
-                          <SelectItem value="51_200">51 - 200 nhân viên</SelectItem>
-                          <SelectItem value="201_500">201 - 500 nhân viên</SelectItem>
-                          <SelectItem value="501_1000">501 - 1000 nhân viên</SelectItem>
-                          <SelectItem value="1001_5000">1001 - 5000 nhân viên</SelectItem>
-                          <SelectItem value="5000_plus">5000+ nhân viên</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="website"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Website công ty</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* MÔ TẢ */}
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
-                Mô tả chi tiết
-              </h3>
-              <div className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="shortDescription"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mô tả ngắn gọn (Slogan/Tagline)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Định hình tương lai công nghệ..." {...field} />
-                      </FormControl>
-                      <FormDescription>Tối đa 255 ký tự, xuất hiện trên card công ty.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mô tả đầy đủ</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Giới thiệu về lịch sử, môi trường làm việc, văn hóa công ty..." 
-                          className="min-h-[150px] resize-y"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* ĐỊA CHỈ & LIÊN HỆ */}
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
-                Địa chỉ & Truyền thông
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Địa chỉ chi tiết</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Số nhà, Tên đường, Phường/Xã..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="facebookUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Facebook URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://facebook.com/..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="linkedinUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>LinkedIn URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://linkedin.com/company/..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+               <FormField
                   control={form.control}
                   name="logoUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Logo URL</FormLabel>
+                      <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Logo URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://..." {...field} />
+                        <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -295,14 +145,160 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
                   name="coverUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Cover Image URL</FormLabel>
+                      <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Cover Image URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://..." {...field} />
+                        <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+            </div>
+          </div>
+        </section>
+
+        {/* General Info Form */}
+        <section className="bg-white border border-[#F1F5F9] rounded-3xl p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+          <div className="flex items-center gap-2 mb-8 border-l-4 border-[#00307c] pl-4">
+            <h3 className="text-[20px] font-black text-[#0F172A]">Thông tin chung</h3>
+            <span className="material-symbols-outlined text-[#94A3B8] text-[20px] cursor-help" title="Thông tin này sẽ hiển thị công khai trên trang tuyển dụng của bạn">info</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Tên công ty <span className="text-rose-500">*</span></FormLabel>
+                  <FormControl>
+                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Ví dụ: JobFy Solutions Global" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="taxCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Mã số thuế</FormLabel>
+                  <FormControl>
+                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Nhập mã số thuế" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="foundedYear"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Năm thành lập</FormLabel>
+                  <FormControl>
+                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" type="number" placeholder="Ví dụ: 2020" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="size"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Quy mô nhân sự</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
+                        <SelectValue placeholder="Chọn quy mô" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-xl border-[#E2E8F0] shadow-xl">
+                      <SelectItem value="1_10">1 - 10 nhân viên</SelectItem>
+                      <SelectItem value="11_50">11 - 50 nhân viên</SelectItem>
+                      <SelectItem value="51_200">51 - 200 nhân viên</SelectItem>
+                      <SelectItem value="201_500">201 - 500 nhân viên</SelectItem>
+                      <SelectItem value="501_1000">501 - 1000 nhân viên</SelectItem>
+                      <SelectItem value="1001_5000">1001 - 5000 nhân viên</SelectItem>
+                      <SelectItem value="5000_plus">5000+ nhân viên</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="website"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Website chính thức</FormLabel>
+                  <FormControl>
+                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="shortDescription"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Mô tả ngắn gọn (Slogan/Tagline)</FormLabel>
+                  <FormControl>
+                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Định hình tương lai công nghệ..." {...field} />
+                  </FormControl>
+                  <FormDescription className="text-[12px] font-medium text-[#94A3B8]">Tối đa 255 ký tự, xuất hiện trên card công ty.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Giới thiệu chi tiết</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Giới thiệu về lịch sử, môi trường làm việc, văn hóa công ty..." 
+                      className="min-h-[160px] resize-y rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20 p-4"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </section>
+
+        {/* Culture & Environment Section */}
+        <section className="bg-white border border-[#F1F5F9] rounded-3xl p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+          <div className="flex items-center justify-between mb-8 border-l-4 border-emerald-500 pl-4">
+            <h3 className="text-[20px] font-black text-[#0F172A]">Văn hóa & Môi trường</h3>
+            <button type="button" className="text-[#00307c] font-bold text-[14px] flex items-center gap-1.5 hover:underline transition-all">
+              <span className="material-symbols-outlined text-[18px]">add_circle</span>
+              Thêm ảnh mới
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Hardcoded sample images to match the UI mockup */}
+            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#F1F5F9]">
+              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLiVxdhIY8umUiBLsAvWQPVI5DnnN1cERctweXp8rNVRUKykH3fYdrQEWMPZYSFzELPDR9MV8a5gq5BfbjGwvGODTZ6w9Lddgfd0u8WhrGyN5a5zZW_HZ3PMgoNjsqD_UU1PAB2OhwXkHXPh_CddVPn74UsZL0xoj4sAM4zOhKt6k0fXGrKWGwwatEif7XssbkLASQ33uKQCvXgE-jR_NiSjNgbaOqpNfsfxQfBk5bYWgojhtzIY2EhjXFG1zpHWd7iaDUdChv-hk"/>
+              <div className="absolute inset-0 bg-[#0F172A]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
+                <button type="button" className="p-2 bg-white rounded-full text-[#64748B] hover:text-rose-600 shadow-sm"><span className="material-symbols-outlined text-[20px]">delete</span></button>
+                <button type="button" className="p-2 bg-white rounded-full text-[#64748B] hover:text-[#00307c] shadow-sm"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
               </div>
             </div>
             
@@ -323,9 +319,14 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               </Button>
             </div>
             
+            <div className="aspect-square border-2 border-dashed border-[#CBD5E1] rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[#00307c] hover:bg-blue-50 transition-all cursor-pointer group bg-[#F8FAFC]">
+              <span className="material-symbols-outlined text-[#94A3B8] text-[32px] group-hover:text-[#00307c]">upload_file</span>
+              <span className="text-[13px] font-bold text-[#64748B] group-hover:text-[#00307c]">Tải lên ảnh</span>
+            </div>
           </div>
-        </form>
-      </Form>
-    </div>
+        </section>
+
+      </form>
+    </Form>
   );
 };
