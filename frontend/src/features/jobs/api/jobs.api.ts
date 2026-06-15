@@ -26,3 +26,8 @@ export const saveJob = async (jobId: string): Promise<void> => {
 export const unsaveJob = async (jobId: string): Promise<void> => {
   await api.delete(`/jobs/${jobId}/save`);
 };
+
+export const getProvinces = async (): Promise<{id: number, name: string}[]> => {
+  const response = await api.get('/locations/provinces');
+  return response.data?.data || response.data;
+};

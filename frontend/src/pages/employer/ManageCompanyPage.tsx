@@ -30,9 +30,14 @@ const ManageCompanyPage = () => {
       </div>
 
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center p-16 bg-white rounded-3xl border border-[#F1F5F9] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
-          <Loader2 className="h-10 w-10 animate-spin text-[#00307c]" />
-          <span className="mt-4 text-[#64748B] font-bold">Đang tải dữ liệu doanh nghiệp...</span>
+        <div className="flex items-center justify-center p-12 bg-white rounded-xl border border-slate-200">
+          <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
+          <span className="ml-3 text-slate-500 font-medium">Đang tải thông tin công ty...</span>
+        </div>
+      ) : error ? (
+        <div className="p-6 bg-red-50 text-red-600 rounded-xl border border-red-200">
+          <p className="font-semibold">Đã xảy ra lỗi</p>
+          <p className="text-sm mt-1">Không thể tải thông tin công ty của bạn. Vui lòng thử lại sau.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

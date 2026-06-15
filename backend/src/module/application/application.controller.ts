@@ -17,18 +17,18 @@ export const getApplications = asyncHandler(async (req: Request, res: Response) 
 });
 
 export const getApplication = asyncHandler(async (req: Request, res: Response) => {
-  const data = await applicationService.findById((req.params.id as string));
+  const data = await applicationService.findById(String(req.params.id));
   return res.status(200).json(ApiResponse.success(data));
 });
 
 export const updateApplicationStatus = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.id;
-  const data = await applicationService.updateStatus((req.params.id as string), userId, req.body);
+  const data = await applicationService.updateStatus(String(req.params.id), userId, req.body);
   return res.status(200).json(ApiResponse.success(data, "Cập nhật trạng thái thành công"));
 });
 
 export const addNote = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.id;
-  const data = await applicationService.addNote((req.params.id as string), userId, req.body);
+  const data = await applicationService.addNote(String(req.params.id), userId, req.body);
   return res.status(201).json(ApiResponse.success(data, "Đã thêm ghi chú"));
 });

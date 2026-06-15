@@ -9,13 +9,13 @@ export function HowItWorks() {
         <Reveal className="text-center mb-16">
           <SectionLabel>
             <span className="mx-auto flex items-center gap-2">
-              <span className="w-5 h-px bg-[#1A56DB] inline-block" />
+              <span className="w-5 h-px bg-[#4F46E5] inline-block" />
               Quy trình ứng tuyển
-              <span className="w-5 h-px bg-[#1A56DB] inline-block" />
+              <span className="w-5 h-px bg-[#4F46E5] inline-block" />
             </span>
           </SectionLabel>
           <SectionHeading>
-            Đơn giản hóa <em className="not-italic text-[#1A56DB]">hành trình</em> của bạn
+            Đơn giản hóa <em className="not-italic text-[#4F46E5]">hành trình</em> của bạn
           </SectionHeading>
           <p className="text-[#64748B] text-[15px] mt-4 max-w-xl mx-auto">
             Chỉ với vài thao tác cơ bản, bạn có thể tiếp cận ngay hàng nghìn cơ hội việc làm tốt nhất.
@@ -32,8 +32,8 @@ export function HowItWorks() {
           ].map(({ step, icon: I, title, desc }, i) => (
             <Reveal key={step} delay={i * 100} className="relative z-10">
               <div className="bg-white rounded-2xl p-8 text-center shadow-lg border border-[#E2E8F0] hover:-translate-y-2 transition-transform duration-300">
-                <div className="w-16 h-16 mx-auto bg-[#1A56DB]/10 rounded-full flex items-center justify-center mb-6 relative">
-                  <I size={28} className="text-[#1A56DB]" />
+                <div className="w-16 h-16 mx-auto bg-[#4F46E5]/10 rounded-full flex items-center justify-center mb-6 relative">
+                  <I size={28} className="text-[#4F46E5]" />
                   <div className="absolute -top-2 -right-2 w-8 h-8 bg-[#F59E0B] text-[#0F172A] rounded-full font-black flex items-center justify-center text-[13px] border-[3px] border-white">
                     {step}
                   </div>

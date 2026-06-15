@@ -3,18 +3,18 @@ import { IPaginatedResult } from "@/utils/query";
 import { CandidateProfileQuery } from "./candidate-profile.type";
 
 export interface ICandidateProfileRepository {
-  create(data: Prisma.CandidateProfileCreateInput): Promise<CandidateProfile>;
+  create(data: Prisma.CandidateProfileUncheckedCreateInput): Promise<CandidateProfile>;
   findAll(query: CandidateProfileQuery): Promise<IPaginatedResult<CandidateProfile>>;
   findById(id: string): Promise<CandidateProfile | null>;
   findByUserId(userId: string): Promise<CandidateProfile | null>;
-  updateById(id: string, data: Prisma.CandidateProfileUpdateInput): Promise<CandidateProfile | null>;
+  updateById(id: string, data: Prisma.CandidateProfileUncheckedUpdateInput): Promise<CandidateProfile | null>;
   incrementViewCount(id: string): Promise<void>;
 }
 
 export class CandidateProfileRepository implements ICandidateProfileRepository {
   constructor(private readonly prisma: PrismaClient) { }
 
-  async create(data: Prisma.CandidateProfileCreateInput): Promise<CandidateProfile> {
+  async create(data: Prisma.CandidateProfileUncheckedCreateInput): Promise<CandidateProfile> {
     return this.prisma.candidateProfile.create({ data });
   }
 
@@ -60,7 +60,7 @@ export class CandidateProfileRepository implements ICandidateProfileRepository {
     });
   }
 
-  async updateById(id: string, data: Prisma.CandidateProfileUpdateInput): Promise<CandidateProfile | null> {
+  async updateById(id: string, data: Prisma.CandidateProfileUncheckedUpdateInput): Promise<CandidateProfile | null> {
     try {
       return await this.prisma.candidateProfile.update({
         where: { id },

@@ -17,10 +17,10 @@ export const getJobs = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getJob = asyncHandler(async (req: Request, res: Response) => {
-  const id = (req.params.id as string);
-  jobService.incrementViewCount(id).catch(console.error);
+  const id = req.params.id;
+  jobService.incrementViewCount(id as string).catch(console.error);
   
-  const data = await jobService.findById(id);
+  const data = await jobService.findById(id as string);
   return res.status(200).json(ApiResponse.success(data));
 });
 

@@ -1,0 +1,172 @@
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+
+import type { AuthState } from "@/features/auth/types";
+import authApi from "@/features/auth/api/authApi";
+import { UserProfile } from "@/features/user";
+import { LoginInput } from "../schemas/auth.schema";
+
+// =================================================================
+// 1. Initial State
+// =================================================================
+const initialState: AuthState<UserProfile> = {
+  token: null,
+  user: null,
+  isAuthChecking: true,
+};
+
+// =================================================================
+// 2. Async Thunks
+// =================================================================
+
+// A. Init Auth (Chạy khi F5 App)
+export const initAuth = createAsyncThunk(
+  "auth/initAuth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authApi.refreshAuth();
+      // 🛑 DEBUG: In ra xem server trả về cái gì
+
+      const { accessToken, user } = response.data;
+      return { accessToken, user };
+    } catch (error: unknown) {
+      const e: any = error;
+      // Normalize axios error shape -> prefer server payload (response.data)
+      const payload = e?.response?.data ?? {
+        message: e?.message ?? "Session expired",
+      };
+      return rejectWithValue(payload);
+    }
+  },
+);
+
+// B. Fetch Current User (Chạy khi update profile xong) - MỚI THÊM
+export const fetchCurrentUser = createAsyncThunk(
+  "auth/fetchCurrentUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      // Gọi API lấy thông tin mới nhất của bản thân
+      const response = await authApi.getMe();
+      return response.data; // Trả về UserProfile mới
+    } catch (error: unknown) {
+      const e: any = error;
+      const payload = e?.response?.data ?? {
+        message: e?.message ?? "Failed fetching user",
+      };
+      return rejectWithValue(payload);
+    }
+  },
+);
+
+export const loginUser = createAsyncThunk(
+  "auth/loginUser",
+  async (data: LoginInput, { rejectWithValue }) => {
+    try {
+      const res = await authApi.login(data);
+      return res.data; // { accessToken, user }
+    } catch (error: unknown) {
+      const e: any = error;
+      // Ưu tiên lấy data từ server response để giữ errorCode, field, data, details
+      const serverPayload = e?.response?.data;
+      if (serverPayload) {
+        return rejectWithValue({
+          ...serverPayload,
+          // Bổ sung statusCode từ HTTP status nếu server không trả
+          statusCode: serverPayload.statusCode ?? e?.response?.status,
+        });
+      }
+      // Lỗi mạng / không có response
+      return rejectWithValue({ message: e?.message ?? "Login failed" });
+    }
+  },
+);
+
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { dispatch }) => {
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error("Logout API failed:", error);
+    }
+    // Gọi action auth/logout để trigger rootReducer xóa sạch localStorage và state
+    dispatch({ type: "auth/logout" });
+  }
+);
+// =================================================================
+// 3. Slice Logic
+// =================================================================
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    login: (
+      state,
+      action: PayloadAction<{ accessToken: string; user: UserProfile }>,
+    ) => {
+      state.token = action.payload.accessToken;
+      state.user = action.payload.user;
+      state.isAuthChecking = false;
+    },
+
+    refreshSuccess: (state, action: PayloadAction<{ accessToken: string }>) => {
+      state.token = action.payload.accessToken;
+    },
+
+    logout: (state) => {
+      state.token = null;
+      state.user = null;
+      state.isAuthChecking = false;
+    },
+
+    authCheckFinished: (state) => {
+      state.isAuthChecking = false;
+    },
+  },
+
+  // =================================================================
+  // 4. Extra Reducers (Xử lý Async)
+  // =================================================================
+  extraReducers: (builder) => {
+    // --- Init Auth ---
+    builder
+      .addCase(initAuth.pending, (state) => {
+        state.isAuthChecking = true;
+      })
+      .addCase(initAuth.fulfilled, (state, action) => {
+        state.token = action.payload.accessToken;
+        state.user = action.payload.user;
+        state.isAuthChecking = false;
+      })
+      .addCase(initAuth.rejected, (state) => {
+        state.token = null;
+        state.user = null;
+        state.isAuthChecking = false;
+      });
+
+    // --- Fetch Current User (MỚI THÊM) ---
+    builder.addCase(fetchCurrentUser.fulfilled, (state, action) => {
+      // Chỉ cập nhật thông tin user, giữ nguyên token
+      state.user = action.payload;
+    });
+    // --- Login User ---
+    builder.addCase(loginUser.fulfilled, (state, action) => {
+      state.token = action.payload.accessToken;
+      state.user = action.payload.user;
+      state.isAuthChecking = false;
+    });
+    // --- Logout User ---
+    builder.addCase(logoutUser.fulfilled, (state) => {
+      state.token = null;
+      state.user = null;
+      state.isAuthChecking = false;
+    });
+  },
+});
+
+export const { login, logout, refreshSuccess, authCheckFinished } =
+  authSlice.actions;
+export default authSlice.reducer;

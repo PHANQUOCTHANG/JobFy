@@ -12,10 +12,10 @@ export function TopCompanies({ companies }: { companies: Company[] }) {
             <SectionLabel>Đối tác</SectionLabel>
             <SectionHeading>
               Nhà tuyển dụng<br />
-              <em className="not-italic text-[#1A56DB]">hàng đầu</em>
+              <em className="not-italic text-[#4F46E5]">hàng đầu</em>
             </SectionHeading>
           </div>
-          <a href="#" className="hidden sm:flex items-center gap-1.5 text-[13px] font-bold text-[#1A56DB] group">
+          <a href="#" className="hidden sm:flex items-center gap-1.5 text-[13px] font-bold text-[#4F46E5] group">
             15,000+ công ty <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </Reveal>
@@ -34,7 +34,7 @@ export function TopCompanies({ companies }: { companies: Company[] }) {
                 <button className="group bg-white hover:bg-[#EEF2FF] border border-slate-200 hover:border-[#C7D2FE] rounded-2xl p-4 text-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 w-full">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-black text-[11px] mx-auto mb-3 shadow-md group-hover:scale-110 transition-transform"
                     style={{ background: c.bg }}>{c.logo}</div>
-                  <p className="text-[12px] font-bold text-slate-900 group-hover:text-[#1A56DB] transition-colors leading-tight">{c.name.split(" ")[0]}</p>
+                  <p className="text-[12px] font-bold text-slate-900 group-hover:text-[#4F46E5] transition-colors leading-tight">{c.name.split(" ")[0]}</p>
                   <p className="text-[11px] text-slate-500 mt-1 transition-colors">{c.openings} vị trí</p>
                 </button>
               </Reveal>

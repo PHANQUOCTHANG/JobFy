@@ -1,7 +1,7 @@
 import { SubscriptionRepository } from "./subscription.repository";
 import { CreateSubscriptionPayload, CreatePaymentPayload, PaymentPaginationParams } from "./subscription.type";
-import { NotFoundError, BadRequestError, ForbiddenError } from "@/error/custom.error";
-import prisma from "@/config/prisma";
+import { NotFoundError, BadRequestError, ForbiddenError } from "@/error";
+import prisma from "@/lib/prisma";
 
 export class SubscriptionService {
   private repository: SubscriptionRepository;

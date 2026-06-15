@@ -1,4 +1,4 @@
-import prisma from "@/config/prisma";
+import prisma from "@/lib/prisma";
 import { CreateJobAlertPayload, UpdateJobAlertPayload, PaginationParams } from "./job-alert.type";
 
 export class JobAlertRepository {

@@ -11,10 +11,10 @@ export function BlogSection({ articles }: { articles: Article[] }) {
           <div>
             <SectionLabel>Cẩm nang</SectionLabel>
             <SectionHeading>
-              Phát triển <em className="not-italic text-[#1A56DB]">sự nghiệp</em>
+              Phát triển <em className="not-italic text-[#4F46E5]">sự nghiệp</em>
             </SectionHeading>
           </div>
-          <a href="#" className="hidden sm:flex items-center gap-1.5 text-[13px] font-bold text-[#1A56DB] group">
+          <a href="#" className="hidden sm:flex items-center gap-1.5 text-[13px] font-bold text-[#4F46E5] group">
             Xem tất cả bài viết <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </Reveal>
@@ -30,20 +30,20 @@ export function BlogSection({ articles }: { articles: Article[] }) {
           <div className="grid md:grid-cols-3 gap-6">
             {articles.map((article, i) => (
               <Reveal key={article.id} delay={i * 80}>
-                <a href="#" className="block bg-white rounded-2xl p-6 border border-[#E2E8F0] hover:border-[#1A56DB]/30 hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
+                <a href="#" className="block bg-white rounded-2xl p-6 border border-[#E2E8F0] hover:border-[#4F46E5]/30 hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-[12px] font-bold px-3 py-1 rounded-full text-white flex items-center gap-1.5" style={{ backgroundColor: article.tagColor }}>
                       <span>{article.emoji}</span> {article.tag}
                     </span>
                     <span className="text-[12px] text-[#94A3B8] ml-auto">{article.readTime}</span>
                   </div>
-                  <h3 className="font-bold text-[17px] text-[#0F172A] group-hover:text-[#1A56DB] transition-colors mb-3 leading-snug" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                  <h3 className="font-bold text-[17px] text-[#0F172A] group-hover:text-[#4F46E5] transition-colors mb-3 leading-snug" style={{ fontFamily: "'Manrope', sans-serif" }}>
                     {article.title}
                   </h3>
                   <p className="text-[13.5px] text-[#64748B] mb-6 flex-1 line-clamp-3">{article.excerpt}</p>
                   <div className="flex items-center justify-between mt-auto pt-4 border-t border-[#F4F6FA]">
                     <span className="text-[12px] text-[#94A3B8] font-medium">{article.date}</span>
-                    <span className="text-[12px] font-bold text-[#1A56DB] flex items-center gap-1">Đọc thêm <ArrowRight size={12} /></span>
+                    <span className="text-[12px] font-bold text-[#4F46E5] flex items-center gap-1">Đọc thêm <ArrowRight size={12} /></span>
                   </div>
                 </a>
               </Reveal>

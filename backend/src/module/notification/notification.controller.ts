@@ -41,9 +41,7 @@ export const markAsRead = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const notificationId = Array.isArray(id) ? id[0] : id;
-  if (!notificationId) return res.status(400).json({ message: "Invalid id" });
-  const notification = await notificationService.markAsRead(notificationId, userId);
+  const notification = await notificationService.markAsRead(id as string, userId);
   sendResponse(res, 200, "Notification marked as read", toNotificationResponse(notification));
 });
 
@@ -61,9 +59,7 @@ export const deleteNotification = catchAsync(async (req: Request, res: Response)
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const notificationId = Array.isArray(id) ? id[0] : id;
-  if (!notificationId) return res.status(400).json({ message: "Invalid id" });
-  await notificationService.deleteNotification(notificationId, userId);
+  await notificationService.deleteNotification(id as string, userId);
   sendResponse(res, 200, "Notification deleted");
 });
 

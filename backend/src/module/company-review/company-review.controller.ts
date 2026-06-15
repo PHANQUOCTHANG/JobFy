@@ -42,9 +42,7 @@ export const updateReview = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const reviewId = Array.isArray(id) ? id[0] : id;
-  if (!reviewId) return res.status(400).json({ message: "Invalid id" });
-  const review = await reviewService.updateReview(reviewId, userId, req.body);
+  const review = await reviewService.updateReview(id as string, userId, req.body);
   sendResponse(res, 200, "Review updated", toCompanyReviewResponse(review));
 });
 
@@ -55,18 +53,14 @@ export const deleteReview = catchAsync(async (req: Request, res: Response) => {
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const reviewId = Array.isArray(id) ? id[0] : id;
-  if (!reviewId) return res.status(400).json({ message: "Invalid id" });
-  await reviewService.deleteReview(reviewId, userId, role);
+  await reviewService.deleteReview(id as string, userId, role);
   sendResponse(res, 200, "Review deleted");
 });
 
 
 export const approveReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const reviewId = Array.isArray(id) ? id[0] : id;
-  if (!reviewId) return res.status(400).json({ message: "Invalid id" });
-  const review = await reviewService.approveReview(reviewId);
+  const review = await reviewService.approveReview(id as string);
   sendResponse(res, 200, "Review approved", toCompanyReviewResponse(review));
 });
 

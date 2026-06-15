@@ -1,7 +1,7 @@
 import { MessagingRepository } from "./messaging.repository";
 import { CreateConversationPayload, SendMessagePayload, PaginationParams } from "./messaging.type";
-import { NotFoundError, ForbiddenError, BadRequestError } from "@/error/custom.error";
-import prisma from "@/config/prisma";
+import { NotFoundError, ForbiddenError, BadRequestError } from "@/error";
+import prisma from "@/lib/prisma";
 
 export class MessagingService {
   private repository: MessagingRepository;

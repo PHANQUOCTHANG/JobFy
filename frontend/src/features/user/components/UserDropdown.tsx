@@ -21,8 +21,18 @@ interface UserDropdownProps {
   user: IUser;
 }
 
+import { useAppDispatch } from "@/store/hooks";
+import { logoutUser } from "@/features/auth/slice/authSlice";
+
 export const UserDropdown = ({ user }: UserDropdownProps) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    navigate("/");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,13 +43,13 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         >
           <Avatar className="size-9 sm:size-10 border border-border/50 shadow-sm cursor-pointer">
             <AvatarImage
-              src={user?.avatar}
+              src={user?.avatar || undefined}
               alt={user?.fullName || "User Avatar"}
               className="object-cover"
               referrerPolicy="no-referrer"
             />
             <AvatarFallback className="bg-primary text-primary-foreground font-bold text-xs">
-              {getInitialsTextAvartar(user?.fullName || user?.username || "U")}
+              {getInitialsTextAvartar(user?.fullName || "U")}
             </AvatarFallback>
           </Avatar>
 
@@ -48,35 +58,50 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         </motion.button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-64 p-2" align="end" sideOffset={8}>
+      <DropdownMenuContent className="w-[280px] p-2 rounded-xl shadow-floating border-border/40 bg-popover/95 backdrop-blur-md" align="end" sideOffset={12}>
         {/* User Info Header */}
-        <DropdownMenuLabel className="font-normal p-3 bg-muted/50 rounded-lg mb-2">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-semibold text-foreground leading-none">
-              {user?.fullName || user?.username || "Người dùng"}
+        <DropdownMenuLabel className="font-normal p-3 mb-2 rounded-lg bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 flex items-center gap-3">
+          <Avatar className="size-11 border-2 border-background shadow-sm">
+            <AvatarImage
+              src={user?.avatar || undefined}
+              alt={user?.fullName || "User Avatar"}
+              className="object-cover"
+              referrerPolicy="no-referrer"
+            />
+            <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
+              {getInitialsTextAvartar(user?.fullName || "U")}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col space-y-0.5 overflow-hidden">
+            <p className="text-[14.5px] font-bold text-foreground leading-none truncate">
+              {user?.fullName || "Người dùng"}
             </p>
-            <p className="text-xs text-muted-foreground truncate font-normal">
+            <p className="text-[12px] text-muted-foreground truncate font-medium">
               {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
 
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate("/profile?tab=overview")}>
-            <UserIcon className="mr-2 size-4" />
-            <span>Hồ sơ cá nhân</span>
+          <DropdownMenuItem onClick={() => navigate("/profile?tab=overview")} className="p-2.5 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group">
+            <div className="w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center mr-3 group-hover:bg-background group-hover:shadow-sm transition-all duration-200">
+              <UserIcon className="size-4 text-foreground/70 group-hover:text-primary transition-colors" />
+            </div>
+            <span className="font-semibold text-[13.5px]">Hồ sơ cá nhân</span>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
         {user.role === "admin" && (
           <>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="my-1 border-border/40" />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate("/admin")}>
-                <ChartColumn className="mr-2 size-4" />
-                <span>Trang quản trị</span>
-                <span className="ml-auto text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-xs font-bold">
+              <DropdownMenuItem onClick={() => navigate("/admin")} className="p-2.5 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group">
+                <div className="w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center mr-3 group-hover:bg-background group-hover:shadow-sm transition-all duration-200">
+                  <ChartColumn className="size-4 text-foreground/70 group-hover:text-primary transition-colors" />
+                </div>
+                <span className="font-semibold text-[13.5px]">Trang quản trị</span>
+                <span className="ml-auto text-[9px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-sm font-black tracking-widest uppercase shadow-sm">
                   PRO
                 </span>
               </DropdownMenuItem>
@@ -84,20 +109,23 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
           </>
         )}
 
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="my-1 border-border/40" />
 
-        {/* Logout Item - Sử dụng variant destructive chuẩn system */}
+        {/* Logout Item */}
         <DropdownMenuItem
-          variant="destructive"
-          onClick={() => navigate("/logout")}
+          onClick={handleLogout}
+          className="p-2.5 rounded-lg cursor-pointer text-destructive hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive transition-all duration-200 mt-1 group"
         >
-          <LogOut className="mr-2 size-4" />
-          <span>Đăng xuất</span>
+          <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center mr-3 group-hover:bg-destructive/20 transition-colors">
+            <LogOut className="size-4" />
+          </div>
+          <span className="font-bold text-[13.5px]">Đăng xuất</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
+
 
 // Helper component nhỏ cho shortcut phím tắt
 function DropdownMenuShortcut({

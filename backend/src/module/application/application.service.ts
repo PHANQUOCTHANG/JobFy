@@ -52,6 +52,7 @@ export class ApplicationService {
     const app = await this.appRepo.findById(id);
     if (!app) throw new AppError("Không tìm thấy đơn ứng tuyển", 404);
     // In real app: check if userId belongs to company that posted the job
+    
     const updated = await this.appRepo.updateStatus(id, dto.status, userId, dto.note ?? undefined);
     return ApplicationResponseDto.from(updated);
   }

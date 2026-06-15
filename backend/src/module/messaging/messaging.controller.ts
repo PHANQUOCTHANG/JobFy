@@ -46,8 +46,7 @@ export const getMessages = catchAsync(async (req: Request, res: Response) => {
   const conversationId = Array.isArray(id) ? id[0] : id;
   if (!conversationId) return res.status(400).json({ message: "Invalid id" });
   const { page, limit } = req.query;
-  const result = await messagingService.getMessages(conversationId, userId, role, {
-
+  const result = await messagingService.getMessages(id as string, userId, role, {
     page: page ? Number(page) : undefined,
     limit: limit ? Number(limit) : undefined
   });
@@ -84,10 +83,7 @@ export const markAsRead = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const conversationId = Array.isArray(id) ? id[0] : id;
-  if (!conversationId) return res.status(400).json({ message: "Invalid id" });
-  await messagingService.markAsRead(conversationId, userId);
-
+  await messagingService.markAsRead(id as string, userId);
   sendResponse(res, 200, "Messages marked as read");
 });
 
@@ -96,9 +92,6 @@ export const archiveConversation = catchAsync(async (req: Request, res: Response
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const conversationId = Array.isArray(id) ? id[0] : id;
-  if (!conversationId) return res.status(400).json({ message: "Invalid id" });
-  await messagingService.archiveConversation(conversationId, userId);
-
+  await messagingService.archiveConversation(id as string, userId);
   sendResponse(res, 200, "Conversation archived");
 });

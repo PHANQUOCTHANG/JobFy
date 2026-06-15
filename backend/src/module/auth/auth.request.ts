@@ -70,13 +70,7 @@ export const refreshTokenSchema = z.object({
 
 // Request Đặt lại mật khẩu bằng OTP
 export const resetPasswordSchema = z.object({
-  email: z.string().email("Email không hợp lệ").toLowerCase().trim(),
-
-  // Mã OTP 6 số từ bảng otps
-  otp: z
-    .string()
-    .length(6, "Mã OTP phải có đúng 6 chữ số")
-    .regex(/^\d+$/, "Mã OTP chỉ bao gồm số"),
+  verificationToken: z.string().min(1, "Token xác thực không hợp lệ"),
 
   // Mật khẩu mới cho người dùng
   newPassword: z.string().min(8, "Mật khẩu mới phải từ 8 ký tự").max(255),

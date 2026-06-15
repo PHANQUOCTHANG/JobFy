@@ -60,7 +60,7 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --popover-foreground: 222.2 47.4% 11.2%;
 
     /* Primary: Trust Blue */
-    --primary:            221.2 83.2% 53.3%;
+    --primary:            239 84% 58%;
     --primary-foreground: 210 40% 98%;
 
     --secondary:            210 40% 96.1%;
@@ -76,27 +76,27 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --border:        214.3 31.8% 91.4%;
     --border-strong: 214.3 31.8% 85%;
     --input:         214.3 31.8% 91.4%;
-    --ring:          221.2 83.2% 53.3%;
+    --ring:          239 84% 58%;
     --overlay:       222.2 47.4% 11.2%;
 
     /* Brand Scale - Trust Blue */
-    --brand-25:   221 83% 98%;
-    --brand-50:   221 83% 96%;
-    --brand-100:  221 83% 91%;
-    --brand-200:  221 83% 82%;
-    --brand-300:  221 83% 72%;
-    --brand-400:  221 83% 63%;
-    --brand-500:  221.2 83.2% 53.3%;
-    --brand-600:  221 83% 48%;
-    --brand-700:  221 83% 40%;
-    --brand-800:  221 83% 32%;
-    --brand-glow: 221.2 83.2% 53.3%;
-    --brand-halo: 221 83% 78%;
+    --brand-25:   239 84% 98%;
+    --brand-50:   239 84% 96%;
+    --brand-100:  239 84% 91%;
+    --brand-200:  239 84% 82%;
+    --brand-300:  239 84% 72%;
+    --brand-400:  239 84% 68%;
+    --brand-500:  239 84% 58%;
+    --brand-600:  239 84% 48%;
+    --brand-700:  239 84% 40%;
+    --brand-800:  239 84% 32%;
+    --brand-glow: 239 84% 58%;
+    --brand-halo: 239 84% 78%;
 
     /* Wave defaults to keep components from breaking */
-    --wave-1: 221 83% 53%;
-    --wave-2: 210 100% 60%;
-    --wave-3: 190 100% 45%;
+    --wave-1: 239 84% 58%;
+    --wave-2: 262 83% 63%;
+    --wave-3: 217 91% 65%;
     --wave-4: 36 90% 58%;
     --wave-5: 142 70% 50%;
     --wave-6: 200 95% 60%;
@@ -109,7 +109,7 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --success: 142 72% 36%;
     --warning: 36  88% 50%;
     --error:   4   86% 54%;
-    --info:    221.2 83.2% 53.3%;
+    --info:    239 84% 58%;
 
     /* Sidebar */
     --sidebar-background:         0 0% 100%;
@@ -119,7 +119,7 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --sidebar-accent:             240 4.8% 95.9%;
     --sidebar-accent-foreground:  240 5.9% 10%;
     --sidebar-border:             220 13% 91%;
-    --sidebar-ring:               221.2 83.2% 53.3%;
+    --sidebar-ring:               239 84% 58%;
 
     /* Shadow Multipliers */
     --shadow-color:      222 47% 11%;
@@ -156,7 +156,7 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --popover:         222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary:            217.2 91.2% 59.8%;
+    --primary:            239 80% 70%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary:            217.2 32.6% 17.5%;
@@ -172,27 +172,27 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --border:        217.2 32.6% 17.5%;
     --border-strong: 217.2 32.6% 25%;
     --input:         217.2 32.6% 17.5%;
-    --ring:          224.3 76.3% 48%;
+    --ring:          239 80% 70%;
     --overlay:       222.2 84% 4.9%;
 
     /* Brand Dark */
-    --brand-25:   217 91% 7%;
-    --brand-50:   217 91% 11%;
-    --brand-100:  217 91% 17%;
-    --brand-200:  217 91% 27%;
-    --brand-300:  217 91% 44%;
-    --brand-400:  217 91% 60%;
-    --brand-500:  217.2 91.2% 59.8%;
-    --brand-600:  217 91% 79%;
-    --brand-700:  217 91% 83%;
-    --brand-800:  217 91% 88%;
-    --brand-glow: 217.2 91.2% 59.8%;
-    --brand-halo: 217 91% 88%;
+    --brand-25:   239 80% 7%;
+    --brand-50:   239 80% 11%;
+    --brand-100:  239 80% 17%;
+    --brand-200:  239 80% 27%;
+    --brand-300:  239 80% 44%;
+    --brand-400:  239 80% 60%;
+    --brand-500:  239 80% 70%;
+    --brand-600:  239 80% 79%;
+    --brand-700:  239 80% 83%;
+    --brand-800:  239 80% 88%;
+    --brand-glow: 239 80% 70%;
+    --brand-halo: 239 80% 88%;
 
     /* Wave defaults dark */
-    --wave-1: 217 91% 60%;
-    --wave-2: 210 100% 70%;
-    --wave-3: 190 100% 55%;
+    --wave-1: 239 80% 70%;
+    --wave-2: 262 78% 72%;
+    --wave-3: 217 80% 75%;
     --wave-4: 36 90% 68%;
     --wave-5: 142 70% 60%;
     --wave-6: 200 95% 70%;
@@ -204,16 +204,16 @@ Long (2–6 tuần): SSR/SSG cho pages quan trọng, PWA, deeper refactor render
     --success: 142 65% 50%;
     --warning: 36  86% 60%;
     --error:   4   72% 60%;
-    --info:    210 86% 64%;
+    --info:    239 80% 70%;
 
     --sidebar-background:         240 5.9% 10%;
     --sidebar-foreground:         240 4.8% 95.9%;
-    --sidebar-primary:            224.3 76.3% 48%;
+    --sidebar-primary:            239 80% 70%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent:             240 3.7% 15.9%;
     --sidebar-accent-foreground:  240 4.8% 95.9%;
     --sidebar-border:             240 3.7% 15.9%;
-    --sidebar-ring:               217.2 91.2% 59.8%;
+    --sidebar-ring:               239 80% 70%;
 
     /* Shadow Multipliers */
     --shadow-color:      0 0% 0%;

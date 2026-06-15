@@ -31,8 +31,10 @@ import {
   CandidateDashboardPage,
   SavedJobsPage,
   JobAlertsPage,
-  EmployerRegisterPage,
-  EmployerLoginPage,
+  CvTemplatesPage,
+  CvEditorPage,
+  MyCvsPage,
+  CoverLetterPage,
 } from "@/pages";
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
@@ -83,6 +85,10 @@ export const router = createBrowserRouter([
             path: CLIENT_PATHS.CANDIDATE_DETAIL(":id"),
             element: <CandidatePublicPage />,
           },
+          { path: CLIENT_PATHS.CV, element: <CvTemplatesPage /> },
+          { path: "/cv/editor/:templateId", element: <CvEditorPage /> },
+          { path: "/cv/my-cvs", element: <MyCvsPage /> },
+          { path: "/cv/cover-letter", element: <CoverLetterPage /> },
         ],
       },
 

@@ -26,25 +26,25 @@ export const saveJob = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-  const jobId = req.params.jobId as string;
-  const saved = await savedJobService.saveJob(userId, jobId);
-  return res.status(201).json(ApiResponse.success(null, "Job saved successfully"));
+  const { jobId } = req.params;
+  const saved = await savedJobService.saveJob(userId, jobId as string);
+  sendResponse(res, 201, "Job saved successfully");
 });
 
 export const unsaveJob = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-  const jobId = req.params.jobId as string;
-  await savedJobService.unsaveJob(userId, jobId);
-  return res.status(200).json(ApiResponse.success(null, "Job removed from saved list"));
+  const { jobId } = req.params;
+  await savedJobService.unsaveJob(userId, jobId as string);
+  sendResponse(res, 200, "Job removed from saved list");
 });
 
 export const checkIsSaved = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-  const jobId = req.params.jobId as string;
-  const result = await savedJobService.isSaved(userId, jobId);
-  return res.status(200).json(ApiResponse.success(result, "Success"));
+  const { jobId } = req.params;
+  const result = await savedJobService.isSaved(userId, jobId as string);
+  sendResponse(res, 200, "Success", result);
 });

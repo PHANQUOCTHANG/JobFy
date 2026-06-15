@@ -1,64 +1,72 @@
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import authApi from "@/features/auth/api/authApi";
-import type { ChangePasswordRequest } from "@/features/auth/types"; // Đảm bảo import đúng type
-import type { ApiErrorResponse } from "@/types";
+import {
+  changePasswordSchema,
+  type ChangePasswordInput,
+} from "@/features/auth/schemas/auth.schema";
+import { extractError } from "@/utils/extractError";
 
 export const useForceChangePassword = () => {
   const navigate = useNavigate();
 
-  // 1. Setup Form
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm<ChangePasswordRequest>(); // Định kiểu cho form
+  const form = useForm<ChangePasswordInput>({
+    resolver: zodResolver(changePasswordSchema),
+    mode: "onBlur",
+  });
 
-  // 2. Setup API Mutation
+  const { setError } = form;
+
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: ChangePasswordRequest) => authApi.changePassword(data),
+    mutationFn: (data: ChangePasswordInput) => authApi.changePassword(data),
     onSuccess: () => {
       toast.success("Đổi mật khẩu thành công!", {
-        description: "Bạn có thể sử dụng tài khoản bình thường.",
+        description: "Tài khoản của bạn đã được bảo mật.",
       });
-      navigate("/"); // Chuyển hướng về trang chủ
+      navigate("/");
     },
     onError: (err: unknown) => {
-      const error = err as ApiErrorResponse;
-      const message = error.response?.data?.message || "Đổi mật khẩu thất bại";
-      toast.error(message);
-      // Có thể set error vào form field cụ thể nếu backend trả về field lỗi
-      // setError("currentPassword", { message });
+      const parsed = extractError(err);
+
+      if (parsed.isNetworkError) {
+        toast.error("Lỗi kết nối", { description: parsed.message });
+        return;
+      }
+
+      // Mật khẩu hiện tại sai
+      if (parsed.statusCode === 401 || parsed.message.includes("hiện tại")) {
+        setError("currentPassword", {
+          type: "server",
+          message: "Mật khẩu hiện tại không chính xác",
+        });
+        return;
+      }
+
+      // Mật khẩu mới trùng mật khẩu cũ
+      if (parsed.message.includes("trùng") || parsed.message.includes("cũ")) {
+        setError("newPassword", {
+          type: "server",
+          message: "Mật khẩu mới không được trùng với mật khẩu cũ",
+        });
+        return;
+      }
+
+      toast.error("Đổi mật khẩu thất bại", { description: parsed.message });
     },
   });
 
-  // 3. Logic Submit
-  const onSubmit = (data: ChangePasswordRequest) => {
-    // Validate client-side
-    if (data.newPassword !== data.confirmPassword) {
-      toast.error("Mật khẩu xác nhận không khớp");
-      setError("confirmPassword", {
-        type: "manual",
-        message: "Mật khẩu xác nhận không khớp",
-      });
-      return;
-    }
-
-    // Gọi API
-    mutate({
-      currentPassword: data.currentPassword,
-      newPassword: data.newPassword,
-      confirmPassword: data.confirmPassword,
-    });
+  const onSubmit = (data: ChangePasswordInput) => {
+    mutate(data);
   };
 
   return {
-    register,
-    errors,
+    form,
+    register: form.register,
+    errors: form.formState.errors,
     isPending,
-    onSubmit: handleSubmit(onSubmit), // Trả về hàm đã được bọc bởi handleSubmit
+    onSubmit: form.handleSubmit(onSubmit),
   };
 };

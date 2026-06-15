@@ -122,7 +122,7 @@ const MOCK_DATA: HomeData = {
       role: "Marketing Manager",
       company: "VNG Corporation",
       days: 10,
-      avatarBg: "#1A56DB",
+      avatarBg: "#4F46E5",
       avatar: "LA",
       quote: "Tính năng gợi ý việc làm theo AI cực kỳ chính xác. Tôi không cần tìm nhiều — đúng vị trí phù hợp tự hiện ra. Quy trình ứng tuyển nhanh và chuyên nghiệp hơn bất kỳ platform nào tôi đã dùng.",
     },
@@ -152,7 +152,7 @@ const MOCK_DATA: HomeData = {
     {
       id: 1,
       tag: "Kỹ năng",
-      tagColor: "#1A56DB",
+      tagColor: "#4F46E5",
       emoji: "📝",
       title: "7 điều nhà tuyển dụng tìm kiếm trong CV của bạn năm 2024",
       excerpt: "Những thay đổi trong xu hướng tuyển dụng đòi hỏi CV không chỉ đẹp — mà còn phải kể đúng câu chuyện của bạn.",

@@ -40,10 +40,7 @@ export const updateAlert = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const alertId = Array.isArray(id) ? id[0] : id;
-  if (!alertId) return res.status(400).json({ message: "Invalid id" });
-
-  const alert = await alertService.updateAlert(alertId, userId, req.body);
+  const alert = await alertService.updateAlert(id as string, userId, req.body);
   sendResponse(res, 200, "Job alert updated", toJobAlertResponse(alert));
 });
 
@@ -53,10 +50,7 @@ export const deleteAlert = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const alertId = Array.isArray(id) ? id[0] : id;
-  if (!alertId) return res.status(400).json({ message: "Invalid id" });
-
-  await alertService.deleteAlert(alertId, userId);
+  await alertService.deleteAlert(id as string, userId);
   sendResponse(res, 200, "Job alert deleted");
 });
 
@@ -65,10 +59,7 @@ export const toggleAlert = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const alertId = Array.isArray(id) ? id[0] : id;
-  if (!alertId) return res.status(400).json({ message: "Invalid id" });
-
-  const alert = await alertService.toggleAlert(alertId, userId);
+  const alert = await alertService.toggleAlert(id as string, userId);
   sendResponse(res, 200, `Job alert ${alert.isActive ? 'enabled' : 'disabled'}`, toJobAlertResponse(alert));
 });
 

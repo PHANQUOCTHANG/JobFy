@@ -1,14 +1,17 @@
 import { Response } from "express";
 
-export function sendResponse<T>(
+/**
+ * Gửi response chuẩn hóa
+ */
+export const sendResponse = (
   res: Response,
   statusCode: number,
   message: string,
-  data?: T,
-) {
-  return res.status(statusCode).json({
+  data?: any
+): void => {
+  res.status(statusCode).json({
+    status: "success",
     message,
-    data: data ?? null,
+    ...(data !== undefined && { data }),
   });
-}
-
+};

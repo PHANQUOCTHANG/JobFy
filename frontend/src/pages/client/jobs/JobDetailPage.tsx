@@ -43,7 +43,7 @@ export const JobDetailPage: React.FC = () => {
         </div>
         <h2 className="text-2xl font-bold text-slate-800 mb-2">Không tìm thấy công việc</h2>
         <p className="text-slate-500 mb-8 max-w-md">Tin tuyển dụng này có thể đã hết hạn, bị xóa hoặc đường dẫn không chính xác.</p>
-        <Button asChild size="lg" className="bg-[#1A56DB] hover:bg-[#1447C0] rounded-xl">
+        <Button asChild size="lg" className="bg-[#4F46E5] hover:bg-[#4338CA] rounded-xl">
           <Link to="/jobs">Khám phá các việc làm khác</Link>
         </Button>
       </div>
@@ -59,9 +59,9 @@ export const JobDetailPage: React.FC = () => {
       <div className="bg-white border-b border-slate-200 py-3">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center text-sm font-medium text-slate-500">
-            <Link to="/" className="hover:text-[#1A56DB] transition-colors">Trang chủ</Link>
+            <Link to="/" className="hover:text-[#4F46E5] transition-colors">Trang chủ</Link>
             <ChevronRight className="w-4 h-4 mx-2 text-slate-300" />
-            <Link to="/jobs" className="hover:text-[#1A56DB] transition-colors">Việc làm</Link>
+            <Link to="/jobs" className="hover:text-[#4F46E5] transition-colors">Việc làm</Link>
             <ChevronRight className="w-4 h-4 mx-2 text-slate-300" />
             <span className="text-slate-800 truncate max-w-[200px] md:max-w-md">{job.title}</span>
           </div>
@@ -90,7 +90,7 @@ export const JobDetailPage: React.FC = () => {
                   <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3 leading-tight">
                     {job.title}
                   </h1>
-                  <Link to={job.company?.slug ? `/companies/${job.company.slug}` : '#'} className="text-lg font-medium text-slate-600 hover:text-[#1A56DB] transition-colors flex items-center gap-2 mb-6">
+                  <Link to={job.company?.slug ? `/companies/${job.company.slug}` : '#'} className="text-lg font-medium text-slate-600 hover:text-[#4F46E5] transition-colors flex items-center gap-2 mb-6">
                     {job.company?.name || 'Công ty ẩn danh'}
                   </Link>
 
@@ -132,7 +132,7 @@ export const JobDetailPage: React.FC = () => {
                   ) : (
                     <Button 
                       size="lg" 
-                      className="w-full h-14 text-base font-bold rounded-xl bg-[#1A56DB] hover:bg-[#1447C0] text-white shadow-lg shadow-[#1A56DB]/20 hover:-translate-y-0.5 transition-all"
+                      className="w-full h-14 text-base font-bold rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-lg shadow-[#4F46E5]/20 hover:-translate-y-0.5 transition-all"
                       onClick={() => setIsApplyModalOpen(true)}
                       disabled={isLoadingStatus}
                     >
@@ -177,7 +177,7 @@ export const JobDetailPage: React.FC = () => {
               {job.company && (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                   <h3 className="font-bold text-lg text-slate-900 mb-4 flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-[#1A56DB]" />
+                    <Building2 className="w-5 h-5 text-[#4F46E5]" />
                     Thông tin chung
                   </h3>
                   
@@ -209,7 +209,7 @@ export const JobDetailPage: React.FC = () => {
                   </ul>
                   
                   <div className="mt-6 pt-6 border-t border-slate-100">
-                    <Link to={`/companies/${job.company.slug}`} className="text-[#1A56DB] text-sm font-semibold hover:underline flex items-center justify-center gap-1">
+                    <Link to={`/companies/${job.company.slug}`} className="text-[#4F46E5] text-sm font-semibold hover:underline flex items-center justify-center gap-1">
                       Xem hồ sơ công ty <ChevronRight className="w-4 h-4" />
                     </Link>
                   </div>

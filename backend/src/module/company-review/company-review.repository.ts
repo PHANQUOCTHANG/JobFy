@@ -1,4 +1,4 @@
-import prisma from "@/config/prisma";
+import prisma from "@/lib/prisma";
 import { CreateCompanyReviewPayload, UpdateCompanyReviewPayload, CompanyReviewPaginationParams } from "./company-review.type";
 
 export class CompanyReviewRepository {

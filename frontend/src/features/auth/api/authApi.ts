@@ -38,23 +38,24 @@ const authApi = {
     return res.data;
   },
 
-  // 3. Xác thực Email (OTP)
-  verifyEmail: async (payload: {
-    email: string;
-    otp: string;
-  }): Promise<ApiResponse<LoginResponse>> => {
+  // 3. Xác thực tài khoản (Account Verification)
+  verifyAccount: async (
+    email: string,
+    otp: string
+  ): Promise<ApiResponse<LoginResponse>> => {
     const res = await api.post<ApiResponse<LoginResponse>>(
-      "/auth/verify-email",
-      payload
+      "/auth/verify-account",
+      { email, otp }
     );
     return res.data;
   },
 
-  // 4. Gửi lại mã OTP
-  resendOtp: async (email: string): Promise<ApiResponse<void>> => {
-    const res = await api.post<ApiResponse<void>>("/auth/resend-otp", {
-      email,
-    });
+  // 4. Gửi lại OTP Xác thực tài khoản
+  resendVerifyAccountOtp: async (email: string): Promise<ApiResponse<void>> => {
+    const res = await api.post<ApiResponse<void>>(
+      "/auth/resend-verification",
+      { email }
+    );
     return res.data;
   },
 
@@ -67,22 +68,35 @@ const authApi = {
     return res.data;
   },
 
-  // 6. Quên mật khẩu (Gửi mail)
-  forgotPassword: async (email: string): Promise<ApiResponse<void>> => {
-    const res = await api.post<ApiResponse<void>>("/auth/forgot-password", {
-      email,
-    });
+  // 6. Quên mật khẩu - Bước 1: Gửi OTP
+  sendForgotOtp: async (email: string): Promise<ApiResponse<void>> => {
+    const res = await api.post<ApiResponse<void>>(
+      "/auth/forgot-password/send-otp",
+      { email }
+    );
     return res.data;
   },
 
-  // 7. Đặt lại mật khẩu (Từ mail quên mật khẩu)
+  // 7. Quên mật khẩu - Bước 2: Xác thực OTP
+  verifyForgotOtp: async (
+    email: string,
+    otp: string
+  ): Promise<ApiResponse<{ verificationToken: string }>> => {
+    const res = await api.post<ApiResponse<{ verificationToken: string }>>(
+      "/auth/forgot-password/verify-otp",
+      { email, otp }
+    );
+    return res.data;
+  },
+
+  // 8. Quên mật khẩu - Bước 3: Đặt lại mật khẩu
   resetPassword: async (
-    token: string,
-    password: string
+    verificationToken: string,
+    newPassword: string
   ): Promise<ApiResponse<void>> => {
     const res = await api.post<ApiResponse<void>>(
-      `/auth/reset-password/${token}`,
-      { password }
+      "/auth/forgot-password/reset-password",
+      { verificationToken, newPassword }
     );
     return res.data;
   },
@@ -91,8 +105,7 @@ const authApi = {
   // 🔒 PROTECTED ROUTES (Cần Token)
   // =================================================================
 
-  // 8. Lấy thông tin bản thân (Me)
-  // Support truyền token thủ công cho trường hợp vừa login xong hoặc Google Callback
+  // 9. Lấy thông tin bản thân (Me)
   getMe: async (token?: string) => {
     const config = token
       ? { headers: { Authorization: `Bearer ${token}` } }
@@ -101,18 +114,18 @@ const authApi = {
     return res.data;
   },
 
-  // 9. Đổi mật khẩu (Dùng cho cả Force Change Password)
+  // 10. Đổi mật khẩu (Dùng cho cả Force Change Password)
   changePassword: async (
     payload: ChangePasswordRequest
   ): Promise<ApiResponse<void>> => {
     const res = await api.post<ApiResponse<void>>(
-      "/users/change-password", // Lưu ý: Check lại route bên backend xem là /auth hay /users
+      "/auth/change-password",
       payload
     );
     return res.data;
   },
 
-  // 10. Claim Profile (Dành cho tài khoản Shadow/Artist ảo)
+  // 11. Claim Profile (Dành cho tài khoản Shadow/Artist ảo)
   claimProfile: async (
     payload: ClaimProfileRequest
   ): Promise<ApiResponse<void>> => {
@@ -123,7 +136,7 @@ const authApi = {
     return res.data;
   },
 
-  // 11. Đăng xuất
+  // 12. Đăng xuất
   logout: async (): Promise<void> => {
     try {
       await api.post("/auth/logout");

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { JobFilterParams } from '../types';
+import { useJobCategories } from '../hooks/useJobs';
+import { Filter, ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface JobSidebarFilterProps {
   filters: JobFilterParams;
@@ -13,176 +12,155 @@ interface JobSidebarFilterProps {
   onClearFilters: () => void;
 }
 
-export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({ 
-  filters, 
-  onFilterChange, 
-  onClearFilters 
+const levels = [
+  'Tất cả',
+  'Nhân viên',
+  'Trưởng nhóm',
+  'Trưởng/Phó phòng',
+  'Quản lý / Giám sát',
+  'Trưởng chi nhánh',
+  'Phó giám đốc',
+  'Giám đốc',
+  'Thực tập sinh'
+];
+
+const jobTypes = [
+  { value: 'all', label: 'Tất cả' },
+  { value: 'full_time', label: 'Toàn thời gian' },
+  { value: 'part_time', label: 'Bán thời gian' },
+  { value: 'intern', label: 'Thực tập' },
+  { value: 'other', label: 'Khác' }
+];
+
+export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
+  filters,
+  onFilterChange,
+  onClearFilters,
 }) => {
-  const [expandedSections, setExpandedSections] = useState({
-    experience: true,
-    jobType: true,
-    salary: true,
-  });
+  const [minSalary, setMinSalary] = useState('');
+  const [maxSalary, setMaxSalary] = useState('');
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
-  };
-
-  const hasActiveFilters = Object.keys(filters).length > 0 && 
-    (filters.experienceLevel || filters.jobType || filters.salaryMin || filters.isRemote);
-
-  const experienceOptions = [
-    { value: 'intern', label: 'Thực tập sinh' },
-    { value: 'fresher', label: 'Mới tốt nghiệp' },
-    { value: 'junior', label: 'Nhân viên (Junior)' },
-    { value: 'mid', label: 'Chuyên viên (Mid)' },
-    { value: 'senior', label: 'Chuyên viên cao cấp (Senior)' },
-    { value: 'manager', label: 'Quản lý / Trưởng phòng' }
-  ];
-
-  const jobTypeOptions = [
-    { value: 'full_time', label: 'Toàn thời gian' },
-    { value: 'part_time', label: 'Bán thời gian' },
-    { value: 'freelance', label: 'Làm việc tự do (Freelance)' },
-    { value: 'contract', label: 'Hợp đồng' }
-  ];
-
-  const handleSalaryChange = (value: number[]) => {
-    onFilterChange({ salaryMin: value[0] });
+  const handleApplySalary = () => {
+    onFilterChange({
+      salaryMin: minSalary ? parseInt(minSalary) * 1000000 : undefined,
+      salaryMax: maxSalary ? parseInt(maxSalary) * 1000000 : undefined,
+    });
   };
 
   return (
-    <div className="bg-white rounded-lg p-5 h-fit sticky top-24 shadow-sm border border-slate-200">
-      <div className="flex items-center justify-between pb-3 mb-4">
-        <h3 className="font-bold text-[17px] text-slate-800 flex items-center gap-2">
-          <Filter size={18} className="text-slate-500" />
-          Lọc kết quả
-        </h3>
-        {hasActiveFilters && (
-          <button 
-            onClick={onClearFilters}
-            className="text-[13px] text-red-500 hover:text-red-600 font-medium hover:underline"
-          >
-            Xóa lọc
-          </button>
-        )}
+    <div className="bg-white rounded-lg p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-6 text-[#4F46E5] font-bold text-[16px]">
+        <Filter size={18} />
+        <h2>Lọc nâng cao</h2>
       </div>
 
-      {/* Tùy chọn Làm việc từ xa */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="space-y-0.5">
-          <Label htmlFor="remote-mode" className="text-[15px] font-bold text-slate-800">
-            Làm việc từ xa
-          </Label>
+      {/* SALARY */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <input
+            type="radio"
+            id="salary-negotiable"
+            name="salary-type"
+            className="w-4 h-4 accent-[#4F46E5] cursor-pointer"
+            checked={!filters.salaryMin && !filters.salaryMax}
+            onChange={() => {
+              setMinSalary('');
+              setMaxSalary('');
+              onFilterChange({ salaryMin: undefined, salaryMax: undefined });
+            }}
+          />
+          <label htmlFor="salary-negotiable" className="text-[14px] text-[#212f3f] cursor-pointer">
+            Thoả thuận
+          </label>
         </div>
-        <Switch 
-          id="remote-mode" 
-          checked={!!filters.isRemote}
-          onCheckedChange={(checked) => onFilterChange({ isRemote: checked || undefined })}
-          className="data-[state=checked]:bg-[#1A56DB]"
-        />
+
+        <div className="flex items-center gap-2 mb-3">
+          <input
+            type="number"
+            placeholder="Từ"
+            className="w-full h-8 px-2 border border-[#e8e8e8] rounded text-[13px] outline-none focus:border-[#4F46E5]"
+            value={minSalary}
+            onChange={(e) => setMinSalary(e.target.value)}
+          />
+          <span className="text-[#9ea5af]">-</span>
+          <input
+            type="number"
+            placeholder="Đến"
+            className="w-full h-8 px-2 border border-[#e8e8e8] rounded text-[13px] outline-none focus:border-[#4F46E5]"
+            value={maxSalary}
+            onChange={(e) => setMaxSalary(e.target.value)}
+          />
+          <span className="text-[#6f7882] text-[13px]">triệu</span>
+        </div>
+        
+        <button
+          onClick={handleApplySalary}
+          disabled={!minSalary && !maxSalary}
+          className="w-full py-1.5 bg-[#f5f5f5] text-[#212f3f] text-[13px] font-medium rounded hover:bg-[#e8e8e8] transition-colors disabled:opacity-50"
+        >
+          Áp dụng
+        </button>
       </div>
 
-      {/* Lọc theo Cấp bậc kinh nghiệm */}
-      <div className="mb-5">
-        <button 
-          className="flex items-center justify-between w-full text-left font-bold text-[15px] text-slate-800 mb-3"
-          onClick={() => toggleSection('experience')}
-        >
-          Cấp bậc
-          {expandedSections.experience ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
-        </button>
-        
-        {expandedSections.experience && (
-          <div className="space-y-3 mt-2">
-            {experienceOptions.map(option => (
-              <div key={option.value} className="flex items-start space-x-3">
-                <Checkbox 
-                  id={`exp-${option.value}`} 
-                  checked={filters.experienceLevel === option.value}
-                  onCheckedChange={(checked) => {
-                    onFilterChange({ 
-                      experienceLevel: checked ? option.value : undefined 
-                    });
-                  }}
-                  className="border-slate-300 data-[state=checked]:bg-[#1A56DB] data-[state=checked]:border-[#1A56DB] rounded-sm mt-0.5"
-                />
-                <Label 
-                  htmlFor={`exp-${option.value}`}
-                  className="text-[14px] font-medium text-slate-600 leading-tight cursor-pointer"
-                >
-                  {option.label}
-                </Label>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="w-full h-px border-t border-dashed border-[#e8e8e8] mb-6" />
 
-      {/* Lọc theo Loại hình */}
-      <div className="mb-5">
-        <button 
-          className="flex items-center justify-between w-full text-left font-bold text-[15px] text-slate-800 mb-3"
-          onClick={() => toggleSection('jobType')}
-        >
-          Loại hình
-          {expandedSections.jobType ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
-        </button>
-        
-        {expandedSections.jobType && (
-          <div className="space-y-3 mt-2">
-            {jobTypeOptions.map(option => (
-              <div key={option.value} className="flex items-start space-x-3">
-                <Checkbox 
-                  id={`type-${option.value}`} 
-                  checked={filters.jobType === option.value}
-                  onCheckedChange={(checked) => {
-                    onFilterChange({ 
-                      jobType: checked ? option.value : undefined 
-                    });
-                  }}
-                  className="border-slate-300 data-[state=checked]:bg-[#1A56DB] data-[state=checked]:border-[#1A56DB] rounded-sm mt-0.5"
-                />
-                <Label 
-                  htmlFor={`type-${option.value}`}
-                  className="text-[14px] font-medium text-slate-600 leading-tight cursor-pointer"
-                >
-                  {option.label}
-                </Label>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Lọc theo Mức lương */}
-      <div>
-        <button 
-          className="flex items-center justify-between w-full text-left font-bold text-[15px] text-slate-800 mb-4"
-          onClick={() => toggleSection('salary')}
-        >
-          Mức lương tối thiểu
-          {expandedSections.salary ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
-        </button>
-        
-        {expandedSections.salary && (
-          <div className="px-2 pt-2">
-            <Slider
-              defaultValue={[filters.salaryMin ? filters.salaryMin / 1000000 : 0]}
-              max={100}
-              step={5}
-              onValueCommit={(val) => handleSalaryChange([val[0] * 1000000])}
-              className="mb-4 [&_[role=slider]]:border-[#1A56DB] [&_[role=slider]]:bg-white [&_.bg-primary]:bg-[#1A56DB]"
-            />
-            <div className="flex justify-between text-[13px] text-slate-500 font-medium">
-              <span>0 Tr</span>
-              <span className="text-[#1A56DB] font-bold text-sm">
-                {filters.salaryMin ? `Từ ${filters.salaryMin / 1000000} Tr` : 'Tất cả mức lương'}
-              </span>
-              <span>100+ Tr</span>
+      {/* CẤP BẬC */}
+      <div className="mb-6">
+        <h3 className="font-bold text-[15px] text-[#212f3f] mb-3">Cấp bậc</h3>
+        <div className="flex flex-col gap-3">
+          {levels.map((level, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <input
+                type="radio"
+                id={`level-${idx}`}
+                name="level"
+                className="w-4 h-4 accent-[#4F46E5] cursor-pointer"
+                defaultChecked={idx === 0}
+              />
+              <label htmlFor={`level-${idx}`} className="text-[14px] text-[#212f3f] cursor-pointer">
+                {level}
+              </label>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
+      </div>
+
+      <div className="w-full h-px border-t border-dashed border-[#e8e8e8] mb-6" />
+
+      {/* LOẠI HÌNH LÀM VIỆC */}
+      <div className="mb-6">
+        <h3 className="font-bold text-[15px] text-[#212f3f] mb-3">Loại hình làm việc</h3>
+        <div className="grid grid-cols-2 gap-y-3 gap-x-2">
+          {jobTypes.map((type, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <input
+                type="radio"
+                id={`type-${idx}`}
+                name="jobType"
+                className="w-4 h-4 accent-[#4F46E5] cursor-pointer"
+                checked={filters.jobType ? filters.jobType === type.value : type.value === 'all'}
+                onChange={() => onFilterChange({ jobType: type.value === 'all' ? undefined : type.value as any })}
+              />
+              <label htmlFor={`type-${idx}`} className="text-[14px] text-[#212f3f] cursor-pointer truncate">
+                {type.label}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* FOOTER ACTIONS */}
+      <div className="flex items-center gap-3 pt-2">
+        <button
+          onClick={onClearFilters}
+          className="text-[#6f7882] text-[14px] whitespace-nowrap hover:text-[#4F46E5] transition-colors"
+        >
+          Xóa lọc
+        </button>
+        <button className="flex-1 bg-white border border-[#4F46E5] text-[#4F46E5] py-2 rounded flex items-center justify-center gap-2 font-medium hover:bg-blue-50 transition-colors">
+          <Star size={16} fill="currentColor" />
+          Lưu bộ lọc
+        </button>
       </div>
     </div>
   );

@@ -31,12 +31,12 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
             {/* Left Column */}
             <div className="flex-1 w-full max-w-[420px]">
               <Reveal>
-                <p className="text-[#1A56DB] text-[11px] font-black uppercase tracking-[0.22em] mb-4 flex items-center gap-2">
-                  <span className="w-5 h-px bg-[#1A56DB] inline-block" />CÂU CHUYỆN
+                <p className="text-[#4F46E5] text-[11px] font-black uppercase tracking-[0.22em] mb-4 flex items-center gap-2">
+                  <span className="w-5 h-px bg-[#4F46E5] inline-block" />CÂU CHUYỆN
                 </p>
                 <h2 className="text-[3.5rem] lg:text-[4rem] font-black leading-[1.05] tracking-tight mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
                   Tại sao chọn<br />
-                  <span className="text-[#1A56DB]">JobFy?</span>
+                  <span className="text-[#4F46E5]">JobFy?</span>
                 </h2>
 
                 {/* Overlapping avatars & reviews */}
@@ -61,21 +61,21 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                 {/* Navigation & Progress */}
                 <div>
                   <div className="flex items-center gap-5 mb-6">
-                    <button onClick={prevT} className="w-11 h-11 rounded-[0.85rem] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:border-[#1A56DB] hover:text-[#1A56DB] transition-all bg-white shadow-sm hover:shadow-md">
+                    <button onClick={prevT} className="w-11 h-11 rounded-[0.85rem] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:border-[#4F46E5] hover:text-[#4F46E5] transition-all bg-white shadow-sm hover:shadow-md">
                       <ChevronLeft size={18} />
                     </button>
                     <div className="flex items-center gap-2.5">
                       {testimonials.map((_, i) => (
-                        <button key={i} onClick={() => setTIdx(i)} className={`h-2.5 rounded-full transition-all duration-300 ${i === tIdx ? "w-7 bg-[#1A56DB]" : "w-2.5 bg-[#E2E8F0]"}`} />
+                        <button key={i} onClick={() => setTIdx(i)} className={`h-2.5 rounded-full transition-all duration-300 ${i === tIdx ? "w-7 bg-[#4F46E5]" : "w-2.5 bg-[#E2E8F0]"}`} />
                       ))}
                     </div>
-                    <button onClick={nextT} className="w-11 h-11 rounded-[0.85rem] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:border-[#1A56DB] hover:text-[#1A56DB] transition-all bg-white shadow-sm hover:shadow-md">
+                    <button onClick={nextT} className="w-11 h-11 rounded-[0.85rem] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:border-[#4F46E5] hover:text-[#4F46E5] transition-all bg-white shadow-sm hover:shadow-md">
                       <ChevronRight size={18} />
                     </button>
                   </div>
                   {/* Progress Line */}
                   <div className="w-32 h-[2px] bg-[#E2E8F0] relative overflow-hidden">
-                    <div className="absolute top-0 left-0 h-full bg-[#1A56DB] transition-all duration-500" style={{ width: `${((tIdx + 1) / testimonials.length) * 100}%` }} />
+                    <div className="absolute top-0 left-0 h-full bg-[#4F46E5] transition-all duration-500" style={{ width: `${((tIdx + 1) / testimonials.length) * 100}%` }} />
                   </div>
                 </div>
               </Reveal>
@@ -99,7 +99,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                       <div>
                         <h3 className="font-bold text-[16px] text-slate-900">{testimonials[tIdx].name}</h3>
                         <p className="text-[13px] text-[#94A3B8] mt-0.5">{testimonials[tIdx].role}</p>
-                        <p className="text-[12px] font-semibold text-[#1A56DB] mt-0.5">@ {testimonials[tIdx].company}</p>
+                        <p className="text-[12px] font-semibold text-[#4F46E5] mt-0.5">@ {testimonials[tIdx].company}</p>
                       </div>
                     </div>
                     <div className="text-right">

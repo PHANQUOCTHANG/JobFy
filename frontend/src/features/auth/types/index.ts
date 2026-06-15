@@ -1,13 +1,12 @@
 import { IUser } from "@/features/user";
 
-// ✅ Dữ liệu trả về từ backend
+export type RoleType = "admin" | "employer" | "candidate";
+
+// ✅ Dữ liệu trả về từ backend (Không còn refreshToken vì nó nằm trong httpOnly cookie)
 export interface AuthDto<TUser> {
   accessToken: string;
-  refreshToken: string;
   user: TUser;
 }
-
-// ✅ Mô tả user trong hệ thống
 
 // ✅ Redux slice state
 export interface AuthState<TUser = IUser> {
@@ -21,19 +20,32 @@ export interface LoginRequest {
   email: string;
   password: string;
   rememberMe: boolean;
+  role?: RoleType;
 }
+
 export interface RegisterRequest {
   fullName: string;
   email: string;
   password: string;
+  role?: RoleType;
 }
+
 export interface ForgetPasswordRequest {
   email: string;
 }
+
 export interface ForgetPasswordResponse {
   email: string;
 }
-// Các type cũ giữ nguyên (LoginRequest, RegisterRequest...)
+
+export interface VerifyForgotOtpResponse {
+  verificationToken: string;
+}
+
+export interface ResetPasswordRequest {
+  verificationToken: string;
+  newPassword: string;
+}
 
 // Type cho Đổi mật khẩu
 export interface ChangePasswordRequest {
@@ -47,6 +59,7 @@ export interface ClaimProfileRequest {
   newEmail: string;
   newPassword: string;
 }
+
 export type LoginResponse = AuthDto<IUser>;
-export type RegisterResponse = AuthDto<IUser>;
+export type RegisterResponse = { message: string };
 export type RefreshResponse = AuthDto<IUser>;

@@ -2,8 +2,8 @@ import React from "react";
 
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[#1A56DB] text-[11px] font-black uppercase tracking-[0.22em] mb-3 flex items-center gap-2">
-      <span className="w-5 h-px bg-[#1A56DB] inline-block" />{children}
+    <p className="text-[#4F46E5] text-[11px] font-black uppercase tracking-[0.22em] mb-3 flex items-center gap-2">
+      <span className="w-5 h-px bg-[#4F46E5] inline-block" />{children}
     </p>
   );
 }

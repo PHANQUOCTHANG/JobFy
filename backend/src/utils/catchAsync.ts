@@ -1,11 +1,12 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+import { Request, Response, NextFunction } from "express";
 
-const catchAsync = (fn: Function): RequestHandler => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+type AsyncHandler = (req: Request, res: Response, next: NextFunction) => Promise<any>;
+
+/**
+ * Wrapper để bắt lỗi async trong Express handlers
+ */
+export const catchAsync = (fn: AsyncHandler) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    fn(req, res, next).catch(next);
   };
 };
-
-export { catchAsync };
-export default catchAsync;
-

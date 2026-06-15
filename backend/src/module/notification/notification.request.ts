@@ -15,8 +15,9 @@ const notificationTypes = [
 export const CreateNotificationSchema = z.object({
   body: z.object({
     userId: z.string().uuid("Invalid user ID"),
-    type: z.enum(notificationTypes),
-
+    type: z.enum(notificationTypes, {
+      message: "Invalid notification type"
+    }),
     title: z.string().min(1, "Title is required").max(255, "Title must be at most 255 characters"),
     body: z.string().max(500, "Body must be at most 500 characters").optional(),
     refType: z.string().max(50, "Ref type must be at most 50 characters").optional(),

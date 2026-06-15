@@ -15,7 +15,7 @@ const Button = React.forwardRef<
 
   const variants = {
     primary:
-      "bg-[#1A56DB] text-white hover:bg-[#1447C0] shadow-[0_0_20px_rgba(212,78,43,0.1)] hover:shadow-[0_0_25px_rgba(212,78,43,0.25)] hover:-translate-y-0.5 border-0",
+      "bg-[#4F46E5] text-white hover:bg-[#4338CA] shadow-[0_0_20px_rgba(212,78,43,0.1)] hover:shadow-[0_0_25px_rgba(212,78,43,0.25)] hover:-translate-y-0.5 border-0",
     outline:
       "border border-zinc-700 bg-transparent text-zinc-400 hover:bg-white hover:text-black hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:-translate-y-0.5",
     ghost: "hover:bg-white/10 text-zinc-400 hover:text-white bg-transparent",
@@ -48,12 +48,12 @@ export default function NotFoundPage() {
       <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-700">
         
         <div className="relative group">
-          <div className="absolute inset-0 bg-[#1A56DB]/10 rounded-full blur-2xl group-hover:bg-[#1A56DB]/20 transition-all duration-500" />
+          <div className="absolute inset-0 bg-[#4F46E5]/10 rounded-full blur-2xl group-hover:bg-[#4F46E5]/20 transition-all duration-500" />
 
-          <div className="relative w-40 h-40 md:w-56 md:h-56 flex items-center justify-center rounded-full bg-white border-2 border-[#1A56DB]/20 shadow-2xl">
-            <div className="absolute inset-0 rounded-full border border-[#1A56DB]/10 animate-[spin_10s_linear_infinite_paused] group-hover:animate-play-state-running"></div>
+          <div className="relative w-40 h-40 md:w-56 md:h-56 flex items-center justify-center rounded-full bg-white border-2 border-[#4F46E5]/20 shadow-2xl">
+            <div className="absolute inset-0 rounded-full border border-[#4F46E5]/10 animate-[spin_10s_linear_infinite_paused] group-hover:animate-play-state-running"></div>
             
-            <div className="w-16 h-16 md:w-24 md:h-24 bg-[#1A56DB] rounded-full flex items-center justify-center border border-[#1A56DB]/20 relative overflow-hidden shadow-inner">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-[#4F46E5] rounded-full flex items-center justify-center border border-[#4F46E5]/20 relative overflow-hidden shadow-inner">
               <Briefcase className="w-8 h-8 md:w-10 md:h-10 text-white relative z-10" strokeWidth={2} />
             </div>
 
@@ -64,7 +64,7 @@ export default function NotFoundPage() {
         </div>
 
         <div className="space-y-4 max-w-md">
-          <h1 className="text-6xl md:text-8xl font-black text-[#1A56DB] tracking-tighter drop-shadow-sm" style={{ fontFamily: "'Manrope', sans-serif" }}>
+          <h1 className="text-6xl md:text-8xl font-black text-[#4F46E5] tracking-tighter drop-shadow-sm" style={{ fontFamily: "'Manrope', sans-serif" }}>
             404
           </h1>
           <h2 className="text-xl md:text-2xl font-bold text-[#0F172A] uppercase tracking-widest">

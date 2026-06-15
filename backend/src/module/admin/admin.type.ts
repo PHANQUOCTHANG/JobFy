@@ -1,7 +1,7 @@
 import { AdminLog, JobView, User } from "@prisma/client";
 
 export interface IAdminLog extends AdminLog {
-  admin?: Pick<User, "id" | "email"> | null;
+  admin?: Pick<User, "id" | "email">;
 }
 
 

@@ -18,6 +18,7 @@ import notificationRoute from "@/module/notification/notification.route";
 import subscriptionRoute, { paymentRouter } from "@/module/subscription/subscription.route";
 import reportRoute from "@/module/report/report.route";
 import adminRoute from "@/module/admin/admin.route";
+import locationRoute from "@/module/location/location.route";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
 
 const clientRoute = (app: Application) => {
@@ -31,10 +32,11 @@ const clientRoute = (app: Application) => {
   app.use(path + "/skill-categories", skillCategoryRoute);
   app.use(path + "/skills", skillRoute);
   app.use(path + "/companies", companyRoute);
-  app.use(path + "/candidate-profiles", candidateProfileRoute);
+  // app.use(path + "/candidate-profiles", candidateProfileRoute);
   app.use(path + "/resumes", resumeRoute);
   app.use(path + "/jobs", jobRoute);
   app.use(path + "/applications", applicationRoute);
+  app.use(path + "/locations", locationRoute);
   
   // New Modules
   app.use(path + "/saved-jobs", requireAuth, savedJobRoute);

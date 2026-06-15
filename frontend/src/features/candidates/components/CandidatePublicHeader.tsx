@@ -58,7 +58,7 @@ export const CandidatePublicHeader: React.FC<CandidatePublicHeaderProps> = ({ pr
             {profile.linkedinUrl && (
               <Button variant="ghost" size="sm" asChild className="h-8">
                 <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer">
-                  <Linkedin className="w-4 h-4 mr-2 text-blue-600" />
+                  <Linkedin className="w-4 h-4 mr-2 text-indigo-600" />
                   LinkedIn
                 </a>
               </Button>

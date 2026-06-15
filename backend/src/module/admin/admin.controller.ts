@@ -50,10 +50,8 @@ export const getDashboardStats = catchAsync(async (req: Request, res: Response) 
 });
 
 export const getJobViewStats = catchAsync(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
-  const normalizedJobId = Array.isArray(jobId) ? jobId[0] : jobId;
-  if (!normalizedJobId) return res.status(400).json({ message: "Invalid jobId" });
-  const stats = await adminService.getJobViewStats(normalizedJobId);
+  const { id } = req.params;
+  const stats = await adminService.getJobViewStats(String(id));
   sendResponse(res, 200, "Success", stats);
 });
 
