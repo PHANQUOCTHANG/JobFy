@@ -1,7 +1,7 @@
 import { CompanyReviewRepository } from "./company-review.repository";
 import { CreateCompanyReviewPayload, UpdateCompanyReviewPayload, CompanyReviewPaginationParams } from "./company-review.type";
-import { NotFoundError, ForbiddenError, BadRequestError } from "@/error/custom.error";
-import prisma from "@/config/prisma";
+import { NotFoundError, ForbiddenError, BadRequestError } from "@/error";
+import prisma from "@/lib/prisma";
 
 export class CompanyReviewService {
   private repository: CompanyReviewRepository;

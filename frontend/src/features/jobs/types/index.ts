@@ -65,6 +65,7 @@ export interface JobFilterParams {
   jobType?: string;
   experienceLevel?: string;
   salaryMin?: number;
+  salaryMax?: number;
   isRemote?: boolean;
   page?: number;
   limit?: number;

@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { Briefcase, Bell, Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAppSelector } from "@/store/hooks";
+import { UserDropdown } from "@/features/user/components/UserDropdown";
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const path = useLocation().pathname;
+  
+  // Lấy state user từ Redux
+  const { user } = useAppSelector((state) => state.auth);
 
   const navLinks = [
     { label: "Việc làm", href: "/jobs" },
@@ -19,7 +24,7 @@ export function Header() {
         
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-[34px] h-[34px] bg-[#1A56DB] rounded-[10px] flex items-center justify-center shadow-md shadow-[#1A56DB]/20">
+          <div className="w-[34px] h-[34px] bg-[#4F46E5] rounded-[10px] flex items-center justify-center shadow-md shadow-[#4F46E5]/20">
             <Briefcase size={16} className="text-white" strokeWidth={2.5} />
           </div>
           <span className="text-[20px] font-black text-slate-900 tracking-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -31,13 +36,39 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map(({ label, href }) => {
             const isActive = path === href || (href !== "/" && path.startsWith(href));
+            
+            if (href === '/cv') {
+              return (
+                <div key={href} className="relative group">
+                  <Link
+                    to={href}
+                    className={`px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all flex items-center gap-1 ${
+                      isActive
+                        ? "text-[#00B14F] bg-[#e5f7ed] font-semibold"
+                        : "text-slate-600 hover:text-[#00B14F] hover:bg-slate-100"
+                    }`}
+                  >
+                    Hồ sơ & CV <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
+                  </Link>
+                  {/* Dropdown */}
+                  <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-56 z-50">
+                    <div className="bg-white border border-gray-100 shadow-xl rounded-xl p-2 flex flex-col">
+                      <Link to="/cv" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu CV theo style</Link>
+                      <Link to="/cv/my-cvs" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Quản lý CV</Link>
+                      <Link to="/cv/cover-letter" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu Cover Letter</Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={href}
                 to={href}
                 className={`px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all ${
                   isActive
-                    ? "text-[#1A56DB] bg-[#EEF2FF] font-semibold"
+                    ? "text-[#4F46E5] bg-[#EEF2FF] font-semibold"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 }`}
               >
@@ -49,22 +80,32 @@ export function Header() {
 
         {/* Right actions */}
         <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-          <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all">
+          <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all mr-2">
             <Bell size={17} />
             <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] bg-[#F59E0B] rounded-full border-2 border-white" />
           </button>
-          <Link
-            to="/login"
-            className="text-[13.5px] font-medium text-slate-600 hover:text-slate-900 px-4 py-2 rounded-lg hover:bg-slate-100 transition-all"
-          >
-            Đăng nhập
-          </Link>
-          <Link
-            to="/register"
-            className="text-[13.5px] font-semibold bg-[#1A56DB] hover:bg-[#1447C0] text-white px-4 py-2.5 rounded-xl transition-all shadow-sm shadow-[#1A56DB]/20"
-          >
-            Đăng ký miễn phí
-          </Link>
+          
+          {user ? (
+            <UserDropdown user={user} />
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-[13.5px] font-medium text-slate-600 hover:text-slate-900 px-4 py-2 rounded-lg hover:bg-slate-100 transition-all"
+              >
+                Đăng nhập
+              </Link>
+              <Link
+                to="/register"
+                className="text-[13.5px] font-semibold bg-[#4F46E5] hover:bg-[#4338CA] text-white px-4 py-2.5 rounded-xl transition-all shadow-sm shadow-[#4F46E5]/20"
+              >
+                Đăng ký miễn phí
+              </Link>
+            </>
+          )}
+          
+          <div className="w-[1px] h-6 bg-slate-200 mx-1"></div>
+          
           <a
             href="#"
             className="text-[13.5px] font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400 px-4 py-2 rounded-xl transition-all"
@@ -92,23 +133,36 @@ export function Header() {
               onClick={() => setMenuOpen(false)}
               className={`text-[14px] font-medium py-2.5 px-3 rounded-lg transition-all ${
                 path === href
-                  ? "text-[#1A56DB] bg-[#EEF2FF]"
+                  ? "text-[#4F46E5] bg-[#EEF2FF]"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               }`}
             >
               {label}
             </Link>
           ))}
-          <div className="flex gap-2 mt-3 pt-3 border-t border-slate-200">
-            <Link to="/login" className="flex-1 text-center border border-slate-300 text-slate-700 py-2.5 rounded-xl text-[13px] font-medium hover:bg-slate-50 transition-all">
-              Đăng nhập
-            </Link>
-            <Link to="/register" className="flex-1 text-center bg-[#1A56DB] text-white py-2.5 rounded-xl text-[13px] font-semibold hover:bg-[#1447C0] transition-all">
-              Đăng ký
-            </Link>
+          <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-slate-200">
+            {user ? (
+              <div className="flex items-center gap-3 px-3 py-2">
+                <UserDropdown user={user} />
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold">{user.fullName || user.email}</span>
+                  <span className="text-xs text-slate-500 capitalize">{user.role}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Link to="/login" className="flex-1 text-center border border-slate-300 text-slate-700 py-2.5 rounded-xl text-[13px] font-medium hover:bg-slate-50 transition-all">
+                  Đăng nhập
+                </Link>
+                <Link to="/register" className="flex-1 text-center bg-[#4F46E5] text-white py-2.5 rounded-xl text-[13px] font-semibold hover:bg-[#4338CA] transition-all">
+                  Đăng ký
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
     </header>
   );
 }

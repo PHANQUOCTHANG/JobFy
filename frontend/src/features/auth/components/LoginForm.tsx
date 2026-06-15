@@ -23,7 +23,7 @@ const BackgroundPattern = () => (
       backgroundSize: "64px 64px",
     }} />
     {/* Glows */}
-    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#1A56DB]/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3" />
+    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#4F46E5]/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3" />
     <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#F59E0B]/10 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4" />
     {/* Noise */}
     <div className="absolute inset-0 opacity-[0.03]" style={{
@@ -35,7 +35,7 @@ const BackgroundPattern = () => (
 const Button = ({ children, className, isLoading, variant = "primary", ...props }: any) => {
   const base = "relative group w-full h-12 rounded-xl font-bold text-[14.5px] transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2";
   const variants: any = {
-    primary: "bg-[#1A56DB] hover:bg-[#1447C0] text-white shadow-lg shadow-[#1A56DB]/20",
+    primary: "bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-lg shadow-[#4F46E5]/20",
     outline: "bg-white border-2 border-[#E2E8F0] hover:border-[#0F172A] text-[#0F172A]",
   };
   return (
@@ -51,7 +51,7 @@ const InputField = React.forwardRef<HTMLInputElement, any>(
     <div className="relative group w-full">
       <div className={cn(
         "absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-300",
-        error ? "text-red-500" : "text-[#94A3B8] group-focus-within:text-[#1A56DB]"
+        error ? "text-red-500" : "text-[#94A3B8] group-focus-within:text-[#4F46E5]"
       )}>
         <Icon size={18} />
       </div>
@@ -60,7 +60,7 @@ const InputField = React.forwardRef<HTMLInputElement, any>(
         className={cn(
           "w-full h-13 bg-white hover:bg-gray-50 focus:bg-white rounded-xl border pl-11 pr-4 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-300",
           error ? "border-red-500 focus:border-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.1)]" 
-                : "border-[#E2E8F0] focus:border-[#1A56DB] focus:shadow-[0_0_0_4px_rgba(212,78,43,0.1)]",
+                : "border-[#E2E8F0] focus:border-[#4F46E5] focus:shadow-[0_0_0_4px_rgba(212,78,43,0.1)]",
           className
         )}
         style={{ height: "52px" }}
@@ -84,7 +84,7 @@ const Checkbox = ({ id, label, checked, onChange }: any) => (
       onClick={() => onChange(!checked)}
       className={cn(
         "w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 shrink-0",
-        checked ? "bg-[#1A56DB] border-[#1A56DB] text-white" : "bg-white border-[#E2E8F0] hover:border-[#1A56DB]"
+        checked ? "bg-[#4F46E5] border-[#4F46E5] text-white" : "bg-white border-[#E2E8F0] hover:border-[#4F46E5]"
       )}
     >
       {checked && <Check size={14} strokeWidth={3} />}
@@ -109,7 +109,7 @@ export default function LoginForm() {
         
         <div className="relative z-10">
           <Link to="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 bg-[#1A56DB] rounded-xl flex items-center justify-center shadow-lg shadow-[#1A56DB]/20">
+            <div className="w-10 h-10 bg-[#4F46E5] rounded-xl flex items-center justify-center shadow-lg shadow-[#4F46E5]/20">
               <Briefcase size={20} className="text-white" strokeWidth={2.5} />
             </div>
             <span className="text-[26px] font-black tracking-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -125,7 +125,7 @@ export default function LoginForm() {
           </div>
           <h1 className="text-[3.5rem] font-black leading-[1.1] mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
             Sự nghiệp<br />
-            <em className="not-italic text-[#1A56DB]">không chỉ</em><br />
+            <em className="not-italic text-[#4F46E5]">không chỉ</em><br />
             là công việc.
           </h1>
           <p className="text-slate-500 text-[17px] leading-relaxed max-w-md">
@@ -149,12 +149,12 @@ export default function LoginForm() {
       {/* RIGHT COLUMN: Login Form */}
       <div className="w-full lg:w-[55%] flex items-center justify-center p-6 sm:p-12 relative">
         <Link to="/" className="absolute top-8 left-8 lg:hidden flex items-center gap-2 text-slate-900">
-          <div className="w-8 h-8 bg-[#1A56DB] rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">
             <Briefcase size={16} className="text-white" />
           </div>
           <span className="text-xl font-black" style={{ fontFamily: "'Manrope', sans-serif" }}>JobFy</span>
         </Link>
-        <Link to="/" className="absolute top-8 right-8 flex items-center gap-1.5 text-[13px] font-bold text-[#64748B] hover:text-[#1A56DB] transition-colors">
+        <Link to="/" className="absolute top-8 right-8 flex items-center gap-1.5 text-[13px] font-bold text-[#64748B] hover:text-[#4F46E5] transition-colors">
           <ChevronLeft size={16} /> Quay lại trang chủ
         </Link>
 
@@ -188,7 +188,7 @@ export default function LoginForm() {
 
             <div className="flex items-center justify-between pt-1 pb-2">
               <Checkbox id="remember" label="Ghi nhớ đăng nhập" checked={!!rememberMe} onChange={(c: boolean) => setValue("rememberMe", c)} />
-              <Link to="/forgot-password" className="text-[13px] font-bold text-[#1A56DB] hover:text-[#1447C0] transition-colors">
+              <Link to="/forgot-password" className="text-[13px] font-bold text-[#4F46E5] hover:text-[#4338CA] transition-colors">
                 Quên mật khẩu?
               </Link>
             </div>
@@ -217,7 +217,7 @@ export default function LoginForm() {
 
           <p className="text-center text-[14px] text-[#64748B] mt-10">
             Chưa có tài khoản?{" "}
-            <Link to="/register" className="font-bold text-[#1A56DB] hover:text-[#1447C0] hover:underline underline-offset-4 transition-all">
+            <Link to="/register" className="font-bold text-[#4F46E5] hover:text-[#4338CA] hover:underline underline-offset-4 transition-all">
               Đăng ký miễn phí
             </Link>
           </p>

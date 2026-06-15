@@ -14,7 +14,7 @@ export const createReport = catchAsync(async (req: Request, res: Response) => {
     ...req.body,
     reporterId: userId
   });
-  sendResponse(res, 201, "Report submitted successfully", toReportResponse(report));
+  sendResponse(res, 201, "Report submitted successfully", toReportResponse(report as any));
 });
 
 export const getReports = catchAsync(async (req: Request, res: Response) => {
@@ -27,7 +27,7 @@ export const getReports = catchAsync(async (req: Request, res: Response) => {
   });
 
   sendResponse(res, 200, "Success", {
-    data: toReportListResponse(result.data),
+    data: toReportListResponse(result.data as any),
     meta: {
       total: result.total,
       page: result.page,
@@ -42,10 +42,10 @@ export const updateReportStatus = catchAsync(async (req: Request, res: Response)
   if (!adminId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  const report = await reportService.updateReportStatus(id, {
+  const report = await reportService.updateReportStatus(id as string, {
     ...req.body,
     reviewedBy: adminId
   });
   
-  sendResponse(res, 200, "Report updated", toReportResponse(report));
+  sendResponse(res, 200, "Report updated", toReportResponse(report as any));
 });

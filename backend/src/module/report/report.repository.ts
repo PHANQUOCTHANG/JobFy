@@ -1,4 +1,4 @@
-import prisma from "@/config/prisma";
+import prisma from "@/lib/prisma";
 import { CreateReportPayload, UpdateReportPayload, ReportPaginationParams } from "./report.type";
 
 export class ReportRepository {

@@ -18,20 +18,20 @@ export const getJobs = asyncHandler(async (req: Request, res: Response) => {
 
 export const getJob = asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id;
-  jobService.incrementViewCount(id).catch(console.error);
+  jobService.incrementViewCount(id as string).catch(console.error);
   
-  const data = await jobService.findById(id);
+  const data = await jobService.findById(id as string);
   return res.status(200).json(ApiResponse.success(data));
 });
 
 export const updateJob = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.id;
-  const data = await jobService.update(req.params.id, userId, req.body);
+  const data = await jobService.update((req.params.id as string), userId, req.body);
   return res.status(200).json(ApiResponse.success(data, "Cập nhật tin tuyển dụng thành công"));
 });
 
 export const deleteJob = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.id;
-  await jobService.delete(req.params.id, userId);
+  await jobService.delete((req.params.id as string), userId);
   return res.status(200).json(ApiResponse.success(null, "Đã xóa tin tuyển dụng"));
 });

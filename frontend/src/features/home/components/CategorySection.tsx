@@ -12,10 +12,10 @@ export function CategorySection({ categories }: { categories: Category[] }) {
             <SectionLabel>Ngành nghề</SectionLabel>
             <SectionHeading>
               Chọn lĩnh vực<br />
-              <em className="not-italic text-[#1A56DB]">của bạn</em>
+              <em className="not-italic text-[#4F46E5]">của bạn</em>
             </SectionHeading>
           </div>
-          <a href="#" className="hidden sm:flex items-center gap-1.5 text-[13px] font-bold text-[#1A56DB] group">
+          <a href="#" className="hidden sm:flex items-center gap-1.5 text-[13px] font-bold text-[#4F46E5] group">
             Tất cả ngành nghề
             <ArrowUpRight size={15} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
@@ -36,17 +36,17 @@ export function CategorySection({ categories }: { categories: Category[] }) {
                 <Reveal key={cat.id} delay={i * 45}>
                   <a href="#"
                     className="group flex items-center gap-4 py-4 border-b border-slate-100 hover:border-[#C7D2FE] transition-all last:border-0">
-                    <span className="text-[11px] font-black text-[#C5B8A8] w-6 flex-shrink-0 group-hover:text-[#1A56DB] transition-colors font-mono">
+                    <span className="text-[11px] font-black text-[#C5B8A8] w-6 flex-shrink-0 group-hover:text-[#4F46E5] transition-colors font-mono">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <div className="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-[#1A56DB] flex items-center justify-center flex-shrink-0 transition-all duration-200 shadow-sm">
+                    <div className="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-[#4F46E5] flex items-center justify-center flex-shrink-0 transition-all duration-200 shadow-sm">
                       <Icon size={17} className="text-[#64748B] group-hover:text-white transition-colors" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="font-bold text-[#1A1612] text-[14px] group-hover:text-[#1A56DB] transition-colors block truncate">{cat.name}</span>
+                      <span className="font-bold text-[#1A1612] text-[14px] group-hover:text-[#4F46E5] transition-colors block truncate">{cat.name}</span>
                       <span className="text-[11px] text-[#94A3B8] mt-0.5 block">{cat.count.toLocaleString()} vị trí</span>
                     </div>
-                    <ChevronRight size={15} className="text-[#C5B8A8] group-hover:text-[#1A56DB] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                    <ChevronRight size={15} className="text-[#C5B8A8] group-hover:text-[#4F46E5] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                   </a>
                 </Reveal>
               );

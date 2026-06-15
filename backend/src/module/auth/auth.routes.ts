@@ -31,7 +31,23 @@ router.post("/refresh-token", authCtrl.refresh);
 // POST | /api/auth/logout | Đăng xuất
 router.post("/logout", authCtrl.logout);
 
-// POST | /api/auth/send-otp | Gửi OTP
+// POST | /api/auth/verify-account | Xác thực tài khoản bằng OTP
+router.post(
+  "/verify-account",
+  authRateLimiter,
+  validationMiddleware(verifyOtpSchema),
+  authCtrl.verifyAccount,
+);
+
+// POST | /api/auth/resend-verification | Gửi lại OTP xác thực tài khoản
+router.post(
+  "/resend-verification",
+  otpRateLimiter,
+  validationMiddleware(sendOtpSchema),
+  authCtrl.resendVerifyAccountOtp,
+);
+
+// POST | /api/auth/forgot-password/send-otp | Gửi OTP
 router.post(
   "/forgot-password/send-otp",
   otpRateLimiter,
@@ -39,27 +55,31 @@ router.post(
   authCtrl.sendOtp,
 );
 
-// POST | /api/auth/verify-otp | Xác thực OTP
+// POST | /api/auth/forgot-password/verify-otp | Xác thực OTP (Quên mật khẩu)
 router.post(
   "/forgot-password/verify-otp",
-  otpRateLimiter,
+  authRateLimiter,
   validationMiddleware(verifyOtpSchema),
   authCtrl.verifyOtp,
 );
 
-// POST | /api/auth/reset-password | Đặt lại mật khẩu
+// POST | /api/auth/forgot-password/reset-password | Đặt lại mật khẩu (Quên mật khẩu)
 router.post(
   "/forgot-password/reset-password",
+  authRateLimiter,
   validationMiddleware(resetPasswordSchema),
   authCtrl.resetPassword,
 );
 
-// POST | /api/auth/change-password | Thay đổi mật khẩu (khi đã đăng nhập)
+// POST | /api/auth/change-password | Thay đổi mật khẩu khi đã đăng nhập
 router.post(
   "/change-password",
   requireAuth,
   validationMiddleware(changePasswordSchema),
   authCtrl.changePassword,
 );
+
+// GET | /api/auth/me | Lấy thông tin user hiện tại
+router.get("/me", requireAuth, authCtrl.getMe);
 
 export default router;

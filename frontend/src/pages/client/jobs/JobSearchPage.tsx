@@ -1,86 +1,163 @@
 import React, { useState } from 'react';
-import { useJobs } from '@/features/jobs';
+import { useJobs, useJobCategories } from '@/features/jobs';
 import { JobFilters } from '@/features/jobs/components/JobFilters';
 import { JobList } from '@/features/jobs/components/JobList';
 import { JobSidebarFilter } from '@/features/jobs/components/JobSidebarFilter';
 import { JobSortBar } from '@/features/jobs/components/JobSortBar';
 import { JobFilterParams } from '@/features/jobs/types';
+import { Bell, ChevronRight } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { mockJobs } from '@/features/jobs/api/mockData';
+import { JobLandingSection } from '@/features/jobs/components/JobLandingSection';
+import { TopCompaniesSection } from '@/features/jobs/components/TopCompaniesSection';
+import { TopCategoriesSection } from '@/features/jobs/components/TopCategoriesSection';
+import { SeoKeywordsSection } from '@/features/jobs/components/SeoKeywordsSection';
 
 export const JobSearchPage: React.FC = () => {
-  const [filters, setFilters] = useState<JobFilterParams>({});
+  const [searchParams] = useSearchParams();
+  const initialKeyword = searchParams.get('keyword') || undefined;
+  const initialProvinceId = searchParams.get('provinceId') ? Number(searchParams.get('provinceId')) : undefined;
+  const initialCategoryId = searchParams.get('categoryId') ? Number(searchParams.get('categoryId')) : undefined;
+
+  const [filters, setFilters] = useState<JobFilterParams>({ 
+    page: 1, 
+    limit: 10,
+    keyword: initialKeyword,
+    provinceId: initialProvinceId,
+    categoryId: initialCategoryId
+  });
   const [sortBy, setSortBy] = useState('latest');
-  
+  const [searchMode, setSearchMode] = useState<'title' | 'company' | 'both'>('title');
+  const [hasSearched, setHasSearched] = useState(!!initialKeyword || !!initialProvinceId || !!initialCategoryId);
+
+  // Persist view mode in localStorage
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => {
+    return (localStorage.getItem('jobfy_view_mode') as 'list' | 'grid') || 'list';
+  });
+  const handleViewModeChange = (mode: 'list' | 'grid') => {
+    setViewMode(mode);
+    localStorage.setItem('jobfy_view_mode', mode);
+  };
+
   const { data: response, isLoading } = useJobs({ ...filters, sort: sortBy } as any);
-  
+  const { data: categories } = useJobCategories();
+
   const handleSearch = (newFilters: Partial<JobFilterParams>) => {
     setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
+    setHasSearched(true);
   };
 
   const handleClearFilters = () => {
-    setFilters((prev) => ({
-      keyword: prev.keyword,
-      provinceId: prev.provinceId,
-      categoryId: prev.categoryId,
-    }));
+    setFilters({ page: 1, limit: 10 });
   };
 
-  const totalResults = response?.meta?.total || (response?.data?.length || 0);
+  const handlePageChange = (page: number) => {
+    setFilters((prev) => ({ ...prev, page }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  if (!hasSearched) {
+    return <JobLandingSection onSearch={handleSearch} />;
+  }
+
+  // Use mock jobs if API returns empty
+  const displayJobs = response?.data && response.data.length > 0 ? response.data : mockJobs;
+  const totalResults = response?.meta?.total || mockJobs.length;
+  const totalPages = response?.meta?.totalPages || 1;
+  const currentPage = filters.page || 1;
+
+  // Breadcrumb date
+  const today = new Date();
+  const dateStr = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
 
   return (
-    <div className="min-h-screen bg-[#F4F5F5] pb-12">
-      {/* TopCV Style Hero Banner - Shorter, Flat Blue */}
-      <div className="bg-[#1A56DB] pt-10 pb-20 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Manrope', sans-serif" }}>
-            Tìm việc làm nhanh 24h, việc làm mới nhất trên toàn quốc.
-          </h1>
-          <p className="text-white/90 text-sm md:text-base font-medium">
-            Tiếp cận 30,000+ tin tuyển dụng việc làm mỗi ngày từ hàng nghìn doanh nghiệp uy tín tại Việt Nam
-          </p>
-        </div>
-      </div>
-
-      {/* Main Content Area - Shifted up to overlap the banner */}
-      <div className="max-w-6xl mx-auto px-4 -mt-10 relative z-20">
-        
-        {/* Search Bar Container */}
-        <div className="mb-6">
-          <JobFilters 
-            onSearch={handleSearch} 
+    <div className="min-h-screen bg-[#f0f0f0] pb-10">
+      {/* ─── SEARCH BAR SECTION (Sticky) ─── */}
+      <div className="bg-[#4F46E5] py-3 px-4 sticky top-[72px] z-40 shadow-sm">
+        <div className="max-w-[1140px] mx-auto">
+          <JobFilters
+            onSearch={handleSearch}
             initialKeyword={filters.keyword}
             initialProvinceId={filters.provinceId}
             initialCategoryId={filters.categoryId}
           />
         </div>
+      </div>
 
-        {/* 2-Column Layout */}
-        <div className="flex flex-col lg:flex-row gap-5">
-          {/* Left Sidebar */}
-          <aside className="w-full lg:w-[280px] flex-shrink-0">
-            <JobSidebarFilter 
-              filters={filters} 
-              onFilterChange={handleSearch} 
+      {/* ─── CONTENT AREA ─── */}
+      <div className="max-w-[1140px] mx-auto px-4 py-4">
+
+        {/* Title + Breadcrumb */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+          <div>
+            <h1 className="text-[16px] font-bold text-[#212f3f] mb-1">
+              Tuyển dụng <span className="text-[#4F46E5]">{totalResults.toLocaleString('vi-VN')} việc làm</span> {filters.keyword && `"${filters.keyword}"`} [Update {dateStr}]
+            </h1>
+            <div className="flex items-center gap-1 text-[13px] text-[#6f7882]">
+              <Link to="/" className="hover:text-[#4F46E5] transition-colors">Trang chủ</Link>
+              <ChevronRight size={13} />
+              <Link to="/jobs" className="hover:text-[#4F46E5] transition-colors">Việc làm</Link>
+              {filters.keyword && (
+                <>
+                  <ChevronRight size={13} />
+                  <span className="text-[#6f7882]">{filters.keyword}</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          <button className="flex items-center gap-2 text-[14px] text-[#212f3f] font-medium bg-white rounded-full px-4 py-2 shadow-sm border border-[#e8e8e8] hover:shadow-md hover:text-[#4F46E5] transition-all whitespace-nowrap mt-2 sm:mt-0">
+            <Bell size={16} className="text-[#212f3f]" />
+            Tạo thông báo việc làm
+          </button>
+        </div>
+
+        {/* ─── 2-COLUMN LAYOUT ─── */}
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
+          {/* LEFT SIDEBAR */}
+          <aside className="w-full lg:w-[280px] flex-shrink-0 lg:sticky lg:top-[140px]">
+            <JobSidebarFilter
+              filters={filters}
+              onFilterChange={handleSearch}
               onClearFilters={handleClearFilters}
             />
           </aside>
 
-          {/* Right Main Content */}
-          <div className="flex-1 min-w-0 flex flex-col">
-            <JobSortBar 
-              totalResults={totalResults} 
-              isLoading={isLoading} 
-              sortBy={sortBy} 
-              onSortChange={setSortBy} 
+          {/* RIGHT MAIN */}
+          <div className="flex-1 min-w-0">
+            <JobSortBar
+              totalResults={totalResults}
+              isLoading={isLoading}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              viewMode={viewMode}
+              onViewModeChange={handleViewModeChange}
+              searchMode={searchMode}
+              onSearchModeChange={setSearchMode}
+              currentPage={currentPage}
+              limit={filters.limit || 10}
             />
-            
-            <JobList 
-              jobs={response?.data || []} 
-              isLoading={isLoading} 
-              filters={filters} 
-              onClearFilters={handleClearFilters} 
+
+            <JobList
+              jobs={displayJobs}
+              isLoading={isLoading}
+              filters={filters}
+              onClearFilters={handleClearFilters}
+              viewMode={viewMode}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
             />
           </div>
         </div>
+
+        {/* ─── NEW BOTTOM SECTIONS ─── */}
+        <div className="mt-12 space-y-8">
+          <TopCategoriesSection />
+          <TopCompaniesSection />
+          <SeoKeywordsSection />
+        </div>
+
       </div>
     </div>
   );

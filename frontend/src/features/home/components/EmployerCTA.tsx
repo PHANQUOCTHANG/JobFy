@@ -8,7 +8,7 @@ export function EmployerCTA() {
       <div 
         className="absolute inset-0 opacity-[0.04] pointer-events-none" 
         style={{ 
-          backgroundImage: "linear-gradient(#1A56DB 1px, transparent 1px), linear-gradient(90deg, #1A56DB 1px, transparent 1px)",
+          backgroundImage: "linear-gradient(#4F46E5 1px, transparent 1px), linear-gradient(90deg, #4F46E5 1px, transparent 1px)",
           backgroundSize: "64px 64px" 
         }} 
       />
@@ -17,14 +17,14 @@ export function EmployerCTA() {
         
         {/* Left Content */}
         <Reveal>
-          <div className="inline-flex items-center gap-2 text-[#1A56DB] font-bold text-[12px] uppercase tracking-widest mb-8">
+          <div className="inline-flex items-center gap-2 text-[#4F46E5] font-bold text-[12px] uppercase tracking-widest mb-8">
             <Building2 size={16} /> DÀNH CHO NHÀ TUYỂN DỤNG
           </div>
           
           <h2 className="text-[3rem] lg:text-[4.5rem] font-black leading-[1.05] mb-8 text-slate-900" style={{ fontFamily: "'Manrope', sans-serif" }}>
             Tìm nhân tài<br />
             xứng tầm<br />
-            <span className="text-[#1A56DB]">doanh nghiệp.</span>
+            <span className="text-[#4F46E5]">doanh nghiệp.</span>
           </h2>
           
           <p className="text-slate-600 text-[17px] leading-relaxed mb-10 max-w-lg">
@@ -39,7 +39,7 @@ export function EmployerCTA() {
               "2M+ ứng viên"
             ].map((text, i) => (
               <div key={i} className="flex items-center gap-2 text-[14px] font-medium text-slate-700">
-                <CheckCircle2 size={16} className="text-[#1A56DB]" /> {text}
+                <CheckCircle2 size={16} className="text-[#4F46E5]" /> {text}
               </div>
             ))}
           </div>
@@ -56,7 +56,7 @@ export function EmployerCTA() {
             </p>
 
             <div className="flex flex-col gap-4 mb-12">
-              <button className="bg-[#1A56DB] hover:bg-[#1447C0] text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all w-full text-[15px] shadow-lg shadow-[#1A56DB]/25">
+              <button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all w-full text-[15px] shadow-lg shadow-[#4F46E5]/25">
                 Đăng tin tuyển dụng miễn phí <ArrowRight size={18} />
               </button>
               <button className="bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold py-4 px-6 rounded-xl transition-all w-full text-[15px]">

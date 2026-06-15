@@ -39,7 +39,7 @@ export function AppDownload() {
 
               <div className="flex items-center gap-4">
                 <div className="flex items-center">
-                  {["#1A56DB", "#F59E0B", "#10B981", "#7C3AED", "#3B82F6"].map((color, i) => (
+                  {["#4F46E5", "#F59E0B", "#10B981", "#7C3AED", "#3B82F6"].map((color, i) => (
                     <div key={i} className="w-9 h-9 rounded-full border-2 border-[#0F172A] -ml-3 first:ml-0" style={{ backgroundColor: color }} />
                   ))}
                 </div>
@@ -70,7 +70,7 @@ export function AppDownload() {
 
                 {/* App UI */}
                 <div className="flex items-center gap-2 mb-6">
-                  <div className="w-8 h-8 bg-[#1A56DB] rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">
                     <Briefcase size={14} className="text-white" strokeWidth={3} />
                   </div>
                   <span className="text-[16px] font-black text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -113,7 +113,7 @@ export function AppDownload() {
                 </div>
 
                 {/* AI Match Card */}
-                <div className="mt-auto bg-gradient-to-r from-[#3A2218] to-[#0F172A] border border-[#1A56DB]/30 rounded-2xl p-5">
+                <div className="mt-auto bg-gradient-to-r from-[#3A2218] to-[#0F172A] border border-[#4F46E5]/30 rounded-2xl p-5">
                   <p className="text-[#F59E0B] font-bold text-[13px] flex items-center gap-1.5 mb-4">
                     ✨ AI Match mới!
                   </p>

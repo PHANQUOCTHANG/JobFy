@@ -4,13 +4,13 @@
 export { default as LoginForm } from "./components/LoginForm";
 export { default as RegisterForm } from "./components/RegisterForm";
 export { default as ForgotPasswordForm } from "./components/ForgotPasswordForm";
-export { default as ResetPasswordForm } from "./components/ResetPasswordForm";
-export { default as VerifyOtpForm } from "./components/VerifyOtpForm";
+
 
 // 🧠 Xuất hooks chính
 export * from "./hooks/useInitAuth";
 export * from "./hooks/useLogin";
 export * from "./hooks/useRegister";
+export * from "./hooks/useForgotPassword";
 export * from "./hooks/useForceChangePassword";
 
 // 🪄 Xuất services / slice nếu cần dùng global

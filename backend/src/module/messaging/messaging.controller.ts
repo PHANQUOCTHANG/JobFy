@@ -44,7 +44,7 @@ export const getMessages = catchAsync(async (req: Request, res: Response) => {
 
   const { id } = req.params;
   const { page, limit } = req.query;
-  const result = await messagingService.getMessages(id, userId, role, {
+  const result = await messagingService.getMessages(id as string, userId, role, {
     page: page ? Number(page) : undefined,
     limit: limit ? Number(limit) : undefined
   });
@@ -78,7 +78,7 @@ export const markAsRead = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  await messagingService.markAsRead(id, userId);
+  await messagingService.markAsRead(id as string, userId);
   sendResponse(res, 200, "Messages marked as read");
 });
 
@@ -87,6 +87,6 @@ export const archiveConversation = catchAsync(async (req: Request, res: Response
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
-  await messagingService.archiveConversation(id, userId);
+  await messagingService.archiveConversation(id as string, userId);
   sendResponse(res, 200, "Conversation archived");
 });

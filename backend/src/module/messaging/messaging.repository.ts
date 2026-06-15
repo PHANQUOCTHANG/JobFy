@@ -1,4 +1,4 @@
-import prisma from "@/config/prisma";
+import prisma from "@/lib/prisma";
 import { CreateConversationPayload, SendMessagePayload, PaginationParams } from "./messaging.type";
 
 export class MessagingRepository {

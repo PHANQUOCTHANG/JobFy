@@ -1,6 +1,6 @@
 import { ReportRepository } from "./report.repository";
 import { CreateReportPayload, UpdateReportPayload, ReportPaginationParams } from "./report.type";
-import { NotFoundError } from "@/error/custom.error";
+import { NotFoundError } from "@/error";
 
 export class ReportService {
   private repository: ReportRepository;

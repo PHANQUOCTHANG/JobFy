@@ -3,7 +3,7 @@ import { Conversation, Message, User, Company, CandidateProfile, Jobs } from "@p
 export interface IConversation extends Conversation {
   company?: Company;
   candidate?: CandidateProfile & { user?: User };
-  job?: Jobs;
+  job?: Jobs | null;
   messages?: Message[];
 }
 

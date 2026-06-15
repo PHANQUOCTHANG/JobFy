@@ -19,7 +19,7 @@ const ManageCompanyPage = () => {
 
       {isLoading ? (
         <div className="flex items-center justify-center p-12 bg-white rounded-xl border border-slate-200">
-          <Loader2 className="h-8 w-8 animate-spin text-[#1A56DB]" />
+          <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
           <span className="ml-3 text-slate-500 font-medium">Đang tải thông tin công ty...</span>
         </div>
       ) : error ? (

@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { ExperienceLevel, GenderType, SalaryType } from "@prisma/client";
 
-const candidateProfileBase = z.object({
+// Schema object gốc — CHƯA có .refine() để có thể dùng .partial()
+const candidateProfileBaseObject = z.object({
   fullName: z.string().trim().min(1, "Họ tên không được để trống").max(255, "Họ tên tối đa 255 ký tự"),
   headline: z.string().max(255, "Tiêu đề tối đa 255 ký tự").nullable().optional(),
   gender: z.nativeEnum(GenderType).nullable().optional(),
@@ -20,22 +21,27 @@ const candidateProfileBase = z.object({
   isLooking: z.boolean().default(true),
   isProfilePublic: z.boolean().default(true),
   bio: z.string().max(2000).nullable().optional(),
-}).refine(
-  (data) => {
-    if (data.desiredSalaryMin && data.desiredSalaryMax) {
-      return data.desiredSalaryMin <= data.desiredSalaryMax;
-    }
-    return true;
-  },
-  {
-    message: "Lương tối đa phải lớn hơn hoặc bằng lương tối thiểu",
-    path: ["desiredSalaryMax"],
+});
+
+// Refinement kiểm tra lương mong muốn
+const salaryRefine = (data: { desiredSalaryMin?: number | null; desiredSalaryMax?: number | null }) => {
+  if (data.desiredSalaryMin && data.desiredSalaryMax) {
+    return data.desiredSalaryMin <= data.desiredSalaryMax;
   }
-);
+  return true;
+};
 
-export const CreateCandidateProfileSchema = candidateProfileBase;
+const salaryRefineConfig = {
+  message: "Lương tối đa phải lớn hơn hoặc bằng lương tối thiểu",
+  path: ["desiredSalaryMax"],
+};
 
-export const UpdateCandidateProfileSchema = candidateProfileBase.partial();
+// CreateCandidateProfileSchema: yêu cầu fullName + refinement
+export const CreateCandidateProfileSchema = candidateProfileBaseObject.refine(salaryRefine, salaryRefineConfig);
+
+// UpdateCandidateProfileSchema: tất cả field optional rồi mới refine
+export const UpdateCandidateProfileSchema = candidateProfileBaseObject.partial().refine(salaryRefine, salaryRefineConfig);
 
 export type CreateCandidateProfileRequestDto = z.infer<typeof CreateCandidateProfileSchema>;
 export type UpdateCandidateProfileRequestDto = z.infer<typeof UpdateCandidateProfileSchema>;
+

@@ -1,6 +1,6 @@
 // src/layouts/RootLayout.tsx
 import { Outlet } from "react-router-dom";
-import { useInitAuth } from "@/features/auth";
+import { useInitAuth } from "@/features/auth/hooks/useInitAuth";
 import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import { useAppSelector } from "@/store/hooks";
 
@@ -12,7 +12,7 @@ const RootLayout = () => {
 
   // 3. Splash Screen: Chặn render Outlet cho đến khi xác định được danh tính (User hoặc Guest)
   if (isAuthChecking) {
-      <ThemedLoader />
+    return <ThemedLoader />;
   }
 
   return (

@@ -1,4 +1,4 @@
-import prisma from "@/config/prisma";
+import prisma from "@/lib/prisma";
 import { CreateAdminLogPayload, AdminLogPaginationParams, DashboardStats } from "./admin.type";
 
 export class AdminRepository {

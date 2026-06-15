@@ -308,7 +308,7 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
             
             {/* NÚT SUBMIT */}
             <div className="flex justify-end pt-4 border-t border-slate-100">
-              <Button type="submit" disabled={isPending} className="px-8 bg-[#1A56DB] hover:bg-[#1447C0]">
+              <Button type="submit" disabled={isPending} className="px-8 bg-[#4F46E5] hover:bg-[#4338CA]">
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

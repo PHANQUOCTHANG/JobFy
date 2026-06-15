@@ -20,7 +20,7 @@ export const toConversationResponse = (conversation: IConversation) => {
       fullName: conversation.candidate.fullName,
       avatarUrl: conversation.candidate.user?.avatarUrl,
     } : undefined,
-    job: conversation.job ? {
+    job: conversation.job != null ? {
       id: conversation.job.id,
       title: conversation.job.title,
     } : undefined

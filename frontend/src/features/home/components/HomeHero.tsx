@@ -29,8 +29,8 @@ export function HomeHero() {
           <div>
             {/* Eyebrow badge */}
             <div className="inline-flex items-center gap-2 mb-7 bg-[#EEF2FF] border border-[#C7D2FE] rounded-full px-4 py-1.5">
-              <TrendingUp size={13} className="text-[#1A56DB]" />
-              <span className="text-[12px] font-bold text-[#1A56DB] tracking-wide">
+              <TrendingUp size={13} className="text-[#4F46E5]" />
+              <span className="text-[12px] font-bold text-[#4F46E5] tracking-wide">
                 Nền tảng tuyển dụng hàng đầu Việt Nam
               </span>
             </div>
@@ -41,7 +41,7 @@ export function HomeHero() {
             >
               Sự nghiệp{" "}
               <em className="not-italic relative">
-                <span className="text-[#1A56DB]">không chỉ</span>
+                <span className="text-[#4F46E5]">không chỉ</span>
                 <svg
                   className="absolute -bottom-1 left-0 w-full"
                   viewBox="0 0 240 9"
@@ -50,7 +50,7 @@ export function HomeHero() {
                 >
                   <path
                     d="M4 7Q60 3 120 6Q180 9 236 5"
-                    stroke="#1A56DB"
+                    stroke="#4F46E5"
                     strokeWidth="2"
                     strokeLinecap="round"
                     opacity=".4"
@@ -68,7 +68,7 @@ export function HomeHero() {
             {/* Search box */}
             <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-lg shadow-slate-200/50 max-w-xl">
               <div className="flex flex-col sm:flex-row gap-2">
-                <div className="flex items-center gap-3 flex-1 bg-slate-50 border border-transparent focus-within:bg-white focus-within:border-[#1A56DB]/40 focus-within:ring-4 focus-within:ring-[#1A56DB]/8 rounded-xl px-4 py-3.5 transition-all">
+                <div className="flex items-center gap-3 flex-1 bg-slate-50 border border-transparent focus-within:bg-white focus-within:border-[#4F46E5]/40 focus-within:ring-4 focus-within:ring-[#4F46E5]/8 rounded-xl px-4 py-3.5 transition-all">
                   <Search size={17} className="text-slate-400 flex-shrink-0" />
                   <input
                     type="text"
@@ -78,7 +78,7 @@ export function HomeHero() {
                     className="bg-transparent text-slate-800 placeholder:text-slate-400 outline-none w-full text-[14px]"
                   />
                 </div>
-                <div className="flex items-center gap-3 sm:w-44 bg-slate-50 border border-transparent focus-within:bg-white focus-within:border-[#1A56DB]/40 focus-within:ring-4 focus-within:ring-[#1A56DB]/8 rounded-xl px-4 py-3.5 transition-all">
+                <div className="flex items-center gap-3 sm:w-44 bg-slate-50 border border-transparent focus-within:bg-white focus-within:border-[#4F46E5]/40 focus-within:ring-4 focus-within:ring-[#4F46E5]/8 rounded-xl px-4 py-3.5 transition-all">
                   <MapPin size={16} className="text-slate-400 flex-shrink-0" />
                   <input
                     type="text"
@@ -89,7 +89,7 @@ export function HomeHero() {
                   />
                 </div>
               </div>
-              <button className="mt-2 w-full bg-[#1A56DB] hover:bg-[#1447C0] active:scale-[.98] text-white font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 transition-all shadow-md shadow-[#1A56DB]/20">
+              <button className="mt-2 w-full bg-[#4F46E5] hover:bg-[#4338CA] active:scale-[.98] text-white font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 transition-all shadow-md shadow-[#4F46E5]/20">
                 <Search size={15} /> Tìm kiếm việc làm
               </button>
             </div>
@@ -101,7 +101,7 @@ export function HomeHero() {
                 <button
                   key={t}
                   onClick={() => setSearch(t)}
-                  className="text-[12px] text-slate-600 bg-slate-100 hover:bg-[#EEF2FF] hover:text-[#1A56DB] border border-slate-200 hover:border-[#C7D2FE] rounded-full px-3 py-1 transition-all font-medium"
+                  className="text-[12px] text-slate-600 bg-slate-100 hover:bg-[#EEF2FF] hover:text-[#4F46E5] border border-slate-200 hover:border-[#C7D2FE] rounded-full px-3 py-1 transition-all font-medium"
                 >
                   {t}
                 </button>
@@ -116,7 +116,7 @@ export function HomeHero() {
                 { icon: CheckCircle, label: "Miễn phí cho ứng viên" },
               ].map(({ icon: I, label }) => (
                 <div key={label} className="flex items-center gap-2 text-[12.5px] text-slate-500 font-medium">
-                  <I size={14} className="text-[#1A56DB]" />
+                  <I size={14} className="text-[#4F46E5]" />
                   {label}
                 </div>
               ))}
@@ -149,7 +149,7 @@ export function HomeHero() {
               </div>
               <div className="flex items-center justify-between pt-3.5 border-t border-slate-100">
                 <span className="text-emerald-600 font-bold text-[14px]">25 – 40 triệu</span>
-                <button className="text-[12px] text-[#1A56DB] font-bold flex items-center gap-1 hover:gap-1.5 transition-all">
+                <button className="text-[12px] text-[#4F46E5] font-bold flex items-center gap-1 hover:gap-1.5 transition-all">
                   Ứng tuyển <ArrowRight size={12} />
                 </button>
               </div>
@@ -161,9 +161,9 @@ export function HomeHero() {
               style={{ animation: "floatB 9s ease-in-out infinite" }}
             >
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles size={14} className="text-[#1A56DB]" />
+                <Sparkles size={14} className="text-[#4F46E5]" />
                 <span className="text-[13px] font-bold text-slate-900">Gợi ý cho bạn</span>
-                <span className="ml-auto text-[10px] bg-[#EEF2FF] text-[#1A56DB] px-2 py-0.5 rounded-full font-bold border border-[#C7D2FE]">AI</span>
+                <span className="ml-auto text-[10px] bg-[#EEF2FF] text-[#4F46E5] px-2 py-0.5 rounded-full font-bold border border-[#C7D2FE]">AI</span>
               </div>
               <div className="space-y-2.5">
                 {[
@@ -174,10 +174,10 @@ export function HomeHero() {
                   <div key={l}>
                     <div className="flex justify-between mb-1">
                       <span className="text-[11px] text-slate-500">{l}</span>
-                      <span className="text-[11px] text-[#1A56DB] font-bold">{p}%</span>
+                      <span className="text-[11px] text-[#4F46E5] font-bold">{p}%</span>
                     </div>
                     <div className="h-1.5 bg-slate-100 rounded-full">
-                      <div className="h-1.5 bg-[#1A56DB] rounded-full" style={{ width: `${p}%` }} />
+                      <div className="h-1.5 bg-[#4F46E5] rounded-full" style={{ width: `${p}%` }} />
                     </div>
                   </div>
                 ))}
@@ -211,7 +211,7 @@ export function HomeHero() {
           ].map(s => (
             <div key={s.label} className="text-center">
               <div
-                className="text-[2.4rem] font-black text-[#1A56DB] leading-none mb-1.5"
+                className="text-[2.4rem] font-black text-[#4F46E5] leading-none mb-1.5"
                 style={{ fontFamily: "'Manrope', sans-serif" }}
               >
                 <Counter to={s.to} suffix={s.suffix} />
