@@ -1,0 +1,70 @@
+openapi: 3.0.0
+info:
+  title: Location API
+  version: 1.0.0
+  description: API lấy danh mục địa chính công khai cho hệ thống JobFy.
+tags:
+  - name: Location
+    description: Các API lấy dữ liệu Tỉnh/Thành phố và Quận/Huyện từ database.
+paths:
+  /api/v1/provinces:
+    get:
+      tags:
+        - Location
+      summary: Lấy danh sách Tỉnh/Thành phố
+      description: Trả về danh sách tất cả các Tỉnh/Thành phố hiện có trong cơ sở dữ liệu. Endpoint này không yêu cầu đăng nhập.
+      responses:
+        200:
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: "Hà Nội"
+        500:
+          description: Lỗi hệ thống khi truy vấn database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: error }
+                  message: { type: string, example: "Lỗi kết nối cơ sở dữ liệu" }
+
+  /api/v1/districts:
+    get:
+      tags:
+        - Location
+      summary: Lấy danh sách Quận/Huyện theo Tỉnh/Thành phố
+      description: Trả về danh sách Quận/Huyện dựa trên ID của Tỉnh/Thành phố được cung cấp.
+      parameters:
+        - in: query
+          name: provinceId
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        200:
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  data: { type: array, items: { type: object } }

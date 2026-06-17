@@ -17,24 +17,15 @@ export class UserRepository implements IUserRepository {
 
   // Tạo người dùng mới và tạo CandidateProfile nếu vai trò là candidate
   async create(data: any): Promise<any> {
-    // Service truyền vào { fullName, passwordHash, role, email, password, ... }
-    // Tách fullName ra để tạo CandidateProfile riêng
-    // Tách password ra vì Prisma User model không có trường `password` (chỉ có `passwordHash`)
-    const { fullName, avatarUrl, password, ...rest } = data;
+    // Đảm bảo email luôn lưu ở dạng chữ thường
+    const { email, avatarUrl, status, ...rest } = data;
 
     return this.prisma.user.create({
       data: {
         ...rest,
-        email: rest.email.toLowerCase(),
+        email: email.toLowerCase(),
         avatarUrl,
-        status: rest.status ?? "active",
-        ...(rest.role === "candidate" && fullName && {
-          candidateProfile: {
-            create: {
-              fullName,
-            },
-          },
-        }),
+        status: status ?? "active",
       },
       include: {
         candidateProfile: true,

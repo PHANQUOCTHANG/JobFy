@@ -25,8 +25,10 @@ export class OtpService implements IOtpService {
 
   // Tạo, lưu trữ OTP và gửi qua email cho người dùng
   async send(email: string, purpose: OtpPurpose = "RESET_PASSWORD"): Promise<OtpSentResponseDto> {
+    const normalizedEmail = email.toLowerCase().trim();
+
     // 1. Kiểm tra tài khoản có tồn tại để tránh gửi mail rác
-    const user = await this.userRepo.findByEmail(email);
+    const user = await this.userRepo.findByEmail(normalizedEmail);
     if (!user) {
       // SECURITY: Return fake success to prevent email enumeration
       const fakeExpiry = new Date(Date.now() + this.OTP_TTL * 1000);
@@ -40,16 +42,16 @@ export class OtpService implements IOtpService {
 
     // 3. Dọn dẹp tất cả các mã cũ của email này trước khi tạo mới
     // [Cache] Redis setCache với cùng một key sẽ tự động ghi đè mã cũ
-    const cacheKey = `${this.CACHE_KEY_PREFIX}${purpose}:${email}`;
+    const cacheKey = `${this.CACHE_KEY_PREFIX}${purpose}:${normalizedEmail}`;
 
     // 4. Ghi nhận mã OTP mới vào cơ sở dữ liệu (Hoặc Redis)
     // Ở đây ta lưu OTP vào Redis thay vì DB để tăng tốc độ và tự động hết hạn
     await setCache(cacheKey, { otpHash, email, purpose }, this.OTP_TTL);
 
     // Lưu song song vào Repo nếu bạn vẫn muốn giữ lịch sử trong DB (optional)
-    await this.otpRepo.deleteByEmail(email);
+    await this.otpRepo.deleteByEmail(normalizedEmail);
     await this.otpRepo.create({
-      email,
+      email: normalizedEmail,
       otpHash,
       expiresAt,
     });
@@ -65,16 +67,19 @@ export class OtpService implements IOtpService {
     } catch (error) {
       // [Cache] Xóa cache nếu gửi mail thất bại
       await deleteCache(cacheKey);
-      await this.otpRepo.deleteByEmail(email);
+      await this.otpRepo.deleteByEmail(normalizedEmail);
       throw new AppError("Không thể gửi email OTP, vui lòng thử lại sau.", 500);
     }
   }
 
   // Xác thực mã OTP và cấp mã Token tạm thời để đặt lại mật khẩu
   async verify(email: string, otp: string, purpose: OtpPurpose = "RESET_PASSWORD"): Promise<OtpVerifiedResponseDto> {
+    const normalizedEmail = email.toLowerCase().trim();
+    const trimmedOtp = otp.toString().trim();
+
     // 1. Truy vấn mã OTP mới nhất và còn hạn sử dụng
     // [Cache] Lấy từ Redis trước để đạt tốc độ tối đa
-    const cacheKey = `${this.CACHE_KEY_PREFIX}${purpose}:${email}`;
+    const cacheKey = `${this.CACHE_KEY_PREFIX}${purpose}:${normalizedEmail}`;
     const cachedRecord = await getCache<{ otpHash: string; email: string; purpose: string }>(
       cacheKey,
     );
@@ -82,11 +87,12 @@ export class OtpService implements IOtpService {
     // Nếu không có trong cache, kiểm tra lại trong DB (đề phòng Redis restart hoặc fallback)
     let record = cachedRecord;
     if (!record) {
-      const dbRecord = await this.otpRepo.findValidByEmail(email);
+      const dbRecord = await this.otpRepo.findValidByEmail(normalizedEmail);
       if (!dbRecord) {
         throw new AppError("Mã OTP đã hết hạn hoặc không tồn tại.", 400);
       }
-      record = { otpHash: dbRecord.otpHash, email: dbRecord.email, purpose: "RESET_PASSWORD" };
+      // Sửa lỗi logic: Dùng chính purpose truyền vào nếu fallback xuống DB
+      record = { otpHash: dbRecord.otpHash, email: dbRecord.email, purpose };
     }
 
     // Kiểm tra đúng purpose không (nếu lấy từ DB mà không có purpose thì fallback qua RESET_PASSWORD)
@@ -95,15 +101,21 @@ export class OtpService implements IOtpService {
     }
 
     // 2. Kiểm tra tính chính xác của mã OTP người dùng nhập vào
-    const isValid = await bcrypt.compare(otp, record.otpHash);
+    const isValid = await bcrypt.compare(trimmedOtp, record.otpHash);
+    if (!isValid) {
+      console.log('[OtpService.verify] INVALID email=', normalizedEmail, 'purpose=', purpose, 'inputOtp=', trimmedOtp, 'hasRecord=', !!record, 'isValid=', isValid);
+    } else {
+      console.log('[OtpService.verify] VALID email=', normalizedEmail, 'purpose=', purpose, 'inputOtp=', trimmedOtp);
+    }
     if (!isValid) throw new AppError("Mã OTP không chính xác.", 400);
+
 
     // 3. Đánh dấu mã đã xác thực để không thể tái sử dụng
     // [Cache] Xóa OTP ngay sau khi verify thành công
     await deleteCache(cacheKey);
 
     // Đồng bộ trạng thái với DB nếu dùng Repo
-    const dbRecordFull = await this.otpRepo.findValidByEmail(email);
+    const dbRecordFull = await this.otpRepo.findValidByEmail(normalizedEmail);
     if (dbRecordFull) await this.otpRepo.markVerified(dbRecordFull.id);
 
     // Nếu purpose là VERIFY_ACCOUNT, không cần tạo JWT reset token

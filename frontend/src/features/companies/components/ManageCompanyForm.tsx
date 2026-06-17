@@ -3,7 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save } from "lucide-react";
 import { companyProfileSchema, CompanyProfileInput } from "../schemas/company.schema";
-import { useUpdateMyCompany } from "../hooks/useManageCompany";
+import { 
+  useUpdateMyCompany, 
+  useIndustries, 
+  useProvinces, 
+  useDistricts 
+} from "../hooks/useManageCompany";
 
 import {
   Form,
@@ -24,22 +29,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Company } from "../types";
+import { Button } from "@/components/ui/button"; // Đảm bảo import đúng Button
 
 interface ManageCompanyFormProps {
   initialData?: Company;
 }
 
+// Helper function to format Prisma CompanySize enum for frontend Select component
+const formatCompanySizeForSelect = (prismaSize: string | undefined | null): string | undefined => {
+  if (!prismaSize) return undefined;
+  return prismaSize.replace('value_', ''); // Converts "value_1_10" to "1_10"
+};
+
 export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialData }) => {
   const { mutate: updateCompany, isPending } = useUpdateMyCompany();
-
+  
+  // Fetch data for select fields
+  const { data: industries, isLoading: isLoadingIndustries } = useIndustries();
+  const { data: provinces, isLoading: isLoadingProvinces } = useProvinces();
+  
   const form = useForm<CompanyProfileInput>({
     resolver: zodResolver(companyProfileSchema) as any,
     defaultValues: {
       name: initialData?.name || "",
       taxCode: initialData?.taxCode || "",
       website: initialData?.website || "",
-      foundedYear: initialData?.foundedYear || "" as any,
-      size: initialData?.size || undefined,
+      foundedYear: initialData?.foundedYear || "" as any, // Giữ nguyên
+      size: formatCompanySizeForSelect(initialData?.size) || undefined, // Áp dụng hàm chuyển đổi
       industryId: initialData?.industryId || "" as any,
       description: initialData?.description || "",
       shortDescription: initialData?.shortDescription || "",
@@ -52,6 +68,9 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
       coverUrl: initialData?.coverUrl || "",
     },
   });
+
+  const selectedProvinceId = form.watch("provinceId");
+  const { data: districts, isLoading: isLoadingDistricts } = useDistricts(selectedProvinceId ? Number(selectedProvinceId) : undefined);
 
   const onSubmit = (data: CompanyProfileInput) => {
     const cleanedData: Partial<Company> = {
@@ -180,10 +199,35 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
             
             <FormField
               control={form.control}
+              name="industryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Lĩnh vực hoạt động <span className="text-rose-500">*</span></FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value?.toString()} disabled={isLoadingIndustries}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
+                        <SelectValue placeholder={isLoadingIndustries ? "Đang tải..." : "Chọn lĩnh vực"} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-xl border-[#E2E8F0] shadow-xl">
+                      {industries?.map((industry: any) => (
+                        <SelectItem key={industry.id} value={industry.id.toString()}>
+                          {industry.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="taxCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Mã số thuế</FormLabel>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Mã số thuế (Tùy chọn)</FormLabel>
                   <FormControl>
                     <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Nhập mã số thuế" {...field} />
                   </FormControl>
@@ -212,7 +256,7 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Quy mô nhân sự</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}> {/* Sử dụng 'value' thay vì 'defaultValue' để đảm bảo component được kiểm soát */}
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
                         <SelectValue placeholder="Chọn quy mô" />
@@ -228,6 +272,73 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
                       <SelectItem value="5000_plus">5000+ nhân viên</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="provinceId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Tỉnh / Thành phố <span className="text-rose-500">*</span></FormLabel>
+                  <Select onValueChange={(value) => {
+                    field.onChange(value);
+                    form.setValue("districtId", ""); // Reset district when province changes
+                  }} value={field.value?.toString()} disabled={isLoadingProvinces}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
+                        <SelectValue placeholder={isLoadingProvinces ? "Đang tải..." : "Chọn Tỉnh/Thành phố"} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-xl border-[#E2E8F0] shadow-xl">
+                      {provinces?.map((province: any) => (
+                        <SelectItem key={province.id} value={province.id.toString()}>
+                          {province.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="districtId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Quận / Huyện <span className="text-rose-500">*</span></FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value?.toString()} disabled={!selectedProvinceId || isLoadingDistricts}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
+                        <SelectValue placeholder={!selectedProvinceId ? "Chọn Tỉnh/Thành phố trước" : isLoadingDistricts ? "Đang tải..." : "Chọn Quận/Huyện"} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-xl border-[#E2E8F0] shadow-xl">
+                      {districts?.map((district: any) => (
+                        <SelectItem key={district.id} value={district.id.toString()}>
+                          {district.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Địa chỉ chi tiết <span className="text-rose-500">*</span></FormLabel>
+                  <FormControl>
+                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Số nhà, tên đường, phường/xã..." {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

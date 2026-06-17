@@ -35,6 +35,8 @@ import {
   CvEditorPage,
   MyCvsPage,
   CoverLetterPage,
+  EmployerRegisterPage,
+  EmployerLoginPage,
 } from "@/pages";
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";

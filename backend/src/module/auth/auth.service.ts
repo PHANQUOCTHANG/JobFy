@@ -1,3 +1,4 @@
+import slugify from "slugify";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import AppError from "@/utils/appError";
@@ -50,12 +51,40 @@ export class AuthService implements IAuthService {
     const existed = await this.userRepo.findByEmail(dto.email);
     if (existed) throw new AppError("Email đã tồn tại trên hệ thống", 409);
 
+    // Bảo mật: Mặc định là candidate nếu role không hợp lệ hoặc cố tình gửi admin
+    const role = (dto.role === "employer" || dto.role === "candidate") ? dto.role : "candidate";
+
     const hashedPassword = await bcrypt.hash(dto.password, 12);
-    await this.userRepo.create({
-      ...dto,
+
+    const userData: any = {
+      email: dto.email,
       passwordHash: hashedPassword,
-      role: dto.role || "candidate",
-    });
+      role: role,
+      phone: dto.phone,
+    };
+
+    const extraData = dto as any;
+    if (role === "candidate" && extraData.fullName) {
+      userData.candidateProfile = {
+        create: { fullName: extraData.fullName },
+      };
+    } else if (role === "employer" && extraData.companyName) {
+      const baseSlug = slugify(extraData.companyName, { lower: true, strict: true, locale: "vi" });
+      userData.companiesOwned = {
+        create: [
+          {
+            name: extraData.companyName,
+            // Thêm hậu tố ngẫu nhiên để tránh lỗi trùng lặp slug (Unique constraint failed)
+            slug: `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`,
+            // Các trường bắt buộc tối thiểu khác của model Company (nếu có)
+            address: "", 
+            shortDescription: "",
+          },
+        ],
+      };
+    }
+
+    await this.userRepo.create(userData);
 
     // Thay vì generate Auth Result, gửi OTP để người dùng xác nhận
     await this.otpService.send(dto.email, "VERIFY_ACCOUNT");
@@ -112,12 +141,13 @@ export class AuthService implements IAuthService {
       (banError as any).errorCode = "ACCOUNT_LOCKED";
       throw banError;
     }
-    if (user.status === "pending_verification") {
-      const unverifiedError = new AppError("Tài khoản chưa được xác thực", 403);
-      (unverifiedError as any).errorCode = "UNVERIFIED_ACCOUNT";
-      (unverifiedError as any).data = { email: user.email };
-      throw unverifiedError;
+
+    // 4. Kiểm tra vai trò đăng nhập có khớp với tài khoản không
+    if (user.role !== dto.role) {
+      throw new AppError("Vai trò đăng nhập không khớp với tài khoản của bạn", 403);
     }
+
+    // Bỏ qua kiểm tra pending_verification tại đây để cho phép đăng nhập trước
 
     const result = await this.generateAuthResult(user, dto.rememberMe);
     return AuthResponseDto.from(
@@ -280,7 +310,7 @@ export class AuthService implements IAuthService {
     const userIdStr = user.id.toString();
 
     const accessToken = jwt.sign(
-      { userId: userIdStr, role: user.role, rememberMe },
+      { userId: userIdStr, email: user.email, role: user.role, rememberMe },
       accessSecret,
       { expiresIn: "15m" },
     );

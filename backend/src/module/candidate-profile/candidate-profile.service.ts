@@ -45,8 +45,8 @@ export class CandidateProfileService implements ICandidateProfileService {
       headline: dto.headline,
       gender: dto.gender,
       dob: dobDate,
-      province: dto.provinceId ? { connect: { id: dto.provinceId } } : undefined,
-      district: dto.districtId ? { connect: { id: dto.districtId } } : undefined,
+      provinceId: dto.provinceId, // Sửa lỗi: Sử dụng provinceId trực tiếp
+      districtId: dto.districtId, // Sửa lỗi: Sử dụng districtId trực tiếp
       address: dto.address,
       linkedinUrl: dto.linkedinUrl,
       githubUrl: dto.githubUrl,
@@ -117,13 +117,13 @@ export class CandidateProfileService implements ICandidateProfileService {
     const dobDate = dto.dob ? new Date(dto.dob) : undefined;
     const updateData: Prisma.CandidateProfileUncheckedUpdateInput = { ...dto };
     if (dobDate !== undefined) updateData.dob = dobDate;
-    if (provinceId !== undefined) {
-      updateData.province = provinceId ? { connect: { id: provinceId } } : { disconnect: true };
+    // Giả sử updateData có kiểu là Prisma.CandidateProfileUncheckedUpdateInput
+    if (dto.provinceId !== undefined) {
+      updateData.provinceId = dto.provinceId;
     }
-    if (districtId !== undefined) {
-      updateData.district = districtId ? { connect: { id: districtId } } : { disconnect: true };
+    if (dto.districtId !== undefined) {
+      updateData.districtId = dto.districtId;
     }
-
     const updated = await this.profileRepo.updateById(profile.id, updateData);
     if (!updated) throw new AppError("Cập nhật thất bại", 500);
 

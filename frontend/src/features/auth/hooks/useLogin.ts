@@ -34,6 +34,15 @@ export const useLogin = () => {
         return navigate("/force-change-password");
       }
 
+      if (user.status === "pending_verification") {
+        toast.warning("Tài khoản chưa được xác thực", {
+          description: "Vui lòng xác thực email của bạn để tiếp tục sử dụng đầy đủ tính năng.",
+        });
+        return navigate("/verify-otp", {
+          state: { email: user.email, isResend: true },
+        });
+      }
+
       toast.success("Đăng nhập thành công!", {
         description: `Chào mừng trở lại, ${user.fullName || user.email}!`,
       });

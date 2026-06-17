@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { resetPassword } from '@/features/auth/types/authSlice';
 import { resetPasswordSchema } from '@/../../backend/src/module/auth/auth.request';
 import { Lock, Eye, EyeOff, Loader2, CheckCircle2, ShieldCheck, ArrowLeft } from 'lucide-react';
-import { BackgroundPattern, FeatureBadge, InputField } from './AuthComponents';
+import { BackgroundPattern, FeatureBadge, InputField } from '../../components/ui/AuthComponents';
 
 const EmployerResetPasswordPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);

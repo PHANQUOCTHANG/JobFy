@@ -19,7 +19,7 @@ import {
   ArrowLeft,
   Loader2,
 } from 'lucide-react';
-import { BackgroundPattern, InputField, FeatureBadge } from './AuthComponents';
+import { BackgroundPattern, InputField, FeatureBadge } from '../../components/ui/AuthComponents';
 
 /* ─── Main Page ─── */
 const EmployerLoginPage: React.FC = () => {

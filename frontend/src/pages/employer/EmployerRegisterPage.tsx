@@ -24,7 +24,7 @@ import {
   User,
   Loader2,
 } from 'lucide-react';
-import { BackgroundPattern, InputField, SelectField, FeatureBadge } from './AuthComponents';
+import { BackgroundPattern, InputField, SelectField, FeatureBadge } from '../../components/ui/AuthComponents';
 
 /* ─── Main Page ─── */
 const EmployerRegisterPage: React.FC = () => {

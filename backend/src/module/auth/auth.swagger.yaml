@@ -54,6 +54,13 @@ paths:
             schema:
               $ref: '#/components/schemas/LoginRequest'
             examples:
+              admin_login:
+                summary: Đăng nhập cổng Quản trị viên (Admin)
+                value:
+                  email: "admin@jobfy.vn"
+                  password: "Admin@123"
+                  role: "admin"
+                  rememberMe: true
               employer_login:
                 summary: Đăng nhập cổng Nhà tuyển dụng
                 value:

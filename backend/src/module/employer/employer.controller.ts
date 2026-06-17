@@ -1,0 +1,107 @@
+import { Request, Response, NextFunction } from "express";
+import { EmployerVerificationService } from "./employer.service";
+import { IOtpService } from "@/module/auth/otp/otp.service";
+import AppError from "@/utils/appError";
+import { updateCompanyInfoSchema, submitLegalDocsSchema } from "./employer.request";
+
+export class EmployerController {
+  constructor(
+    private readonly verificationService: EmployerVerificationService,
+    private readonly otpService: IOtpService
+  ) {}
+
+  // Lấy trạng thái tiến trình 3 bước
+  getProgress = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Sửa từ req.user.id thành req.user.userId để khớp với định nghĩa express.ts
+      const data = await this.verificationService.getVerificationProgress(req.user!.userId);
+      res.status(200).json({ status: "success", data });
+    } catch (error) { 
+      next(error); 
+    }
+  };
+
+  // Lấy thông tin công ty hiện tại (dùng để điền form ở Bước 2)
+  getCompanyInfo = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await this.verificationService.getCompanyProfile(req.user!.userId);
+      res.status(200).json({ status: "success", data });
+    } catch (error) { 
+      next(error); 
+    }
+  };
+
+  // Bước 1: Gửi lại OTP xác thực
+  resendEmailOtp = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!this.otpService || typeof this.otpService.send !== 'function') {
+        return res.status(500).json({ status: "error", message: "Hệ thống chưa cấu hình OtpService" });
+      }
+
+      let email = req.user?.email;
+
+      if (!email) {
+        // Fallback: Lấy từ DB nếu token cũ không có email
+        email = await this.verificationService.getUserEmail(req.user!.userId);
+      }
+
+      await this.otpService.send(email, "VERIFY_ACCOUNT");
+      res.status(200).json({ status: "success", message: "Mã OTP đã được gửi" });
+    } catch (error) { 
+      next(error); 
+    }
+  };
+
+  // Bước 1: Xác thực mã OTP
+  verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { otp } = req.body;
+      if (!otp) throw new AppError("Vui lòng nhập mã OTP", 400);
+
+      // Chuẩn hóa input để tránh lỗi copy-paste
+      const trimmedOtp = otp.toString().trim();
+      const email = (req.user?.email || await this.verificationService.getUserEmail(req.user!.userId)).toLowerCase().trim();
+      console.log('[EmployerController.verifyEmail] userId=', req.user!.userId, 'email=', email, 'otp=', trimmedOtp);
+
+
+      // 1. Kiểm tra OTP qua OtpService
+      await this.otpService.verify(email, trimmedOtp, "VERIFY_ACCOUNT");
+
+      // 2. Cập nhật DB
+      await this.verificationService.markEmailAsVerified(req.user!.userId);
+
+      res.status(200).json({ status: "success", message: "Xác thực email thành công" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // Bước 2: Cập nhật thông tin công ty
+  updateInfo = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Log để kiểm tra dữ liệu thực tế nhận từ Frontend
+      console.log('[EmployerController.updateInfo] Payload:', req.body);
+      const validated = updateCompanyInfoSchema.parse(req.body);
+      await this.verificationService.updateCompanyProfile( // requireAuth đảm bảo req.user tồn tại
+        req.user!.userId, 
+        validated
+      );
+      res.status(200).json({ status: "success", message: "Cập nhật hồ sơ thành công" });
+    } catch (error) { next(error); }
+  };
+
+  // Bước 3: Gửi hồ sơ pháp lý
+  submitLegal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const validated = submitLegalDocsSchema.parse(req.body);
+      await this.verificationService.submitLegalVerification( // requireAuth đảm bảo req.user tồn tại
+        req.user!.userId, 
+        validated
+      );
+      res.status(200).json({ 
+        status: "success", 
+        message: "Hồ sơ đã được gửi và đang chờ quản trị viên phê duyệt" 
+      });
+    } catch (error) { next(error); }
+  };
+}
