@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { EmployerController } from "./employer.controller";
 import { EmployerVerificationService } from "./employer.service";
+import { EmployerDashboardService } from "./employer.dashboard";
+import { EmployerAIService } from "./employer.ai.service";
 import { OtpService } from "@/module/auth/otp/otp.service";
 import { OtpRepository } from "@/module/auth/otp/otp.repository";
 import { UserRepository } from "@/module/user/user.repository";
@@ -16,15 +18,19 @@ router.use((req, res, next) => {
 });
 
 const service = new EmployerVerificationService(prisma);
+const dashboardService = new EmployerDashboardService(prisma);
+const aiService = new EmployerAIService();
 
 // Khởi tạo OtpService thật thay vì dùng {}
 const otpRepo = new OtpRepository(prisma);
 const userRepo = new UserRepository(prisma);
 const otpService = new OtpService(otpRepo, userRepo);
-const controller = new EmployerController(service, otpService);
+const controller = new EmployerController(service, otpService, dashboardService, aiService);
 
 router.use(requireAuth, requireRole("employer"));
 
+router.get("/dashboard/export", controller.exportDashboard);
+router.get("/dashboard", controller.getDashboard);
 router.get("/verification-progress", controller.getProgress);
 router.post("/resend-otp", controller.resendEmailOtp);
 router.post("/verify-email", controller.verifyEmail);
