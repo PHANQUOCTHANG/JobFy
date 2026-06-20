@@ -84,7 +84,9 @@ export const JobSearchPage: React.FC = () => {
   const { data: response, isLoading } = useJobs({
     ...filters,
     sort: sortBy,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { data: categories } = useJobCategories();
 
   // Sync filters to URL
@@ -148,7 +150,6 @@ export const JobSearchPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f0f0f0] pb-10">
-      {/* ─── SEARCH BAR SECTION (Sticky) ─── */}
       <div className="bg-[#4F46E5] py-3 px-4 sticky top-[72px] z-40 shadow-sm">
         <div className="max-w-[1140px] mx-auto">
           <JobFilters
@@ -160,9 +161,7 @@ export const JobSearchPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ─── CONTENT AREA ─── */}
       <div className="max-w-[1140px] mx-auto px-4 py-4">
-        {/* Title + Breadcrumb */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
           <div>
             <h1 className="text-[16px] font-bold text-[#212f3f] mb-1">
@@ -198,9 +197,7 @@ export const JobSearchPage: React.FC = () => {
           </button>
         </div>
 
-        {/* ─── 2-COLUMN LAYOUT ─── */}
         <div className="flex flex-col lg:flex-row gap-5 items-start">
-          {/* LEFT SIDEBAR */}
           <aside className="w-full lg:w-[280px] flex-shrink-0 lg:sticky lg:top-[140px]">
             <JobSidebarFilter
               filters={filters}
@@ -209,7 +206,6 @@ export const JobSearchPage: React.FC = () => {
             />
           </aside>
 
-          {/* RIGHT MAIN */}
           <div className="flex-1 min-w-0">
             <JobSortBar
               totalResults={totalResults}
@@ -237,7 +233,6 @@ export const JobSearchPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ─── NEW BOTTOM SECTIONS ─── */}
         <div className="mt-12 space-y-8">
           <TopCategoriesSection />
           <TopCompaniesSection />

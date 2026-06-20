@@ -55,7 +55,6 @@ export function SectionBlock({
       onMouseEnter={() => mode === 'editor' && setHovered(true)}
       onMouseLeave={() => mode === 'editor' && setHovered(false)}
     >
-      {/* Section controls - top left */}
       {hovered && mode === 'editor' && (
         <div className="absolute -left-1 -top-7 flex items-center gap-0.5 z-40">
           <button className="px-1.5 py-0.5 bg-gray-600 text-white text-[10px] rounded cursor-grab active:cursor-grabbing" title="Kéo để sắp xếp">

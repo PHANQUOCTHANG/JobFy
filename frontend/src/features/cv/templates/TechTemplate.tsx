@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { Mail, Phone, MapPin, Github, Linkedin, Monitor } from 'lucide-react';
+import { Mail, Phone, MapPin, Github, Monitor } from 'lucide-react';
 import { TemplateRendererProps } from './templateRegistry';
 import { EditableField } from './shared/EditableField';
 import { SectionBlock } from './shared/SectionBlock';
@@ -18,11 +18,13 @@ export const TechTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
       field: K, index: number, itemField: string, value: string
     ) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       newList[index] = { ...newList[index], [itemField]: value };
       onUpdateArrayField(field, newList);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, newItem: any) => {
       if (!onUpdateArrayField) return;
       onUpdateArrayField(field, [...data[field], { ...newItem, id: uuidv4() }]);
@@ -30,11 +32,13 @@ export const TechTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
 
     const handleDeleteItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, id: string) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onUpdateArrayField(field, data[field].filter((item: any) => item.id !== id) as any);
     };
 
     const handleMoveItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, index: number, direction: 1 | -1) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       if (index + direction < 0 || index + direction >= newList.length) return;
       const temp = newList[index];
@@ -61,7 +65,6 @@ export const TechTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
           color: '#334155'
         }}
       >
-        {/* HEADER */}
         <div className="w-full flex items-center p-8 bg-slate-900 text-slate-100">
           <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-slate-700 bg-slate-800 flex items-center justify-center">
             {data.personalInfo.avatarUrl ? (
@@ -101,9 +104,7 @@ export const TechTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
         </div>
 
         <div className="flex min-h-[calc(1123px-160px)]">
-          {/* SIDEBAR (30%) */}
           <div className="w-[30%] bg-slate-50 p-6 border-r border-slate-200">
-            {/* Skills / Tech Stack */}
             <div className="mb-8">
               <SectionBlock title="TECH STACK" color="#0f172a" mode={mode} variant="bold-line" titleStyle={{ fontFamily: "'Fira Code', monospace" }} />
               <div className="mt-4 flex flex-wrap gap-2">
@@ -126,7 +127,6 @@ export const TechTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               </div>
             </div>
 
-            {/* Certifications */}
             <div className="mb-8">
               <SectionBlock title="CERTIFICATES" color="#0f172a" mode={mode} variant="bold-line" titleStyle={{ fontFamily: "'Fira Code', monospace" }} />
               <div className="mt-4 space-y-4">
@@ -158,9 +158,7 @@ export const TechTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
             </div>
           </div>
 
-          {/* MAIN (70%) */}
           <div className="w-[70%] p-8">
-            {/* Summary */}
             <div className="mb-8">
               <SectionBlock title="ABOUT ME" color="#0f172a" mode={mode} variant="bold-line" titleStyle={{ fontFamily: "'Fira Code', monospace" }} />
               <div className="mt-4 text-slate-600 leading-relaxed text-[14.5px]">
@@ -168,7 +166,6 @@ export const TechTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               </div>
             </div>
 
-            {/* Experience */}
             <div className="mb-8">
               <SectionBlock title="EXPERIENCE" color="#0f172a" mode={mode} variant="bold-line" titleStyle={{ fontFamily: "'Fira Code', monospace" }} />
               <div className="mt-4 space-y-6">
@@ -208,7 +205,6 @@ export const TechTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               </div>
             </div>
 
-            {/* Education */}
             <div className="mb-6">
               <SectionBlock title="EDUCATION" color="#0f172a" mode={mode} variant="bold-line" titleStyle={{ fontFamily: "'Fira Code', monospace" }} />
               <div className="mt-4 space-y-4">

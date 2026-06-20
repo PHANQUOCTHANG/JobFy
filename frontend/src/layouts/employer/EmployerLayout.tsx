@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 
@@ -10,7 +9,7 @@ const EmployerLayout = () => {
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
 
   return (
-    <div className="relative flex h-screen w-full bg-background text-foreground font-sans antialiased overflow-hidden">
+    <div className="bg-background text-on-surface font-body-md min-h-screen flex overflow-hidden">
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
@@ -18,22 +17,12 @@ const EmployerLayout = () => {
         toggleSidebar={toggleSidebar}
       />
 
-      <div className="flex flex-1 flex-col min-w-0 transition-all duration-300">
+      <main className="flex-1 flex flex-col h-screen overflow-y-auto relative">
         <Header setIsSidebarOpen={setIsSidebarOpen} />
-
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 scroll-smooth bg-muted/20">
-          <div className="mx-auto max-w-7xl animate-fade-in">
-            <Outlet />
-          </div>
-        </main>
-      </div>
-
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+        
+        <Outlet />
+        
+      </main>
     </div>
   );
 };

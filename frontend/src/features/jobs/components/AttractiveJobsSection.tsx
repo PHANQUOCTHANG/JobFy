@@ -85,9 +85,7 @@ export const AttractiveJobsSection: React.FC = () => {
   return (
     <div className="max-w-[1140px] mx-auto px-4 mt-8">
       <div className="flex flex-col lg:flex-row gap-4">
-        {/* Left Jobs Area */}
         <div className="flex-1 bg-white rounded-lg p-5 shadow-sm border border-gray-100">
-          {/* Header */}
           <div className="flex flex-col gap-4 mb-4">
             <div className="flex items-center justify-between">
               <h2 className="text-[20px] font-bold text-[#4F46E5] flex items-center gap-2">
@@ -102,7 +100,6 @@ export const AttractiveJobsSection: React.FC = () => {
               </button>
             </div>
 
-            {/* Filter Bar */}
             <SectionFilterBar
               filterTypes={JOB_FILTER_TYPES}
               activeFilterType={activeFilterType}
@@ -114,7 +111,6 @@ export const AttractiveJobsSection: React.FC = () => {
             />
           </div>
 
-          {/* Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-4">
             {isLoading ? (
               [1, 2, 3, 4, 5, 6].map(i => <JobSkeletonCard key={i} viewMode="compact" />)
@@ -137,7 +133,6 @@ export const AttractiveJobsSection: React.FC = () => {
             )}
           </div>
 
-          {/* Pagination */}
           <div className="flex items-center justify-center gap-4 mt-6 pt-4">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -159,7 +154,6 @@ export const AttractiveJobsSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Vertical Ad Banner */}
         <div className="w-full lg:w-[300px] rounded-lg overflow-hidden shadow-sm hidden lg:block flex-shrink-0">
           <img
             src="/images/banners/vertical_ad.png"

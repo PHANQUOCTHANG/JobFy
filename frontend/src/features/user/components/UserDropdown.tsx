@@ -53,13 +53,11 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
             </AvatarFallback>
           </Avatar>
 
-          {/* Online Indicator (Optional) */}
           <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-green-500 ring-2 ring-background" />
         </motion.button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-[280px] p-2 rounded-xl shadow-xl border-slate-200 bg-white" align="end" sideOffset={12}>
-        {/* User Info Header */}
         <DropdownMenuLabel className="font-normal p-3 mb-2 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center gap-3">
           <Avatar className="size-11 border-2 border-white shadow-sm">
             <AvatarImage
@@ -111,7 +109,6 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
 
         <DropdownMenuSeparator className="my-1 border-slate-100" />
 
-        {/* Logout Item */}
         <DropdownMenuItem
           onClick={handleLogout}
           className="p-2.5 rounded-lg cursor-pointer text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 focus:bg-indigo-50 focus:text-indigo-600 transition-all duration-200 mt-1 group"

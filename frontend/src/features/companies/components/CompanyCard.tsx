@@ -22,10 +22,8 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
         ) : (
           <div className="w-full h-full bg-gradient-brand opacity-80" />
         )}
-        {/* Overlay gradient for text readability if needed */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         
-        {/* Logo */}
         <div className="absolute -bottom-8 left-5 p-1 bg-card rounded-xl shadow-raised border border-border/50 ring-1 ring-primary/10">
           {company.logoUrl ? (
             <img src={company.logoUrl} alt={`${company.name} logo`} className="w-[60px] h-[60px] object-contain rounded-lg bg-white" />

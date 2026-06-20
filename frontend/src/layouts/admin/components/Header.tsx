@@ -48,9 +48,7 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
         "transition-all duration-300",
       )}
     >
-      {/* ── LEFT ── */}
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        {/* Mobile menu trigger */}
         <button
           onClick={() => setIsSidebarOpen(true)}
           className={cn(
@@ -63,7 +61,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
           <Menu className="size-5" />
         </button>
 
-        {/* Search bar — desktop */}
         <div className="hidden md:flex relative w-full max-w-xs lg:max-w-sm">
           <div
             className={cn(
@@ -120,7 +117,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
           </div>
         </div>
 
-        {/* Mobile search trigger */}
         <button
           className={cn(
             "md:hidden flex items-center justify-center size-9 rounded-xl shrink-0",
@@ -134,9 +130,7 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
         </button>
       </div>
 
-      {/* ── RIGHT ── */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        {/* Notification bell */}
         <button
           onClick={() => setHasNotif(false)}
           className={cn(
@@ -149,7 +143,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
           <Bell className="size-4.5" />
           {hasNotif && (
             <>
-              {/* Pulse ring */}
               <span className="absolute top-2 right-2 size-2 rounded-full bg-destructive">
                 <span className="absolute inset-0 rounded-full bg-destructive animate-ping opacity-75" />
               </span>
@@ -157,13 +150,10 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
           )}
         </button>
 
-        {/* Divider */}
         <div className="h-5 w-px bg-border/60 mx-1" />
 
-        {/* Theme toggle */}
 
 
-        {/* User dropdown */}
         {user && (
           <div className="ml-1">
             <UserDropdown user={user} />
@@ -171,7 +161,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
         )}
       </div>
 
-      {/* ── Mobile fullscreen search overlay ── */}
       {searchOpen && (
         <div
           className={cn(
@@ -208,7 +197,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
             </button>
           </div>
 
-          {/* Search empty state */}
           {!searchValue && (
             <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center p-8">
               <div className="size-12 rounded-2xl bg-muted/50 flex items-center justify-center">

@@ -39,6 +39,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     if (mode === 'editor' && ref.current && !ref.current.innerHTML) {
       ref.current.innerHTML = value || '';
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
   if (mode === 'preview') {

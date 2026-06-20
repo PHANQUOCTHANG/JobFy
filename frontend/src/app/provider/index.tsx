@@ -14,13 +14,11 @@ import { RouterProvider } from "react-router-dom";
 
 import { router } from "@/app/routes/route";
 
-// --- Components ---
+// Components ---
 import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import { AppProviders } from "./AppProvider";
 
-// ============================================================================
 // 2. ROOT APP (With Router)
-// ============================================================================
 
 export const AppWithRouter = () => (
   <AppProviders>

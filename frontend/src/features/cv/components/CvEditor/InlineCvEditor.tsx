@@ -24,7 +24,6 @@ export const InlineCvEditor = forwardRef<HTMLDivElement, InlineCvEditorProps>(
 
     return (
       <div className="relative">
-        {/* Tip banner */}
         <div style={{ background: '#dcfce7', padding: '6px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#166534', position: 'relative' }}>
           <span>💡 Gợi ý: Các mục có viền nét đứt khi click vào để sửa. Di chuột vào tiêu đề để kéo thả hoặc thêm/xóa mục.</span>
         </div>

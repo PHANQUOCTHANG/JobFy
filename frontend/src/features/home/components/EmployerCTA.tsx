@@ -4,7 +4,6 @@ import { Reveal } from "./Reveal";
 export function EmployerCTA() {
   return (
     <section className="relative bg-white text-slate-900 overflow-hidden py-24 px-5 lg:px-10 border-t border-slate-100">
-      {/* Subtle grid background */}
       <div 
         className="absolute inset-0 opacity-[0.04] pointer-events-none" 
         style={{ 
@@ -15,7 +14,6 @@ export function EmployerCTA() {
 
       <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
         
-        {/* Left Content */}
         <Reveal>
           <div className="inline-flex items-center gap-2 text-[#4F46E5] font-bold text-[12px] uppercase tracking-widest mb-8">
             <Building2 size={16} /> DÀNH CHO NHÀ TUYỂN DỤNG
@@ -45,7 +43,6 @@ export function EmployerCTA() {
           </div>
         </Reveal>
 
-        {/* Right Card */}
         <Reveal delay={150}>
           <div className="bg-[#0F172A] rounded-3xl p-10 lg:p-12 shadow-2xl relative border border-slate-800">
             <h3 className="text-[28px] font-black mb-2 text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>

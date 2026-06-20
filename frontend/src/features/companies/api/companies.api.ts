@@ -3,10 +3,12 @@ import { Company, CompanyLocation, CompanyReview } from '../types';
 
 import { mockCompanies } from './mockData';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getCompanies = async (params?: Record<string, any>): Promise<Company[]> => {
   try {
     const response = await api.get('/companies', { params });
     return response.data?.data || response.data;
+  // eslint-disable-next-line unused-imports/no-unused-vars
   } catch (error) {
     return mockCompanies as unknown as Company[];
   }
@@ -27,7 +29,7 @@ export const getCompanyReviews = async (companyId: string): Promise<CompanyRevie
   return response.data?.data || response.data;
 };
 
-// --- API cho Nhà tuyển dụng (Employer) ---
+// API cho Nhà tuyển dụng (Employer) ---
 
 export const getMyCompany = async (): Promise<Company> => {
   const response = await api.get('/companies/me');

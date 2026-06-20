@@ -35,7 +35,6 @@ export const JobSortBar: React.FC<JobSortBarProps> = ({
   return (
     <div className="mb-4">
       <div className="flex flex-wrap items-center gap-4 text-[13px] bg-white rounded-xl p-3 border border-[#e8e8e8] shadow-sm">
-        {/* Search mode toggle */}
         <div className="flex items-center gap-3">
           <span className="text-[#212f3f] font-bold whitespace-nowrap">Tìm kiếm theo:</span>
           <div className="flex items-center gap-2">
@@ -89,7 +88,6 @@ export const JobSortBar: React.FC<JobSortBarProps> = ({
 
         <div className="flex-1" />
 
-        {/* View mode toggle (kept for functionality) */}
         <div className="flex items-center gap-1 bg-[#e8eaef] rounded-full p-1 border border-transparent">
           <button
             onClick={() => onViewModeChange('list')}
@@ -114,7 +112,6 @@ export const JobSortBar: React.FC<JobSortBarProps> = ({
         </div>
       </div>
 
-      {/* Results count */}
       {!isLoading && (
         <div className="text-[13px] text-[#6f7882] mt-3 pl-1">
           Tìm thấy{' '}

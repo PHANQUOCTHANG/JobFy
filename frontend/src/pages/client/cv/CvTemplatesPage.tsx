@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { mockCvTemplates } from '@/features/cv/api/mockData';
 import { MiniCvPreview } from '@/features/cv/components/CvEditor/MiniCvPreview';
 import { Filter, LayoutTemplate, Palette, Globe, Check, Briefcase, Columns, Sparkles, X, SlidersHorizontal } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export const CvTemplatesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ export const CvTemplatesPage: React.FC = () => {
   };
 
   const filteredCvs = useMemo(() => {
-    let result = mockCvTemplates.filter(cv => {
+    const result = mockCvTemplates.filter(cv => {
       if (activeLang !== 'Tất cả' && cv.language !== activeLang) return false;
       if (activeTab === 'style' && activeStyle !== 'Tất cả' && cv.style !== activeStyle) return false;
       if (activeTab === 'industry' && activeIndustry !== 'Tất cả' && cv.industry !== activeIndustry) return false;
@@ -117,7 +117,6 @@ export const CvTemplatesPage: React.FC = () => {
 
   const FilterContent = () => (
     <>
-      {/* Filter by Language */}
       <div className="mb-6">
         <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
           <Globe size={16} /> Ngôn ngữ
@@ -148,7 +147,6 @@ export const CvTemplatesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Conditional Filters based on Active Tab */}
       {activeTab === 'style' && (
         <div className="mb-6">
           <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
@@ -213,7 +211,6 @@ export const CvTemplatesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Filter by Columns */}
       <div>
         <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
           <Columns size={16} /> Bố cục
@@ -248,7 +245,6 @@ export const CvTemplatesPage: React.FC = () => {
 
   return (
     <div className="bg-[#f4f5f5] min-h-screen pb-12" style={{ fontFamily: "'Inter', sans-serif" }}>
-      {/* Hero Section */}
       <div className="bg-gradient-to-r from-[#4F46E5] to-[#4338CA] py-12 px-4 text-center">
         <h1 className="text-3xl md:text-[32px] font-bold text-white mb-4">
           Tạo CV Xin Việc Online Chuyên Nghiệp
@@ -261,7 +257,6 @@ export const CvTemplatesPage: React.FC = () => {
 
       <div className="max-w-[1140px] mx-auto px-4 mt-8">
         
-        {/* Tabs */}
         <div className="flex justify-center mb-8">
           <div className="bg-white rounded-full p-1 shadow-sm border border-gray-200 inline-flex flex-wrap justify-center">
             <button
@@ -288,7 +283,6 @@ export const CvTemplatesPage: React.FC = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar Filters (Desktop) */}
           <div className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm sticky top-24">
               <div className="flex items-center justify-between mb-4 border-b pb-3">
@@ -305,9 +299,7 @@ export const CvTemplatesPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Main Grid */}
           <div className="flex-1">
-            {/* Top Toolbar */}
             <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6 shadow-sm flex flex-col gap-4">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <h2 className="font-bold text-[#212f3f] text-lg">
@@ -315,7 +307,6 @@ export const CvTemplatesPage: React.FC = () => {
                 </h2>
                 
                 <div className="flex items-center gap-4">
-                  {/* Mobile Filter Button */}
                   <button 
                     onClick={() => setIsMobileFilterOpen(true)}
                     className="lg:hidden flex items-center gap-2 px-4 py-1.5 bg-gray-100 rounded-md text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
@@ -338,7 +329,6 @@ export const CvTemplatesPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Active Filter Badges */}
               {activeFilters.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 pt-3 border-t">
                   <span className="text-sm text-gray-500 mr-1">Đang lọc:</span>
@@ -368,7 +358,6 @@ export const CvTemplatesPage: React.FC = () => {
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   
-                  {/* Badges */}
                   <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
                     {cv.isHot && (
                       <span className="bg-[#ff4b4b] text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase flex items-center gap-1 shadow-md">
@@ -382,11 +371,9 @@ export const CvTemplatesPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* CV Preview - Real template render */}
                   <div className="relative aspect-[1/1.414] bg-gray-100 overflow-hidden border-b border-gray-100">
                     <MiniCvPreview templateStyle={cv.style} color={cv.color || '#4F46E5'} />
                     
-                    {/* Overlay on hover */}
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
                       <button 
                         onClick={() => navigate(`/cv/editor/${cv.id}`)}
@@ -397,7 +384,6 @@ export const CvTemplatesPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* CV Info */}
                   <div className="p-4">
                     <h3 className="font-bold text-[#212f3f] mb-2 line-clamp-1 group-hover:text-[#4F46E5] transition-colors text-lg">{cv.name}</h3>
                     
@@ -417,7 +403,6 @@ export const CvTemplatesPage: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Bottom Color Accent */}
                   {cv.color && (
                     <div className="h-1 w-full absolute bottom-0" style={{ backgroundColor: cv.color }}></div>
                   )}
@@ -442,13 +427,10 @@ export const CvTemplatesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Filter Drawer */}
-      {/* Backdrop */}
       <div 
         className={`fixed inset-0 bg-black/50 z-[100] lg:hidden transition-opacity duration-300 ${isMobileFilterOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsMobileFilterOpen(false)}
       />
-      {/* Bottom Sheet */}
       <div 
         className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-[101] lg:hidden transition-transform duration-300 flex flex-col max-h-[85vh] ${isMobileFilterOpen ? 'translate-y-0' : 'translate-y-full'}`}
       >

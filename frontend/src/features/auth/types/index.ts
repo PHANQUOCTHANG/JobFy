@@ -2,20 +2,20 @@ import { IUser } from "@/features/user";
 
 export type RoleType = "admin" | "employer" | "candidate";
 
-// ✅ Dữ liệu trả về từ backend (Không còn refreshToken vì nó nằm trong httpOnly cookie)
+// Dữ liệu trả về từ backend (Không còn refreshToken vì nó nằm trong httpOnly cookie)
 export interface AuthDto<TUser> {
   accessToken: string;
   user: TUser;
 }
 
-// ✅ Redux slice state
+// Redux slice state
 export interface AuthState<TUser = IUser> {
   token: string | null;
   user: TUser | null;
   isAuthChecking: boolean;
 }
 
-// ✅ Request/Response dạng API
+// Request/Response dạng API
 export interface LoginRequest {
   email: string;
   password: string;

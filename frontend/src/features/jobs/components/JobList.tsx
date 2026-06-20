@@ -2,7 +2,6 @@ import React from 'react';
 import { Job, JobFilterParams } from '../types';
 import { JobCard } from './JobCard';
 import { JobSkeletonCard } from './JobSkeletonCard';
-import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { SearchX } from 'lucide-react';
 import { JobPagination } from './JobPagination';
@@ -29,6 +28,7 @@ export const JobList: React.FC<JobListProps> = ({
   totalPages = 1,
   onPageChange,
 }) => {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const handleSaveJob = (id: string) => {
     toast.success('Đã lưu việc làm vào danh sách yêu thích');
   };

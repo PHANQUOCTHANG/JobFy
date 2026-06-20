@@ -17,11 +17,13 @@ export const SimpleTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
       field: K, index: number, itemField: string, value: string
     ) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       newList[index] = { ...newList[index], [itemField]: value };
       onUpdateArrayField(field, newList);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, newItem: any) => {
       if (!onUpdateArrayField) return;
       onUpdateArrayField(field, [...data[field], { ...newItem, id: uuidv4() }]);
@@ -29,11 +31,13 @@ export const SimpleTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
 
     const handleDeleteItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, id: string) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onUpdateArrayField(field, data[field].filter((item: any) => item.id !== id) as any);
     };
 
     const handleMoveItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, index: number, direction: 1 | -1) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       if (index + direction < 0 || index + direction >= newList.length) return;
       const temp = newList[index];
@@ -61,7 +65,6 @@ export const SimpleTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
           padding: '40px 50px'
         }}
       >
-        {/* HEADER (1 column) */}
         <div className="flex gap-6 items-center mb-8 pb-6 border-b-2" style={{ borderBottomColor: color }}>
           <div className="w-32 h-32 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-200">
             {data.personalInfo.avatarUrl ? (
@@ -101,7 +104,6 @@ export const SimpleTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
           </div>
         </div>
 
-        {/* SUMMARY */}
         <div className="mb-6">
           <SectionBlock title="MỤC TIÊU NGHỀ NGHIỆP" color={color} mode={mode} variant="underline" />
           <div className="mt-2 text-gray-700">
@@ -109,7 +111,6 @@ export const SimpleTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
           </div>
         </div>
 
-        {/* EDUCATION */}
         <div className="mb-6">
           <SectionBlock title="HỌC VẤN" color={color} mode={mode} variant="underline" />
           <div className="mt-2">
@@ -149,7 +150,6 @@ export const SimpleTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
           </div>
         </div>
 
-        {/* EXPERIENCE */}
         <div className="mb-6">
           <SectionBlock title="KINH NGHIỆM LÀM VIỆC" color={color} mode={mode} variant="underline" />
           <div className="mt-2">
@@ -189,7 +189,6 @@ export const SimpleTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
           </div>
         </div>
 
-        {/* SKILLS */}
         <div className="mb-6">
           <SectionBlock title="KỸ NĂNG" color={color} mode={mode} variant="underline" />
           <div className="mt-2 grid grid-cols-2 gap-x-8 gap-y-3">
@@ -207,6 +206,7 @@ export const SimpleTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
                     <EditableField mode={mode} color={color} font={font} value={skill.name} onChange={(v) => handleUpdateItem('skills', index, 'name', v)} placeholder="Tên kỹ năng" />
                   </div>
                   <div className="text-gray-600 text-[13px] ml-4 mt-0.5">
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     <EditableField mode={mode} color={color} font={font} value={(skill as any).description || ''} onChange={(v) => handleUpdateItem('skills', index, 'description', v)} placeholder="Mô tả..." multiline />
                   </div>
                 </div>

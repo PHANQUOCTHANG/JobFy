@@ -18,7 +18,6 @@ const RootLayout = () => {
   return (
     <div className="relative min-h-screen">
       <main className="">
-        {/* Thêm padding bottom để không bị Player đè mất nội dung cuối trang */}
         <Outlet />
       </main>
     </div>

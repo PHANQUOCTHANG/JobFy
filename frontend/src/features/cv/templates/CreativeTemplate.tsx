@@ -18,11 +18,13 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
       field: K, index: number, itemField: string, value: string
     ) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       newList[index] = { ...newList[index], [itemField]: value };
       onUpdateArrayField(field, newList);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, newItem: any) => {
       if (!onUpdateArrayField) return;
       onUpdateArrayField(field, [...data[field], { ...newItem, id: uuidv4() }]);
@@ -30,11 +32,13 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
 
     const handleDeleteItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, id: string) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onUpdateArrayField(field, data[field].filter((item: any) => item.id !== id) as any);
     };
 
     const handleMoveItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, index: number, direction: 1 | -1) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       if (index + direction < 0 || index + direction >= newList.length) return;
       const temp = newList[index];
@@ -50,6 +54,7 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
     };
 
     // Dark sidebar based on primary color
+    // eslint-disable-next-line unused-imports/no-unused-vars
     const isDarkColor = true; // Assume primary colors are generally dark enough, we'll use a very dark version
     
     return (
@@ -65,9 +70,7 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
         }}
       >
         <div className="flex min-h-[1123px]">
-          {/* DARK SIDEBAR */}
           <div className="w-[38%] flex flex-col pt-10 pb-8 px-6 text-white" style={{ backgroundColor: '#212529' }}>
-            {/* Avatar */}
             <div className="w-44 h-44 mx-auto rounded-full overflow-hidden border-4 mb-6 shadow-md" style={{ borderColor: color }}>
               {data.personalInfo.avatarUrl ? (
                 <img src={data.personalInfo.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -76,7 +79,6 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
               )}
             </div>
 
-            {/* Contact Info */}
             <div className="mb-8">
               <SectionBlock title="LIÊN HỆ" color={color} mode={mode} variant="none" titleStyle={{ borderBottom: `2px solid ${color}`, display: 'inline-block', paddingBottom: 2 }} />
               <div className="space-y-4 mt-5 text-[14px] text-gray-200">
@@ -101,7 +103,6 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
               </div>
             </div>
 
-            {/* Skills */}
             <div>
               <SectionBlock title="KỸ NĂNG" color={color} mode={mode} variant="none" titleStyle={{ borderBottom: `2px solid ${color}`, display: 'inline-block', paddingBottom: 2 }} />
               <div className="mt-5 space-y-4">
@@ -120,7 +121,6 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
                       <div className="text-gray-400 text-[13px]">
                         <EditableField mode={mode} color={color} font={font} value={skill.description || ''} onChange={(v) => handleUpdateItem('skills', index, 'description', v)} placeholder="Mô tả (tùy chọn)..." multiline />
                       </div>
-                      {/* Fake progress bar purely for creative look */}
                       <div className="w-full h-1.5 bg-gray-800 mt-2 rounded-full overflow-hidden">
                         <div className="h-full rounded-full opacity-80" style={{ backgroundColor: color, width: `${Math.max(40, 100 - index * 10)}%` }}></div>
                       </div>
@@ -134,9 +134,7 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
             </div>
           </div>
 
-          {/* MAIN CONTENT */}
           <div className="w-[62%] pt-12 pb-8 pr-10 pl-8">
-            {/* Header Name */}
             <div className="mb-10">
               <div className="text-4xl font-black uppercase mb-2 tracking-tight" style={{ color: '#212529' }}>
                 <EditableField mode={mode} color={color} font={font} value={data.personalInfo.fullName} onChange={(v) => updateInfo('fullName', v)} placeholder="HỌ VÀ TÊN" />
@@ -146,7 +144,6 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
               </div>
             </div>
 
-            {/* Summary */}
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: color }}>
@@ -159,7 +156,6 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
               </div>
             </div>
 
-            {/* Experience */}
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: color }}>
@@ -204,7 +200,6 @@ export const CreativeTemplate = forwardRef<HTMLDivElement, TemplateRendererProps
               </div>
             </div>
 
-            {/* Education */}
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: color }}>

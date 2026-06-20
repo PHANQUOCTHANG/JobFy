@@ -64,7 +64,6 @@ export const CompanyDetailPage: React.FC = () => {
   return (
     <div className="bg-background min-h-screen pb-20 font-sans">
       <div className="max-w-[1140px] mx-auto py-8 px-4">
-        {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6 -ml-2 text-muted-foreground hover:text-foreground hover:bg-muted/40 font-semibold rounded-xl px-3">
           <Link to="/companies">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -72,10 +71,8 @@ export const CompanyDetailPage: React.FC = () => {
           </Link>
         </Button>
 
-        {/* Company Header */}
         <CompanyHeader company={company} />
 
-        {/* Tabs */}
         <div className="bg-card border border-border/40 rounded-2xl shadow-sm overflow-hidden mb-8">
           <div className="flex border-b border-border/40 overflow-x-auto no-scrollbar">
             {tabs.map((tab) => {
@@ -110,7 +107,6 @@ export const CompanyDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Tab Content */}
         <div className="space-y-6">
           {activeTab === 'about' && (
             <div className="bg-card border border-border/40 rounded-2xl shadow-sm p-8">

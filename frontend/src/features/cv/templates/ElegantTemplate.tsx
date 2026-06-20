@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
 import { TemplateRendererProps } from './templateRegistry';
 import { EditableField } from './shared/EditableField';
-import { SectionBlock } from './shared/SectionBlock';
 import { ItemBlock } from './shared/ItemBlock';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,11 +16,13 @@ export const ElegantTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
       field: K, index: number, itemField: string, value: string
     ) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       newList[index] = { ...newList[index], [itemField]: value };
       onUpdateArrayField(field, newList);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, newItem: any) => {
       if (!onUpdateArrayField) return;
       onUpdateArrayField(field, [...data[field], { ...newItem, id: uuidv4() }]);
@@ -29,11 +30,13 @@ export const ElegantTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
 
     const handleDeleteItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, id: string) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onUpdateArrayField(field, data[field].filter((item: any) => item.id !== id) as any);
     };
 
     const handleMoveItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, index: number, direction: 1 | -1) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       if (index + direction < 0 || index + direction >= newList.length) return;
       const temp = newList[index];
@@ -63,7 +66,6 @@ export const ElegantTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           padding: '60px 70px'
         }}
       >
-        {/* HEADER */}
         <div className="flex flex-col items-center text-center mb-10">
           <div className="w-28 h-28 rounded-full overflow-hidden mb-6 border bg-gray-100 flex items-center justify-center text-gray-300" style={{ borderColor: color }}>
             {data.personalInfo.avatarUrl ? (
@@ -102,7 +104,6 @@ export const ElegantTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           </div>
         </div>
 
-        {/* SUMMARY */}
         <div className="mb-10 text-center px-10">
           <div className="text-gray-600 italic leading-loose text-[15px]">
             <EditableField mode={mode} color="#4b5563" font={actualFont} value={data.personalInfo.summary} onChange={(v) => updateInfo('summary', v)} placeholder="Một vài dòng giới thiệu bản thân một cách thanh lịch..." multiline style={{ textAlign: 'center' }} />
@@ -115,7 +116,6 @@ export const ElegantTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           <div className="h-px w-full bg-gray-200"></div>
         </div>
 
-        {/* EXPERIENCE */}
         <div className="mb-10">
           <div className="space-y-8">
             {data.experiences.map((exp, index) => (
@@ -157,7 +157,6 @@ export const ElegantTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           <div className="h-px w-full bg-gray-200"></div>
         </div>
 
-        {/* EDUCATION */}
         <div className="mb-10">
           <div className="space-y-6">
             {data.educations.map((edu, index) => (
@@ -196,7 +195,6 @@ export const ElegantTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           <div className="h-px w-full bg-gray-200"></div>
         </div>
 
-        {/* SKILLS */}
         <div className="mb-6">
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
             {data.skills.map((skill, index) => (

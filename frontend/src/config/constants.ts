@@ -70,7 +70,7 @@ export const SP_HERO = {
   mass: 0.9,
 } as const;
 
-// 🔥 Top quốc gia có nhiều nghệ sĩ nhất để ưu tiên hiển thị đầu danh sách
+// Top quốc gia có nhiều nghệ sĩ nhất để ưu tiên hiển thị đầu danh sách
 export const TOP_NATIONALITIES: Country[] = [
   { label: "Việt Nam", value: "VN", flag: "🇻🇳" },
   { label: "Hoa Kỳ", value: "US", flag: "🇺🇸" },

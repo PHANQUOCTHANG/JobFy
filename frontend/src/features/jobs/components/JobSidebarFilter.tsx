@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { JobFilterParams } from "../types";
-import { Filter, ChevronDown, Star, Box, Briefcase } from "lucide-react";
+import { Filter, ChevronDown, Star } from "lucide-react";
 import { useIndustries, useJobCategories } from "../hooks/useJobs";
 
 interface JobSidebarFilterProps {
@@ -98,7 +98,6 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
 
       <Divider />
 
-      {/* LĨNH VỰC CÔNG TY */}
       <div className="mb-6">
         <SectionTitle>Lĩnh vực công ty</SectionTitle>
         <div className="relative">
@@ -118,7 +117,6 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
 
       <Divider />
 
-      {/* LĨNH VỰC CÔNG VIỆC */}
       <div className="mb-6">
         <SectionTitle>Lĩnh vực công việc</SectionTitle>
         <div className="relative">
@@ -138,7 +136,6 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
 
       <Divider />
 
-      {/* MỨC LƯƠNG */}
       <div>
         <SectionTitle>Mức lương</SectionTitle>
         <div className="grid grid-cols-2 gap-y-3 gap-x-2 mb-4">
@@ -193,7 +190,6 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
 
       <Divider />
 
-      {/* KINH NGHIỆM */}
       <div className="mb-6">
         <SectionTitle>Kinh nghiệm</SectionTitle>
         <div className="grid grid-cols-2 gap-y-3 gap-x-2">
@@ -210,7 +206,6 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
 
       <Divider />
 
-      {/* LOẠI HÌNH LÀM VIỆC */}
       <div className="mb-8">
         <SectionTitle>Loại hình làm việc</SectionTitle>
         <div className="grid grid-cols-2 gap-y-3 gap-x-2">
@@ -218,6 +213,7 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
             <CustomRadio
               key={opt.value}
               checked={filters.jobType ? filters.jobType === opt.value : opt.value === "all"}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={() => onFilterChange({ jobType: opt.value === "all" ? undefined : (opt.value as any) })}
               label={opt.label}
             />
@@ -225,7 +221,6 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
         </div>
       </div>
 
-      {/* FOOTER ACTIONS */}
       <div className="flex items-center gap-3 pt-2">
         <button
           onClick={onClearFilters}

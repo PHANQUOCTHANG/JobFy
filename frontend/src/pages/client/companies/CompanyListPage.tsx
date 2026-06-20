@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { useCompanies } from '@/features/companies';
 import { mockCompanies } from '@/features/companies/api/mockData';
 import { CompanyCard } from '@/features/companies/components/CompanyCard';
@@ -9,6 +8,7 @@ export const CompanyListPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeLetter, setActiveLetter] = useState('Tất cả');
   
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { data: apiCompanies, isLoading } = useCompanies({ search: searchTerm });
   
   // Use mock data if API is empty or loading for demo purposes
@@ -23,9 +23,7 @@ export const CompanyListPage: React.FC = () => {
 
   return (
     <div className="bg-background min-h-screen pb-16 font-sans">
-      {/* Hero Search Section */}
       <div className="bg-gradient-brand pt-16 pb-24 px-4 relative overflow-hidden">
-        {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-black/10 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4 pointer-events-none" />
         <div className="absolute inset-0 bg-mesh-brand mix-blend-overlay opacity-30 pointer-events-none" />
@@ -56,10 +54,8 @@ export const CompanyListPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-[1140px] mx-auto px-4 relative z-20 -mt-10">
         
-        {/* Alphabet Filter */}
         <div className="bg-card border border-border/40 rounded-2xl p-6 shadow-raised mb-8">
           <div className="flex items-center gap-4 mb-5">
             <h2 className="text-[18px] font-bold text-foreground flex items-center gap-2">
@@ -87,7 +83,6 @@ export const CompanyListPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Companies Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCompanies.map(company => (
             <CompanyCard key={company.id} company={company} />

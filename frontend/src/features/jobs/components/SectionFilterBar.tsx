@@ -60,7 +60,6 @@ export const SectionFilterBar: React.FC<SectionFilterBarProps> = ({
 
   return (
     <div className="flex items-center gap-3 w-full min-w-0">
-      {/* Filter Type Dropdown */}
       <div ref={dropdownRef} className="relative flex-shrink-0 z-1000">
         <div
           onClick={() => setShowDropdown(prev => !prev)}
@@ -101,7 +100,6 @@ export const SectionFilterBar: React.FC<SectionFilterBarProps> = ({
         )}
       </div>
 
-      {/* Scroll Left */}
       <button
         onClick={scrollLeft}
         className="w-8 h-8 rounded-full border border-[#e8e8e8] flex items-center justify-center flex-shrink-0 hover:border-[#4F46E5] hover:text-[#4F46E5] text-[#9ea5af] transition-colors"
@@ -109,7 +107,6 @@ export const SectionFilterBar: React.FC<SectionFilterBarProps> = ({
         <ChevronLeft size={16} />
       </button>
 
-      {/* Quick Filter Pills */}
       <div
         ref={scrollRef}
         className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1 min-w-0"
@@ -133,7 +130,6 @@ export const SectionFilterBar: React.FC<SectionFilterBarProps> = ({
         })}
       </div>
 
-      {/* Scroll Right */}
       <button
         onClick={scrollRight}
         className="w-8 h-8 rounded-full border border-[#e8e8e8] flex items-center justify-center flex-shrink-0 hover:border-[#4F46E5] hover:text-[#4F46E5] text-[#9ea5af] transition-colors"

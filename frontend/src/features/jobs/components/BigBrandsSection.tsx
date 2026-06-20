@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, Zap, Building2 } from 'lucide-react';
+import { Zap, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCompanies } from '@/features/companies/hooks/useCompanies';
 
@@ -9,7 +9,6 @@ export const BigBrandsSection: React.FC = () => {
 
   return (
     <div className="max-w-[1140px] mx-auto px-4 mt-8">
-      {/* 3 Small Banners */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         <div className="rounded-lg overflow-hidden shadow-sm aspect-[21/9]">
           <img src="/images/banners/hero.png" className="w-full h-full object-cover" alt="Banner 1" />
@@ -22,13 +21,11 @@ export const BigBrandsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Thương hiệu lớn tuyển dụng */}
       <div className="bg-white rounded-lg p-5 shadow-sm mb-10">
         <h2 className="text-[24px] font-bold text-[#4F46E5] text-center mb-6">
           Thương hiệu lớn tuyển dụng
         </h2>
 
-        {/* Tabs */}
         <div className="flex justify-center mb-6">
           <div className="flex bg-gray-100 rounded-full p-1 overflow-x-auto">
             <button 
@@ -58,7 +55,6 @@ export const BigBrandsSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Grid 4 columns of Brands */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {isLoading
             ? [...Array(8)].map((_, i) => (
@@ -98,7 +94,6 @@ export const BigBrandsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Huy Hiệu Tia Sét Banner */}
       <div className="w-full bg-gradient-to-r from-[#0a2d73] to-[#4F46E5] rounded-lg overflow-hidden shadow-lg p-6 mb-10 flex flex-col md:flex-row items-center justify-between gap-6 relative">
         <div className="text-white z-10 flex-1">
           <h2 className="text-[28px] font-bold mb-2 flex items-center gap-2">
@@ -112,7 +107,6 @@ export const BigBrandsSection: React.FC = () => {
           </button>
         </div>
         
-        {/* Some decorative elements mimicking TopCV banner */}
         <div className="hidden md:flex gap-4 z-10">
            <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-4 rounded-lg w-48 shadow-xl">
              <div className="flex items-center gap-3 mb-2">

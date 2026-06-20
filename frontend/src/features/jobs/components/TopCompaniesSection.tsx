@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, Building2, ArrowRight } from 'lucide-react';
+import { Building2, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCompanies } from '@/features/companies/hooks/useCompanies';
 import { useProvinces } from '../hooks/useJobs';
@@ -82,6 +82,7 @@ export const TopCompaniesSection: React.FC = () => {
     limit: 4,
     isActive: true,
     ...(provinceId ? { provinceId } : {}),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 
   const companies = React.useMemo(() => {

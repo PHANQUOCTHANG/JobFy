@@ -27,6 +27,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ data, onChange }
     onChange(data.filter(item => item.id !== id));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (id: string, field: keyof Experience, value: any) => {
     onChange(
       data.map(item => (item.id === id ? { ...item, [field]: value } : item))

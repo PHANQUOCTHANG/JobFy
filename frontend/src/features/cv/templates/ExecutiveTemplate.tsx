@@ -18,11 +18,13 @@ export const ExecutiveTemplate = forwardRef<HTMLDivElement, TemplateRendererProp
       field: K, index: number, itemField: string, value: string
     ) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       newList[index] = { ...newList[index], [itemField]: value };
       onUpdateArrayField(field, newList);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, newItem: any) => {
       if (!onUpdateArrayField) return;
       onUpdateArrayField(field, [...data[field], { ...newItem, id: uuidv4() }]);
@@ -30,11 +32,13 @@ export const ExecutiveTemplate = forwardRef<HTMLDivElement, TemplateRendererProp
 
     const handleDeleteItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, id: string) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onUpdateArrayField(field, data[field].filter((item: any) => item.id !== id) as any);
     };
 
     const handleMoveItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, index: number, direction: 1 | -1) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       if (index + direction < 0 || index + direction >= newList.length) return;
       const temp = newList[index];
@@ -61,9 +65,7 @@ export const ExecutiveTemplate = forwardRef<HTMLDivElement, TemplateRendererProp
           color: '#333'
         }}
       >
-        {/* FULL WIDTH HEADER */}
         <div className="w-full pt-10 pb-8 px-10 text-white flex items-center gap-8" style={{ backgroundColor: color }}>
-          {/* Avatar */}
           <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-white/50 shadow-sm flex-shrink-0 bg-white text-gray-400 flex items-center justify-center">
             {data.personalInfo.avatarUrl ? (
               <img src={data.personalInfo.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -103,9 +105,7 @@ export const ExecutiveTemplate = forwardRef<HTMLDivElement, TemplateRendererProp
         </div>
 
         <div className="flex px-10 pt-8 pb-10 gap-10">
-          {/* NARROW SIDEBAR */}
           <div className="w-[30%] border-r border-gray-200 pr-8">
-            {/* Skills */}
             <div className="mb-8">
               <SectionBlock title="KỸ NĂNG NỔI BẬT" color={color} mode={mode} variant="line" />
               <div className="mt-4 space-y-3">
@@ -133,7 +133,6 @@ export const ExecutiveTemplate = forwardRef<HTMLDivElement, TemplateRendererProp
               </div>
             </div>
 
-            {/* Certifications */}
             <div className="mb-8">
               <SectionBlock title="CHỨNG CHỈ" color={color} mode={mode} variant="line" />
               <div className="mt-4 space-y-4">
@@ -165,9 +164,7 @@ export const ExecutiveTemplate = forwardRef<HTMLDivElement, TemplateRendererProp
             </div>
           </div>
 
-          {/* MAIN CONTENT */}
           <div className="w-[70%]">
-            {/* Summary */}
             <div className="mb-8">
               <SectionBlock title="TỔNG QUAN" color={color} mode={mode} variant="background" />
               <div className="mt-3 text-gray-700 leading-relaxed text-[15px] pl-2">
@@ -175,7 +172,6 @@ export const ExecutiveTemplate = forwardRef<HTMLDivElement, TemplateRendererProp
               </div>
             </div>
 
-            {/* Experience */}
             <div className="mb-8">
               <SectionBlock title="KINH NGHIỆM LÀM VIỆC" color={color} mode={mode} variant="background" />
               <div className="mt-4 space-y-6">
@@ -213,7 +209,6 @@ export const ExecutiveTemplate = forwardRef<HTMLDivElement, TemplateRendererProp
               </div>
             </div>
 
-            {/* Education */}
             <div className="mb-6">
               <SectionBlock title="TRÌNH ĐỘ HỌC VẤN" color={color} mode={mode} variant="background" />
               <div className="mt-4 space-y-5">

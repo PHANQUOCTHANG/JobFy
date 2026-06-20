@@ -33,20 +33,17 @@ const AdminLayout = () => {
       <div className="flex flex-1 flex-col min-w-0 transition-all duration-300">
         <Header setIsSidebarOpen={setIsSidebarOpen} />
 
-        {/* SCROLLABLE AREA */}
         <main
           className={cn(
             "flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 scroll-smooth bg-muted/20"
           )}
         >
-          {/* Max width container để nội dung không bị bè ra quá rộng trên màn hình 4k */}
           <div className="mx-auto max-w-7xl animate-fade-in">
             <Outlet />
           </div>
         </main>
       </div>
 
-      {/* Mobile Overlay (Nằm ngoài cùng để đè lên tất cả khi mở menu mobile) */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"

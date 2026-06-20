@@ -12,7 +12,6 @@ export function CvBuilderFeature() {
       }} />
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-2 gap-14 items-center">
-          {/* Left copy */}
           <Reveal>
             <SectionLabel>Tính năng</SectionLabel>
             <h2 className="text-[2.2rem] lg:text-[2.8rem] font-black text-slate-900 leading-[1.1] mb-6"
@@ -50,7 +49,6 @@ export function CvBuilderFeature() {
             </div>
           </Reveal>
 
-          {/* Right: CV mockup */}
           <Reveal delay={150}>
             <div className="relative" style={{ animation: "floatA 8s ease-in-out infinite" }}>
               <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 overflow-hidden border border-slate-200">

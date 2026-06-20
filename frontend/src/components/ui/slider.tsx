@@ -38,7 +38,6 @@ function Slider({
       )}
       {...props}
     >
-      {/* TRACK (Nền) */}
       <SliderPrimitive.Track
         data-slot="slider-track"
         className={cn(
@@ -60,7 +59,6 @@ function Slider({
         />
       </SliderPrimitive.Track>
 
-      {/* THUMB (Cục nắm) */}
       {Array.from({ length: _values.length }, (_, index) => (
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
@@ -68,7 +66,7 @@ function Slider({
           className={cn(
             "block bg-background border-2 border-primary ring-offset-background shadow-[0_0_10px_rgba(var(--primary),0.5)] rounded-lg transition-all duration-200",
 
-            // --- KÍCH THƯỚC (SIZE) ---
+            // KÍCH THƯỚC (SIZE) ---
             // Mặc định: size-0 (ẩn)
             "size-0",
             // Desktop: Hover hiện lên size-3.5
@@ -76,7 +74,7 @@ function Slider({
             // Mobile: Chạm vào (active) hoặc Focus (bàn phím) hiện lên size-4 (to hơn xíu cho dễ nhìn)
             "group-active:size-4 focus-visible:size-4",
 
-            // --- HIỆU ỨNG (SCALE) ---
+            // HIỆU ỨNG (SCALE) ---
             // Khi đang kéo (active), phóng to lên 1.25 lần
             "group-active:scale-125 group-active:ring-4 group-active:ring-primary/20",
 

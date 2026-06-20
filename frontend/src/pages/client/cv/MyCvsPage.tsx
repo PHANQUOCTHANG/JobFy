@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CvData } from '@/features/cv/types';
 import { mockCvTemplates } from '@/features/cv/api/mockData';
-import { FileText, Plus, Trash2, Edit3, Download, ExternalLink } from 'lucide-react';
+import { FileText, Plus, Trash2, Edit3, Download } from 'lucide-react';
 import { cvApi } from '@/features/cv/api/cv.api';
 
 const STORAGE_KEY = 'jobfy_my_cvs';

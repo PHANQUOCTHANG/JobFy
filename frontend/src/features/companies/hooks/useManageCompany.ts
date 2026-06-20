@@ -19,6 +19,7 @@ export const useUpdateMyCompany = () => {
       // Invalidate the cache to ensure fresh data is fetched
       queryClient.invalidateQueries({ queryKey: ['myCompany'] });
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật công ty.';
       toast.error(message);

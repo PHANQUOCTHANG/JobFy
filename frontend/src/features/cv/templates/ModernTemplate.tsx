@@ -17,11 +17,13 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
       field: K, index: number, itemField: string, value: string
     ) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       newList[index] = { ...newList[index], [itemField]: value };
       onUpdateArrayField(field, newList);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, newItem: any) => {
       if (!onUpdateArrayField) return;
       onUpdateArrayField(field, [...data[field], { ...newItem, id: uuidv4() }]);
@@ -29,11 +31,13 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
 
     const handleDeleteItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, id: string) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onUpdateArrayField(field, data[field].filter((item: any) => item.id !== id) as any);
     };
 
     const handleMoveItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, index: number, direction: 1 | -1) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       if (index + direction < 0 || index + direction >= newList.length) return;
       const temp = newList[index];
@@ -61,9 +65,7 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
         }}
       >
         <div className="flex">
-          {/* LEFT SIDEBAR */}
           <div className="w-[35%] bg-gray-50 flex flex-col pt-8 pb-8 px-6 min-h-[1123px]">
-            {/* Avatar */}
             <div className="w-40 h-40 mx-auto rounded-full overflow-hidden border-4 border-white shadow-sm mb-6 flex-shrink-0 bg-gray-200">
               {data.personalInfo.avatarUrl ? (
                 <img src={data.personalInfo.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -72,7 +74,6 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               )}
             </div>
 
-            {/* Contact Info */}
             <div className="mb-6">
               <SectionBlock title="THÔNG TIN LIÊN HỆ" color={color} mode={mode} />
               <div className="space-y-3 mt-4">
@@ -97,7 +98,6 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               </div>
             </div>
 
-            {/* Skills */}
             <div>
               <SectionBlock title="KỸ NĂNG" color={color} mode={mode} />
               <div className="mt-3">
@@ -126,9 +126,7 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
             </div>
           </div>
 
-          {/* RIGHT CONTENT */}
           <div className="w-[65%] pt-10 pb-8 px-8">
-            {/* Header / Name */}
             <div className="mb-8">
               <div className="text-3xl font-bold uppercase mb-1" style={{ color }}>
                 <EditableField mode={mode} color={color} font={font} value={data.personalInfo.fullName} onChange={(v) => updateInfo('fullName', v)} placeholder="HỌ VÀ TÊN" />
@@ -138,7 +136,6 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               </div>
             </div>
 
-            {/* Summary */}
             <div className="mb-6">
               <SectionBlock title="MỤC TIÊU NGHỀ NGHIỆP" color={color} mode={mode} />
               <div className="mt-3 text-gray-700">
@@ -146,7 +143,6 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               </div>
             </div>
 
-            {/* Education */}
             <div className="mb-6">
               <SectionBlock title="HỌC VẤN" color={color} mode={mode} />
               <div className="mt-3">
@@ -184,7 +180,6 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               </div>
             </div>
 
-            {/* Experience */}
             <div className="mb-6">
               <SectionBlock title="KINH NGHIỆM LÀM VIỆC" color={color} mode={mode} />
               <div className="mt-3">
@@ -222,7 +217,6 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
               </div>
             </div>
 
-            {/* Certifications */}
             <div className="mb-6">
               <SectionBlock title="CHỨNG CHỈ" color={color} mode={mode} />
               <div className="mt-3">

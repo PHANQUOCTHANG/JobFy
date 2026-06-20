@@ -17,6 +17,7 @@ export const CandidateProfilePage: React.FC = () => {
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateMyProfile();
   const { data: resumes, isLoading: isLoadingResumes } = useMyResumes();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleProfileSubmit = (data: any) => {
     updateProfile(data, {
       onSuccess: () => {

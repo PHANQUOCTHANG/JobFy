@@ -22,7 +22,6 @@ export function Header() {
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-5 lg:px-10 flex items-center justify-between h-[64px]">
         
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
           <div className="w-[34px] h-[34px] bg-[#4F46E5] rounded-[10px] flex items-center justify-center shadow-md shadow-[#4F46E5]/20">
             <Briefcase size={16} className="text-white" strokeWidth={2.5} />
@@ -32,7 +31,6 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Nav desktop */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map(({ label, href }) => {
             const isActive = path === href || (href !== "/" && path.startsWith(href));
@@ -50,7 +48,6 @@ export function Header() {
                   >
                     Hồ sơ & CV <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
                   </Link>
-                  {/* Dropdown */}
                   <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-56 z-50">
                     <div className="bg-white border border-gray-100 shadow-xl rounded-xl p-2 flex flex-col">
                       <Link to="/cv" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu CV theo style</Link>
@@ -78,7 +75,6 @@ export function Header() {
           })}
         </nav>
 
-        {/* Right actions */}
         <div className="hidden md:flex items-center gap-2 flex-shrink-0">
           <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all mr-2">
             <Bell size={17} />
@@ -114,7 +110,6 @@ export function Header() {
           </a>
         </div>
 
-        {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-slate-600 hover:text-slate-900 p-2 rounded-lg hover:bg-slate-100 transition-all"
@@ -123,7 +118,6 @@ export function Header() {
         </button>
       </div>
 
-      {/* Mobile drawer */}
       <div className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-96" : "max-h-0"}`}>
         <div className="bg-white border-t border-slate-200 px-5 py-4 flex flex-col gap-1">
           {navLinks.map(({ label, href }) => (

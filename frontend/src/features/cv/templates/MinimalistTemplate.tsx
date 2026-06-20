@@ -6,6 +6,7 @@ import { ItemBlock } from './shared/ItemBlock';
 import { v4 as uuidv4 } from 'uuid';
 
 export const MinimalistTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
+  // eslint-disable-next-line unused-imports/no-unused-vars
   ({ data, color, font, fontSize, lineHeight, background, mode, onUpdatePersonalInfo, onUpdateArrayField }, ref) => {
     
     // Handlers
@@ -17,11 +18,13 @@ export const MinimalistTemplate = forwardRef<HTMLDivElement, TemplateRendererPro
       field: K, index: number, itemField: string, value: string
     ) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       newList[index] = { ...newList[index], [itemField]: value };
       onUpdateArrayField(field, newList);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, newItem: any) => {
       if (!onUpdateArrayField) return;
       onUpdateArrayField(field, [...data[field], { ...newItem, id: uuidv4() }]);
@@ -29,11 +32,13 @@ export const MinimalistTemplate = forwardRef<HTMLDivElement, TemplateRendererPro
 
     const handleDeleteItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, id: string) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onUpdateArrayField(field, data[field].filter((item: any) => item.id !== id) as any);
     };
 
     const handleMoveItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, index: number, direction: 1 | -1) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       if (index + direction < 0 || index + direction >= newList.length) return;
       const temp = newList[index];
@@ -61,7 +66,6 @@ export const MinimalistTemplate = forwardRef<HTMLDivElement, TemplateRendererPro
           padding: '60px 80px' // Extra generous padding for minimalist look
         }}
       >
-        {/* HEADER */}
         <div className="mb-10">
           <div className="text-4xl font-normal tracking-tight mb-2 text-black">
             <EditableField mode={mode} color="#000" font={font} value={data.personalInfo.fullName} onChange={(v) => updateInfo('fullName', v)} placeholder="Họ và Tên" />
@@ -97,7 +101,6 @@ export const MinimalistTemplate = forwardRef<HTMLDivElement, TemplateRendererPro
           </div>
         </div>
 
-        {/* SUMMARY */}
         <div className="mb-8">
           <SectionBlock title="Giới thiệu" color="#000" mode={mode} variant="none" titleStyle={{ textTransform: 'none', fontSize: '18px', fontWeight: 600, borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '12px' }} />
           <div className="text-gray-700 leading-relaxed font-light">
@@ -105,7 +108,6 @@ export const MinimalistTemplate = forwardRef<HTMLDivElement, TemplateRendererPro
           </div>
         </div>
 
-        {/* EXPERIENCE */}
         <div className="mb-8">
           <SectionBlock title="Kinh nghiệm làm việc" color="#000" mode={mode} variant="none" titleStyle={{ textTransform: 'none', fontSize: '18px', fontWeight: 600, borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '12px' }} />
           <div className="space-y-6">
@@ -143,7 +145,6 @@ export const MinimalistTemplate = forwardRef<HTMLDivElement, TemplateRendererPro
           </div>
         </div>
 
-        {/* EDUCATION */}
         <div className="mb-8">
           <SectionBlock title="Học vấn" color="#000" mode={mode} variant="none" titleStyle={{ textTransform: 'none', fontSize: '18px', fontWeight: 600, borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '12px' }} />
           <div className="space-y-6">
@@ -181,7 +182,6 @@ export const MinimalistTemplate = forwardRef<HTMLDivElement, TemplateRendererPro
           </div>
         </div>
 
-        {/* SKILLS */}
         <div className="mb-8">
           <SectionBlock title="Kỹ năng" color="#000" mode={mode} variant="none" titleStyle={{ textTransform: 'none', fontSize: '18px', fontWeight: 600, borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '12px' }} />
           <div className="flex flex-wrap gap-x-2 gap-y-2 mt-4">

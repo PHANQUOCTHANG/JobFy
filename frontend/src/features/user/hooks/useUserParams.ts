@@ -8,8 +8,7 @@ const DEFAULT_PARAMS: UserFilterParams = {
   keyword: "",
   role: undefined,
   sort: "newest",
-  isVerified: undefined,
-  isActive: undefined,
+  status: undefined,
 };
 
 export const useUserParams = (initialLimit = 10) => {
@@ -32,6 +31,7 @@ export const useUserParams = (initialLimit = 10) => {
     [setParams],
   );
   const handleFilterChange = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (key: keyof UserFilterParams, value: any) => {
       setParams({ [key]: value, page: 1 });
     },

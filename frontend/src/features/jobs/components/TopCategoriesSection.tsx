@@ -4,9 +4,8 @@ import {
   Database, Megaphone, Stethoscope, ShoppingBag, Code2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useJobCategories, useProvinces } from '../hooks/useJobs';
+import { useJobCategories } from '../hooks/useJobs';
 import { SectionFilterBar } from './SectionFilterBar';
-import { LOCATION_QUICK_OPTIONS } from '../constants/filterOptions';
 import { QuickFilterOption, FilterType } from './SectionFilterBar';
 
 const CATEGORY_ICON_MAP: Record<string, React.ReactNode> = {
@@ -84,7 +83,6 @@ export const TopCategoriesSection: React.FC = () => {
 
   return (
     <div className="py-8">
-      {/* Header + Filter */}
       <div className="flex flex-col gap-4 mb-6">
         <h2 className="text-[20px] md:text-[24px] font-bold text-[#212f3f]">
           Ngành nghề trọng điểm

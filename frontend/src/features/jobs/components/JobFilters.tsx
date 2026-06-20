@@ -89,7 +89,6 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
         className="flex items-stretch gap-3 h-12 relative z-10"
       >
         <div className="flex flex-1 items-stretch bg-white rounded-lg border border-[#e8e8e8]">
-        {/* Category Selector */}
         <div ref={categoryRef} className="relative border-r border-[#e8e8e8] bg-[#f8f8f8] rounded-l-lg">
           <button
             type="button"
@@ -156,7 +155,6 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
           )}
         </div>
 
-        {/* Keyword Input */}
         <div className="flex-1 relative flex items-center border-r border-[#e8e8e8]">
           <Search className="absolute left-3.5 w-4 h-4 text-[#9ea5af]" />
           <input
@@ -172,7 +170,6 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
           />
         </div>
 
-        {/* Province Selector */}
         <div ref={provinceRef} className="relative border-r border-[#e8e8e8] last:border-r-0">
           <button
             type="button"
@@ -242,7 +239,6 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
 
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           className="px-6 h-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[15px] rounded-lg transition-colors whitespace-nowrap flex-shrink-0"
@@ -251,7 +247,6 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
         </button>
       </form>
 
-      {/* Suggestion Dropdown */}
       {showSuggestions && (
         <JobSearchSuggestion
           keyword={keyword}

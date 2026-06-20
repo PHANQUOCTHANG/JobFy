@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCvEditor } from '@/features/cv/hooks/useCvEditor';
 import { mockCvTemplates } from '@/features/cv/api/mockData';
@@ -155,7 +155,6 @@ export const CvEditorPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Inter', sans-serif", background: '#f0f0f0' }}>
 
-      {/* ── Top Bar ── */}
       <div className="bg-white border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0" style={{ height: 48 }}>
         <div className="flex items-center gap-2">
           <input
@@ -174,7 +173,6 @@ export const CvEditorPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-1.5">
-          {/* Undo/Redo */}
           <button className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors rounded" title="Undo">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M3 7v6h6"/><path d="M3 13c0-4.97 4.03-9 9-9a9 9 0 0 1 9 9"/></svg>
           </button>
@@ -183,7 +181,6 @@ export const CvEditorPage: React.FC = () => {
           </button>
           <div className="h-5 w-px bg-gray-200 mx-1" />
 
-          {/* Xem trước */}
           <button
             onClick={() => setIsPreviewOpen(true)}
             className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded border border-gray-200 text-gray-600 hover:border-[#4F46E5] hover:text-[#4F46E5] transition-colors"
@@ -191,7 +188,6 @@ export const CvEditorPage: React.FC = () => {
             <Eye size={13} /> Xem trước
           </button>
 
-          {/* Lưu CV */}
           <button
             onClick={handleSaveCv}
             disabled={isSaving}
@@ -211,10 +207,8 @@ export const CvEditorPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Main ── */}
       <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 48px)' }}>
 
-        {/* ── Far Left Sidebar ── */}
         <div className="bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-20" style={{ width: 72 }}>
           {sidebarItems.map((item, i) => (
             <button
@@ -231,7 +225,6 @@ export const CvEditorPage: React.FC = () => {
           ))}
         </div>
 
-        {/* ── Design Panel ── */}
         {showDesignPanel && (
           <div className="bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-10 overflow-hidden" style={{ width: 240 }}>
             <DesignPanel
@@ -250,16 +243,13 @@ export const CvEditorPage: React.FC = () => {
           </div>
         )}
 
-        {/* ── CV Area ── */}
         <div className="flex-1 overflow-auto" style={{ background: '#e4e4e4' }}>
-          {/* Zoom controls */}
           <div className="sticky top-4 float-right mr-4 flex items-center gap-1 bg-white rounded-full shadow-md px-3 py-1.5 z-30" style={{ width: 'fit-content' }}>
             <button onClick={() => setZoom(z => Math.max(50, z - 10))} className="text-gray-500 hover:text-gray-800 font-bold w-5 h-5 flex items-center justify-center">−</button>
             <span className="text-xs font-semibold text-gray-700 w-12 text-center">{zoom}%</span>
             <button onClick={() => setZoom(z => Math.min(150, z + 10))} className="text-gray-500 hover:text-gray-800 font-bold w-5 h-5 flex items-center justify-center">+</button>
           </div>
 
-          {/* The CV document */}
           <div className="flex justify-center pt-6 pb-10 px-4 clear-both">
             <div style={{
               transform: `scale(${zoom / 100})`,
@@ -284,10 +274,8 @@ export const CvEditorPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Dialog Xem trước CV ── */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-[900px] w-[95vw] max-h-[95vh] p-0 overflow-hidden border-0 shadow-2xl rounded-xl bg-white">
-          {/* Header */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-white flex-shrink-0">
             <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
               <Eye size={18} className="text-[#4F46E5]" />
@@ -301,7 +289,6 @@ export const CvEditorPage: React.FC = () => {
             </button>
           </div>
 
-          {/* CV Preview Body */}
           <div className="flex-1 overflow-auto bg-gray-100" style={{ maxHeight: 'calc(95vh - 120px)' }}>
             <div className="flex justify-center py-8 px-4">
               <div style={{
@@ -323,7 +310,6 @@ export const CvEditorPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Footer with zoom + download */}
           <div className="flex items-center justify-between px-5 py-2.5 border-t border-gray-200 bg-gray-50 flex-shrink-0">
             <div className="flex items-center gap-2">
               <Search size={14} className="text-gray-400" />

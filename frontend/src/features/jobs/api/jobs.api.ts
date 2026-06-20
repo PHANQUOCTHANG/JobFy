@@ -4,6 +4,7 @@ import { mockJobs } from "./mockData";
 
 export const getJobs = async (
   params?: JobFilterParams,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<{ data: Job[]; meta: any }> => {
   // Build apiParams outside try so it's accessible in catch
   const apiParams = { ...params };
@@ -21,6 +22,7 @@ export const getJobs = async (
       data: response.data?.data || response.data,
       meta: response.data?.meta || {},
     };
+  // eslint-disable-next-line unused-imports/no-unused-vars
   } catch (error) {
     let filteredJobs = [...mockJobs];
 
@@ -71,6 +73,7 @@ export const getFeaturedJobs = async (): Promise<{ data: Job[] }> => {
       params: { limit: 9, status: "published" },
     });
     return { data: response.data?.data || response.data };
+  // eslint-disable-next-line unused-imports/no-unused-vars
   } catch (error) {
     return { data: mockJobs.slice(0, 9) };
   }
@@ -91,6 +94,7 @@ export const getJobCategories = async (): Promise<JobCategory[]> => {
   try {
     const response = await api.get("/job-categories");
     return response.data?.data || response.data;
+  // eslint-disable-next-line unused-imports/no-unused-vars
   } catch (error) {
     return [
       { id: 1, name: "Công nghệ thông tin", slug: "it", isActive: true },

@@ -25,7 +25,6 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
         <span>Chi tiết tin tuyển dụng</span>
       </h2>
 
-      {/* Kỹ năng/Tags */}
       {job.jobSkills && job.jobSkills.length > 0 && (
         <div className="mb-5">
           <div className="flex flex-wrap gap-2">
@@ -41,7 +40,6 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
         </div>
       )}
 
-      {/* Mô tả công việc */}
       {job.description && (
         <Section title="Mô tả công việc">
           <div
@@ -54,7 +52,6 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
         </Section>
       )}
 
-      {/* Yêu cầu ứng viên */}
       {job.requirements && (
         <Section title="Yêu cầu ứng viên">
           <div
@@ -67,7 +64,6 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
         </Section>
       )}
 
-      {/* Quyền lợi */}
       {job.benefits && (
         <Section title="Quyền lợi">
           <div
@@ -80,13 +76,11 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
         </Section>
       )}
 
-      {/* Địa điểm làm việc */}
       <Section title="Địa điểm làm việc">
         <div className="flex items-start gap-2 text-sm text-gray-700">
           <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
           <span>{job.address || 'Đang cập nhật địa điểm'}</span>
         </div>
-        {/* Google Maps placeholder */}
         <div className="mt-3 w-full h-40 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden relative">
           <div
             className="absolute inset-0 opacity-5"
@@ -98,14 +92,12 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
         </div>
       </Section>
 
-      {/* Thời gian làm việc (nếu có) */}
       {job.isRemote && (
         <Section title="Thời gian làm việc">
           <p className="text-sm text-gray-700">Làm việc từ xa (Remote) – Linh hoạt theo thỏa thuận.</p>
         </Section>
       )}
 
-      {/* Cách thức ứng tuyển */}
       <Section title="Cách thức ứng tuyển">
         <p className="text-sm text-gray-700">
           Ứng viên nộp hồ sơ trực tuyến bằng cách bấm{' '}

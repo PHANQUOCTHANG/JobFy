@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Building2, Users, Briefcase, GraduationCap, Clock,
-  MapPin, Calendar, Star, ExternalLink, Shield, ChevronRight
+  MapPin, Calendar, Star, ExternalLink, Shield
 } from 'lucide-react';
 import { differenceInDays, format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 
 interface JobDetailSidebarProps {
   job: Job;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   applicationStatus?: any;
   isLoadingStatus: boolean;
   onApplyClick: () => void;
@@ -18,6 +19,7 @@ interface JobDetailSidebarProps {
 
 const PRIMARY_COLOR = '#4F46E5';
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const EXPERIENCE_LABEL: Record<string, string> = {
   intern: 'Thực tập sinh',
   fresher: 'Không yêu cầu',
@@ -64,8 +66,11 @@ const InfoRow: React.FC<InfoRowProps> = ({ icon, label, value }) => (
 
 export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
   job,
+  // eslint-disable-next-line unused-imports/no-unused-vars
   applicationStatus,
+  // eslint-disable-next-line unused-imports/no-unused-vars
   isLoadingStatus,
+  // eslint-disable-next-line unused-imports/no-unused-vars
   onApplyClick,
 }) => {
   const daysLeft = job.expiresAt
@@ -78,7 +83,6 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
   return (
     <div className="space-y-4">
 
-      {/* ── Company Card ───────────────────────────────────── */}
       {job.company && (
         <div className="bg-white rounded-lg shadow-sm p-5">
           <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
@@ -142,7 +146,6 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
         </div>
       )}
 
-      {/* ── Thông tin chung ────────────────────────────────── */}
       <div className="bg-white rounded-lg shadow-sm p-5">
         <h3 className="font-bold text-gray-900 text-base mb-3">Thông tin chung</h3>
 
@@ -175,7 +178,6 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
         </div>
       </div>
 
-      {/* ── Deadline countdown ─────────────────────────────── */}
       {deadlineStr && (
         <div
           className={cn(
@@ -199,7 +201,6 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
         </div>
       )}
 
-      {/* ── Stats ──────────────────────────────────────────── */}
       <div className="bg-white rounded-lg shadow-sm p-4 flex items-center justify-around text-center">
         <div>
           <div className="text-lg font-bold text-gray-900">{(job.viewCount || 0).toLocaleString()}</div>
@@ -217,7 +218,6 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
         </div>
       </div>
 
-      {/* ── Safety tips ────────────────────────────────────── */}
       <div className="bg-white rounded-lg shadow-sm p-5 border-l-4" style={{ borderLeftColor: PRIMARY_COLOR }}>
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-4 h-4" style={{ color: PRIMARY_COLOR }} />

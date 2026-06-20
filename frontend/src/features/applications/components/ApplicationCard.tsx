@@ -2,10 +2,9 @@ import React from 'react';
 import { JobApplication } from '../types';
 import { Card, CardContent } from '@/components/ui/card';
 import { ApplicationStatusBadge } from './ApplicationStatusBadge';
-import { Building2, MapPin, Calendar, Clock, ChevronRight } from 'lucide-react';
+import { Building2, MapPin, Calendar, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 
 interface ApplicationCardProps {

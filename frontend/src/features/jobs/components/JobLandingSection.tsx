@@ -100,7 +100,6 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
 
   return (
     <div className="min-h-screen bg-[#f0f0f0] pb-10">
-      {/* ─── HERO SECTION ─── */}
       <div className="bg-[#4F46E5] pt-10 pb-6 px-4">
         <div className="max-w-[1140px] mx-auto text-center">
           <h1 className="text-[28px] md:text-[32px] font-bold text-white mb-2">
@@ -113,13 +112,10 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
         </div>
       </div>
 
-      {/* ─── BANNER & CATEGORIES MENU ─── */}
       <HeroBanner />
 
-      {/* ─── BEST JOBS SECTION ─── */}
       <div className="max-w-[1140px] mx-auto px-4 mt-8">
         <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100">
-          {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-5">
             <h2 className="text-[24px] font-bold text-[#212f3f] flex-shrink-0">Việc làm tốt nhất</h2>
             <div className="flex-1 md:ml-6 min-w-0">
@@ -135,7 +131,6 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
             </div>
           </div>
 
-          {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-4">
             {isLoading ? (
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
@@ -148,7 +143,6 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
             )}
           </div>
 
-          {/* Pagination */}
           <div className="flex items-center justify-center gap-4 mt-6 pt-4">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -171,11 +165,9 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
         </div>
       </div>
 
-      {/* ─── ATTRACTIVE JOBS & BIG BRANDS ─── */}
       <AttractiveJobsSection />
       <BigBrandsSection />
 
-      {/* ─── BOTTOM SECTIONS ─── */}
       <div className="max-w-[1140px] mx-auto px-4">
         <TopCategoriesSection />
         <TopCompaniesSection />

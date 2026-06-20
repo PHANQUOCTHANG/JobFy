@@ -29,6 +29,7 @@ export const useUserForm = ({
 
   // 2. Khởi tạo React Hook Form
   const form = useForm<AdminUserFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(adminUserSchema) as any,
     defaultValues,
     mode: "onSubmit", // Chỉ hiện lỗi khi bấm submit
@@ -44,7 +45,7 @@ export const useUserForm = ({
     }
   }, [isOpen, defaultValues, reset]);
 
-  // --- PREVIEW LOGIC CHO AVATAR ---
+  // PREVIEW LOGIC CHO AVATAR ---
   const avatarValue = watch("avatar");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
@@ -74,7 +75,7 @@ export const useUserForm = ({
     }
   };
 
-  // --- SUBMIT LOGIC ---
+  // SUBMIT LOGIC ---
   const handleSubmit = form.handleSubmit(async (values) => {
     const isEditMode = !!userToEdit;
 

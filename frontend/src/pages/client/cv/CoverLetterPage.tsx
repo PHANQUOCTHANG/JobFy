@@ -13,7 +13,6 @@ export const CoverLetterPage: React.FC = () => {
 
   return (
     <div className="bg-[#f4f5f5] min-h-screen pb-12" style={{ fontFamily: "'Inter', sans-serif" }}>
-      {/* Hero Section */}
       <div className="bg-gradient-to-r from-[#172554] to-[#1e3a8a] py-12 px-4 text-center">
         <h1 className="text-3xl md:text-[32px] font-bold text-white mb-4">
           Tạo Cover Letter (Thư xin việc)
@@ -26,7 +25,6 @@ export const CoverLetterPage: React.FC = () => {
 
       <div className="max-w-[1140px] mx-auto px-4 mt-8 flex flex-col md:flex-row gap-6">
         
-        {/* Main Grid */}
         <div className="flex-1">
           <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6 shadow-sm flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <h2 className="font-bold text-[#212f3f] text-lg flex items-center gap-2">

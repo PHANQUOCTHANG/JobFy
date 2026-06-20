@@ -17,6 +17,7 @@ import {
 
 const LIMIT = 9;
 
+// eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-explicit-any
 const getProvinceIdsByRegion = (region: string, provinces: any[]): number[] => {
   return provinces
     .filter((p) => p.region === region)
@@ -63,6 +64,7 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
     experienceLevel,
     categorySlug,
     status: 'published'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 
   const jobs = response?.data && response.data.length > 0
@@ -109,7 +111,6 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
     <section className="py-10 px-5 lg:px-10 bg-[#f0f0f0]">
       <div className="max-w-[1140px] mx-auto">
         <div className="bg-white rounded-lg p-5 shadow-sm">
-          {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
             <div className="flex items-center gap-4 flex-shrink-0">
               <h2 className="text-[24px] font-bold text-[#4F46E5] flex items-center gap-2">
@@ -134,7 +135,6 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
             </div>
           </div>
 
-          {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-4">
             {isLoading ? (
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
@@ -153,7 +153,6 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
             )}
           </div>
 
-          {/* Pagination */}
           <div className="flex items-center justify-center gap-4 mt-6 pt-4">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}

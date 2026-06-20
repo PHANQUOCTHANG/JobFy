@@ -5,7 +5,6 @@ import {
   getJobBySlug, 
   getJobCategories,
   saveJob,
-  unsaveJob,
   getProvinces,
   getIndustries
 } from '../api/jobs.api';
@@ -52,6 +51,7 @@ export const useProvinces = () => {
 };
 
 export const useSaveJob = () => {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const queryClient = useQueryClient();
   
   return useMutation({

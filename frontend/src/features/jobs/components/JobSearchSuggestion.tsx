@@ -27,7 +27,6 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
 
   return (
     <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-[#e8e8e8] z-50 flex overflow-hidden max-h-[500px]">
-      {/* Left Column: Keywords */}
       <div className="flex-1 flex flex-col min-w-0 border-r border-[#e8e8e8] overflow-y-auto p-4">
         <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[#f0f0f0]">
           <span className="text-[13px] text-[#6f7882] font-medium whitespace-nowrap">Tìm kiếm theo:</span>
@@ -65,7 +64,6 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
           </div>
         </div>
 
-        {/* Suggested Keywords */}
         {jobTitles.length > 0 && (
           <div className="mb-4">
             <h4 className="text-[14px] font-bold text-[#212f3f] mb-2">Từ khóa gợi ý</h4>
@@ -73,8 +71,10 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
               {jobTitles.map((sug, idx) => {
                 const lowerKeyword = keyword.toLowerCase();
                 const lowerSug = sug.toLowerCase();
-                let displaySug = sug;
-                let highlightKeyword = keyword;
+                // eslint-disable-next-line unused-imports/no-unused-vars
+                const displaySug = sug;
+                // eslint-disable-next-line unused-imports/no-unused-vars
+                const highlightKeyword = keyword;
                 
                 // Try to split the suggestion if it contains the keyword
                 const index = lowerSug.indexOf(lowerKeyword);
@@ -105,7 +105,6 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
           </div>
         )}
 
-        {/* Related Keywords */}
         {relatedKeywords.length > 0 && (
           <div>
             <h4 className="text-[14px] font-bold text-[#212f3f] mb-2">Từ khóa liên quan</h4>
@@ -126,7 +125,6 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
         )}
       </div>
 
-      {/* Right Column: Suggested Jobs */}
       <div className="w-[380px] bg-[#fafafa] p-4 flex-shrink-0 overflow-y-auto scrollbar-hide">
         <h4 className="text-[14px] font-bold text-[#212f3f] mb-4">Việc làm có thể bạn quan tâm</h4>
         <div className="flex flex-col gap-3">

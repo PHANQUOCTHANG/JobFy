@@ -33,7 +33,7 @@ const FacebookCallbackPage = () => {
             }),
           );
           toast.success("Welcome back!", {
-            description: `Logged in successfully as ${user.fullName || user.username}`,
+            description: `Logged in successfully as ${user.fullName || user.email}`,
           });
           navigate("/");
         })

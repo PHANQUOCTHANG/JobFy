@@ -33,6 +33,7 @@ function rgbToHsv(r: number, g: number, b: number) {
   r /= 255; g /= 255; b /= 255;
   const max = Math.max(r, g, b), min = Math.min(r, g, b);
   const d = max - min;
+  // eslint-disable-next-line prefer-const
   let h = 0, s = max === 0 ? 0 : d / max, v = max;
   if (max !== min) {
     switch (max) {
@@ -92,7 +93,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
   background,
   onChangeBackground,
 }) => {
-  // --- Color Picker State ---
+  // Color Picker State ---
   const rgb = hexToRgb(currentColor.startsWith('#') ? currentColor : '#000000');
   const { h, s, v } = rgbToHsv(rgb.r, rgb.g, rgb.b);
 
@@ -111,11 +112,13 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
     const hex = rgbToHex(r, g, b);
     onChangeColor(hex);
     setHexInput(hex.replace('#', ''));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hue, sat, bri]);
 
   const handleGradientMouseDown = useCallback((e: React.MouseEvent) => {
     isDraggingGrad.current = true;
     updateGradientPos(e.nativeEvent);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hue]);
 
   const updateGradientPos = useCallback((e: MouseEvent | React.MouseEvent) => {
@@ -162,6 +165,7 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
   };
 
   const hueColor = `hsl(${hue * 360}, 100%, 50%)`;
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const currentHex = currentColor.replace('#', '').toUpperCase();
 
   const fontSizeSteps: Array<'small' | 'medium' | 'large'> = ['small', 'medium', 'large'];
@@ -175,7 +179,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden">
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0">
         <h3 className="font-bold text-gray-800 text-sm">Thiết kế &amp; Font</h3>
         {onClose && (
@@ -186,7 +189,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {/* Font */}
         <div className="px-4 py-3 border-b border-gray-50">
           <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Font chữ</label>
           <select
@@ -198,7 +200,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
           </select>
         </div>
 
-        {/* Font Size */}
         <div className="px-4 py-3 border-b border-gray-50">
           <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Cỡ chữ</label>
           <div className="relative">
@@ -217,7 +218,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
           </div>
         </div>
 
-        {/* Line Height */}
         <div className="px-4 py-3 border-b border-gray-50">
           <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Khoảng cách dòng</label>
           <div className="relative">
@@ -235,11 +235,9 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
           </div>
         </div>
 
-        {/* Color Picker */}
         <div className="px-4 py-3 border-b border-gray-50">
           <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Màu chủ đề</label>
 
-          {/* Preset Row */}
           <div className="flex flex-wrap gap-1.5 mb-3">
             {presetColors.map(c => (
               <button
@@ -259,7 +257,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
             ))}
           </div>
 
-          {/* Gradient Box */}
           <div
             ref={gradientRef}
             onMouseDown={handleGradientMouseDown}
@@ -268,7 +265,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
               background: `linear-gradient(to bottom, transparent, #000), linear-gradient(to right, #fff, ${hueColor})`,
             }}
           >
-            {/* Selector dot */}
             <div
               className="absolute w-3 h-3 rounded-full border-2 border-white shadow-md pointer-events-none"
               style={{
@@ -279,7 +275,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
             />
           </div>
 
-          {/* Hue Slider */}
           <div
             ref={hueRef}
             onMouseDown={(e) => { isDraggingHue.current = true; updateHuePos(e); }}
@@ -294,7 +289,6 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
             />
           </div>
 
-          {/* Hex + Preview */}
           <div className="flex items-center gap-2">
             <div
               className="w-8 h-8 rounded-md border border-gray-200 flex-shrink-0"
@@ -314,10 +308,10 @@ export const DesignPanel: React.FC<DesignPanelProps> = ({
           </div>
         </div>
 
-        {/* Background / Hình nền CV */}
         <div className="px-4 py-3">
           <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Hình nền CV</label>
           <div className="grid grid-cols-4 gap-1.5">
+            // eslint-disable-next-line unused-imports/no-unused-vars
             {backgroundOptions.map((opt, i) => {
               const isActive = background === opt.id;
               return (

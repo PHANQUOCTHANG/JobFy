@@ -6,24 +6,20 @@ import {
   Save,
   Camera,
   User as UserIcon,
-  ShieldCheck,
   Mail,
   Lock,
   UserCheck,
   UserX,
   AlertCircle,
   Loader2,
-  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type User } from "../types";
 
 // UI Components
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -51,7 +47,7 @@ const UserModal: React.FC<UserModalProps> = ({
   onSubmit,
   isPending,
 }) => {
-  // 🔥 TÍCH HỢP HOOK MỚI ĐÃ CHUẨN HÓA
+  // TÍCH HỢP HOOK MỚI ĐÃ CHUẨN HÓA
   const {
     form,
     handleSubmit,
@@ -67,19 +63,18 @@ const UserModal: React.FC<UserModalProps> = ({
   const {
     register,
     control,
+    // eslint-disable-next-line unused-imports/no-unused-vars
     setValue,
     formState: { errors },
   } = form;
 
-  // Xem trực tiếp trạng thái các Switch để đổi màu UI
-  const isActive = useWatch({ control, name: "isActive" });
-  const isVerified = useWatch({ control, name: "isVerified" });
+  const status = useWatch({ control, name: "status" });
 
   const isLoading = isPending || isFormSubmitting;
 
   if (!isOpen) return null;
 
-  // --- Helper Components ---
+  // Helper Components ---
   const FormLabel = ({
     children,
     required,
@@ -105,15 +100,12 @@ const UserModal: React.FC<UserModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden">
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300"
         onClick={onClose}
       />
 
-      {/* Modal Container */}
       <div className="relative z-[101] w-full max-w-4xl bg-background border border-border shadow-2xl flex flex-col h-full sm:h-auto max-h-[90vh] rounded-2xl animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-white/10">
-        {/* --- HEADER --- */}
         <header className="px-6 py-4 border-b border-border bg-card/50 flex justify-between items-center shrink-0">
           <div className="flex items-center gap-4">
             <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md ring-2 ring-primary/20">
@@ -132,7 +124,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 />
                 <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-widest">
                   {userToEdit
-                    ? `ID: ${userToEdit._id.slice(-8)}`
+                    ? `ID: ${userToEdit.id.slice(-8)}`
                     : "Admin Dashboard"}
                 </p>
               </div>
@@ -149,7 +141,6 @@ const UserModal: React.FC<UserModalProps> = ({
           </Button>
         </header>
 
-        {/* --- BODY --- */}
         <div className="flex-1 overflow-y-auto custom-scrollbar bg-secondary/5">
           <form
             id="user-form"
@@ -157,9 +148,7 @@ const UserModal: React.FC<UserModalProps> = ({
             className="p-4 sm:p-6 md:p-8"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* === SIDEBAR (Avatar & Status) === */}
               <aside className="lg:col-span-4 space-y-6">
-                {/* Avatar Upload */}
                 <div className="bg-card p-6 rounded-xl border border-border shadow-sm flex flex-col items-center text-center">
                   <div className="relative group size-32 rounded-full border-4 border-background shadow-lg overflow-hidden transition-all cursor-pointer bg-secondary/20 mb-4">
                     {avatarPreview ? (
@@ -177,7 +166,6 @@ const UserModal: React.FC<UserModalProps> = ({
                       </div>
                     )}
 
-                    {/* Overlay Upload */}
                     <label className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer z-10">
                       <div className="bg-background/80 backdrop-blur-md text-foreground p-2 rounded-full shadow-lg transform group-hover:scale-110 transition-transform">
                         <Camera className="size-5" />
@@ -199,18 +187,17 @@ const UserModal: React.FC<UserModalProps> = ({
                   <ErrorMessage message={errors.avatar?.message as string} />
                 </div>
 
-                {/* Account Status */}
-                <div className="p-4 rounded-xl border border-border bg-card shadow-sm flex items-center justify-between">
+                <div className="p-4 rounded-xl border border-border bg-card shadow-sm flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <div
                       className={cn(
                         "p-2.5 rounded-lg border",
-                        isActive
+                        status === 'active'
                           ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
                           : "bg-destructive/10 border-destructive/20 text-destructive",
                       )}
                     >
-                      {isActive ? (
+                      {status === 'active' ? (
                         <UserCheck className="size-5" />
                       ) : (
                         <UserX className="size-5" />
@@ -220,71 +207,31 @@ const UserModal: React.FC<UserModalProps> = ({
                       <p className="text-sm font-bold text-foreground">
                         Trạng thái
                       </p>
-                      <p
-                        className={cn(
-                          "text-[11px] font-medium mt-0.5",
-                          isActive
-                            ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-destructive",
-                        )}
-                      >
-                        {isActive ? "Đang hoạt động" : "Bị khóa (Banned)"}
-                      </p>
                     </div>
                   </div>
-                  <Switch
-                    checked={isActive}
-                    onCheckedChange={(v) =>
-                      // 🔥 Bổ sung shouldValidate để cập nhật state ngay lập tức
-                      setValue("isActive", v, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      })
-                    }
-                    className="data-[state=checked]:bg-emerald-500"
-                  />
-                </div>
-
-                {/* Verification Badge */}
-                <div className="p-4 rounded-xl border border-border bg-card shadow-sm flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={cn(
-                        "p-2.5 rounded-lg border",
-                        isVerified
-                          ? "bg-blue-500/10 border-blue-500/20 text-indigo-600 dark:text-blue-400"
-                          : "bg-secondary border-transparent text-muted-foreground",
+                  <Controller
+                      control={control}
+                      name="status"
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="w-full bg-background h-10 text-sm shadow-sm focus:ring-1">
+                            <SelectValue placeholder="Trạng thái" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="active">Đang hoạt động</SelectItem>
+                            <SelectItem value="inactive">Chưa kích hoạt</SelectItem>
+                            <SelectItem value="banned" className="text-destructive font-bold">Bị khóa (Banned)</SelectItem>
+                          </SelectContent>
+                        </Select>
                       )}
-                    >
-                      <ShieldCheck className="size-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-foreground">
-                        Tích xanh
-                      </p>
-                      <p className="text-[11px] font-medium mt-0.5 text-muted-foreground">
-                        {isVerified
-                          ? "Tài khoản xác thực"
-                          : "Người dùng thường"}
-                      </p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={isVerified}
-                    onCheckedChange={(v) =>
-                      setValue("isVerified", v, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      })
-                    }
-                    className="data-[state=checked]:bg-blue-500"
-                  />
+                    />
                 </div>
               </aside>
 
-              {/* === MAIN CONTENT === */}
               <main className="lg:col-span-8 bg-card rounded-xl border border-border shadow-sm p-6 space-y-6">
-                {/* 1. Full Name */}
                 <div>
                   <FormLabel required>Họ và tên</FormLabel>
                   <Input
@@ -302,7 +249,6 @@ const UserModal: React.FC<UserModalProps> = ({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* 2. Email */}
                   <div>
                     <FormLabel required>Email</FormLabel>
                     <div className="relative">
@@ -311,7 +257,7 @@ const UserModal: React.FC<UserModalProps> = ({
                         type="email"
                         {...register("email")}
                         autoComplete="off"
-                        // 🔥 Cho phép Admin sửa email nhưng cảnh báo nhẹ
+                        // Cho phép Admin sửa email nhưng cảnh báo nhẹ
                         className={cn(
                           "pl-9 h-10 rounded-lg bg-background border-input shadow-sm px-3",
                           errors.email && "border-destructive bg-destructive/5",
@@ -327,7 +273,6 @@ const UserModal: React.FC<UserModalProps> = ({
                     <ErrorMessage message={errors.email?.message} />
                   </div>
 
-                  {/* 3. Role */}
                   <div>
                     <FormLabel required>Phân quyền (Role)</FormLabel>
                     <Controller
@@ -342,11 +287,11 @@ const UserModal: React.FC<UserModalProps> = ({
                             <SelectValue placeholder="Chọn vai trò" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="user">
-                              Người nghe (User)
+                            <SelectItem value="candidate">
+                              Ứng viên
                             </SelectItem>
-                            <SelectItem value="artist">
-                              Nghệ sĩ (Artist)
+                            <SelectItem value="employer">
+                              Nhà tuyển dụng
                             </SelectItem>
                             <SelectItem
                               value="admin"
@@ -362,7 +307,6 @@ const UserModal: React.FC<UserModalProps> = ({
                   </div>
                 </div>
 
-                {/* 4. Password */}
                 <div>
                   <FormLabel>Mật khẩu</FormLabel>
                   <div className="relative">
@@ -393,31 +337,12 @@ const UserModal: React.FC<UserModalProps> = ({
 
                 <Separator className="my-2" />
 
-                {/* 5. Bio */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2 ml-0.5">
-                    <FileText className="size-3.5 text-muted-foreground" />
-                    <span className="text-[11px] font-bold uppercase text-foreground/80 tracking-wider">
-                      Tiểu sử (Bio)
-                    </span>
-                  </div>
-                  <Textarea
-                    {...register("bio")}
-                    spellCheck="false"
-                    className={cn(
-                      "min-h-[120px] text-sm p-3 bg-background border-input shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 rounded-xl resize-none transition-all custom-scrollbar",
-                      errors.bio && "border-destructive bg-destructive/5",
-                    )}
-                    placeholder="Viết một vài dòng giới thiệu về người dùng này..."
-                  />
-                  <ErrorMessage message={errors.bio?.message} />
-                </div>
+
               </main>
             </div>
           </form>
         </div>
 
-        {/* --- FOOTER --- */}
         <footer className="px-6 py-4 border-t border-border bg-background flex justify-end items-center gap-3 shrink-0 z-20">
           <Button
             variant="ghost"

@@ -12,7 +12,6 @@ const CandidateDashboardPage = () => {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Stat Cards */}
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary/10 rounded-lg">

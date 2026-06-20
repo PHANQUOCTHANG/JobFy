@@ -6,6 +6,7 @@ import { ItemBlock } from './shared/ItemBlock';
 import { v4 as uuidv4 } from 'uuid';
 
 export const HarvardTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
+  // eslint-disable-next-line unused-imports/no-unused-vars
   ({ data, color, font, fontSize, lineHeight, background, mode, onUpdatePersonalInfo, onUpdateArrayField }, ref) => {
     
     // Handlers
@@ -17,11 +18,13 @@ export const HarvardTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
       field: K, index: number, itemField: string, value: string
     ) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       newList[index] = { ...newList[index], [itemField]: value };
       onUpdateArrayField(field, newList);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, newItem: any) => {
       if (!onUpdateArrayField) return;
       onUpdateArrayField(field, [...data[field], { ...newItem, id: uuidv4() }]);
@@ -29,11 +32,13 @@ export const HarvardTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
 
     const handleDeleteItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, id: string) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onUpdateArrayField(field, data[field].filter((item: any) => item.id !== id) as any);
     };
 
     const handleMoveItem = <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(field: K, index: number, direction: 1 | -1) => {
       if (!onUpdateArrayField) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newList = [...data[field]] as any[];
       if (index + direction < 0 || index + direction >= newList.length) return;
       const temp = newList[index];
@@ -64,7 +69,6 @@ export const HarvardTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           padding: '50px 60px'
         }}
       >
-        {/* HEADER */}
         <div className="text-center mb-6">
           <div className="text-3xl font-bold uppercase mb-1" style={{ color: '#000' }}>
             <EditableField mode={mode} color="#000" font={actualFont} value={data.personalInfo.fullName} onChange={(v) => updateInfo('fullName', v)} placeholder="NGUYỄN VĂN A" style={{ textAlign: 'center' }} />
@@ -96,7 +100,6 @@ export const HarvardTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           </div>
         </div>
 
-        {/* SUMMARY */}
         <div className="mb-5">
           <SectionBlock title="MỤC TIÊU NGHỀ NGHIỆP" color="#000" mode={mode} variant="bold-line" titleStyle={{ textAlign: 'center' }} />
           <div className="mt-2 text-justify">
@@ -104,7 +107,6 @@ export const HarvardTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           </div>
         </div>
 
-        {/* EDUCATION */}
         <div className="mb-5">
           <SectionBlock title="HỌC VẤN" color="#000" mode={mode} variant="bold-line" titleStyle={{ textAlign: 'center' }} />
           <div className="mt-2">
@@ -141,7 +143,6 @@ export const HarvardTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           </div>
         </div>
 
-        {/* EXPERIENCE */}
         <div className="mb-5">
           <SectionBlock title="KINH NGHIỆM LÀM VIỆC" color="#000" mode={mode} variant="bold-line" titleStyle={{ textAlign: 'center' }} />
           <div className="mt-2">
@@ -178,7 +179,6 @@ export const HarvardTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>
           </div>
         </div>
 
-        {/* SKILLS & CERTS */}
         <div className="mb-5">
           <SectionBlock title="KỸ NĂNG & CHỨNG CHỈ" color="#000" mode={mode} variant="bold-line" titleStyle={{ textAlign: 'center' }} />
           <div className="mt-2 space-y-2">

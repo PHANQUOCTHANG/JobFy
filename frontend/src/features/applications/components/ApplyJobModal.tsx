@@ -11,7 +11,7 @@ import { useApplyJob, useApplyWithCv } from '../hooks/useApplications';
 import { useMyResumes } from '@/features/candidates/hooks/useCandidates';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Send, Sparkles, AlertCircle, Upload, ChevronDown, X, CheckCircle2, Trash2 } from 'lucide-react';
+import { FileText, Sparkles, AlertCircle, Upload, ChevronDown, X, CheckCircle2, Trash2 } from 'lucide-react';
 import { useAppSelector } from '@/store/hooks';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -49,10 +49,12 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const { user } = useAppSelector((state) => state.auth);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { data: resumes, isLoading: isLoadingResumes } = useMyResumes();
   const { mutate: apply, isPending } = useApplyJob();
   const { mutate: applyWithCv, isPending: isUploadingCv } = useApplyWithCv();
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { register, handleSubmit, formState: { errors }, reset, trigger, getValues } = useForm({
     resolver: zodResolver(uploadSchema),
     defaultValues: {
@@ -86,6 +88,7 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
         setIsSuccess(true);
         onSuccess?.();
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onError: (error: any) => {
         const status = error.response?.status;
         const msg = error.response?.data?.message;
@@ -156,6 +159,7 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
             setIsSuccess(true);
             onSuccess?.();
           },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onError: (error: any) => {
             const status = error.response?.status;
             const msg = error.response?.data?.message;
@@ -209,7 +213,6 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
           </div>
         ) : (
           <>
-            {/* Header */}
             <div className="px-6 py-4 border-b border-slate-200 flex flex-col relative bg-white z-10">
               <DialogTitle className="text-xl font-bold text-slate-800">Ứng tuyển</DialogTitle>
               <p className="text-sm text-slate-500 mt-1 line-clamp-1">{jobTitle}</p>
@@ -221,16 +224,13 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
               </button>
             </div>
             
-            {/* Body */}
             <div className="p-6 max-h-[70vh] overflow-y-auto space-y-6">
-              {/* CV Selection */}
               <div>
                 <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-3">
                   <FileText className="w-5 h-5 text-indigo-600" />
                   Chọn CV để ứng tuyển
                 </h3>
                 <div className="space-y-3">
-                  {/* Option 1: Online CV */}
                   <label className={`block border ${selectedCvType === 'online' ? 'border-indigo-600 bg-indigo-50/20' : 'border-slate-200'} rounded-lg p-4 cursor-pointer hover:border-indigo-400 transition-colors`}>
                       <div className="flex items-center gap-3">
                         <input type="radio" name="cv_type" value="online" checked={selectedCvType === 'online'} onChange={() => setSelectedCvType('online')} className="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-600 accent-indigo-600" />
@@ -249,7 +249,6 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
                       </div>
                   </label>
 
-                  {/* Option 2: Upload */}
                   <div className={`border ${selectedCvType === 'upload' ? 'border-indigo-600 shadow-sm' : 'border-slate-200 border-dashed'} rounded-lg transition-colors overflow-hidden`}>
                     <div 
                       onClick={() => setSelectedCvType('upload')}
@@ -314,7 +313,6 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
                         )}
                     </div>
 
-                    {/* Form Nhập liệu (Expand) */}
                     {selectedCvType === 'upload' && (
                       <div className="border-t border-indigo-100 bg-white p-5 animate-in slide-in-from-top-2 duration-200 cursor-default">
                         <div className="flex justify-between items-center mb-4">
@@ -347,7 +345,6 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
                 </div>
               </div>
 
-              {/* Location */}
               <div>
                 <h3 className="text-sm font-bold text-slate-800 mb-2">Địa điểm làm việc mong muốn <span className="text-red-500">*</span></h3>
                 <div className="border border-slate-200 rounded-lg p-2.5 flex items-center justify-between cursor-pointer hover:border-indigo-400 transition-colors">
@@ -358,7 +355,6 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
                 </div>
               </div>
 
-              {/* Cover Letter */}
               <div>
                 <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-2">
                   <Sparkles className="w-5 h-5 text-indigo-600" />
@@ -373,13 +369,11 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
                 />
               </div>
 
-              {/* Notice */}
               <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
                 <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2 mb-2"><AlertCircle className="w-4 h-4 text-red-500" /> Lưu ý:</h4>
                 <p className="text-sm text-slate-600 mb-1 leading-relaxed">1. JobFy khuyên tất cả các bạn hãy luôn cẩn trọng trong quá trình tìm việc và chủ động nghiên cứu về thông tin công ty, vị trí việc làm trước khi ứng tuyển.</p>
               </div>
 
-              {/* Checks */}
               <div className="space-y-3 pb-2">
                 <label className="flex items-start gap-3 cursor-pointer group">
                     <input type="checkbox" defaultChecked className="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-600 accent-indigo-600 cursor-pointer" />
@@ -392,7 +386,6 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
               </div>
             </div>
 
-            {/* Footer */}
             <div className="px-6 py-4 border-t border-slate-200 bg-white shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.05)] z-10">
               <Button 
                 onClick={handleApply} 

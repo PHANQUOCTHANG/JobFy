@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import {
-  AdminLayout,
   ClientLayout,
   RootLayout,
   EmployerLayout,
@@ -13,7 +12,6 @@ import {
   HomePage,
   NotFoundPage,
   SettingsPage,
-  UsersManagementPage,
   CompanyListPage,
   CompanyDetailPage,
   CandidateProfilePage,
@@ -24,7 +22,9 @@ import {
   EmployerDashboardPage,
   ManageCompanyPage,
   ManageJobsPage,
+  CreateJobPage,
   ManageApplicationsPage,
+  CandidateDetailPage,
   EmployerSettingsPage,
   CandidateDashboardPage,
   SavedJobsPage,
@@ -34,28 +34,29 @@ import {
   MyCvsPage,
   CoverLetterPage,
 } from "@/pages";
+
+
+import EmployerRegisterPage from "@/pages/employer/EmployerRegisterPage";
+import EmployerLoginPage from "@/pages/employer/EmployerLoginPage";
+
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
 import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS } from "@/config/paths";
 
 export const router = createBrowserRouter([
   {
-    // 🔥 QUAN TRỌNG: RootLayout bao trùm toàn bộ ứng dụng
+    // QUAN TRỌNG: RootLayout bao trùm toàn bộ ứng dụng
     // Nó không có path (pathless route), nhiệm vụ chỉ là chạy logic Init Auth
     element: <RootLayout />,
     children: [
-      // ===================================================
       // 1. NHÓM AUTH (Login/Register)
-      // ===================================================
       {
         element: <GuestRoute />, // <--- Bọc ở đây
         children: [
           ...guestAuthRoutes, // Login, Register
         ],
       },
-      // ===================================================
       // 2. NHÓM CLIENT (USER APP)
-      // ===================================================
       {
         path: CLIENT_PATHS.CLIENT,
         element: <ClientLayout />,
@@ -87,9 +88,7 @@ export const router = createBrowserRouter([
         ],
       },
 
-      // ===================================================
       // 3. NHÓM CANDIDATE PORTAL
-      // ===================================================
       {
         path: CANDIDATE_PATHS.DASHBOARD,
         element: <ProtectedRoute requiredRole="candidate" />,
@@ -122,14 +121,21 @@ export const router = createBrowserRouter([
         ],
       },
 
-      // ===================================================
       // 4. NHÓM EMPLOYER PORTAL
-      // ===================================================
       {
         path: EMPLOYER_PATHS.DASHBOARD,
         element: <ProtectedRoute requiredRole="employer" />,
         children: [
           {
+            path: EMPLOYER_PATHS.REGISTER,
+            element: <EmployerRegisterPage />
+          },
+          {
+            path: EMPLOYER_PATHS.LOGIN,
+            element: <EmployerLoginPage />
+          },
+          {
+            // element: <ProtectedRoute />,
             element: <EmployerLayout />,
             children: [
               {
@@ -145,8 +151,16 @@ export const router = createBrowserRouter([
                 element: <ManageJobsPage />,
               },
               {
+                path: EMPLOYER_PATHS.CREATE_JOB,
+                element: <CreateJobPage />,
+              },
+              {
                 path: EMPLOYER_PATHS.APPLICATIONS,
                 element: <ManageApplicationsPage />,
+              },
+              {
+                path: EMPLOYER_PATHS.CANDIDATE_DETAIL(":id"),
+                element: <CandidateDetailPage />,
               },
               {
                 path: EMPLOYER_PATHS.SETTINGS,
@@ -157,9 +171,7 @@ export const router = createBrowserRouter([
         ],
       },
 
-      // ===================================================
       // 5. 404 NOT FOUND
-      // ===================================================
       {
         path: "*",
         element: <NotFoundPage />,

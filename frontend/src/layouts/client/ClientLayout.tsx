@@ -15,17 +15,14 @@ const ClientLayout = () => {
     >
       <Header />
 
-      {/* Main Content Area */}
       <main className="flex-1 w-full relative z-0">
         <Outlet />
       </main>
 
       <Footer />
 
-      {/* Floating Action Bar */}
       <FloatingActionBar />
 
-      {/* Player thường được render ở root hoặc portal, nhưng layout cần chừa chỗ */}
     </div>
   );
 };

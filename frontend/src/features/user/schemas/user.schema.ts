@@ -8,7 +8,7 @@ const ACCEPTED_IMAGE_TYPES = [
   "image/webp",
 ];
 
-// --- SHARED RULES ---
+// SHARED RULES ---
 const passwordRule = z
   .string()
   .min(6, "Mật khẩu tối thiểu 6 ký tự")
@@ -27,28 +27,25 @@ const avatarRule = z
   .optional()
   .nullable();
 
-// --- 1. ADMIN CREATE/UPDATE USER ---
+// 1. ADMIN CREATE/UPDATE USER ---
 export const adminUserSchema = z.object({
   fullName: z.string().trim().min(2, "Tên quá ngắn").max(50),
   email: z.string().email("Email không hợp lệ"),
-  role: z.enum(["user", "artist", "admin"]),
+  role: z.enum(["candidate", "employer", "admin"]),
 
   // Chỉ Admin mới được sửa các field này
-  isActive: z.boolean().default(true),
-  isVerified: z.boolean().default(false),
+  status: z.enum(["active", "inactive", "banned"]).default("active"),
 
   // Password optional khi edit
   password: passwordRule,
   avatar: avatarRule,
-  bio: z.string().max(500).optional(),
 });
 
 export type AdminUserFormValues = z.infer<typeof adminUserSchema>;
 
-// --- 2. USER PROFILE UPDATE (Self) ---
+// 2. USER PROFILE UPDATE (Self) ---
 export const profileSchema = z.object({
   fullName: z.string().trim().min(2).max(50),
-  bio: z.string().max(500).optional(),
   avatar: avatarRule,
 });
 

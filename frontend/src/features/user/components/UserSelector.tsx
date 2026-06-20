@@ -4,7 +4,6 @@ import {
   Check,
   X,
   Loader2,
-  Users as UsersIcon,
   ListFilter,
   UserCircle,
 } from "lucide-react";
@@ -21,7 +20,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useUsersQuery } from "@/features/user/hooks/useUsersQuery";
 import type { User } from "@/features/user/types";
 
-// --- Props ---
+// Props ---
 interface UserSelectorProps {
   label?: string;
   required?: boolean;
@@ -29,6 +28,7 @@ interface UserSelectorProps {
 
   // Hỗ trợ cả mảng (Multi), ID đơn (Single), hoặc undefined (All/Empty)
   value: string | string[] | null | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (val: any) => void;
 
   singleSelect?: boolean;
@@ -86,8 +86,8 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
     // Gộp fetched và initial, loại bỏ trùng lặp và loại trừ excludeIds
     const pool = [...initialArr, ...fetchedUsers].filter(
       (u, index, self) =>
-        index === self.findIndex((t) => t._id === u._id) &&
-        !excludeIds.includes(u._id),
+        index === self.findIndex((t) => t.id === u.id) &&
+        !excludeIds.includes(u.id),
     );
 
     return pool;
@@ -96,11 +96,11 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
   // Lấy chi tiết các user đang được chọn để hiển thị Tag
   const selectedUserDetails = useMemo(() => {
     return selectedIds
-      .map((id) => displayUsers.find((u) => u._id === id))
+      .map((id) => displayUsers.find((u) => u.id === id))
       .filter(Boolean) as User[];
   }, [selectedIds, displayUsers]);
 
-  // --- CORE LOGIC: Handle Select ---
+  // CORE LOGIC: Handle Select ---
   const handleSelect = (id: string | undefined) => {
     if (singleSelect) {
       onChange(id === value ? undefined : id);
@@ -120,21 +120,18 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
 
   return (
     <div className={cn("space-y-2 w-full", className)}>
-      {/* --- LABEL --- */}
       {label && (
         <Label className="text-xs font-bold uppercase text-foreground/80 tracking-wider flex items-center gap-1.5 ml-0.5">
           {label} {required && <span className="text-destructive">*</span>}
         </Label>
       )}
 
-      {/* --- MAIN CONTAINER --- */}
       <div
         className={cn(
           "border border-input rounded-lg bg-background shadow-sm transition-all focus-within:ring-2 focus-within:ring-primary/20",
           error && "border-destructive focus-within:ring-destructive/20",
         )}
       >
-        {/* Search Input (Giả lập Select Trigger) */}
         <div className="relative border-b border-border/50">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
@@ -148,7 +145,6 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
           />
         </div>
 
-        {/* List (Chỉ hiện khi Focus) */}
         <div
           className={cn(
             "overflow-hidden transition-all duration-200 ease-in-out",
@@ -165,7 +161,6 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
               </div>
             ) : (
               <>
-                {/* --- TÙY CHỌN: TẤT CẢ (CHO FILTER) --- */}
                 {variant === "filter" && !searchTerm && (
                   <div
                     onMouseDown={(e) => {
@@ -185,26 +180,24 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                   </div>
                 )}
 
-                {/* --- DANH SÁCH USERS --- */}
                 {displayUsers.map((user) => {
-                  const isSelected = selectedIds.includes(user._id);
+                  const isSelected = selectedIds.includes(user.id);
                   return (
                     <div
-                      key={user._id}
+                      key={user.id}
                       onMouseDown={(e) => {
                         e.preventDefault();
-                        handleSelect(user._id);
+                        handleSelect(user.id);
                       }}
                       className={cn(
                         "flex items-center gap-3 p-2 rounded-md cursor-pointer transition-colors select-none",
                         isSelected ? "bg-primary/10" : "hover:bg-accent",
                       )}
                     >
-                      {/* Avatar */}
                       <div className="relative shrink-0">
                         <Avatar className="size-8 border border-border">
                           <AvatarImage
-                            src={user.avatar}
+                            src={user.avatar || undefined}
                             className="object-cover"
                           />
                           <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">
@@ -218,7 +211,6 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                         )}
                       </div>
 
-                      {/* Info */}
                       <div className="flex-1 min-w-0">
                         <p
                           className={cn(
@@ -235,7 +227,6 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                         </p>
                       </div>
 
-                      {/* Multi-select check box giả */}
                       {!singleSelect && (
                         <div
                           className={cn(
@@ -254,7 +245,6 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                   );
                 })}
 
-                {/* Không có dữ liệu */}
                 {displayUsers.length === 0 && !isLoading && (
                   <div className="py-8 flex flex-col items-center justify-center gap-2 text-muted-foreground">
                     <UserCircle className="size-8 opacity-20" />
@@ -269,17 +259,16 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
         </div>
       </div>
 
-      {/* --- HIỂN THỊ TAGS CHO MULTI-SELECT (HOẶC SINGLE KHI ĐÃ ĐÓNG) --- */}
       {selectedUserDetails.length > 0 && (
         <div className="flex flex-wrap gap-2 animate-in fade-in zoom-in-95 duration-200">
           {selectedUserDetails.map((user) => (
             <Badge
-              key={user._id}
+              key={user.id}
               variant="secondary"
               className="pl-1 pr-1.5 py-1 h-8 text-xs border bg-background hover:bg-muted transition-colors flex items-center gap-1.5 shadow-sm"
             >
               <Avatar className="size-5">
-                <AvatarImage src={user.avatar} className="object-cover" />
+                <AvatarImage src={user.avatar || undefined} className="object-cover" />
                 <AvatarFallback className="text-[8px] bg-primary/10 text-primary">
                   {getInitialsTextAvartar(user.fullName)}
                 </AvatarFallback>
@@ -291,7 +280,7 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleSelect(user._id);
+                  handleSelect(user.id);
                 }}
                 className="size-4 rounded-full hover:bg-destructive hover:text-white flex items-center justify-center transition-colors ml-0.5"
               >
@@ -302,7 +291,6 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
         </div>
       )}
 
-      {/* --- LỖI VALIDATION --- */}
       {error && (
         <p className="text-[11px] font-bold text-destructive animate-in slide-in-from-left-1">
           {error}

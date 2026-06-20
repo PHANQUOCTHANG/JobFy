@@ -80,9 +80,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
     if (viewMode === 'compact') {
       return (
         <Link target="_blank" rel="noopener noreferrer" to={`/jobs/${job.slug || job.id}`} className="group bg-white border border-[#e8e8e8] rounded-lg p-3 transition-all hover:border-indigo-600 hover:-translate-y-1 hover:shadow-md cursor-pointer flex flex-col justify-between h-full block">
-          {/* Top section: Logo + Title + Company */}
           <div className="flex items-start gap-3 mb-3">
-            {/* Small Logo */}
             <div className="w-[48px] h-[48px] border border-[#e8e8e8] rounded flex-shrink-0 bg-white p-1 flex items-center justify-center">
               {job.company?.logoUrl ? (
                 <img
@@ -114,7 +112,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
             </div>
           </div>
 
-          {/* Bottom section: Pills + Heart */}
           <div className="flex items-center justify-between mt-auto pt-2">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#f5f5f5] text-[#212f3f] text-[12px] font-medium">
@@ -151,7 +148,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
           to={`/jobs/${job.slug || job.id}`}
           className="group bg-white border border-[#4F46E5] rounded-[16px] p-4 transition-all hover:shadow-md cursor-pointer flex flex-row items-start gap-4 w-full"
         >
-          {/* Logo */}
           <div className="w-[100px] h-[100px] border border-[#4F46E5] rounded-xl flex-shrink-0 bg-white p-2 flex items-center justify-center">
              {job.company?.logoUrl ? (
                 <img
@@ -164,10 +160,8 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
               )}
           </div>
           
-          {/* Content */}
           <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
             <div>
-               {/* Title row */}
                <div className="flex items-start justify-between gap-3 mb-2">
                   <TooltipProvider delayDuration={300}>
                     <Tooltip>
@@ -190,12 +184,10 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
                   </span>
                </div>
                
-               {/* Company */}
                <p className="text-[#6f7882] text-[13px] uppercase truncate mb-3 flex items-center gap-1.5">
                  {job.company?.name || 'CÔNG TY ẨN DANH'}
                </p>
 
-               {/* Pills */}
                <div className="flex flex-wrap items-center gap-2">
                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#f4f5f5] text-[#212f3f] text-[13px]">
                    {job.address ? job.address.split(',')[0] : 'Hồ Chí Minh'}
@@ -206,7 +198,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
                </div>
             </div>
 
-            {/* Requirements row */}
             <div className="mt-4 pt-3 border-t border-[#f0f0f0] flex items-center text-[13px] text-[#6f7882]">
                <span className="truncate max-w-[80%]">
                  {EXPERIENCE_LABEL[job.experienceLevel || ''] || 'Không yêu cầu'} kinh nghiệm chuyên môn
@@ -234,7 +225,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
         to={`/jobs/${job.slug || job.id}`}
         className="group bg-white border border-[#e8e8e8] rounded-lg p-4 transition-all hover:border-indigo-600 hover:shadow-md cursor-pointer flex flex-col gap-4 block"
       >
-        {/* Logo */}
         <div className="w-[80px] h-[80px] border border-[#e8e8e8] rounded flex-shrink-0 bg-white p-1.5 flex items-center justify-center">
           {job.company?.logoUrl ? (
             <img
@@ -247,7 +237,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
           )}
         </div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div className="flex items-start justify-between gap-3 mb-1">
             <h3 className="font-bold text-[16px] text-[#212f3f] leading-snug truncate group-hover:text-indigo-600 transition-colors">

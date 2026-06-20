@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Quote, ChevronLeft, ChevronRight, Inbox, Star, CheckCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Inbox, Star, CheckCircle } from "lucide-react";
 import { Reveal } from "./Reveal";
-import { SectionLabel } from "./Typography";
 import { Testimonial } from "../types";
 
 export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
@@ -28,7 +27,6 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
           </Reveal>
         ) : (
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-20 items-center">
-            {/* Left Column */}
             <div className="flex-1 w-full max-w-[420px]">
               <Reveal>
                 <p className="text-[#4F46E5] text-[11px] font-black uppercase tracking-[0.22em] mb-4 flex items-center gap-2">
@@ -39,7 +37,6 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                   <span className="text-[#4F46E5]">JobFy?</span>
                 </h2>
 
-                {/* Overlapping avatars & reviews */}
                 <div className="flex items-center gap-5 mb-14">
                   <div className="flex items-center">
                     {testimonials.slice(0, 4).map((t, i) => (
@@ -58,7 +55,6 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                   </div>
                 </div>
 
-                {/* Navigation & Progress */}
                 <div>
                   <div className="flex items-center gap-5 mb-6">
                     <button onClick={prevT} className="w-11 h-11 rounded-[0.85rem] border border-[#E2E8F0] flex items-center justify-center text-[#64748B] hover:border-[#4F46E5] hover:text-[#4F46E5] transition-all bg-white shadow-sm hover:shadow-md">
@@ -73,7 +69,6 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                       <ChevronRight size={18} />
                     </button>
                   </div>
-                  {/* Progress Line */}
                   <div className="w-32 h-[2px] bg-[#E2E8F0] relative overflow-hidden">
                     <div className="absolute top-0 left-0 h-full bg-[#4F46E5] transition-all duration-500" style={{ width: `${((tIdx + 1) / testimonials.length) * 100}%` }} />
                   </div>
@@ -81,16 +76,13 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
               </Reveal>
             </div>
             
-            {/* Right Column */}
             <div className="flex-[1.2] w-full">
               <Reveal delay={150}>
                 <div className="bg-slate-50 border border-slate-200 rounded-[2rem] p-8 md:p-12 relative shadow-sm">
-                  {/* Huge faded quote icon in top right */}
                   <div className="absolute top-10 right-10 pointer-events-none opacity-[0.03] select-none text-slate-900" style={{ fontFamily: "'Manrope', sans-serif", fontSize: "160px", lineHeight: "1" }}>
                     ”
                   </div>
                   
-                  {/* Reviewer Info */}
                   <div className="flex items-start justify-between mb-8 relative z-10">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-[1rem] flex items-center justify-center text-white font-bold text-[16px] shadow-sm" style={{ backgroundColor: testimonials[tIdx].avatarBg }}>
@@ -108,12 +100,10 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                     </div>
                   </div>
 
-                  {/* Quote text */}
                   <p className="text-[20px] md:text-[22px] leading-[1.65] text-slate-900 font-semibold italic mb-10 relative z-10" style={{ fontFamily: "'Manrope', sans-serif" }}>
                     "{testimonials[tIdx].quote}"
                   </p>
 
-                  {/* Bottom Verification */}
                   <div className="flex items-center justify-between pt-6 border-t border-[#E2E8F0] relative z-10">
                     <div className="flex items-center gap-3">
                       <div className="flex gap-1">

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { useJob, JobDetailContent } from "@/features/jobs";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   MapPin,
@@ -14,8 +13,6 @@ import {
   Send,
   Heart,
   Clock,
-  Users,
-  Share2,
   Facebook,
   Twitter,
   Linkedin,
@@ -33,7 +30,6 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AUTH_PATHS } from "@/config/paths";
@@ -67,6 +63,7 @@ const EXPERIENCE_LABEL: Record<string, string> = {
   manager: "Trên 7 năm",
 };
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const JOB_TYPE_LABEL: Record<string, string> = {
   full_time: "Toàn thời gian",
   part_time: "Bán thời gian",
@@ -112,6 +109,7 @@ export const JobDetailPage: React.FC = () => {
     setIsApplyModalOpen(true);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSearch = (newFilters: any) => {
     const params = new URLSearchParams();
     if (newFilters.keyword) params.set("keyword", newFilters.keyword);
@@ -176,7 +174,6 @@ export const JobDetailPage: React.FC = () => {
 
   return (
     <div className="bg-[#f4f5f5] min-h-screen pb-10">
-      {/* ── Sticky Top Bar on scroll ─────────────────────────────── */}
       <div
         className={cn(
           "fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow transition-transform duration-300",
@@ -204,14 +201,12 @@ export const JobDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ─── SEARCH BAR SECTION ─── */}
       <div className="bg-[#4F46E5] py-3 px-4">
         <div className="max-w-6xl mx-auto">
           <JobFilters onSearch={handleSearch} />
         </div>
       </div>
 
-      {/* ── Breadcrumb ──────────────────────────────────────────── */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center text-sm text-gray-500 gap-1">
@@ -229,10 +224,8 @@ export const JobDetailPage: React.FC = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 mt-4 space-y-4">
-        {/* ── Hero Card ─────────────────────────────────────────── */}
         <div ref={headerRef} className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-start gap-5">
-            {/* Logo */}
             <div className="w-20 h-20 border border-gray-200 rounded-lg flex items-center justify-center p-2 flex-shrink-0">
               {job.company?.logoUrl ? (
                 <img
@@ -246,7 +239,6 @@ export const JobDetailPage: React.FC = () => {
             </div>
 
             <div className="flex-1 min-w-0">
-              {/* Title */}
               <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight mb-1">
                 {job.title}
                 {job.company?.isVerified && (
@@ -259,7 +251,6 @@ export const JobDetailPage: React.FC = () => {
                 )}
               </h1>
 
-              {/* Company name */}
               <Link
                 to={job.company?.slug ? `/companies/${job.company.slug}` : "#"}
                 style={{ color: PRIMARY_COLOR }}
@@ -268,7 +259,6 @@ export const JobDetailPage: React.FC = () => {
                 {job.company?.name || "Công ty ẩn danh"}
               </Link>
 
-              {/* 3-column metrics */}
               <div className="flex flex-wrap gap-6 mt-4">
                 <div className="flex items-center gap-2.5">
                   <div
@@ -330,7 +320,6 @@ export const JobDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Deadline */}
               {deadlineStr && (
                 <div className="flex items-center gap-2 mt-4 text-sm text-gray-600">
                   <Clock className="w-4 h-4 text-gray-400" />
@@ -357,7 +346,6 @@ export const JobDetailPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 mt-5">
                 <button
                   onClick={handleApplyClick}
@@ -379,7 +367,6 @@ export const JobDetailPage: React.FC = () => {
                   Lưu tin
                 </button>
 
-                {/* Social share buttons */}
                 <div className="flex items-center gap-2 ml-auto">
                   <button className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center hover:opacity-80 transition-opacity">
                     <Facebook className="w-4 h-4" />
@@ -399,13 +386,10 @@ export const JobDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ── 2-column body ──────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4 items-start">
-          {/* LEFT: Job Content */}
           <div className="space-y-4">
             <JobDetailContent job={job} />
 
-            {/* Bottom CTA (repeat) */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <p className="text-gray-600 text-sm mb-4 text-center">
                 Hạn nộp hồ sơ:{" "}
@@ -434,7 +418,6 @@ export const JobDetailPage: React.FC = () => {
                 </button>
               </div>
 
-              {/* Report */}
               <p className="text-center mt-4 text-xs text-gray-400">
                 Báo cáo tin tuyển dụng:{" "}
                 <button className="underline hover:text-red-500 transition-colors">
@@ -447,7 +430,6 @@ export const JobDetailPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Related jobs */}
             <RelatedJobs
               categorySlug={job.category?.slug}
               categoryId={job.categoryId}
@@ -455,7 +437,6 @@ export const JobDetailPage: React.FC = () => {
             />
           </div>
 
-          {/* RIGHT: Sidebar */}
           <div className="sticky top-16 space-y-4">
             <JobDetailSidebar
               job={job}
@@ -467,7 +448,6 @@ export const JobDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Login Guard Dialog ─────────────────────────────────── */}
       <AlertDialog open={isLoginAlertOpen} onOpenChange={setIsLoginAlertOpen}>
         <AlertDialogContent className="rounded-2xl sm:max-w-[420px] bg-white border-none shadow-2xl p-0 overflow-hidden">
           <div className="bg-[#4F46E5]/10 pt-8 pb-6 px-6 flex flex-col items-center border-b border-[#4F46E5]/10">
@@ -501,7 +481,6 @@ export const JobDetailPage: React.FC = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* ── Apply Modal ────────────────────────────────────────── */}
       {job && (
         <ApplyJobModal
           isOpen={isApplyModalOpen}

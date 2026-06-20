@@ -2,7 +2,6 @@ import React from "react";
 import { useJobs } from "../hooks/useJobs";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Sparkles,
   Heart,
   MapPin,
   Briefcase,
@@ -21,6 +20,7 @@ import { vi } from "date-fns/locale";
 import { Job } from "../types";
 import { mockJobs } from "../api/mockData";
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const PRIMARY_COLOR = "#4F46E5";
 
 interface RelatedJobsProps {

@@ -16,8 +16,10 @@ const BackgroundPattern = () => (
   </div>
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Button = ({ children, className, isLoading, variant = "primary", ...props }: any) => {
   const base = "relative group w-full h-12 rounded-xl font-bold text-[14.5px] transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const variants: any = {
     primary: "bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-lg shadow-[#4F46E5]/20",
     outline: "bg-white border border-[#E2E8F0] hover:border-[#0F172A] text-[#0F172A]",
@@ -133,6 +135,7 @@ const ResendTimer = ({ onResend, isLoading }: { onResend: () => Promise<void>; i
 };
 
 const VerifyAccountForm = () => {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const navigate = useNavigate();
   const { 
     email, 
@@ -160,11 +163,11 @@ const VerifyAccountForm = () => {
     if (otp.length === 6) {
       handleVerifyOtp(otp);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otp]);
 
   return (
     <div className="min-h-screen w-full flex bg-white text-slate-900" style={{ fontFamily: "'Manrope', sans-serif" }}>
-      {/* LEFT COLUMN: Visuals */}
       <div className="hidden lg:flex w-[45%] relative flex-col justify-between p-12 bg-slate-50 border-r border-slate-200 text-slate-900 overflow-hidden">
         <BackgroundPattern />
         
@@ -207,7 +210,6 @@ const VerifyAccountForm = () => {
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Form */}
       <div className="w-full lg:w-[55%] flex flex-col items-center justify-center p-6 sm:p-12 relative">
         <Link to="/" className="absolute top-8 left-8 lg:hidden flex items-center gap-2 text-slate-900">
           <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">

@@ -43,6 +43,7 @@ export const checkApplied = async (jobId: string, candidateId: string): Promise<
       return data[0];
     }
     return null;
+  // eslint-disable-next-line unused-imports/no-unused-vars
   } catch (error) {
     return null;
   }

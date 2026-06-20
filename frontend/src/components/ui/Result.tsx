@@ -349,9 +349,7 @@ const LoadingSkeleton = memo(
           className,
         )}
       >
-        {/* Skeleton icon */}
         <div className={cn("skeleton skeleton-avatar", s.iconWrap)} />
-        {/* Skeleton text */}
         <div className="space-y-2 w-full max-w-[180px]">
           <div className="skeleton skeleton-text w-3/4 mx-auto" />
           <div className="skeleton skeleton-text w-full" />
@@ -419,6 +417,7 @@ export const MusicResult = memo(
       // KIỂM TRA: Nếu customIcon là một Function (Component), ta render nó
       if (
         typeof customIcon === "function" ||
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (typeof customIcon === "object" && (customIcon as any).$$typeof)
       ) {
         const IconComp = customIcon as LucideIcon;
@@ -509,7 +508,6 @@ export const MusicResult = memo(
             : undefined
         }
       >
-        {/* Icon wrapper */}
         <div
           className={cn(
             "flex items-center justify-center rounded-full shrink-0 transition-colors",
@@ -523,7 +521,6 @@ export const MusicResult = memo(
           {iconNode}
         </div>
 
-        {/* Text + Actions */}
         <div className={cn("space-y-1", isHorizontal ? "flex-1 min-w-0" : "")}>
           <p className={cn("text-foreground", s.title)}>{title}</p>
           {description && (
@@ -532,7 +529,6 @@ export const MusicResult = memo(
             </p>
           )}
 
-          {/* Actions */}
           {(resolvedAction ||
             resolvedSecondaryAction ||
             resolvedThirdAction ||

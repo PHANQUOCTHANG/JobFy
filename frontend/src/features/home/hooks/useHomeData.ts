@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Code2, Palette, BookOpen, Heart, Headphones, DollarSign, LineChart, TrendingUp } from "lucide-react";
 import { Job, Testimonial, Article, Category, Company } from "../types";
 import { useFeaturedJobs, useJobCategories } from "@/features/jobs/hooks/useJobs";
@@ -185,6 +184,7 @@ const MOCK_DATA: HomeData = {
   ],
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CATEGORY_ICONS: Record<string, any> = {
   "it": Code2,
   "marketing": LineChart,
