@@ -27,6 +27,15 @@ export const getSavedJobs = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+export const getSavedJobIds = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+  const result = await savedJobService.getSavedJobIds(userId);
+
+  sendResponse(res, 200, "Success", result.data);
+});
+
 export const saveJob = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });

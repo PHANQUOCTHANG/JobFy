@@ -19,6 +19,16 @@ export class SavedJobService {
     return await this.repository.getSavedJobs(candidate.id, params);
   }
 
+  async getSavedJobIds(userId: string) {
+    const candidate = await prisma.candidateProfile.findUnique({
+      where: { userId }
+    });
+    if (!candidate) throw new BadRequestError("Candidate profile not found");
+
+    const ids = await this.repository.getSavedJobIds(candidate.id);
+    return { data: ids };
+  }
+
   async isSaved(userId: string, jobId: string) {
     const candidate = await prisma.candidateProfile.findUnique({
       where: { userId }
