@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import UserDropdown from "@/features/user/components/UserDropdown";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
@@ -13,6 +14,15 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
   const [searchValue, setSearchValue] = useState("");
   const [hasNotif, setHasNotif] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchValue.trim()) {
+      import("sonner").then(({ toast }) => toast.success(`Đang tìm kiếm: ${searchValue}`));
+      // Tương lai: navigate(`/employer/search?q=${encodeURIComponent(searchValue)}`);
+      setSearchOpen(false);
+    }
+  };
 
   // Focus input khi mở search trên mobile
   useEffect(() => {
@@ -41,6 +51,7 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={handleSearch}
             className="w-full pl-12 pr-12 py-3 bg-[#F8FAFC] border-2 border-transparent hover:bg-[#F1F5F9] focus:bg-white rounded-xl focus:ring-0 focus:border-[#00307c]/20 focus:shadow-[0_0_0_4px_rgba(0,48,124,0.05)] text-[14.5px] font-medium text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all duration-300"
             placeholder="Tìm kiếm ứng viên, công việc, chiến dịch..."
           />
@@ -90,9 +101,9 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
           </button>
           
           {/* Settings */}
-          <button className="w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300">
+          <Link to="/employer/settings" className="w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300">
             <span className="material-symbols-outlined text-[22px]">settings</span>
-          </button>
+          </Link>
         </div>
 
         {/* Profile */}
@@ -143,6 +154,7 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
               type="text"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={handleSearch}
               placeholder="Tìm kiếm ứng viên, tin tuyển dụng..."
               className="flex-1 bg-transparent text-[16px] font-medium text-[#0F172A] placeholder:text-[#94A3B8] outline-none border-none"
             />
