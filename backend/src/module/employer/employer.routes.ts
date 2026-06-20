@@ -3,10 +3,13 @@ import { EmployerController } from "./employer.controller";
 import { EmployerVerificationService } from "./employer.service";
 import { EmployerDashboardService } from "./employer.dashboard";
 import { EmployerAIService } from "./employer.ai.service";
+import { EmployerCandidateService } from "./employer.candidate.service";
+import { EmployerCandidateController } from "./employer.candidate.controller";
 import { OtpService } from "@/module/auth/otp/otp.service";
 import { OtpRepository } from "@/module/auth/otp/otp.repository";
 import { UserRepository } from "@/module/user/user.repository";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
+import { EmailService } from "@/module/auth/email/email.service";
 import prisma from "@/lib/prisma";
 
 
@@ -20,12 +23,16 @@ router.use((req, res, next) => {
 const service = new EmployerVerificationService(prisma);
 const dashboardService = new EmployerDashboardService(prisma);
 const aiService = new EmployerAIService();
+const emailService = new EmailService();
+const candidateService = new EmployerCandidateService(prisma, emailService);
 
 // Khởi tạo OtpService thật thay vì dùng {}
 const otpRepo = new OtpRepository(prisma);
 const userRepo = new UserRepository(prisma);
 const otpService = new OtpService(otpRepo, userRepo);
+
 const controller = new EmployerController(service, otpService, dashboardService, aiService);
+const candidateController = new EmployerCandidateController(candidateService, aiService);
 
 router.use(requireAuth, requireRole("employer"));
 
@@ -37,5 +44,16 @@ router.post("/verify-email", controller.verifyEmail);
 router.get("/company-info", controller.getCompanyInfo);
 router.patch("/company-info", controller.updateInfo);
 router.post("/submit-legal", controller.submitLegal);
+
+// Candidates
+router.get("/jobs/dropdown", candidateController.getJobsDropdown);
+router.get("/candidates", candidateController.getCandidates);
+router.get("/candidates/export", candidateController.exportCandidates);
+router.get("/candidates/ai-insights", candidateController.getAIInsights);
+router.get("/candidates/history", candidateController.getRecruitmentHistory);
+router.get("/candidates/conversion-report", candidateController.getConversionReport);
+router.patch("/candidates/bulk-status", candidateController.bulkUpdateStatus);
+router.get("/candidates/:id/detail", candidateController.getCandidateDetail);
+router.patch("/candidates/:id/status", candidateController.updateStatus);
 
 export default router;
