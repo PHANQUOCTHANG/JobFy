@@ -1,12 +1,12 @@
-// src/features/auth/hooks/useLogin.ts
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/store/hooks";
-import { loginUser } from "../slice/authSlice";
+import { loginUser } from "../types/authSlice";
 import { loginSchema, type LoginInput } from "../schemas/auth.schema";
+import { extractError } from "@/utils/extractError";
 
 export const useLogin = () => {
   const navigate = useNavigate();
@@ -16,32 +16,41 @@ export const useLogin = () => {
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema) as any,
     mode: "onBlur",
-    defaultValues: { email: "", password: "", rememberMe: false },
+    defaultValues: { email: "", password: "", rememberMe: false, role: "candidate" },
   });
 
+  const { setError } = form;
+
   const onSubmit = async (data: LoginInput) => {
-    // Dispatch thunk thay vì gọi trực tiếp API
     const resultAction = await dispatch(loginUser(data));
 
     if (loginUser.fulfilled.match(resultAction)) {
       const { user } = resultAction.payload;
 
-      // 1. Xử lý chuyển hướng đặc biệt
       if (user.mustChangePassword) {
         toast.warning("Yêu cầu bảo mật", {
-          description: "Vui lòng đổi mật khẩu mới.",
+          description: "Vui lòng đổi mật khẩu mới trước khi tiếp tục.",
         });
         return navigate("/force-change-password");
       }
 
-      toast.success("Welcome back!", {
-        description: `Logged in as ${user.fullName}`,
+      if (user.status === "pending_verification") {
+        toast.warning("Tài khoản chưa được xác thực", {
+          description: "Vui lòng xác thực email của bạn để tiếp tục sử dụng đầy đủ tính năng.",
+        });
+        return navigate("/verify-otp", {
+          state: { email: user.email, isResend: true },
+        });
+      }
+
+      toast.success("Đăng nhập thành công!", {
+        description: `Chào mừng trở lại, ${user.fullName || user.email}!`,
       });
       navigate("/");
     } else {
-      // 2. Xử lý lỗi tập trung
+      // loginUser.rejected — errorPayload là server response data
       const errorPayload = resultAction.payload as any;
-      handleAuthError(errorPayload, form, navigate);
+      handleLoginError(errorPayload, setError, navigate);
     }
   };
 
@@ -54,34 +63,63 @@ export const useLogin = () => {
 };
 
 /**
- * Helper xử lý lỗi tập trung - Chuẩn Production
+ * Xử lý lỗi đăng nhập tập trung.
+ * errorPayload có thể là:
+ *   - object từ server: { status, message, errorCode, data, ... }
+ *   - hoặc axios error wrapped: { message }
  */
-const handleAuthError = (error: any, form: any, navigate: any) => {
-  // Accept either server payload or axios-style error
-  const server = error?.response?.data ?? error;
-  const errorCode = server?.errorCode ?? server?.data?.errorCode;
-  const message = server?.message ?? error?.message ?? "Đăng nhập thất bại";
+function handleLoginError(
+  errorPayload: any,
+  setError: (field: any, error: any) => void,
+  navigate: (path: string, opts?: any) => void
+) {
+  // Nếu là Axios error (network error không có response)
+  if (errorPayload?.message && !errorPayload?.status) {
+    const parsed = extractError({ message: errorPayload.message });
+    if (parsed.isNetworkError) {
+      toast.error("Lỗi kết nối", { description: parsed.message });
+      return;
+    }
+  }
+
+  const message = errorPayload?.message || "Đăng nhập thất bại";
+  const errorCode = errorPayload?.errorCode;
 
   switch (errorCode) {
     case "ACCOUNT_LOCKED":
       toast.error("Tài khoản đã bị khóa", {
         description: message,
         action: {
-          label: "Hỗ trợ",
-          onClick: () => (window.location.href = "mailto:support@musichub.com"),
+          label: "Liên hệ hỗ trợ",
+          onClick: () => (window.location.href = "mailto:support@jobfy.com"),
         },
       });
       break;
-    case "UNVERIFIED_ACCOUNT":
-      toast.warning("Tài khoản chưa xác thực");
+
+    case "UNVERIFIED_ACCOUNT": {
+      const emailFromServer = errorPayload?.data?.email;
+      toast.warning("Tài khoản chưa được xác thực", {
+        description: "Vui lòng xác thực email của bạn để tiếp tục.",
+      });
       navigate("/verify-otp", {
-        state: { email: error.data?.email, isResend: true },
+        state: { email: emailFromServer, isResend: true },
       });
       break;
-    default:
-      toast.error("Lỗi", { description: message });
-      // Focus và đánh dấu lỗi đỏ cho Input
-      form.setError("email", { type: "manual" });
-      form.setError("password", { type: "manual" });
+    }
+
+    default: {
+      // Email hoặc mật khẩu sai → đỏ cả 2 ô
+      const isCredentialError =
+        message.includes("Email") ||
+        message.includes("mật khẩu") ||
+        errorPayload?.statusCode === 401;
+
+      if (isCredentialError) {
+        setError("email", { type: "server", message: " " }); // message rỗng để không hiện text dưới email
+        setError("password", { type: "server", message });   // message hiện dưới ô password
+      } else {
+        toast.error("Đăng nhập thất bại", { description: message });
+      }
+    }
   }
-};
+}

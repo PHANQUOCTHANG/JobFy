@@ -1,4 +1,4 @@
-import { WaveformLoader } from "@/components/ui/MusicLoadingEffects";
+import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import MusicResult from "@/components/ui/Result";
 import { useAppSelector } from "@/store/hooks";
 import { AlertCircle, LogInIcon } from "lucide-react";
@@ -15,9 +15,10 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
 }) => {
   const navigate = useNavigate();
   const { token, user, isAuthChecking } = useAppSelector((state) => state.auth);
-  // 1️⃣ Đang xác thực (ví dụ đang gọi refreshToken)
-  if (isAuthChecking) {
-    return <WaveformLoader glass={false} text="Đang xác thực..." fullscreen />;
+
+  // 1️⃣ Đang xác thực hoặc đang trong quá trình khôi phục dữ liệu từ LocalStorage (Hydration)
+  if (isAuthChecking || (token && !user)) {
+    return <ThemedLoader />;
   }
 
   // 2️⃣ Chưa đăng nhập → yêu cầu login
@@ -31,7 +32,11 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
           action={{
             label: "Đăng nhập",
             icon: LogInIcon,
-            onClick: () => {navigate("/login")},
+            onClick: () => {
+              // Tối ưu: Chuyển về đúng trang login của role yêu cầu
+              const loginPath = requiredRole === "employer" ? "/employer/login" : "/login";
+              navigate(loginPath);
+            },
             variant: "primary",
           }}
         />
@@ -60,7 +65,11 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
     );
   }
   // 3️⃣ Kiểm tra role (nếu route có yêu cầu)
-  if (requiredRole && user?.role !== requiredRole) {
+  // Chuyển role về chữ thường để so sánh chính xác hơn
+  if (
+    requiredRole && 
+    user?.role?.toLowerCase() !== requiredRole.toLowerCase()
+  ) {
     return (
       <div className="section-container min-h-screen flex items-center justify-center">
         <MusicResult

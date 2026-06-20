@@ -17,6 +17,13 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
+    // Không khởi tạo kết nối nếu không có token
+    if (!token) {
+      setSocket(null);
+      setIsConnected(false);
+      return;
+    }
+
     // 1. Khởi tạo instance
     const socketInstance = io(SOCKET_URL, {
       transports: ["websocket"],

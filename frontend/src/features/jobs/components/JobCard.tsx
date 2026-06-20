@@ -1,92 +1,173 @@
 import React from 'react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MapPin, DollarSign, Clock, Building2, BookmarkPlus } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { Job } from '../types';
-import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import { formatSalary } from '@/utils/formatters';
 
 interface JobCardProps {
   job: Job;
-  onSave?: (id: string) => void;
+  onSave?: (jobId: string) => void;
+  viewMode?: 'list' | 'grid' | 'compact';
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ job, onSave }) => {
-  return (
-    <Card className="hover:shadow-md transition-all hover:border-primary/50 flex flex-col h-full">
-      <CardContent className="p-5 flex-grow">
-        <div className="flex gap-4">
-          <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center flex-shrink-0 border p-1 overflow-hidden">
+export const JobCard: React.FC<JobCardProps> = ({ job, onSave, viewMode = 'list' }) => {
+  const timeAgo = formatDistanceToNow(new Date(job.publishedAt || job.createdAt), {
+    addSuffix: true,
+    locale: vi,
+  });
+
+  const salaryDisplay =
+    job.isSalaryPublic && job.salaryMin && job.salaryMax
+      ? `${formatSalary(job.salaryMin)} - ${formatSalary(job.salaryMax)}`
+      : 'Thoả thuận';
+
+  const formatTimeAgoText = (text: string) => {
+    return text.replace('khoảng ', '').replace('trước', '').trim() + ' trước';
+  };
+
+  const timeDisplay = formatTimeAgoText(timeAgo);
+
+  if (viewMode === 'compact') {
+    return (
+      <div className="group bg-white border border-[#e8e8e8] rounded-lg p-3 transition-all hover:border-[#4F46E5] hover:-translate-y-1 hover:shadow-md cursor-pointer flex flex-col justify-between h-full">
+        {/* Top section: Logo + Title + Company */}
+        <div className="flex items-start gap-3 mb-3">
+          {/* Small Logo */}
+          <div className="w-[48px] h-[48px] border border-[#e8e8e8] rounded flex-shrink-0 bg-white p-1 flex items-center justify-center">
             {job.company?.logoUrl ? (
-              <img src={job.company.logoUrl} alt={job.company.name} className="w-full h-full object-contain" />
+              <img
+                src={job.company.logoUrl}
+                alt={job.company.name}
+                className="max-w-full max-h-full object-contain"
+              />
             ) : (
-              <Building2 className="w-8 h-8 text-muted-foreground" />
+              <div className="w-full h-full bg-[#f0f0f0] rounded flex items-center justify-center text-[8px] text-center text-[#6f7882] break-words">
+                {job.company?.name || 'Company'}
+              </div>
             )}
           </div>
           
           <div className="flex-1 min-w-0">
-            <Link to={`/jobs/${job.slug}`} className="hover:text-primary transition-colors">
-              <h3 className="font-semibold text-lg line-clamp-2 leading-tight">{job.title}</h3>
-            </Link>
-            
-            <Link to={job.company?.slug ? `/companies/${job.company.slug}` : '#'} className="text-sm text-muted-foreground hover:text-primary mt-1 line-clamp-1 block">
-              {job.company?.name || 'Công ty ẩn danh'}
-            </Link>
+            <h3 className="font-bold text-[14px] text-[#212f3f] leading-snug line-clamp-2 group-hover:text-[#4F46E5] transition-colors mb-1">
+              {job.title}
+            </h3>
+            <p className="text-[#6f7882] text-[12px] uppercase truncate">
+              {job.company?.name}
+            </p>
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <DollarSign className="w-4 h-4 text-green-600" />
-            <span className="font-medium text-foreground">
-              {job.isSalaryPublic ? (
-                job.salaryMin && job.salaryMax 
-                  ? `${job.salaryMin} - ${job.salaryMax} ${job.salaryCurrency}`
-                  : (job.salaryMin ? `Từ ${job.salaryMin} ${job.salaryCurrency}` : 'Thỏa thuận')
-              ) : 'Thương lượng'}
+        {/* Bottom section: Pills + Heart */}
+        <div className="flex items-center justify-between mt-auto pt-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#f5f5f5] text-[#212f3f] text-[12px] font-medium">
+              {salaryDisplay}
+            </span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#f5f5f5] text-[#212f3f] text-[12px]">
+              {job.address || 'Hồ Chí Minh'}
             </span>
           </div>
           
-          <div className="flex items-center gap-1">
-            <MapPin className="w-4 h-4" />
-            <span className="line-clamp-1">{job.address || 'Không xác định'}</span>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onSave?.(job.id);
+            }}
+            className="w-7 h-7 rounded-full border border-[#4F46E5] text-[#4F46E5] flex items-center justify-center hover:bg-blue-50 transition-colors flex-shrink-0"
+          >
+            <Heart size={14} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        'group bg-white border border-[#e8e8e8] rounded-lg p-4 transition-all hover:border-[#4F46E5] flex gap-4',
+        viewMode === 'grid' ? 'flex-col' : 'flex-row items-start'
+      )}
+    >
+      {/* Logo */}
+      <div className="w-[80px] h-[80px] border border-[#e8e8e8] rounded flex-shrink-0 bg-white p-1.5 flex items-center justify-center">
+        {job.company?.logoUrl ? (
+          <img
+            src={job.company.logoUrl}
+            alt={job.company.name}
+            className="max-w-full max-h-full object-contain"
+          />
+        ) : (
+          <div className="w-full h-full bg-[#f0f0f0] rounded flex items-center justify-center text-[10px] text-center text-[#6f7882] break-words">
+            {job.company?.name || 'Company'}
           </div>
-        </div>
+        )}
+      </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {job.experienceLevel && (
-            <Badge variant="secondary" className="font-normal capitalize">
-              {job.experienceLevel.replace('_', ' ')}
-            </Badge>
-          )}
-          {job.isRemote && (
-            <Badge variant="outline" className="font-normal border-blue-200 text-blue-600 bg-blue-50">
-              Làm việc từ xa
-            </Badge>
-          )}
-        </div>
-      </CardContent>
-
-      <CardFooter className="p-5 pt-0 flex justify-between items-center border-t border-border/40 mt-auto pt-4 relative top-4">
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Clock className="w-3.5 h-3.5" />
-          <span>
-            {job.publishedAt 
-              ? formatDistanceToNow(new Date(job.publishedAt), { addSuffix: true, locale: vi })
-              : 'Gần đây'
-            }
+      {/* Content */}
+      <div className="flex-1 min-w-0 flex flex-col justify-between">
+        {/* Title row */}
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <h3 className="font-bold text-[16px] text-[#212f3f] leading-snug truncate group-hover:text-[#4F46E5] transition-colors">
+            {job.title}
+          </h3>
+          <span className="flex-shrink-0 text-[#4F46E5] font-bold text-[15px] whitespace-nowrap">
+            {salaryDisplay}
           </span>
         </div>
-        
-        <div className="flex gap-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => onSave?.(job.id)}>
-            <BookmarkPlus className="w-4 h-4" />
-            <span className="sr-only">Lưu tin</span>
-          </Button>
+
+        {/* Company name */}
+        <p className="text-[#6f7882] text-[13px] uppercase truncate mb-2">
+          {job.company?.name}
+        </p>
+
+        {/* Chips row */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#f5f5f5] text-[#212f3f] text-[12px]">
+            {job.address || 'Hồ Chí Minh'}
+          </span>
+          <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#f5f5f5] text-[#212f3f] text-[12px]">
+            {job.experienceLevel === 'fresher' ? 'Không yêu cầu' : '1 năm'}
+          </span>
         </div>
-      </CardFooter>
-    </Card>
+
+        {/* Skills and Date row */}
+        <div className="flex items-end justify-between mt-auto">
+          {/* Skills */}
+          <div className="flex flex-wrap items-center gap-1.5 text-[12px] text-[#6f7882]">
+            {job.jobSkills?.slice(0, 3).map((js, index) => (
+              <React.Fragment key={js.skillId}>
+                {index > 0 && <span>|</span>}
+                <span className="truncate max-w-[120px]">{js.skill?.name || 'Kỹ năng'}</span>
+              </React.Fragment>
+            ))}
+            {job.jobSkills && job.jobSkills.length > 3 && (
+              <>
+                <span>|</span>
+                <span>+{job.jobSkills.length - 3}</span>
+              </>
+            )}
+          </div>
+
+          {/* Date and Heart */}
+          <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+            <span className="text-[12px] text-[#9ea5af] whitespace-nowrap">Đăng {timeDisplay}</span>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onSave?.(job.id);
+              }}
+              className="w-8 h-8 rounded-full border border-[#4F46E5] text-[#4F46E5] flex items-center justify-center hover:bg-blue-50 transition-colors flex-shrink-0"
+            >
+              <Heart size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

@@ -20,7 +20,7 @@ import { store, persistor } from "@/store/store";
 import { queryClient } from "@/lib/queryClient";
 
 // --- Components ---
-import { RadioLoader } from "@/components/ui/MusicLoadingEffects";
+import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SocketProvider } from "@/app/provider/SocketProvider";
 // Note: router-aware sheet callbacks moved into RootLayout
@@ -48,18 +48,14 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({
      */}
     <PersistGate
       loading={
-        <RadioLoader
-          glass={false}
-          fullscreen
-          text="Đang khôi phục dữ liệu..."
-        />
+        <ThemedLoader />
       }
       persistor={persistor}
     >
       <QueryClientProvider client={queryClient}>
         <SocketProvider>
-          {/* ThemeProvider quản lý Class 'dark'/'light' trên thẻ HTML */}
-          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          {/* Thay đổi mặc định về 'light' để lấy lại màu trắng */}
+          <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
             <InnerProviders>{children}</InnerProviders>
 
             {/* ========================================================= */}

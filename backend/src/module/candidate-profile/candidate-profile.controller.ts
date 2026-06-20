@@ -38,12 +38,12 @@ export const getProfiles = asyncHandler(async (req: Request, res: Response) => {
 
 // [GET] /api/v1/candidate-profiles/:id - Lấy chi tiết 1 profile (Công khai)
 export const getProfileById = asyncHandler(async (req: Request, res: Response) => {
-  const id = req.params.id;
-  
+  const id = req.params.id as string;
+
   // Tăng view count async không block response
-  candidateProfileService.incrementViewCount(id).catch(console.error);
+  candidateProfileService.incrementViewCount(id as string).catch(console.error);
   
-  const data = await candidateProfileService.findById(id);
+  const data = await candidateProfileService.findById(id as string);
 
   return res.status(200).json(ApiResponse.success(data));
 });

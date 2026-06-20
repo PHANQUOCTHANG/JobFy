@@ -1,35 +1,60 @@
 import React from 'react';
-import { Job } from '../types';
+import { Job, JobFilterParams } from '../types';
 import { JobCard } from './JobCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import { SearchX } from 'lucide-react';
+import { JobPagination } from './JobPagination';
+import { cn } from '@/lib/utils';
 
 interface JobListProps {
   jobs: Job[];
   isLoading?: boolean;
+  filters?: JobFilterParams;
+  onClearFilters?: () => void;
+  viewMode?: 'list' | 'grid';
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
-export const JobList: React.FC<JobListProps> = ({ jobs, isLoading }) => {
+export const JobList: React.FC<JobListProps> = ({
+  jobs,
+  isLoading,
+  filters,
+  onClearFilters,
+  viewMode = 'list',
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
+}) => {
   const handleSaveJob = (id: string) => {
-    toast.success(`Đã lưu tin tuyển dụng ${id}`);
-    // Thực tế sẽ gọi API useSaveJob
+    toast.success('Đã lưu việc làm vào danh sách yêu thích');
   };
+
+  const hasActiveFilters =
+    filters &&
+    (filters.experienceLevel ||
+      filters.jobType ||
+      filters.salaryMin ||
+      filters.isRemote ||
+      filters.keyword ||
+      filters.provinceId ||
+      filters.categoryId);
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={cn(viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-3' : 'flex flex-col gap-3')}>
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="border rounded-xl p-5 flex flex-col h-full space-y-4">
-            <div className="flex gap-4">
-              <Skeleton className="w-16 h-16 rounded-md" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-4 w-2/3" />
+          <div key={i} className="bg-white border border-[#e8e8e8] rounded-lg p-4 flex gap-3">
+            <Skeleton className="w-[80px] h-[80px] rounded-lg bg-[#f0f0f0] flex-shrink-0" />
+            <div className="flex-1 space-y-2.5 min-w-0">
+              <Skeleton className="h-5 w-3/4 bg-[#f0f0f0]" />
+              <Skeleton className="h-4 w-1/2 bg-[#f0f0f0]" />
+              <div className="flex gap-2 pt-1">
+                <Skeleton className="h-7 w-28 rounded-full bg-[#f0f0f0]" />
+                <Skeleton className="h-7 w-20 rounded-full bg-[#f0f0f0]" />
               </div>
-            </div>
-            <div className="space-y-2 mt-4">
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-3/4" />
             </div>
           </div>
         ))}
@@ -39,18 +64,43 @@ export const JobList: React.FC<JobListProps> = ({ jobs, isLoading }) => {
 
   if (!jobs || jobs.length === 0) {
     return (
-      <div className="text-center p-12 border border-dashed rounded-xl bg-muted/20">
-        <p className="text-lg font-medium text-foreground mb-2">Không tìm thấy công việc phù hợp</p>
-        <p className="text-muted-foreground">Vui lòng thử điều chỉnh lại bộ lọc tìm kiếm của bạn.</p>
+      <div className="text-center py-16 bg-white border border-[#e8e8e8] rounded-lg">
+        <div className="w-16 h-16 bg-[#f0f0f0] rounded-full flex items-center justify-center mx-auto mb-4">
+          <SearchX className="w-8 h-8 text-[#9ea5af]" />
+        </div>
+        <p className="text-[16px] font-bold text-[#212f3f] mb-2">
+          Không tìm thấy công việc phù hợp
+        </p>
+        <p className="text-[13px] text-[#6f7882] mb-5 max-w-sm mx-auto leading-relaxed">
+          Hãy thử thay đổi từ khóa hoặc điều chỉnh bộ lọc để tìm kiếm kết quả khác.
+        </p>
+        {hasActiveFilters && onClearFilters && (
+          <button
+            onClick={onClearFilters}
+            className="px-5 py-2 border border-[#4F46E5] text-[#4F46E5] text-[13px] font-semibold rounded-md hover:bg-[#4F46E5] hover:text-white transition-colors"
+          >
+            Xóa bộ lọc
+          </button>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {jobs.map((job) => (
-        <JobCard key={job.id} job={job} onSave={handleSaveJob} />
-      ))}
+    <div>
+      <div className={cn(viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-3' : 'flex flex-col gap-3')}>
+        {jobs.map((job) => (
+          <JobCard key={job.id} job={job} onSave={handleSaveJob} viewMode={viewMode} />
+        ))}
+      </div>
+
+      {totalPages > 1 && onPageChange && (
+        <JobPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
+      )}
     </div>
   );
 };

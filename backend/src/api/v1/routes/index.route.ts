@@ -10,7 +10,20 @@ import candidateProfileRoute from "@/module/candidate-profile/candidate-profile.
 import resumeRoute from "@/module/resume/resume.route";
 import jobRoute from "@/module/job/job.route";
 import applicationRoute from "@/module/application/application.route";
-import { requireAuth } from "@/middleware/auth.middleware";
+import savedJobRoute from "@/module/saved-job/saved-job.route";
+import jobAlertRoute from "@/module/job-alert/job-alert.route";
+import messagingRoute from "@/module/messaging/messaging.route";
+import companyReviewRoute from "@/module/company-review/company-review.route";
+import notificationRoute from "@/module/notification/notification.route";
+import subscriptionRoute, { paymentRouter } from "@/module/subscription/subscription.route";
+import reportRoute from "@/module/report/report.route";
+import adminRoute from "@/module/admin/admin.route";
+import locationRoute from "@/module/location/location.route";
+import { requireAuth, requireRole } from "@/middleware/auth.middleware";
+import employerRoute from "@/module/employer/employer.routes";
+import adminEmployerRoute from "@/module/admin-employer/admin-employer.routes";
+
+
 
 const clientRoute = (app: Application) => {
   const path = "/api/v1";
@@ -23,10 +36,31 @@ const clientRoute = (app: Application) => {
   app.use(path + "/skill-categories", skillCategoryRoute);
   app.use(path + "/skills", skillRoute);
   app.use(path + "/companies", companyRoute);
-  app.use(path + "/candidate-profiles", candidateProfileRoute);
+  // app.use(path + "/candidate-profiles", candidateProfileRoute);
   app.use(path + "/resumes", resumeRoute);
   app.use(path + "/jobs", jobRoute);
   app.use(path + "/applications", applicationRoute);
+  app.use(path, locationRoute);
+  
+  // New Modules
+  app.use(path + "/saved-jobs", requireAuth, savedJobRoute);
+  app.use(path + "/job-alerts", requireAuth, jobAlertRoute);
+  app.use(path + "/conversations", requireAuth, messagingRoute);
+  app.use(path + "/company-reviews", companyReviewRoute);
+  app.use(path + "/notifications", requireAuth, notificationRoute);
+  app.use(path + "/subscriptions", subscriptionRoute);
+  app.use(path + "/payments", requireAuth, paymentRouter);
+  app.use(path + "/reports", reportRoute);
+
+  // Employer Module
+  app.use(path + "/employer", employerRoute);
+
+  // Admin Module
+  app.use(path + "/admin", requireAuth, requireRole("admin"), adminRoute);
+
+  // Admin Employer Module (pending/verify)
+  app.use(path + "/admin/employer", adminEmployerRoute);
 };
+
 
 export default clientRoute;

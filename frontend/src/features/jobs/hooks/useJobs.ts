@@ -4,7 +4,8 @@ import {
   getJobBySlug, 
   getJobCategories,
   saveJob,
-  unsaveJob
+  unsaveJob,
+  getProvinces
 } from '../api/jobs.api';
 import { JobFilterParams } from '../types';
 
@@ -27,6 +28,14 @@ export const useJobCategories = () => {
   return useQuery({
     queryKey: ['jobCategories'],
     queryFn: getJobCategories,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+};
+
+export const useProvinces = () => {
+  return useQuery({
+    queryKey: ['provinces'],
+    queryFn: getProvinces,
     staleTime: 1000 * 60 * 60, // 1 hour
   });
 };

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 // Logic Imports
 import authApi from "@/features/auth/api/authApi";
-import { login } from "@/features/auth/slice/authSlice";
+import { login } from "@/features/auth/types/authSlice";
 import type { ApiErrorResponse } from "@/types";
 import { useAppDispatch } from "@/store/hooks";
 

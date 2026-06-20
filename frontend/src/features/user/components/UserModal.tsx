@@ -252,7 +252,7 @@ const UserModal: React.FC<UserModalProps> = ({
                       className={cn(
                         "p-2.5 rounded-lg border",
                         isVerified
-                          ? "bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400"
+                          ? "bg-blue-500/10 border-blue-500/20 text-indigo-600 dark:text-blue-400"
                           : "bg-secondary border-transparent text-muted-foreground",
                       )}
                     >

@@ -24,15 +24,26 @@ import {
   EmployerDashboardPage,
   ManageCompanyPage,
   ManageJobsPage,
-  ManageApplicationsPage,
+  CreateJobPage,
+  EmployerCandidatePage,
+  CandidateDetailPage,
   EmployerSettingsPage,
   CandidateDashboardPage,
   SavedJobsPage,
   JobAlertsPage,
+  CvTemplatesPage,
+  CvEditorPage,
+  MyCvsPage,
+  CoverLetterPage,
+  EmployerRegisterPage,
+  EmployerLoginPage,
 } from "@/pages";
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
 import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS } from "@/config/paths";
+import EmployerForgotPasswordPage from "@/pages/employer/EmployerForgotPasswordPage";
+import EmployerVerifyOtpPage from "@/pages/employer/EmployerVerifyOtpPage";
+import EmployerResetPasswordPage from "@/pages/employer/EmployerResetPasswordPage";
 
 export const router = createBrowserRouter([
   {
@@ -76,6 +87,10 @@ export const router = createBrowserRouter([
             path: CLIENT_PATHS.CANDIDATE_DETAIL(":id"),
             element: <CandidatePublicPage />,
           },
+          { path: CLIENT_PATHS.CV, element: <CvTemplatesPage /> },
+          { path: "/cv/editor/:templateId", element: <CvEditorPage /> },
+          { path: "/cv/my-cvs", element: <MyCvsPage /> },
+          { path: "/cv/cover-letter", element: <CoverLetterPage /> },
         ],
       },
 
@@ -119,9 +134,29 @@ export const router = createBrowserRouter([
       // ===================================================
       {
         path: EMPLOYER_PATHS.DASHBOARD,
-        // element: <ProtectedRoute />,
         children: [
           {
+            path: EMPLOYER_PATHS.REGISTER,
+            element: <EmployerRegisterPage />
+          },
+          {
+            path: EMPLOYER_PATHS.LOGIN,
+            element: <EmployerLoginPage />
+          },
+          {
+            path: "forgot-password",
+            element: <EmployerForgotPasswordPage />
+          },
+          {
+            path: "verify-otp",
+            element: <EmployerVerifyOtpPage />
+          },
+          {
+            path: "reset-password",
+            element: <EmployerResetPasswordPage />
+          },
+          {
+            // element: <ProtectedRoute />,
             element: <EmployerLayout />,
             children: [
               {
@@ -137,8 +172,16 @@ export const router = createBrowserRouter([
                 element: <ManageJobsPage />,
               },
               {
+                path: EMPLOYER_PATHS.CREATE_JOB,
+                element: <CreateJobPage />,
+              },
+              {
                 path: EMPLOYER_PATHS.APPLICATIONS,
-                element: <ManageApplicationsPage />,
+                element: <EmployerCandidatePage />,
+              },
+              {
+                path: EMPLOYER_PATHS.CANDIDATE_DETAIL(":id"),
+                element: <CandidateDetailPage />,
               },
               {
                 path: EMPLOYER_PATHS.SETTINGS,

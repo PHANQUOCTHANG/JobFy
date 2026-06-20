@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import PageHeader from "@/components/ui/PageHeader";
 import Pagination from "@/utils/pagination";
-import MusicResult from "@/components/ui/Result";
+import Result from "@/components/ui/Result";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 
@@ -48,7 +48,7 @@ import { useUserParams } from "@/features/user/hooks/useUserParams";
 import { useUsersQuery } from "@/features/user/hooks/useUsersQuery";
 import { useUserMutations } from "@/features/user/hooks/useUserMutations";
 import { useSmartBack } from "@/hooks/useSmartBack";
-import { WaveformLoader } from "@/components/ui/MusicLoadingEffects";
+import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import { IUser } from "@/features/user";
 import { getInitialsTextAvartar } from "@/utils/genTextAvartar";
 
@@ -166,14 +166,14 @@ const UsersManagementPage = () => {
 
   // Switching
   if (isLoading && hasResults) {
-    return <WaveformLoader glass={false} text="Đang tải" />;
+    return <ThemedLoader />;
   }
   // Deep Error
   if (isError && !hasResults) {
     return (
       <>
         <div className="section-container space-y-6 sm:space-y-8 pt-4 pb-4">
-          <MusicResult variant="error" onRetry={refetch} />
+          <Result variant="error" onRetry={refetch} />
         </div>
       </>
     );
@@ -182,7 +182,7 @@ const UsersManagementPage = () => {
   if (isOffline) {
     return (
       <div className="section-container space-y-6 sm:space-y-8 pt-4 pb-4">
-        <MusicResult
+        <Result
           variant="error-network"
           onRetry={refetch}
           onBack={onBack}
@@ -223,12 +223,12 @@ const UsersManagementPage = () => {
         />
       ) : !hasResults ? (
         !isLoading && !isFiltering ? (
-          <MusicResult
+          <Result
             variant="empty-genres"
             description="Genre hiện đang trống"
           />
         ) : (
-          <MusicResult
+          <Result
             variant="empty-genres"
             description="Không có kết quả! Thử bộ lọc khác "
             onClearFilters={clearFilters}

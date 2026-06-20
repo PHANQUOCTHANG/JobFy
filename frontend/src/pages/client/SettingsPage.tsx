@@ -544,7 +544,7 @@ const AccountSection = memo(() => (
           </label>
           <Textarea
             className="input-base min-h-[110px] resize-none py-3"
-            placeholder="Tell us about your musical taste…"
+            placeholder="Tell us about your career goals…"
             aria-label="Biography"
           />
         </div>
@@ -649,7 +649,7 @@ const PlaybackSection = memo(
             {
               id: "crossfade",
               label: "Crossfade Tracks",
-              desc: "Blend between songs during playback (5s transition).",
+              desc: "Blend between job applications.",
               checked: true,
               onChange: () => {},
             },

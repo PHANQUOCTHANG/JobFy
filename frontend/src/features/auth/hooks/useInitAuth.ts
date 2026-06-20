@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { initAuth, authCheckFinished } from "@/features/auth/slice/authSlice";
+import { initAuth, authCheckFinished } from "@/features/auth/types/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 
 const SOCIAL_CALLBACK_ROUTES = [

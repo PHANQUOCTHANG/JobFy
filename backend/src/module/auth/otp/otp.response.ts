@@ -16,9 +16,9 @@ export class OtpVerifiedResponseDto {
   success: boolean;
   message: string;
   // Token tạm thời dùng cho bước Reset Password tiếp theo
-  verificationToken: string;
+  verificationToken?: string;
 
-  constructor(token: string, message: string = "Xác thực OTP thành công.") {
+  constructor(token?: string, message: string = "Xác thực OTP thành công.") {
     this.success = true;
     this.message = message;
     this.verificationToken = token;

@@ -1,4 +1,5 @@
 import AppError from "@/utils/appError";
+import { Prisma } from "@prisma/client";
 import { CandidateProfileQuery } from "./candidate-profile.type";
 import { ICandidateProfileRepository } from "./candidate-profile.repository";
 import { IUserRepository } from "@/module/user/user.repository";
@@ -26,7 +27,7 @@ export class CandidateProfileService implements ICandidateProfileService {
   constructor(
     private readonly profileRepo: ICandidateProfileRepository,
     private readonly userRepo: IUserRepository
-  ) {}
+  ) { }
 
   async create(userId: string, dto: CreateCandidateProfileRequestDto): Promise<CandidateProfileResponseDto> {
     const user = await this.userRepo.findById(userId);
@@ -39,13 +40,13 @@ export class CandidateProfileService implements ICandidateProfileService {
     const dobDate = dto.dob ? new Date(dto.dob) : undefined;
 
     const profile = await this.profileRepo.create({
-      user: { connect: { id: userId } },
+      userId,
       fullName: dto.fullName,
       headline: dto.headline,
       gender: dto.gender,
       dob: dobDate,
-      provinceId: dto.provinceId,
-      districtId: dto.districtId,
+      provinceId: dto.provinceId, // Sửa lỗi: Sử dụng provinceId trực tiếp
+      districtId: dto.districtId, // Sửa lỗi: Sử dụng districtId trực tiếp
       address: dto.address,
       linkedinUrl: dto.linkedinUrl,
       githubUrl: dto.githubUrl,
@@ -114,9 +115,15 @@ export class CandidateProfileService implements ICandidateProfileService {
     if (!profile) throw new AppError("Bạn chưa có hồ sơ ứng viên", 404);
 
     const dobDate = dto.dob ? new Date(dto.dob) : undefined;
-    const updateData: any = { ...dto };
+    const updateData: Prisma.CandidateProfileUncheckedUpdateInput = { ...dto };
     if (dobDate !== undefined) updateData.dob = dobDate;
-
+    // Giả sử updateData có kiểu là Prisma.CandidateProfileUncheckedUpdateInput
+    if (dto.provinceId !== undefined) {
+      updateData.provinceId = dto.provinceId;
+    }
+    if (dto.districtId !== undefined) {
+      updateData.districtId = dto.districtId;
+    }
     const updated = await this.profileRepo.updateById(profile.id, updateData);
     if (!updated) throw new AppError("Cập nhật thất bại", 500);
 

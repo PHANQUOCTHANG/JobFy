@@ -20,3 +20,15 @@ export const getCompanyReviews = async (companyId: string): Promise<CompanyRevie
   const response = await api.get(`/companies/${companyId}/reviews`);
   return response.data?.data || response.data;
 };
+
+// --- API cho Nhà tuyển dụng (Employer) ---
+
+export const getMyCompany = async (): Promise<Company> => {
+  const response = await api.get('/companies/me');
+  return response.data?.data || response.data;
+};
+
+export const updateMyCompany = async (data: Partial<Company>): Promise<Company> => {
+  const response = await api.put('/companies/me', data);
+  return response.data?.data || response.data;
+};

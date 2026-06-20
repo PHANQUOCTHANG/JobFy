@@ -7,8 +7,7 @@ import {
   LoginPage,
   LogoutPage,
   RegisterPage,
-  ResetPasswordPage,
-  VerifyOtpPage,
+  VerifyAccountPage,
 } from "@/pages";
 import { AUTH_PATHS } from "@/config/paths";
 
@@ -22,10 +21,7 @@ export const guestAuthRoutes: RouteObject[] = [
     path: AUTH_PATHS.REGISTER,
     element: <RegisterPage />,
   },
-  {
-    path: AUTH_PATHS.VERIFY_OTP,
-    element: <VerifyOtpPage />,
-  },
+
   {
     path: AUTH_PATHS.AUTH_GOOGLE,
     element: <GoogleCallbackPage />,
@@ -39,8 +35,8 @@ export const guestAuthRoutes: RouteObject[] = [
     element: <ForgotPasswordPage />,
   },
   {
-    path: AUTH_PATHS.RESET_PASSWORD(":token"),
-    element: <ResetPasswordPage />,
+    path: AUTH_PATHS.VERIFY_ACCOUNT,
+    element: <VerifyAccountPage />,
   },
 ];
 

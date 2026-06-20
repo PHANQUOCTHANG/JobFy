@@ -32,7 +32,21 @@ export const registerSchema = z.object({
     .optional(),
 
   // Quyền người dùng - mặc định là candidate
-  role: UserRoleEnum.default("candidate").optional(),
+  role: z.enum(["employer", "candidate"]).describe("Quyền người dùng: 'employer' cho nhà tuyển dụng, 'candidate' cho ứng viên"),
+
+  // --- Thông tin bổ sung cho Employer (Chỉ yêu cầu khi role là employer) ---
+  companyName: z.string().min(2, "Tên công ty quá ngắn").max(255).optional().describe("Tên công ty (Bắt buộc nếu role là employer)"),
+  provinceId: z.string().min(1, "Vui lòng chọn Tỉnh/Thành phố").optional().describe("ID Tỉnh/Thành phố"),
+  districtId: z.string().min(1, "Vui lòng chọn Quận/Huyện").optional().describe("ID Quận/Huyện"),
+}).refine((data) => {
+  // Nếu đăng ký làm nhà tuyển dụng, yêu cầu phải có tên công ty, tỉnh và huyện
+  if (data.role === "employer" && (!data.companyName || !data.provinceId || !data.districtId)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Nhà tuyển dụng bắt buộc phải nhập đầy đủ tên công ty, tỉnh và huyện",
+  path: ["companyName"],
 });
 
 // Request Đăng nhập
@@ -42,7 +56,7 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Mật khẩu không được để trống"),
   
   // Quyền người dùng - mặc định là candidate
-  role: UserRoleEnum.default("candidate").optional(),
+  role: UserRoleEnum,
   
   // Ghi nhớ đăng nhập: true = refreshToken 14 ngày, false = 24 giờ
   rememberMe: z.boolean().default(false).optional(),
@@ -56,13 +70,7 @@ export const refreshTokenSchema = z.object({
 
 // Request Đặt lại mật khẩu bằng OTP
 export const resetPasswordSchema = z.object({
-  email: z.string().email("Email không hợp lệ").toLowerCase().trim(),
-
-  // Mã OTP 6 số từ bảng otps
-  otp: z
-    .string()
-    .length(6, "Mã OTP phải có đúng 6 chữ số")
-    .regex(/^\d+$/, "Mã OTP chỉ bao gồm số"),
+  verificationToken: z.string().min(1, "Token xác thực không hợp lệ"),
 
   // Mật khẩu mới cho người dùng
   newPassword: z.string().min(8, "Mật khẩu mới phải từ 8 ký tự").max(255),
