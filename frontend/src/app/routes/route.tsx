@@ -92,7 +92,7 @@ export const router = createBrowserRouter([
       // ===================================================
       {
         path: CANDIDATE_PATHS.DASHBOARD,
-        // element: <ProtectedRoute />,
+        element: <ProtectedRoute requiredRole="candidate" />,
         children: [
           {
             element: <CandidateLayout />,
@@ -127,7 +127,7 @@ export const router = createBrowserRouter([
       // ===================================================
       {
         path: EMPLOYER_PATHS.DASHBOARD,
-        // element: <ProtectedRoute />,
+        element: <ProtectedRoute requiredRole="employer" />,
         children: [
           {
             element: <EmployerLayout />,

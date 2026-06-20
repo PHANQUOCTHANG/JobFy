@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as applicationCtrl from "./application.controller";
 import validationMiddleware from "@/middleware/validate.middleware";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
+import { uploadCvFile } from "@/middleware/upload.middleware";
 import {
   CreateApplicationSchema,
   UpdateApplicationStatusSchema,
@@ -16,9 +17,18 @@ router
   .get(requireAuth, applicationCtrl.getApplications)
   .post(
     requireAuth,
-    requireRole("CANDIDATE"),
+    requireRole("candidate"),
     validationMiddleware(CreateApplicationSchema),
     applicationCtrl.applyForJob
+  );
+
+router
+  .route("/upload-cv")
+  .post(
+    requireAuth,
+    requireRole("candidate"),
+    uploadCvFile,
+    applicationCtrl.applyWithUploadCv
   );
 
 router
@@ -33,7 +43,7 @@ router
   .route("/:id/status")
   .patch(
     requireAuth,
-    requireRole("EMPLOYER"), // only employer can update status
+    requireRole("employer"), // only employer can update status
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateApplicationStatusSchema),
     applicationCtrl.updateApplicationStatus
@@ -43,7 +53,7 @@ router
   .route("/:id/notes")
   .post(
     requireAuth,
-    requireRole("EMPLOYER"), // only employer can add notes
+    requireRole("employer"), // only employer can add notes
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(CreateApplicationNoteSchema),
     applicationCtrl.addNote

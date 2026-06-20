@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, Zap } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Zap, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useCompanies } from '@/features/companies/hooks/useCompanies';
 
 export const BigBrandsSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState('it');
+  const { data: apiCompanies, isLoading } = useCompanies({ limit: 8, isActive: true });
 
   return (
     <div className="max-w-[1140px] mx-auto px-4 mt-8">
@@ -58,19 +60,41 @@ export const BigBrandsSection: React.FC = () => {
 
         {/* Grid 4 columns of Brands */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="border border-gray-100 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-all group">
-              <div className="h-16 flex items-center justify-center mb-3">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform">
-                  Logo
+          {isLoading
+            ? [...Array(8)].map((_, i) => (
+                <div key={i} className="border border-gray-100 rounded-lg p-4 animate-pulse flex flex-col items-center">
+                  <div className="h-16 w-16 bg-gray-100 rounded-full mb-3" />
+                  <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-gray-100 rounded w-1/2" />
                 </div>
-              </div>
-              <p className="text-[14px] text-[#212f3f] font-medium group-hover:text-[#4F46E5] transition-colors text-center line-clamp-1">
-                Công ty ABC {i}
-              </p>
-              <p className="text-[12px] text-gray-500 mt-1">15 Việc làm</p>
-            </div>
-          ))}
+              ))
+            : (apiCompanies && apiCompanies.length > 0 ? apiCompanies : []).slice(0, 8).map(company => (
+                <Link
+                  key={company.id}
+                  to={`/companies/${company.slug || company.id}`}
+                  className="border border-gray-100 rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-all group hover:border-[#4F46E5]"
+                >
+                  <div className="h-16 flex items-center justify-center mb-3">
+                    {company.logoUrl ? (
+                      <img
+                        src={company.logoUrl}
+                        alt={company.name}
+                        className="w-12 h-12 object-contain group-hover:scale-110 transition-transform"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform">
+                        <Building2 size={20} />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-[14px] text-[#212f3f] font-medium group-hover:text-[#4F46E5] transition-colors text-center line-clamp-1">
+                    {company.name}
+                  </p>
+                  <p className="text-[12px] text-gray-500 mt-1">{company.totalJobs} Việc làm</p>
+                </Link>
+              ))
+          }
         </div>
       </div>
 

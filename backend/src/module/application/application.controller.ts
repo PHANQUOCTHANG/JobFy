@@ -1,12 +1,35 @@
 import { Request, Response } from "express";
 import asyncHandler from "@/utils/asyncHandler";
 import { ApiResponse } from "@/utils/apiResponse";
+import AppError from "@/utils/appError";
 import { applicationService } from "@/config/container";
 import { normalizeApplicationQuery } from "./application.type";
 
 export const applyForJob = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.id;
   const data = await applicationService.apply(userId, req.body);
+  return res.status(201).json(ApiResponse.success(data, "Nộp đơn ứng tuyển thành công"));
+});
+
+export const applyWithUploadCv = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+  const file = req.file as Express.Multer.File & { path: string };
+  
+  if (!file) throw new AppError("Vui lòng chọn file CV", 400);
+  
+  const { jobId, coverLetter, fullName, email, phone } = req.body;
+  if (!jobId) throw new AppError("Thiếu jobId", 400);
+
+  const data = await applicationService.applyWithCvUpload(userId, {
+    jobId, 
+    coverLetter, 
+    fullName, 
+    email, 
+    phone,
+    fileUrl: file.path,
+    fileName: file.originalname,
+  });
+
   return res.status(201).json(ApiResponse.success(data, "Nộp đơn ứng tuyển thành công"));
 });
 

@@ -1,7 +1,7 @@
 export interface Experience {
   id: string;
-  company: string;
-  position: string;
+  companyName: string;
+  jobTitle: string;
   startDate: string;
   endDate: string;
   isCurrent: boolean;
@@ -10,8 +10,8 @@ export interface Experience {
 
 export interface Education {
   id: string;
-  school: string;
-  major: string;
+  schoolName: string;
+  fieldOfStudy: string;
   startDate: string;
   endDate: string;
   isCurrent: boolean;
@@ -22,19 +22,21 @@ export interface Skill {
   id: string;
   name: string;
   level?: number; // 1-5 or 0-100
+  description?: string;
 }
 
 export interface Certificate {
   id: string;
   name: string;
-  organization: string;
-  year: string;
+  issuer: string;
+  issueDate: string;
 }
 
 export interface CvData {
   id?: string;
   templateId: string;
   title: string; // The user-defined title for this CV (e.g., "My Frontend CV")
+  fileUrl?: string;
   personalInfo: {
     fullName: string;
     email: string;

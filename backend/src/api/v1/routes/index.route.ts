@@ -32,7 +32,7 @@ const clientRoute = (app: Application) => {
   app.use(path + "/skill-categories", skillCategoryRoute);
   app.use(path + "/skills", skillRoute);
   app.use(path + "/companies", companyRoute);
-  // app.use(path + "/candidate-profiles", candidateProfileRoute);
+  app.use(path + "/candidate-profiles", candidateProfileRoute);
   app.use(path + "/resumes", resumeRoute);
   app.use(path + "/jobs", jobRoute);
   app.use(path + "/applications", applicationRoute);

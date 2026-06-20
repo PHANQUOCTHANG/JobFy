@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   getJobs, 
+  getFeaturedJobs,
   getJobBySlug, 
   getJobCategories,
   saveJob,
   unsaveJob,
-  getProvinces
+  getProvinces,
+  getIndustries
 } from '../api/jobs.api';
 import { JobFilterParams } from '../types';
 
@@ -13,6 +15,15 @@ export const useJobs = (params?: JobFilterParams) => {
   return useQuery({
     queryKey: ['jobs', params],
     queryFn: () => getJobs(params),
+  });
+};
+
+export const useFeaturedJobs = () => {
+  return useQuery({
+    queryKey: ['jobs', 'featured'],
+    queryFn: getFeaturedJobs,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    select: (data) => data.data,
   });
 };
 
@@ -48,5 +59,13 @@ export const useSaveJob = () => {
     onSuccess: () => {
       // Invalidate queries if needed
     },
+  });
+};
+
+export const useIndustries = () => {
+  return useQuery({
+    queryKey: ['industries'],
+    queryFn: getIndustries,
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 };

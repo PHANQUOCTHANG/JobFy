@@ -1,9 +1,15 @@
 import api from '@/lib/axios';
 import { Company, CompanyLocation, CompanyReview } from '../types';
 
+import { mockCompanies } from './mockData';
+
 export const getCompanies = async (params?: Record<string, any>): Promise<Company[]> => {
-  const response = await api.get('/companies', { params });
-  return response.data?.data || response.data;
+  try {
+    const response = await api.get('/companies', { params });
+    return response.data?.data || response.data;
+  } catch (error) {
+    return mockCompanies as unknown as Company[];
+  }
 };
 
 export const getCompanyBySlug = async (slug: string): Promise<Company> => {

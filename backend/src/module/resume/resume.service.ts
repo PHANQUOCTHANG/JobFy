@@ -34,6 +34,8 @@ export class ResumeService {
     const resume = await this.resumeRepo.create({
       candidate: { connect: { id: profile.id } },
       title: dto.title,
+      templateId: dto.templateId,
+      personalData: dto.personalData || null,
       fileUrl: dto.fileUrl,
       isPrimary: dto.isPrimary ?? false,
       isPublic: dto.isPublic ?? true,
@@ -164,6 +166,109 @@ export class ResumeService {
   async deleteExperience(resumeId: string, expId: number, userId: string) {
     await this.checkOwnership(resumeId, userId);
     await this.resumeRepo.deleteExperience(expId);
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+  }
+
+  // ================= Skill =================
+  async addSkill(resumeId: string, userId: string, dto: any) {
+    await this.checkOwnership(resumeId, userId);
+    const data = {
+      resume: { connect: { id: resumeId } },
+      skill: { connect: { id: dto.skillId } },
+      level: dto.level,
+      years: dto.years,
+    };
+    const result = await (this.resumeRepo as any).prisma.resumeSkill.create({ data });
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+    return result;
+  }
+
+  async updateSkill(resumeId: string, skillId: number, userId: string, dto: any) {
+    await this.checkOwnership(resumeId, userId);
+    const result = await (this.resumeRepo as any).prisma.resumeSkill.update({
+      where: { id: skillId },
+      data: { level: dto.level, years: dto.years },
+    });
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+    return result;
+  }
+
+  async deleteSkill(resumeId: string, skillId: number, userId: string) {
+    await this.checkOwnership(resumeId, userId);
+    await (this.resumeRepo as any).prisma.resumeSkill.delete({ where: { id: skillId } });
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+  }
+
+  // ================= Certification =================
+  async addCertification(resumeId: string, userId: string, dto: any) {
+    await this.checkOwnership(resumeId, userId);
+    const data: any = {
+      resume: { connect: { id: resumeId } },
+      name: dto.name,
+      issuer: dto.issuer,
+      credentialUrl: dto.credentialUrl,
+      sortOrder: dto.sortOrder ?? 0,
+    };
+    if (dto.issueDate) data.issueDate = new Date(dto.issueDate);
+    if (dto.expireDate) data.expireDate = new Date(dto.expireDate);
+    const result = await (this.resumeRepo as any).prisma.resumeCertification.create({ data });
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+    return result;
+  }
+
+  async updateCertification(resumeId: string, certId: number, userId: string, dto: any) {
+    await this.checkOwnership(resumeId, userId);
+    const data: any = { ...dto };
+    if (dto.issueDate) data.issueDate = new Date(dto.issueDate);
+    if (dto.expireDate) data.expireDate = new Date(dto.expireDate);
+    const result = await (this.resumeRepo as any).prisma.resumeCertification.update({
+      where: { id: certId },
+      data,
+    });
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+    return result;
+  }
+
+  async deleteCertification(resumeId: string, certId: number, userId: string) {
+    await this.checkOwnership(resumeId, userId);
+    await (this.resumeRepo as any).prisma.resumeCertification.delete({ where: { id: certId } });
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+  }
+
+  // ================= Project =================
+  async addProject(resumeId: string, userId: string, dto: any) {
+    await this.checkOwnership(resumeId, userId);
+    const data: any = {
+      resume: { connect: { id: resumeId } },
+      name: dto.name,
+      role: dto.role,
+      url: dto.url,
+      description: dto.description,
+      sortOrder: dto.sortOrder ?? 0,
+    };
+    if (dto.startDate) data.startDate = new Date(dto.startDate);
+    if (dto.endDate) data.endDate = new Date(dto.endDate);
+    const result = await (this.resumeRepo as any).prisma.resumeProject.create({ data });
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+    return result;
+  }
+
+  async updateProject(resumeId: string, projectId: number, userId: string, dto: any) {
+    await this.checkOwnership(resumeId, userId);
+    const data: any = { ...dto };
+    if (dto.startDate) data.startDate = new Date(dto.startDate);
+    if (dto.endDate) data.endDate = new Date(dto.endDate);
+    const result = await (this.resumeRepo as any).prisma.resumeProject.update({
+      where: { id: projectId },
+      data,
+    });
+    await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
+    return result;
+  }
+
+  async deleteProject(resumeId: string, projectId: number, userId: string) {
+    await this.checkOwnership(resumeId, userId);
+    await (this.resumeRepo as any).prisma.resumeProject.delete({ where: { id: projectId } });
     await deleteCache(`${this.CACHE_KEY}:id:${resumeId}`);
   }
 }

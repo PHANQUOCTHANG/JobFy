@@ -21,6 +21,7 @@ export interface JobApplication {
 
 export interface ApplyPayload {
   jobId: string;
-  resumeId: string;
+  resumeId?: string | null;
   coverLetter?: string;
+  source?: string;
 }

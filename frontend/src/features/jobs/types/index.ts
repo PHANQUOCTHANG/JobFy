@@ -1,4 +1,4 @@
-import { Company } from '@/features/companies';
+import { Company } from "@/features/companies";
 
 export interface JobCategory {
   id: number;
@@ -31,19 +31,34 @@ export interface Job {
   description: string;
   requirements?: string;
   benefits?: string;
-  jobType: 'full_time' | 'part_time' | 'contract' | 'internship' | 'freelance' | 'remote';
-  experienceLevel?: 'intern' | 'fresher' | 'junior' | 'mid' | 'senior' | 'lead' | 'manager' | 'director' | 'executive';
+  jobType:
+    | "full_time"
+    | "part_time"
+    | "contract"
+    | "internship"
+    | "freelance"
+    | "remote";
+  experienceLevel?:
+    | "intern"
+    | "fresher"
+    | "junior"
+    | "mid"
+    | "senior"
+    | "lead"
+    | "manager"
+    | "director"
+    | "executive";
   quantity: number;
   salaryMin?: number;
   salaryMax?: number;
-  salaryType: 'hourly' | 'daily' | 'monthly' | 'yearly' | 'negotiable';
+  salaryType: "hourly" | "daily" | "monthly" | "yearly" | "negotiable";
   salaryCurrency: string;
   isSalaryPublic: boolean;
   provinceId?: number;
   districtId?: number;
   address?: string;
   isRemote: boolean;
-  status: 'draft' | 'published' | 'closed' | 'expired' | 'paused';
+  status: "draft" | "published" | "closed" | "expired" | "paused";
   publishedAt?: string;
   expiresAt?: string;
   viewCount: number;
@@ -51,16 +66,18 @@ export interface Job {
   saveCount: number;
   createdAt: string;
   updatedAt: string;
-  
+
   // Relations
   company?: Company;
   category?: JobCategory;
   jobSkills?: JobSkill[];
 }
-
 export interface JobFilterParams {
   keyword?: string;
+  search?: string;
   categoryId?: number;
+  categorySlug?: string;
+  industryId?: number;
   provinceId?: number;
   jobType?: string;
   experienceLevel?: string;

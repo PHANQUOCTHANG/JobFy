@@ -46,6 +46,7 @@
     "@tanstack/react-query": "^5.96.2",
     "@tanstack/react-query-devtools": "^5.91.1",
     "@tanstack/react-virtual": "^3.13.23",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -80,6 +81,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "topojson-client": "^3.1.0",
+    "uuid": "^14.0.0",
     "vaul": "^1.1.2",
     "zod": "^4.1.13"
   },

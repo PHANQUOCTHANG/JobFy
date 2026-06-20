@@ -17,16 +17,16 @@ const IdParamSchema = z.object({
 // APIs dành riêng cho ứng viên quản lý hồ sơ cá nhân
 router
   .route("/me")
-  .get(requireAuth, requireRole("CANDIDATE"), profileCtrl.getMyProfile)
+  .get(requireAuth, requireRole("candidate"), profileCtrl.getMyProfile)
   .post(
     requireAuth,
-    requireRole("CANDIDATE"),
+    requireRole("candidate"),
     validationMiddleware(CreateCandidateProfileSchema),
     profileCtrl.createMyProfile
   )
   .patch(
     requireAuth,
-    requireRole("CANDIDATE"),
+    requireRole("candidate"),
     validationMiddleware(UpdateCandidateProfileSchema),
     profileCtrl.updateMyProfile
   );

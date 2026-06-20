@@ -1,65 +1,126 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CvData, initialCvData } from '../types';
+import { cvApi } from '../api/cv.api';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
-const STORAGE_KEY = 'jobfy_my_cvs';
+const STORAGE_KEY = 'jobfy_my_cvs_fallback';
 
 export const useCvEditor = (cvId?: string, initialTemplateId?: string) => {
-  const [cvData, setCvData] = useState<CvData>(() => {
-    // If we have an ID, try to load it
-    if (cvId) {
+  const isExistingCv = cvId && cvId.includes('-') && cvId.length === 36;
+
+  const [cvData, setCvData] = useState<CvData>(() => ({
+    ...initialCvData,
+    id: cvId || `cv_${Date.now()}`,
+    templateId: initialTemplateId || initialCvData.templateId
+  }));
+
+  const [isSaved, setIsSaved] = useState(true);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const initialFetchDone = useRef(false);
+
+  // 1. Fetch real data from API if cvId is valid UUID
+  const isUuid = cvId && cvId.includes('-') && cvId.length === 36;
+
+  const { data: fetchedData, error, isSuccess, isError } = useQuery({
+    queryKey: ['resume', cvId],
+    queryFn: async () => {
+      if (!isUuid) return null;
+      const res = await cvApi.getResumeById(cvId);
+      return res.data;
+    },
+    enabled: !!isUuid && !initialFetchDone.current,
+  });
+
+  useEffect(() => {
+    if (isSuccess && fetchedData) {
+      const resume = fetchedData.data;
+      const pd = resume.personalData || {};
+      
+      setCvData(prev => ({
+        ...prev,
+        id: resume.id,
+        title: resume.title,
+        templateId: resume.templateId || initialTemplateId || initialCvData.templateId,
+        personalInfo: {
+          fullName: pd.fullName || '',
+          jobTitle: pd.jobTitle || '',
+          email: pd.email || '',
+          phone: pd.phone || '',
+          address: pd.address || '',
+          avatarUrl: pd.avatarUrl || '',
+          summary: pd.summary || '',
+          linkedin: pd.linkedin || '',
+          website: pd.website || '',
+        },
+        experiences: pd.experiences || [],
+        educations: pd.educations || [],
+        skills: pd.skills || [],
+        certificates: pd.certificates || [],
+      }));
+      setIsInitializing(false);
+      initialFetchDone.current = true;
+    } else if (isError || (isSuccess && !fetchedData && isUuid)) {
+      // Fallback to local storage if API fails or empty
       try {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
-          const cvs: CvData[] = JSON.parse(stored);
-          const found = cvs.find(c => c.id === cvId);
-          if (found) return found;
+          const cvs = JSON.parse(stored);
+          const found = cvs.find((c: any) => c.id === cvId);
+          if (found) setCvData(found);
         }
-      } catch (e) {
-        console.error('Failed to load CV from storage', e);
-      }
+      } catch (e) {}
+      setIsInitializing(false);
+      initialFetchDone.current = true;
     }
-    
-    // Otherwise, create a new one
-    return {
-      ...initialCvData,
-      id: cvId || `cv_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
-      templateId: initialTemplateId || initialCvData.templateId
-    };
-  });
+  }, [fetchedData, isSuccess, isError, cvId, isUuid, initialTemplateId]);
 
-  const [isSaved, setIsSaved] = useState(true);
+  // For non-UUIDs (e.g. creating a new CV without hitting DB yet)
+  useEffect(() => {
+    if (!isUuid && !initialFetchDone.current) {
+      setIsInitializing(false);
+      initialFetchDone.current = true;
+    }
+  }, [isUuid]);
+
+  // Mutation for saving
+  const saveMutation = useMutation({
+    mutationFn: async (data: CvData) => {
+      if (data.id && data.id.includes('-') && data.id.length === 36) {
+        // Đã có UUID → UPDATE
+        return cvApi.updateResume(data.id, data);
+      } else {
+        // Tạo mới qua API → nhận UUID từ server
+        const res = await cvApi.createResume(data);
+        const responseData = res.data?.data || res.data;
+        const newId = responseData?.id;
+        if (newId) {
+          // Cập nhật state với UUID mới từ server
+          setCvData(prev => ({ ...prev, id: newId }));
+          // Cập nhật URL mà không reload trang
+          window.history.replaceState(
+            null, '',
+            `/cv/editor/${data.templateId}?id=${newId}`
+          );
+        }
+        return res;
+      }
+    },
+    onSuccess: () => {
+      setIsSaved(true);
+    }
+  });
 
   // Auto-save debounced
   useEffect(() => {
+    if (isInitializing) return;
+
     const timer = setTimeout(() => {
-      saveCvData(cvData);
-      setIsSaved(true);
-    }, 1000);
+      saveMutation.mutate(cvData);
+    }, 1500);
 
     setIsSaved(false);
     return () => clearTimeout(timer);
-  }, [cvData]);
-
-  const saveCvData = useCallback((data: CvData) => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      let cvs: CvData[] = stored ? JSON.parse(stored) : [];
-      
-      const index = cvs.findIndex(c => c.id === data.id);
-      
-      const dataToSave = { ...data, updatedAt: new Date().toISOString() };
-      
-      if (index >= 0) {
-        cvs[index] = dataToSave;
-      } else {
-        cvs.push(dataToSave);
-      }
-      
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cvs));
-    } catch (e) {
-      console.error('Failed to save CV to storage', e);
-    }
-  }, []);
+  }, [cvData, isInitializing]);
 
   const updatePersonalInfo = useCallback((info: Partial<CvData['personalInfo']>) => {
     setCvData(prev => ({
@@ -89,6 +150,7 @@ export const useCvEditor = (cvId?: string, initialTemplateId?: string) => {
   return {
     cvData,
     isSaved,
+    isInitializing,
     updatePersonalInfo,
     updateArrayField,
     updateTitle,

@@ -11,7 +11,7 @@ router
   .get(jobCtrl.getJobs)
   .post(
     requireAuth,
-    requireRole("EMPLOYER"), // only employers can post jobs
+    requireRole("employer"), // only employers can post jobs
     validationMiddleware(CreateJobSchema),
     jobCtrl.createJob
   );
@@ -24,14 +24,14 @@ router
   )
   .patch(
     requireAuth,
-    requireRole("EMPLOYER"),
+    requireRole("employer"),
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateJobSchema),
     jobCtrl.updateJob
   )
   .delete(
     requireAuth,
-    requireRole("EMPLOYER"),
+    requireRole("employer"),
     validationMiddleware(IdParamSchema, "params"),
     jobCtrl.deleteJob
   );

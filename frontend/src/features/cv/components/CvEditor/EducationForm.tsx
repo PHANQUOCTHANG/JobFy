@@ -13,8 +13,8 @@ export const EducationForm: React.FC<EducationFormProps> = ({ data, onChange }) 
       ...data,
       {
         id: `edu_${Date.now()}`,
-        school: '',
-        major: '',
+        schoolName: '',
+        fieldOfStudy: '',
         startDate: '',
         endDate: '',
         isCurrent: false,
@@ -52,8 +52,8 @@ export const EducationForm: React.FC<EducationFormProps> = ({ data, onChange }) 
               <label className="block text-sm font-medium text-gray-700 mb-1">Trường</label>
               <input
                 type="text"
-                value={item.school}
-                onChange={(e) => handleChange(item.id, 'school', e.target.value)}
+                value={item.schoolName}
+                onChange={(e) => handleChange(item.id, 'schoolName', e.target.value)}
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#4F46E5] focus:border-[#4F46E5]"
                 placeholder="Tên trường học"
               />
@@ -63,8 +63,8 @@ export const EducationForm: React.FC<EducationFormProps> = ({ data, onChange }) 
               <label className="block text-sm font-medium text-gray-700 mb-1">Chuyên ngành</label>
               <input
                 type="text"
-                value={item.major}
-                onChange={(e) => handleChange(item.id, 'major', e.target.value)}
+                value={item.fieldOfStudy}
+                onChange={(e) => handleChange(item.id, 'fieldOfStudy', e.target.value)}
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#4F46E5] focus:border-[#4F46E5]"
                 placeholder="Chuyên ngành"
               />

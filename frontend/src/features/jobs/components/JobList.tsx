@@ -1,6 +1,7 @@
 import React from 'react';
 import { Job, JobFilterParams } from '../types';
 import { JobCard } from './JobCard';
+import { JobSkeletonCard } from './JobSkeletonCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { SearchX } from 'lucide-react';
@@ -46,17 +47,7 @@ export const JobList: React.FC<JobListProps> = ({
     return (
       <div className={cn(viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-3' : 'flex flex-col gap-3')}>
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="bg-white border border-[#e8e8e8] rounded-lg p-4 flex gap-3">
-            <Skeleton className="w-[80px] h-[80px] rounded-lg bg-[#f0f0f0] flex-shrink-0" />
-            <div className="flex-1 space-y-2.5 min-w-0">
-              <Skeleton className="h-5 w-3/4 bg-[#f0f0f0]" />
-              <Skeleton className="h-4 w-1/2 bg-[#f0f0f0]" />
-              <div className="flex gap-2 pt-1">
-                <Skeleton className="h-7 w-28 rounded-full bg-[#f0f0f0]" />
-                <Skeleton className="h-7 w-20 rounded-full bg-[#f0f0f0]" />
-              </div>
-            </div>
-          </div>
+          <JobSkeletonCard key={i} viewMode={viewMode} />
         ))}
       </div>
     );
@@ -90,7 +81,7 @@ export const JobList: React.FC<JobListProps> = ({
     <div>
       <div className={cn(viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-3' : 'flex flex-col gap-3')}>
         {jobs.map((job) => (
-          <JobCard key={job.id} job={job} onSave={handleSaveJob} viewMode={viewMode} />
+          <JobCard key={job.id} job={job} onSave={handleSaveJob} viewMode={viewMode} disableHoverCard={true} />
         ))}
       </div>
 

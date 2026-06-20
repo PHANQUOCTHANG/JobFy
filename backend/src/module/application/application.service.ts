@@ -3,6 +3,7 @@ import { ApplicationQuery } from "./application.type";
 import { IApplicationRepository } from "./application.repository";
 import { IJobRepository } from "@/module/job/job.repository";
 import { ICandidateProfileRepository } from "@/module/candidate-profile/candidate-profile.repository";
+import { IResumeRepository } from "@/module/resume/resume.repository";
 import { CreateApplicationRequestDto, UpdateApplicationStatusRequestDto } from "./application.request";
 import { ApplicationResponseDto } from "./application.response";
 
@@ -10,7 +11,8 @@ export class ApplicationService {
   constructor(
     private readonly appRepo: IApplicationRepository,
     private readonly jobRepo: IJobRepository,
-    private readonly candidateProfileRepo: ICandidateProfileRepository
+    private readonly candidateProfileRepo: ICandidateProfileRepository,
+    private readonly resumeRepo: IResumeRepository
   ) {}
 
   async apply(userId: string, dto: CreateApplicationRequestDto): Promise<ApplicationResponseDto> {
@@ -28,6 +30,39 @@ export class ApplicationService {
         ...(dto.resumeId && { resume: { connect: { id: dto.resumeId } } }),
         coverLetter: dto.coverLetter,
         source: dto.source,
+      });
+
+      return ApplicationResponseDto.from(application);
+    } catch (error: any) {
+      if (error.code === "P2002") throw new AppError("Bạn đã ứng tuyển công việc này rồi", 409);
+      throw error;
+    }
+  }
+
+  async applyWithCvUpload(userId: string, dto: any): Promise<ApplicationResponseDto> {
+    const candidate = await this.candidateProfileRepo.findByUserId(userId);
+    if (!candidate) throw new AppError("Bạn chưa có hồ sơ ứng viên", 403);
+
+    const job = await this.jobRepo.findById(dto.jobId);
+    if (!job) throw new AppError("Công việc không tồn tại", 404);
+    if (job.status !== "published") throw new AppError("Công việc này không nhận ứng tuyển lúc này", 400);
+
+    try {
+      // 1. Tạo Resume mới với fileUrl từ Cloudinary
+      const resume = await this.resumeRepo.create({
+        candidate: { connect: { id: candidate.id } },
+        title: dto.fileName || "CV Upload",
+        fileUrl: dto.fileUrl,
+        isPrimary: false,
+      });
+
+      // 2. Tạo Application liên kết Resume
+      const application = await this.appRepo.create({
+        job: { connect: { id: dto.jobId } },
+        candidate: { connect: { id: candidate.id } },
+        resume: { connect: { id: resume.id } },
+        coverLetter: dto.coverLetter,
+        source: "upload",
       });
 
       return ApplicationResponseDto.from(application);

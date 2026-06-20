@@ -1,10 +1,39 @@
-import { useState } from "react";
-import { Search, MapPin, Sparkles, Shield, Award, CheckCircle, ArrowRight, TrendingUp } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Search, MapPin, Sparkles, Shield, Award, CheckCircle, ArrowRight, TrendingUp, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Counter } from "./Counter";
+import { useProvinces } from "@/features/jobs/hooks/useJobs";
+import { CLIENT_PATHS } from "@/config/paths";
 
 export function HomeHero() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [loc, setLoc] = useState("");
+  const [provinceId, setProvinceId] = useState<string>("all");
+  const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
+  
+  const { data: provinces, isLoading: isLoadingProvinces } = useProvinces();
+  const provinceRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (provinceRef.current && !provinceRef.current.contains(e.target as Node)) {
+        setShowProvinceDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (search.trim()) params.set("keyword", search.trim());
+    if (provinceId !== "all") params.set("provinceId", provinceId);
+    
+    navigate(`/${CLIENT_PATHS.JOBS}?${params.toString()}`);
+  };
+
+  const selectedProvince = provinces?.find((p) => String(p.id) === provinceId);
 
   return (
     <section className="relative bg-white overflow-hidden border-b border-slate-100" style={{ minHeight: "88vh" }}>
@@ -78,18 +107,37 @@ export function HomeHero() {
                     className="bg-transparent text-slate-800 placeholder:text-slate-400 outline-none w-full text-[14px]"
                   />
                 </div>
-                <div className="flex items-center gap-3 sm:w-44 bg-slate-50 border border-transparent focus-within:bg-white focus-within:border-[#4F46E5]/40 focus-within:ring-4 focus-within:ring-[#4F46E5]/8 rounded-xl px-4 py-3.5 transition-all">
+                <div ref={provinceRef} className="relative flex items-center gap-3 sm:w-56 bg-slate-50 border border-transparent focus-within:bg-white focus-within:border-[#4F46E5]/40 focus-within:ring-4 focus-within:ring-[#4F46E5]/8 rounded-xl px-4 py-3.5 transition-all cursor-pointer" onClick={() => setShowProvinceDropdown(!showProvinceDropdown)}>
                   <MapPin size={16} className="text-slate-400 flex-shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="Địa điểm"
-                    value={loc}
-                    onChange={e => setLoc(e.target.value)}
-                    className="bg-transparent text-slate-800 placeholder:text-slate-400 outline-none w-full text-[14px]"
-                  />
+                  <div className="flex-1 text-left truncate text-[14px] text-slate-800">
+                    {isLoadingProvinces ? "Đang tải..." : selectedProvince ? selectedProvince.name : "Tất cả địa điểm"}
+                  </div>
+                  <ChevronDown size={16} className="text-slate-400 flex-shrink-0" />
+                  
+                  {showProvinceDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-64 overflow-y-auto scrollbar-hide py-2">
+                      <div
+                        className="px-4 py-2.5 text-[13px] text-slate-600 hover:bg-slate-50 cursor-pointer flex justify-start text-left w-full"
+                        onClick={() => setProvinceId("all")}
+                      >
+                        Tất cả địa điểm
+                      </div>
+                      {(provinces || []).map((prov) => (
+                        <div
+                          key={prov.id}
+                          className={`px-4 py-2.5 text-[13px] cursor-pointer hover:bg-slate-50 transition-colors flex justify-start text-left w-full ${
+                            provinceId === String(prov.id) ? "text-[#4F46E5] font-bold bg-indigo-50/50" : "text-slate-800"
+                          }`}
+                          onClick={() => setProvinceId(String(prov.id))}
+                        >
+                          {prov.name}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-              <button className="mt-2 w-full bg-[#4F46E5] hover:bg-[#4338CA] active:scale-[.98] text-white font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 transition-all shadow-md shadow-[#4F46E5]/20">
+              <button onClick={handleSearch} className="mt-2 w-full bg-[#4F46E5] hover:bg-[#4338CA] active:scale-[.98] text-white font-bold py-3.5 rounded-xl text-[14px] flex items-center justify-center gap-2 transition-all shadow-md shadow-[#4F46E5]/20">
                 <Search size={15} /> Tìm kiếm việc làm
               </button>
             </div>
@@ -103,7 +151,7 @@ export function HomeHero() {
                   onClick={() => setSearch(t)}
                   className="text-[12px] text-slate-600 bg-slate-100 hover:bg-[#EEF2FF] hover:text-[#4F46E5] border border-slate-200 hover:border-[#C7D2FE] rounded-full px-3 py-1 transition-all font-medium"
                 >
-                  {t}
+                  {}
                 </button>
               ))}
             </div>

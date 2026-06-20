@@ -2,6 +2,8 @@ export class ResumeResponseDto {
   id: string;
   candidateId: string;
   title: string;
+  templateId: string | null;
+  personalData: any | null;
   fileUrl: string | null;
   isPrimary: boolean;
   isPublic: boolean;
@@ -20,6 +22,8 @@ export class ResumeResponseDto {
     this.id = resume.id;
     this.candidateId = resume.candidateId;
     this.title = resume.title;
+    this.templateId = resume.templateId || null;
+    this.personalData = resume.personalData || null;
     this.fileUrl = resume.fileUrl;
     this.isPrimary = resume.isPrimary;
     this.isPublic = resume.isPublic;

@@ -128,6 +128,7 @@ const applicationRepository: IApplicationRepository = new ApplicationRepository(
 export const applicationService: ApplicationService = new ApplicationService(
   applicationRepository,
   jobRepository,
-  candidateProfileRepository
+  candidateProfileRepository,
+  resumeRepository
 );
 

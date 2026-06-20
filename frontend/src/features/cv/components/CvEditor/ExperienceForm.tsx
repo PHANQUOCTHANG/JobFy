@@ -13,8 +13,8 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ data, onChange }
       ...data,
       {
         id: `exp_${Date.now()}`,
-        company: '',
-        position: '',
+        companyName: '',
+        jobTitle: '',
         startDate: '',
         endDate: '',
         isCurrent: false,
@@ -52,8 +52,8 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ data, onChange }
               <label className="block text-sm font-medium text-gray-700 mb-1">Công ty</label>
               <input
                 type="text"
-                value={item.company}
-                onChange={(e) => handleChange(item.id, 'company', e.target.value)}
+                value={item.companyName}
+                onChange={(e) => handleChange(item.id, 'companyName', e.target.value)}
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#4F46E5] focus:border-[#4F46E5]"
                 placeholder="Tên công ty"
               />
@@ -63,8 +63,8 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ data, onChange }
               <label className="block text-sm font-medium text-gray-700 mb-1">Vị trí</label>
               <input
                 type="text"
-                value={item.position}
-                onChange={(e) => handleChange(item.id, 'position', e.target.value)}
+                value={item.jobTitle}
+                onChange={(e) => handleChange(item.id, 'jobTitle', e.target.value)}
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-[#4F46E5] focus:border-[#4F46E5]"
                 placeholder="Vị trí đảm nhiệm"
               />

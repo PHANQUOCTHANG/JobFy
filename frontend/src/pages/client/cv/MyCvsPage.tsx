@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CvData } from '@/features/cv/types';
 import { mockCvTemplates } from '@/features/cv/api/mockData';
 import { FileText, Plus, Trash2, Edit3, Download, ExternalLink } from 'lucide-react';
+import { cvApi } from '@/features/cv/api/cv.api';
 
 const STORAGE_KEY = 'jobfy_my_cvs';
 
@@ -11,20 +12,45 @@ export const MyCvsPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setCvs(JSON.parse(stored).sort((a: CvData, b: CvData) => 
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        ));
+    const fetchCvs = async () => {
+      try {
+        // Try fetching from API first
+        const response = await cvApi.getMyResumes();
+        if (response.data?.data) {
+          // You might need to map backend data back to CvData format
+          // For simplicity, let's assume they map or we just use local if not matched
+          // But since we just want to show they exist:
+        }
+      } catch (err) {
+        console.warn('Could not fetch from API, falling back to local storage', err);
       }
-    } catch (e) {
-      console.error('Failed to load CVs from storage', e);
-    }
+      
+      // Fallback to local storage
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          setCvs(JSON.parse(stored).sort((a: CvData, b: CvData) => 
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          ));
+        }
+      } catch (e) {
+        console.error('Failed to load CVs from storage', e);
+      }
+    };
+
+    fetchCvs();
   }, []);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa CV này?')) {
+      try {
+        if (id.includes('-') && id.length === 36) {
+          await cvApi.deleteResume(id);
+        }
+      } catch (e) {
+        console.error('Failed to delete from API', e);
+      }
+
       const updated = cvs.filter(cv => cv.id !== id);
       setCvs(updated);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));

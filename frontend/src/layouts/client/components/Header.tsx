@@ -44,8 +44,8 @@ export function Header() {
                     to={href}
                     className={`px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all flex items-center gap-1 ${
                       isActive
-                        ? "text-[#00B14F] bg-[#e5f7ed] font-semibold"
-                        : "text-slate-600 hover:text-[#00B14F] hover:bg-slate-100"
+                        ? "text-[#4F46E5] bg-[#EEF2FF] font-semibold"
+                        : "text-slate-600 hover:text-[#4F46E5] hover:bg-[#EEF2FF]"
                     }`}
                   >
                     Hồ sơ & CV <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
@@ -53,9 +53,9 @@ export function Header() {
                   {/* Dropdown */}
                   <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-56 z-50">
                     <div className="bg-white border border-gray-100 shadow-xl rounded-xl p-2 flex flex-col">
-                      <Link to="/cv" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu CV theo style</Link>
-                      <Link to="/cv/my-cvs" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Quản lý CV</Link>
-                      <Link to="/cv/cover-letter" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu Cover Letter</Link>
+                      <Link to="/cv" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu CV theo style</Link>
+                      <Link to="/cv/my-cvs" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Quản lý CV</Link>
+                      <Link to="/cv/cover-letter" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu Cover Letter</Link>
                     </div>
                   </div>
                 </div>

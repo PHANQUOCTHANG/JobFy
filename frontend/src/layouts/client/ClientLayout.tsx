@@ -1,5 +1,6 @@
 import { Footer } from "@/layouts/client/components/Footer";
 import { Header } from "@/layouts/client/components/Header";
+import { FloatingActionBar } from "@/layouts/client/components/FloatingActionBar";
 import { cn } from "@/lib/utils";
 import { Outlet } from "react-router-dom";
 
@@ -20,6 +21,9 @@ const ClientLayout = () => {
       </main>
 
       <Footer />
+
+      {/* Floating Action Bar */}
+      <FloatingActionBar />
 
       {/* Player thường được render ở root hoặc portal, nhưng layout cần chừa chỗ */}
     </div>

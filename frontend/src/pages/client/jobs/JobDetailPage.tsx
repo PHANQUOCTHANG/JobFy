@@ -1,34 +1,142 @@
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useJob, JobDetailContent } from '@/features/jobs';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, DollarSign, Clock, Building2, Send, CheckCircle2, ChevronRight, Bookmark, Share2, Briefcase } from 'lucide-react';
-import { formatDistanceToNow, differenceInDays } from 'date-fns';
-import { vi } from 'date-fns/locale';
-import { ApplyJobModal, useApplicationStatus } from '@/features/applications';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+import { useJob, JobDetailContent } from "@/features/jobs";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  MapPin,
+  DollarSign,
+  Building2,
+  ChevronRight,
+  Briefcase,
+  AlertCircle,
+  LogIn,
+  Send,
+  Heart,
+  Clock,
+  Users,
+  Share2,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Link as LinkIcon,
+} from "lucide-react";
+import { ApplyJobModal, useCheckApplied } from "@/features/applications";
+import { JobDetailSidebar } from "@/features/jobs/components/JobDetailSidebar";
+import { RelatedJobs } from "@/features/jobs/components/RelatedJobs";
+import { JobFilters } from "@/features/jobs/components/JobFilters";
+import { useAppSelector } from "@/store/hooks";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { AUTH_PATHS } from "@/config/paths";
+import { differenceInDays, format } from "date-fns";
+import { vi } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+const PRIMARY_COLOR = "#4F46E5";
+
+const formatSalaryVND = (min?: number, max?: number, isPublic?: boolean) => {
+  if (!isPublic) return "Thỏa thuận";
+  if (!min && !max) return "Thỏa thuận";
+  const fmt = (v: number) => {
+    if (v >= 1_000_000) return `${v / 1_000_000} triệu`;
+    return `${v.toLocaleString("vi-VN")} đ`;
+  };
+  if (min && max) return `${fmt(min)} - ${fmt(max)}`;
+  if (min) return `Từ ${fmt(min)}`;
+  if (max) return `Đến ${fmt(max)}`;
+  return "Thỏa thuận";
+};
+
+const EXPERIENCE_LABEL: Record<string, string> = {
+  intern: "Thực tập sinh",
+  fresher: "Không yêu cầu",
+  junior: "Dưới 1 năm",
+  mid: "1 - 3 năm",
+  senior: "3 - 5 năm",
+  lead: "5 - 7 năm",
+  manager: "Trên 7 năm",
+};
+
+const JOB_TYPE_LABEL: Record<string, string> = {
+  full_time: "Toàn thời gian",
+  part_time: "Bán thời gian",
+  contract: "Hợp đồng",
+  internship: "Thực tập",
+  freelance: "Freelance",
+  remote: "Remote",
+};
 
 export const JobDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [isApplyModalOpen, setIsApplyModalOpen] = React.useState(false);
-  
-  const { data: job, isLoading } = useJob(slug || '');
-  const { data: applicationStatus, isLoading: isLoadingStatus } = useApplicationStatus(job?.id || '');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [isLoginAlertOpen, setIsLoginAlertOpen] = useState(false);
+  const [isStickyVisible, setIsStickyVisible] = useState(false);
+
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  const { user } = useAppSelector((state) => state.auth);
+  const { data: job, isLoading } = useJob(slug || "");
+  const { data: applicationStatus, isLoading: isLoadingStatus } =
+    useCheckApplied(job?.id || "", user?.id);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsStickyVisible(!entry.isIntersecting),
+      { threshold: 0 },
+    );
+    if (headerRef.current) observer.observe(headerRef.current);
+    return () => observer.disconnect();
+  }, [job]);
+
+  const handleApplyClick = () => {
+    if (!user) {
+      setIsLoginAlertOpen(true);
+      return;
+    }
+    if (user.role !== 'candidate') {
+      toast.error('Chỉ ứng viên mới có thể nộp hồ sơ ứng tuyển.');
+      return;
+    }
+    setIsApplyModalOpen(true);
+  };
+
+  const handleSearch = (newFilters: any) => {
+    const params = new URLSearchParams();
+    if (newFilters.keyword) params.set("keyword", newFilters.keyword);
+    if (newFilters.categorySlug) params.set("categorySlug", newFilters.categorySlug);
+    if (newFilters.provinceId) params.set("provinceId", String(newFilters.provinceId));
+    
+    navigate(`/jobs?${params.toString()}`);
+  };
+
+  const handleGoToLogin = () => {
+    setIsLoginAlertOpen(false);
+    navigate(`${AUTH_PATHS.LOGIN}?redirect=${location.pathname}`);
+  };
 
   if (isLoading) {
     return (
-      <div className="bg-[#F4F6FA] min-h-screen pt-8 pb-20">
-        <div className="max-w-7xl mx-auto px-4">
-          <Skeleton className="h-40 w-full rounded-2xl mb-8 bg-white/60" />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <Skeleton className="h-96 w-full rounded-2xl bg-white/60" />
+      <div className="bg-[#f4f5f5] min-h-screen pt-4 pb-16">
+        <div className="max-w-6xl mx-auto px-4 space-y-4">
+          <Skeleton className="h-6 w-72 bg-gray-200" />
+          <Skeleton className="h-64 w-full rounded-lg bg-white" />
+          <div className="grid grid-cols-3 gap-4">
+            <div className="col-span-2 space-y-4">
+              <Skeleton className="h-96 w-full rounded-lg bg-white" />
             </div>
-            <div>
-              <Skeleton className="h-[500px] w-full rounded-2xl bg-white/60" />
-            </div>
+            <Skeleton className="h-[400px] w-full rounded-lg bg-white" />
           </div>
         </div>
       </div>
@@ -37,198 +145,370 @@ export const JobDetailPage: React.FC = () => {
 
   if (!job) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-[#F4F6FA] text-center px-4">
-        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
-          <Briefcase className="w-10 h-10 text-slate-300" />
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-[#f4f5f5] text-center px-4">
+        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-5">
+          <Briefcase className="w-10 h-10 text-gray-300" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">Không tìm thấy công việc</h2>
-        <p className="text-slate-500 mb-8 max-w-md">Tin tuyển dụng này có thể đã hết hạn, bị xóa hoặc đường dẫn không chính xác.</p>
-        <Button asChild size="lg" className="bg-[#4F46E5] hover:bg-[#4338CA] rounded-xl">
-          <Link to="/jobs">Khám phá các việc làm khác</Link>
-        </Button>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">
+          Không tìm thấy công việc
+        </h2>
+        <p className="text-gray-500 mb-6 max-w-sm">
+          Tin tuyển dụng này có thể đã hết hạn hoặc đường dẫn không chính xác.
+        </p>
+        <button
+          onClick={() => navigate("/jobs")}
+          style={{ backgroundColor: PRIMARY_COLOR }}
+          className="text-white font-semibold px-6 py-2.5 rounded-md hover:opacity-90 transition-opacity"
+        >
+          Khám phá việc làm khác
+        </button>
       </div>
     );
   }
 
-  const daysUntilExpiry = job.expiresAt ? differenceInDays(new Date(job.expiresAt), new Date()) : 999;
-  const isExpiringSoon = daysUntilExpiry <= 3 && daysUntilExpiry >= 0;
+  const daysLeft = job.expiresAt
+    ? differenceInDays(new Date(job.expiresAt), new Date())
+    : null;
+  const deadlineStr = job.expiresAt
+    ? format(new Date(job.expiresAt), "dd/MM/yyyy", { locale: vi })
+    : null;
+  const isApplied = !!applicationStatus;
 
   return (
-    <div className="bg-white min-h-screen pb-20">
-      {/* Breadcrumb Navigation */}
-      <div className="bg-white border-b border-slate-200 py-3">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center text-sm font-medium text-slate-500">
-            <Link to="/" className="hover:text-[#4F46E5] transition-colors">Trang chủ</Link>
-            <ChevronRight className="w-4 h-4 mx-2 text-slate-300" />
-            <Link to="/jobs" className="hover:text-[#4F46E5] transition-colors">Việc làm</Link>
-            <ChevronRight className="w-4 h-4 mx-2 text-slate-300" />
-            <span className="text-slate-800 truncate max-w-[200px] md:max-w-md">{job.title}</span>
+    <div className="bg-[#f4f5f5] min-h-screen pb-10">
+      {/* ── Sticky Top Bar on scroll ─────────────────────────────── */}
+      <div
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow transition-transform duration-300",
+          isStickyVisible ? "translate-y-0" : "-translate-y-full",
+        )}
+      >
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6 text-sm font-semibold border-b-0">
+            <span className="text-[#4F46E5] border-b-2 border-[#4F46E5] pb-0.5 py-4">
+              Chi tiết tin tuyển dụng
+            </span>
+            <span className="text-gray-500 hover:text-gray-700 cursor-pointer">
+              Việc làm liên quan
+            </span>
+          </div>
+          <button
+            onClick={handleApplyClick}
+            disabled={isApplied}
+            style={{ backgroundColor: isApplied ? "#6b7280" : PRIMARY_COLOR }}
+            className="flex items-center gap-2 text-white text-sm font-semibold px-5 py-2 rounded-md hover:opacity-90 transition-opacity disabled:cursor-default flex-shrink-0"
+          >
+            <Send className="w-4 h-4" />
+            {isApplied ? "Đã ứng tuyển" : "Ứng tuyển ngay"}
+          </button>
+        </div>
+      </div>
+
+      {/* ─── SEARCH BAR SECTION ─── */}
+      <div className="bg-[#4F46E5] py-3 px-4">
+        <div className="max-w-6xl mx-auto">
+          <JobFilters onSearch={handleSearch} />
+        </div>
+      </div>
+
+      {/* ── Breadcrumb ──────────────────────────────────────────── */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          <div className="flex items-center text-sm text-gray-500 gap-1">
+            <Link to="/" className="hover:text-[#4F46E5] transition-colors">
+              Trang chủ
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <Link to="/jobs" className="hover:text-[#4F46E5] transition-colors">
+              Tìm việc làm
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-gray-800 line-clamp-1">{job.title}</span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          
-          {/* Cột trái: Nội dung chính */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* Job Header Card */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
-              
-              <div className="relative z-10 flex flex-col md:flex-row gap-6">
-                <div className="w-24 h-24 rounded-2xl bg-white border border-slate-100 flex items-center justify-center p-3 shadow-sm flex-shrink-0">
-                  {job.company?.logoUrl ? (
-                    <img src={job.company.logoUrl} alt={job.company.name} className="w-full h-full object-contain" />
-                  ) : (
-                    <Building2 className="w-10 h-10 text-slate-300" />
-                  )}
-                </div>
-                
-                <div className="flex-1">
-                  <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3 leading-tight">
-                    {job.title}
-                  </h1>
-                  <Link to={job.company?.slug ? `/companies/${job.company.slug}` : '#'} className="text-lg font-medium text-slate-600 hover:text-[#4F46E5] transition-colors flex items-center gap-2 mb-6">
-                    {job.company?.name || 'Công ty ẩn danh'}
-                  </Link>
-
-                  <div className="flex flex-wrap gap-3">
-                    <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-0 rounded-lg font-semibold px-3 py-1.5 text-sm">
-                      <DollarSign className="w-4 h-4 mr-1.5" />
-                      {job.isSalaryPublic ? (
-                        job.salaryMin && job.salaryMax 
-                          ? `${job.salaryMin / 1000000} - ${job.salaryMax / 1000000} Triệu`
-                          : (job.salaryMin ? `Từ ${job.salaryMin / 1000000} Triệu` : 'Thỏa thuận')
-                      ) : 'Mức lương thương lượng'}
-                    </Badge>
-                    <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 rounded-lg font-medium px-3 py-1.5 text-sm">
-                      <MapPin className="w-4 h-4 mr-1.5 text-slate-400" />
-                      {job.address || 'Không xác định'}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
+      <div className="max-w-6xl mx-auto px-4 mt-4 space-y-4">
+        {/* ── Hero Card ─────────────────────────────────────────── */}
+        <div ref={headerRef} className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-start gap-5">
+            {/* Logo */}
+            <div className="w-20 h-20 border border-gray-200 rounded-lg flex items-center justify-center p-2 flex-shrink-0">
+              {job.company?.logoUrl ? (
+                <img
+                  src={job.company.logoUrl}
+                  alt={job.company.name}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <Building2 className="w-10 h-10 text-gray-300" />
+              )}
             </div>
 
-            {/* Main Tabs Detail */}
-            <JobDetailContent job={job} />
+            <div className="flex-1 min-w-0">
+              {/* Title */}
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight mb-1">
+                {job.title}
+                {job.company?.isVerified && (
+                  <span
+                    className="inline-flex items-center ml-2 text-[#4F46E5]"
+                    title="Đã xác minh"
+                  >
+                    ✔
+                  </span>
+                )}
+              </h1>
 
-          </div>
-          
-          {/* Cột phải: Sticky Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
-              
-              {/* Box Action */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                <div className="mb-6 space-y-4">
-                  {applicationStatus ? (
-                    <Button size="lg" className="w-full h-14 text-base font-bold rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200">
-                      <CheckCircle2 className="w-5 h-5 mr-2" />
-                      Bạn đã ứng tuyển công việc này
-                    </Button>
-                  ) : (
-                    <Button 
-                      size="lg" 
-                      className="w-full h-14 text-base font-bold rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-lg shadow-[#4F46E5]/20 hover:-translate-y-0.5 transition-all"
-                      onClick={() => setIsApplyModalOpen(true)}
-                      disabled={isLoadingStatus}
-                    >
-                      <Send className="w-5 h-5 mr-2" />
-                      Ứng tuyển ngay
-                    </Button>
-                  )}
-                  
-                  <div className="flex gap-3">
-                    <Button variant="outline" size="lg" className="flex-1 h-12 rounded-xl font-medium border-slate-200 hover:bg-slate-50 text-slate-700">
-                      <Bookmark className="w-4 h-4 mr-2" />
-                      Lưu tin
-                    </Button>
-                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700 flex-shrink-0">
-                      <Share2 className="w-4 h-4" />
-                    </Button>
+              {/* Company name */}
+              <Link
+                to={job.company?.slug ? `/companies/${job.company.slug}` : "#"}
+                style={{ color: PRIMARY_COLOR }}
+                className="text-base font-semibold hover:underline"
+              >
+                {job.company?.name || "Công ty ẩn danh"}
+              </Link>
+
+              {/* 3-column metrics */}
+              <div className="flex flex-wrap gap-6 mt-4">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#e6f4ee" }}
+                  >
+                    <DollarSign
+                      className="w-5 h-5"
+                      style={{ color: PRIMARY_COLOR }}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500">Mức lương</div>
+                    <div className="font-bold text-gray-900 text-sm">
+                      {formatSalaryVND(
+                        job.salaryMin,
+                        job.salaryMax,
+                        job.isSalaryPublic,
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-slate-100 space-y-4 text-sm">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 flex items-center gap-2"><Clock className="w-4 h-4" /> Ngày đăng</span>
-                    <span className="font-medium text-slate-800">
-                      {job.publishedAt ? formatDistanceToNow(new Date(job.publishedAt), { addSuffix: true, locale: vi }) : 'Gần đây'}
-                    </span>
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#e6f4ee" }}
+                  >
+                    <MapPin
+                      className="w-5 h-5"
+                      style={{ color: PRIMARY_COLOR }}
+                    />
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Hạn nộp</span>
-                    <span className={cn("font-medium", isExpiringSoon ? "text-red-600" : "text-slate-800")}>
-                      {job.expiresAt ? new Date(job.expiresAt).toLocaleDateString('vi-VN') : 'Không giới hạn'}
-                    </span>
-                  </div>
-                  {isExpiringSoon && (
-                    <div className="mt-2 text-xs font-medium text-red-500 bg-red-50 p-2 rounded-md text-center">
-                      Nhanh tay! Chỉ còn {daysUntilExpiry} ngày nữa là hết hạn.
+                  <div>
+                    <div className="text-xs text-gray-500">Địa điểm</div>
+                    <div className="font-bold text-gray-900 text-sm line-clamp-1 max-w-[160px]">
+                      {job.address || "Đang cập nhật"}
                     </div>
-                  )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#e6f4ee" }}
+                  >
+                    <Briefcase
+                      className="w-5 h-5"
+                      style={{ color: PRIMARY_COLOR }}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500">Kinh nghiệm</div>
+                    <div className="font-bold text-gray-900 text-sm">
+                      {EXPERIENCE_LABEL[job.experienceLevel || ""] ||
+                        "Không yêu cầu"}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Box Company Summary */}
-              {job.company && (
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                  <h3 className="font-bold text-lg text-slate-900 mb-4 flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-[#4F46E5]" />
-                    Thông tin chung
-                  </h3>
-                  
-                  <ul className="space-y-4 text-sm">
-                    <li className="flex flex-col gap-1 border-b border-slate-100 pb-3">
-                      <span className="text-slate-500">Cấp bậc / Kinh nghiệm</span>
-                      <span className="font-semibold text-slate-800 capitalize">
-                        {job.experienceLevel?.replace('_', ' ') || 'Không yêu cầu'}
+              {/* Deadline */}
+              {deadlineStr && (
+                <div className="flex items-center gap-2 mt-4 text-sm text-gray-600">
+                  <Clock className="w-4 h-4 text-gray-400" />
+                  Hạn nộp hồ sơ:{" "}
+                  <strong
+                    className={
+                      daysLeft !== null && daysLeft <= 3
+                        ? "text-red-500"
+                        : "text-gray-800"
+                    }
+                  >
+                    {deadlineStr}
+                    {daysLeft !== null && daysLeft >= 0 && (
+                      <span className="ml-1 font-normal text-gray-500">
+                        (Còn {daysLeft} ngày)
                       </span>
-                    </li>
-                    <li className="flex flex-col gap-1 border-b border-slate-100 pb-3">
-                      <span className="text-slate-500">Loại hình công việc</span>
-                      <span className="font-semibold text-slate-800 capitalize">
-                        {job.jobType?.replace('_', ' ') || 'Toàn thời gian'}
+                    )}
+                    {daysLeft !== null && daysLeft < 0 && (
+                      <span className="ml-1 font-normal text-red-500">
+                        (Đã hết hạn)
                       </span>
-                    </li>
-                    <li className="flex flex-col gap-1 border-b border-slate-100 pb-3">
-                      <span className="text-slate-500">Số lượng cần tuyển</span>
-                      <span className="font-semibold text-slate-800">
-                        {job.quantity ? `${job.quantity} người` : 'Không giới hạn'}
-                      </span>
-                    </li>
-                    <li className="flex flex-col gap-1">
-                      <span className="text-slate-500">Hình thức làm việc</span>
-                      <span className="font-semibold text-slate-800">
-                        {job.isRemote ? 'Làm việc từ xa (Remote)' : 'Tại văn phòng'}
-                      </span>
-                    </li>
-                  </ul>
-                  
-                  <div className="mt-6 pt-6 border-t border-slate-100">
-                    <Link to={`/companies/${job.company.slug}`} className="text-[#4F46E5] text-sm font-semibold hover:underline flex items-center justify-center gap-1">
-                      Xem hồ sơ công ty <ChevronRight className="w-4 h-4" />
-                    </Link>
-                  </div>
+                    )}
+                  </strong>
                 </div>
               )}
 
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 mt-5">
+                <button
+                  onClick={handleApplyClick}
+                  disabled={isApplied || isLoadingStatus}
+                  style={{
+                    backgroundColor: isApplied ? "#6b7280" : PRIMARY_COLOR,
+                  }}
+                  className="flex items-center gap-2 text-white font-bold px-8 py-3 rounded-md hover:opacity-90 transition-opacity disabled:cursor-default text-sm"
+                >
+                  <Send className="w-4 h-4" />
+                  {isApplied ? "Đã ứng tuyển" : "Ứng tuyển ngay"}
+                </button>
+
+                <button
+                  style={{ color: PRIMARY_COLOR, borderColor: PRIMARY_COLOR }}
+                  className="flex items-center gap-2 font-bold px-6 py-3 rounded-md border-2 bg-white hover:bg-indigo-50 transition-colors text-sm"
+                >
+                  <Heart className="w-4 h-4" />
+                  Lưu tin
+                </button>
+
+                {/* Social share buttons */}
+                <div className="flex items-center gap-2 ml-auto">
+                  <button className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center hover:opacity-80 transition-opacity">
+                    <Facebook className="w-4 h-4" />
+                  </button>
+                  <button className="w-8 h-8 rounded-full bg-sky-400 text-white flex items-center justify-center hover:opacity-80 transition-opacity">
+                    <Twitter className="w-4 h-4" />
+                  </button>
+                  <button className="w-8 h-8 rounded-full bg-blue-700 text-white flex items-center justify-center hover:opacity-80 transition-opacity">
+                    <Linkedin className="w-4 h-4" />
+                  </button>
+                  <button className="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center hover:opacity-80 transition-opacity">
+                    <LinkIcon className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
+        {/* ── 2-column body ──────────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4 items-start">
+          {/* LEFT: Job Content */}
+          <div className="space-y-4">
+            <JobDetailContent job={job} />
+
+            {/* Bottom CTA (repeat) */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <p className="text-gray-600 text-sm mb-4 text-center">
+                Hạn nộp hồ sơ:{" "}
+                <strong className="text-gray-900">
+                  {deadlineStr || "Không giới hạn"}
+                </strong>
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={handleApplyClick}
+                  disabled={isApplied}
+                  style={{
+                    backgroundColor: isApplied ? "#6b7280" : PRIMARY_COLOR,
+                  }}
+                  className="flex items-center gap-2 text-white font-bold px-8 py-3 rounded-md hover:opacity-90 transition-opacity disabled:cursor-default text-sm"
+                >
+                  <Send className="w-4 h-4" />
+                  {isApplied ? "Đã ứng tuyển" : "Ứng tuyển ngay"}
+                </button>
+                <button
+                  style={{ color: PRIMARY_COLOR, borderColor: PRIMARY_COLOR }}
+                  className="flex items-center gap-2 font-bold px-6 py-3 rounded-md border-2 bg-white hover:bg-indigo-50 transition-colors text-sm"
+                >
+                  <Heart className="w-4 h-4" />
+                  Lưu tin
+                </button>
+              </div>
+
+              {/* Report */}
+              <p className="text-center mt-4 text-xs text-gray-400">
+                Báo cáo tin tuyển dụng:{" "}
+                <button className="underline hover:text-red-500 transition-colors">
+                  Nếu bạn thấy rằng tin tuyển dụng này không đúng hoặc có dấu
+                  hiệu lừa đảo,{" "}
+                  <span style={{ color: PRIMARY_COLOR }}>
+                    hãy phản ánh với chúng tôi.
+                  </span>
+                </button>
+              </p>
+            </div>
+
+            {/* Related jobs */}
+            <RelatedJobs
+              categorySlug={job.category?.slug}
+              categoryId={job.categoryId}
+              currentJobId={job.id}
+            />
+          </div>
+
+          {/* RIGHT: Sidebar */}
+          <div className="sticky top-16 space-y-4">
+            <JobDetailSidebar
+              job={job}
+              applicationStatus={applicationStatus}
+              isLoadingStatus={isLoadingStatus}
+              onApplyClick={handleApplyClick}
+            />
+          </div>
         </div>
       </div>
 
+      {/* ── Login Guard Dialog ─────────────────────────────────── */}
+      <AlertDialog open={isLoginAlertOpen} onOpenChange={setIsLoginAlertOpen}>
+        <AlertDialogContent className="rounded-2xl sm:max-w-[420px] bg-white border-none shadow-2xl p-0 overflow-hidden">
+          <div className="bg-[#4F46E5]/10 pt-8 pb-6 px-6 flex flex-col items-center border-b border-[#4F46E5]/10">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-[#4F46E5]/20">
+              <AlertCircle className="w-8 h-8 text-[#4F46E5]" />
+            </div>
+            <AlertDialogTitle className="text-center text-xl font-bold text-gray-900">
+              Yêu cầu đăng nhập
+            </AlertDialogTitle>
+          </div>
+          
+          <div className="px-6 py-6">
+            <AlertDialogDescription className="text-center text-[15px] leading-relaxed text-gray-600 mb-6">
+              Bạn cần đăng nhập bằng tài khoản ứng viên để có thể tiếp tục nộp hồ sơ ứng tuyển cho công việc này.
+            </AlertDialogDescription>
+            
+            <AlertDialogFooter className="flex-col sm:flex-row gap-3 mt-0">
+              <AlertDialogCancel className="mt-0 w-full rounded-xl h-12 border-gray-200 text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                Để sau
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleGoToLogin}
+                style={{ backgroundColor: PRIMARY_COLOR }}
+                className="w-full rounded-xl h-12 font-semibold gap-2 shadow-md hover:shadow-lg transition-all"
+              >
+                <LogIn className="w-4 h-4" />
+                Đăng nhập ngay
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Apply Modal ────────────────────────────────────────── */}
       {job && (
-        <ApplyJobModal 
+        <ApplyJobModal
           isOpen={isApplyModalOpen}
           onClose={() => setIsApplyModalOpen(false)}
           jobId={job.id}
           jobTitle={job.title}
-          companyName={job.company?.name || 'Công ty ẩn danh'}
+          companyName={job.company?.name || "Công ty ẩn danh"}
         />
       )}
     </div>

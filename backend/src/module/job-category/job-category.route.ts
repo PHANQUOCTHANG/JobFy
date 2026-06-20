@@ -16,7 +16,7 @@ router
   .get(jobCategoryCtrl.getJobCategories)
   .post(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(CreateJobCategorySchema),
     jobCategoryCtrl.createJobCategory,
   );
@@ -30,14 +30,14 @@ router
   )
   .patch(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateJobCategorySchema),
     jobCategoryCtrl.updateJobCategory,
   )
   .delete(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     jobCategoryCtrl.deleteJobCategory,
   );
