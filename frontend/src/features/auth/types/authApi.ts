@@ -17,6 +17,9 @@ export const authApi = {
   loginEmployer: (data: EmployerLoginInput) => 
     authHttpClient.post('/login', { ...data, role: 'employer' }),
 
+  googleLoginEmployer: (accessToken: string) => 
+    authHttpClient.post('/google-login', { accessToken, role: 'employer' }),
+
   // Đăng nhập chung cho các vai trò khác
   login: (data: any) => authHttpClient.post('/login', data),
 

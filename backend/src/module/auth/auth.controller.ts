@@ -28,7 +28,7 @@ const sendAuthResponse = (
   statusCode: number = 200,
 ) => {
   console.log("Remember Me (Server):", result.rememberMe);
-  const expiresAt = result.rememberMe 
+  const expiresAt = result.rememberMe
     ? result.refreshTokenExpiresAt
     : undefined;
   const cookieOptions = getCookieOptions(expiresAt);
@@ -147,7 +147,7 @@ export const resetPassword = asyncHandler(
   },
 );
 
-// POST | /api/auth/change-password
+// POST | /api/auth/change-password | Thay đổi mật khẩu khi đã đăng nhập
 export const changePassword = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = getUserId(req);
@@ -155,3 +155,11 @@ export const changePassword = asyncHandler(
     res.status(204).send();
   },
 );
+
+// POST | /api/auth/google-login | Đăng nhập/Đăng ký bằng Google
+export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
+  const { accessToken, role } = req.body;
+  if (!accessToken) throw new AppError("accessToken là bắt buộc", 400);
+  const result = await authService.googleLogin(accessToken, role || "candidate");
+  sendAuthResponse(res, result, 200);
+});

@@ -102,6 +102,23 @@ export const loginEmployer = createAsyncThunk(
   }
 );
 
+export const googleLoginEmployer = createAsyncThunk(
+  "auth/googleLoginEmployer",
+  async (idToken: string, { rejectWithValue }) => {
+    try {
+      const res = await authApi.googleLoginEmployer(idToken);
+      const { accessToken, user } = res.data.data;
+      
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+      }
+      return { accessToken, user };
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || "Đăng nhập bằng Google thất bại");
+    }
+  }
+);
+
 export const registerEmployer = createAsyncThunk(
   "auth/registerEmployer",
   async (data: any, { rejectWithValue }) => {
@@ -238,22 +255,6 @@ const authSlice = createSlice({
       state.isAuthChecking = false;
     });
 
-    // --- Login Employer ---
-    builder
-      .addCase(loginEmployer.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(loginEmployer.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.token = action.payload.accessToken;
-        state.user = action.payload.user;
-        state.isAuthChecking = false;
-      })
-      .addCase(loginEmployer.rejected, (state) => {
-        state.isLoading = false;
-        state.isAuthChecking = false;
-      });
-
     // --- Register Employer ---
     builder
       .addCase(registerEmployer.pending, (state) => {
@@ -265,6 +266,31 @@ const authSlice = createSlice({
       .addCase(registerEmployer.rejected, (state) => {
         state.isLoading = false;
       });
+
+    // --- Login Employer ---
+    builder
+      .addMatcher(
+        (action) => [loginEmployer.pending.type, googleLoginEmployer.pending.type].includes(action.type),
+        (state) => {
+          state.isLoading = true;
+        }
+      )
+      .addMatcher(
+        (action) => [loginEmployer.fulfilled.type, googleLoginEmployer.fulfilled.type].includes(action.type),
+        (state, action: any) => {
+          state.isLoading = false;
+          state.token = action.payload.accessToken;
+          state.user = action.payload.user;
+          state.isAuthChecking = false;
+        }
+      )
+      .addMatcher(
+        (action) => [loginEmployer.rejected.type, googleLoginEmployer.rejected.type].includes(action.type),
+        (state) => {
+          state.isLoading = false;
+          state.isAuthChecking = false;
+        }
+      );
 
     // --- Forgot Password Flow ---
     builder

@@ -1,4 +1,3 @@
-import slugify from "slugify";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import AppError from "@/utils/appError";
@@ -14,6 +13,10 @@ import {
 import { AuthResponseDto } from "./auth.response";
 import { getCache, setCache, deleteCache } from "@/utils/cache";
 import { emailService } from "@/config/container";
+import slugify from "slugify";
+import { OAuth2Client } from "google-auth-library";
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Kết quả nội bộ — thêm refreshTokenExpiresAt để controller set cookie chính xác
 interface AuthResult {
@@ -34,6 +37,7 @@ export interface IAuthService {
   logout(refreshToken: string, accessToken?: string): Promise<void>;
   resetPassword(dto: ResetPasswordRequest): Promise<void>;
   changePassword(userId: string, dto: ChangePasswordRequest): Promise<void>;
+  googleLogin(idToken: string, role: string): Promise<AuthResponseDto>;
 }
 
 export class AuthService implements IAuthService {
@@ -45,7 +49,7 @@ export class AuthService implements IAuthService {
     private readonly refreshRepo: IRefreshTokenRepository,
     private readonly otpRepo: IOtpRepository,
     private readonly otpService: IOtpService,
-  ) {}
+  ) { }
 
   async register(dto: RegisterRequest): Promise<{ message: string }> {
     const existed = await this.userRepo.findByEmail(dto.email);
@@ -77,7 +81,7 @@ export class AuthService implements IAuthService {
             // Thêm hậu tố ngẫu nhiên để tránh lỗi trùng lặp slug (Unique constraint failed)
             slug: `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`,
             // Các trường bắt buộc tối thiểu khác của model Company (nếu có)
-            address: "", 
+            address: "",
             shortDescription: "",
           },
         ],
@@ -296,6 +300,86 @@ export class AuthService implements IAuthService {
       // Xóa cache user detail — mật khẩu vừa được đổi
       deleteCache(`users:id:${userId}`),
     ]);
+  }
+
+  async googleLogin(accessToken: string, role: string): Promise<AuthResponseDto> {
+    // 1. Lấy thông tin user từ Google Access Token
+    let payload;
+    try {
+      const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      if (!response.ok) throw new Error();
+      payload = await response.json();
+    } catch {
+      throw new AppError("Google Access Token không hợp lệ", 401);
+    }
+
+    if (!payload || !payload.email) {
+      throw new AppError("Không lấy được thông tin từ Google", 400);
+    }
+
+    const { email, name, picture, sub: googleId } = payload;
+
+    // 2. Tìm user theo email hoặc googleId
+    let user = await this.userRepo.findByEmail(email);
+
+    if (user) {
+      // Cập nhật googleId nếu chưa có
+      if (!user.googleId) {
+        await this.userRepo.updateById(user.id, { googleId });
+        user.googleId = googleId;
+      }
+      // Kiểm tra role có khớp không
+      if (user.role !== role) {
+        throw new AppError(`Tài khoản này đã đăng ký với vai trò "${user.role}", không thể đăng nhập với vai trò "${role}"`, 403);
+      }
+      // Kiểm tra trạng thái tài khoản
+      if (user.status === "inactive") {
+        throw new AppError("Tài khoản đã bị tạm khóa", 403);
+      }
+      if (user.status === "banned") {
+        throw new AppError("Tài khoản đã bị cấm", 403);
+      }
+    } else {
+      // 3. Tạo user mới nếu chưa tồn tại
+      const validRole = (role === "employer" || role === "candidate") ? role : "candidate";
+      const userData: any = {
+        email,
+        googleId,
+        role: validRole,
+        status: "active",
+        emailVerified: true,
+      };
+
+      if (validRole === "candidate") {
+        userData.candidateProfile = {
+          create: { fullName: name || email.split("@")[0] }
+        };
+      } else if (validRole === "employer") {
+        const companyName = name || `Công ty của ${email.split("@")[0]}`;
+        const baseSlug = slugify(companyName, { lower: true, strict: true, locale: "vi" });
+        userData.companiesOwned = {
+          create: [{
+            name: companyName,
+            slug: `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`,
+            address: "",
+            shortDescription: "",
+          }]
+        };
+      }
+
+      user = await this.userRepo.create(userData);
+    }
+
+    const result = await this.generateAuthResult(user, false);
+    return AuthResponseDto.from(
+      result.user,
+      result.accessToken,
+      result.refreshToken,
+      result.refreshTokenExpiresAt,
+      result.rememberMe,
+    );
   }
 
   private async generateAuthResult(

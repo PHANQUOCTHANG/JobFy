@@ -30,7 +30,11 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
-    navigate("/");
+    if (user?.role === 'employer') {
+      navigate("/employer/login");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -83,11 +87,22 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         </DropdownMenuLabel>
 
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate("/profile?tab=overview")} className="p-2.5 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group">
+          <DropdownMenuItem 
+            onClick={() => {
+              if (user.role === 'employer') {
+                navigate("/employer/company");
+              } else {
+                navigate("/profile?tab=overview");
+              }
+            }} 
+            className="p-2.5 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group"
+          >
             <div className="w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center mr-3 group-hover:bg-background group-hover:shadow-sm transition-all duration-200">
               <UserIcon className="size-4 text-foreground/70 group-hover:text-primary transition-colors" />
             </div>
-            <span className="font-semibold text-[13.5px]">Hồ sơ cá nhân</span>
+            <span className="font-semibold text-[13.5px]">
+              {user.role === 'employer' ? 'Hồ sơ công ty' : 'Hồ sơ cá nhân'}
+            </span>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>

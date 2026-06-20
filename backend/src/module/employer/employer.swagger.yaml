@@ -217,6 +217,64 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
 
+  /api/v1/admin/employer/pending:
+    get:
+      tags: 
+        - Employer
+      summary: Danh sách hồ sơ chờ duyệt (Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+      responses:
+        200:
+          description: Trả về danh sách công ty kèm thông tin phân trang.
+
+  /api/v1/admin/employer/{companyId}:
+    get:
+      tags:  
+        - Employer
+      summary: Xem chi tiết hồ sơ công ty
+      description: Lấy toàn bộ thông tin công ty và tài liệu pháp lý để review.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Chi tiết hồ sơ.
+        404:
+          description: Không tìm thấy công ty.
+
+  /api/v1/admin/employer/{companyId}/verify:
+    patch:
+      tags: 
+        - Employer
+      summary: Phê duyệt hoặc từ chối hồ sơ (Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyCompanyRequest'
+      responses:
+        200:
+          description: Cập nhật trạng thái thành công.
+        400:
+          description: Dữ liệu trạng thái không hợp lệ.
+
 components:
   securitySchemes:
     bearerAuth:
@@ -264,6 +322,19 @@ components:
               type: string
               enum: ['1_10', '11_50', '51_200', '201_500', '501_1000', '1001_5000', '5000_plus']
               example: "11_50"
+
+    VerifyCompanyRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [approved, rejected]
+          example: approved
+        reason:
+          type: string
+          description: Lý do từ chối (bắt buộc nếu status là rejected)
+          example: "Giấy phép kinh doanh đã hết hạn hoặc mờ không đọc được."
 
     SuccessMessageResponse:
       type: object

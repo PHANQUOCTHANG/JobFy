@@ -1,34 +1,46 @@
-import axiosInstance from "@/lib/axios"; // Giả định bạn đã có file config axios
+import axiosInstance from "@/lib/axios";
 
 export interface VerificationProgress {
-  step1: { isCompleted: boolean; email: string }; // Xác thực email
-  step2: { isCompleted: boolean };               // Hoàn thiện hồ sơ cơ bản
-  step3: { isVerified: boolean; hasTaxCode: boolean }; // Xác thực pháp lý
+  step1: { isCompleted: boolean; email: string }; 
+  step1_5: { isCompleted: boolean; phone: string | null };
+  step2: { isCompleted: boolean };               
+  step3: { isVerified: boolean; hasTaxCode: boolean }; 
 }
 
 export const employerApi = {
-  // Lấy tiến trình xác thực
   getProgress: async (): Promise<VerificationProgress> => {
     const response = await axiosInstance.get("/employer/verification-progress");
     return response.data.data;
   },
 
-  // Gửi lại mã OTP
   resendOtp: async () => {
     const response = await axiosInstance.post("/employer/resend-otp");
     return response.data;
   },
 
-  // Xác thực OTP (Bước 1)
   verifyEmail: async (otp: string) => {
-    // axios baseURL: /api/v1
     const response = await axiosInstance.post("/employer/verify-email", { otp });
     return response.data;
   },
 
-  // Gửi hồ sơ pháp lý (Bước 3)
   submitLegal: async (data: { taxCode: string; businessLicenseUrl: string }) => {
     const response = await axiosInstance.post("/employer/submit-legal", data);
+    return response.data;
+  },
+
+  uploadDocument: async (file: File) => {
+    const formData = new FormData();
+    formData.append("document", file);
+    const response = await axiosInstance.post("/employer/upload-document", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+
+  verifyPhone: async (firebaseIdToken: string) => {
+    const response = await axiosInstance.post("/employer/verify-phone", { firebaseIdToken });
     return response.data;
   }
 };

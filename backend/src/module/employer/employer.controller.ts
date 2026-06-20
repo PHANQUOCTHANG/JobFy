@@ -3,6 +3,15 @@ import { EmployerVerificationService } from "./employer.service";
 import { IOtpService } from "@/module/auth/otp/otp.service";
 import AppError from "@/utils/appError";
 import { updateCompanyInfoSchema, submitLegalDocsSchema } from "./employer.request";
+import * as firebaseAdmin from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+
+// Initialize Firebase Admin (If not initialized)
+if (!firebaseAdmin.getApps().length) {
+  firebaseAdmin.initializeApp({
+    projectId: process.env.FIREBASE_PROJECT_ID || "jobfy-ec16d",
+  });
+}
 
 export class EmployerController {
   constructor(
@@ -76,6 +85,29 @@ export class EmployerController {
     }
   };
 
+  // Bước 1.5: Xác thực Số Điện thoại (bằng Firebase ID Token)
+  verifyPhone = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { firebaseIdToken } = req.body;
+      if (!firebaseIdToken) throw new AppError("Thiếu firebaseIdToken", 400);
+
+      // Verify token bằng Firebase Admin Auth
+      const decodedToken = await getAuth().verifyIdToken(firebaseIdToken);
+      const phone = decodedToken.phone_number;
+
+      if (!phone) throw new AppError("Token không chứa thông tin số điện thoại", 400);
+
+      // Cập nhật Database
+      await this.verificationService.markPhoneAsVerified(req.user!.userId, phone);
+
+      res.status(200).json({ status: "success", message: "Xác thực số điện thoại thành công", data: { phone } });
+    } catch (error) {
+      console.error("[verifyPhone] Error:", error);
+      // Chuyển tiếp AppError (ví dụ 409 trùng SĐT) thay vì ghi đè bằng lỗi chung
+      next(error);
+    }
+  };
+
   // Bước 2: Cập nhật thông tin công ty
   updateInfo = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -103,5 +135,35 @@ export class EmployerController {
         message: "Hồ sơ đã được gửi và đang chờ quản trị viên phê duyệt" 
       });
     } catch (error) { next(error); }
+  };
+
+  // Upload ảnh (Logo / Cover)
+  uploadImage = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ status: "fail", message: "Vui lòng chọn ảnh." });
+      }
+      res.status(200).json({
+        status: "success",
+        data: { url: req.file.path }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // Upload tài liệu pháp lý (PDF, JPG)
+  uploadDocument = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ status: "fail", message: "Vui lòng chọn tệp tài liệu." });
+      }
+      res.status(200).json({
+        status: "success",
+        data: { url: req.file.path }
+      });
+    } catch (error) {
+      next(error);
+    }
   };
 }

@@ -15,7 +15,7 @@ export class JobService {
   constructor(
     private readonly jobRepo: IJobRepository,
     private readonly companyRepo: ICompanyRepository
-  ) {}
+  ) { }
 
   private generateSlug(title: string): string {
     return slugify(title, { lower: true, strict: true, locale: "vi" });
@@ -24,7 +24,7 @@ export class JobService {
   async create(userId: string, dto: CreateJobRequestDto): Promise<JobResponseDto> {
     const company = await this.companyRepo.findById(dto.companyId);
     if (!company) throw new AppError("Công ty không tồn tại", 404);
-    
+
     // Authorization: User must be owner or member
     // In real app, check company_members table. Assuming we check owner here for simplicity:
     if (company.ownerId !== userId) {
@@ -64,8 +64,20 @@ export class JobService {
     if (dto.provinceId) jobData.province = { connect: { id: dto.provinceId } };
     if (dto.districtId) jobData.district = { connect: { id: dto.districtId } };
     if (dto.address) jobData.address = dto.address;
-    if (dto.expiresAt) jobData.expiresAt = new Date(dto.expiresAt);
-    if (dto.status === "published") jobData.publishedAt = new Date();
+
+    let publishedAt: Date | undefined;
+    if (dto.status === "published") {
+      publishedAt = new Date();
+      jobData.publishedAt = publishedAt;
+    }
+
+    if (dto.expiresAt) {
+      const expiresDate = new Date(dto.expiresAt);
+      if (publishedAt && expiresDate <= publishedAt) {
+        throw new AppError("Hạn nộp hồ sơ phải sau thời gian đăng tin", 400);
+      }
+      jobData.expiresAt = expiresDate;
+    }
 
     if (dto.skills && dto.skills.length > 0) {
       jobData.jobSkills = {
@@ -97,7 +109,7 @@ export class JobService {
 
     const result = await this.jobRepo.findAll(query);
     const response = { ...result, data: JobResponseDto.fromList(result.data) };
-    
+
     await setCache(cacheKey, response, this.CACHE_TTL_LIST);
     return response;
   }
@@ -125,11 +137,20 @@ export class JobService {
     delete updateData.skills;
     delete updateData.tagIds;
     delete updateData.companyId;
+    delete updateData.applicationDeadline;
 
-    if (dto.expiresAt) updateData.expiresAt = new Date(dto.expiresAt);
-    
+    let currentPublishedAt = job.publishedAt ? new Date(job.publishedAt) : undefined;
     if (dto.status === "published" && job.status !== "published" && !job.publishedAt) {
-      updateData.publishedAt = new Date();
+      currentPublishedAt = new Date();
+      updateData.publishedAt = currentPublishedAt;
+    }
+
+    if (dto.expiresAt) {
+      const expiresDate = new Date(dto.expiresAt);
+      if (currentPublishedAt && expiresDate <= currentPublishedAt) {
+        throw new AppError("Hạn nộp hồ sơ phải sau thời gian đăng tin", 400);
+      }
+      updateData.expiresAt = expiresDate;
     }
 
     // Handle nested updates (skills, tags) - standard way in Prisma is to delete and recreate for simplicity
@@ -170,7 +191,7 @@ export class JobService {
     // TODO: Verify ownership
 
     await this.jobRepo.deleteById(id);
-    
+
     await Promise.all([
       deleteCache(`${this.CACHE_KEY}:id:${id}`),
       deleteCacheByPattern(`${this.CACHE_KEY}:list:*`),

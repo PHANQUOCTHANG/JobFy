@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import api from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save } from "lucide-react";
 import { companyProfileSchema, CompanyProfileInput } from "../schemas/company.schema";
@@ -72,6 +73,43 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
   const selectedProvinceId = form.watch("provinceId");
   const { data: districts, isLoading: isLoadingDistricts } = useDistricts(selectedProvinceId ? Number(selectedProvinceId) : undefined);
 
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+
+  const handleUpload = async (file: File, type: "logo" | "cover") => {
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append("image", file);
+    
+    try {
+      if (type === "logo") setIsUploadingLogo(true);
+      else setIsUploadingCover(true);
+
+      const resp = await api.post("/employer/upload-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      
+      const url = resp.data.data.url;
+      if (type === "logo") {
+        form.setValue("logoUrl", url);
+      } else {
+        form.setValue("coverUrl", url);
+      }
+    } catch (error) {
+      console.error("Lỗi upload ảnh:", error);
+    } finally {
+      if (type === "logo") setIsUploadingLogo(false);
+      else setIsUploadingCover(false);
+      
+      // Reset input value to allow selecting the same file again
+      if (type === "logo" && logoInputRef.current) logoInputRef.current.value = "";
+      if (type === "cover" && coverInputRef.current) coverInputRef.current.value = "";
+    }
+  };
+
   const onSubmit = (data: CompanyProfileInput) => {
     const cleanedData: Partial<Company> = {
       ...data,
@@ -110,68 +148,75 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
         </div>
 
         {/* Brand Identity Section */}
-        <section className="bg-white border border-[#F1F5F9] rounded-3xl overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
-          <div className="h-48 relative bg-[#F8FAFC] group">
+        <section className="bg-white border border-[#E2E8F0] rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+          {/* Cover Image Area */}
+          <div className="h-[240px] relative bg-gradient-to-r from-blue-50 to-indigo-50 group">
             {form.watch("coverUrl") ? (
-              <img alt="Company Cover" className="w-full h-full object-cover opacity-80" src={form.watch("coverUrl")} />
+              <img alt="Company Cover" className="w-full h-full object-cover" src={form.watch("coverUrl")} />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-[#64748B]">
-                <span className="material-symbols-outlined text-4xl opacity-20">image</span>
+              <div className="w-full h-full flex flex-col items-center justify-center text-blue-300">
+                <div className="w-20 h-20 rounded-full bg-white/60 flex items-center justify-center backdrop-blur-sm shadow-sm mb-3">
+                  <span className="material-symbols-outlined text-[40px] text-blue-400">landscape</span>
+                </div>
+                <p className="font-semibold text-blue-400/80 text-sm">Chưa có ảnh bìa</p>
               </div>
             )}
-            <button type="button" className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-[#0F172A] text-[13px] font-bold flex items-center gap-2 hover:bg-white shadow-sm transition-all border border-white/50">
-              <span className="material-symbols-outlined text-[18px]">edit</span>
-              Thay đổi ảnh bìa
-            </button>
-          </div>
-          <div className="px-8 pb-8 relative">
-            <div className="relative -top-12 flex flex-col md:flex-row md:items-end gap-6">
-              <div className="w-28 h-28 rounded-2xl bg-white p-2 shadow-lg border border-[#F1F5F9] relative group">
-                {form.watch("logoUrl") ? (
-                  <img alt="Logo" className="w-full h-full object-contain rounded-xl" src={form.watch("logoUrl")} />
-                ) : (
-                  <div className="w-full h-full bg-[#F8FAFC] rounded-xl flex items-center justify-center text-[#94A3B8]">
-                    <span className="material-symbols-outlined text-3xl">domain</span>
-                  </div>
-                )}
-                <button type="button" className="absolute inset-0 bg-[#0F172A]/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                  <span className="material-symbols-outlined text-white text-[28px]">photo_camera</span>
-                </button>
-              </div>
-              <div className="flex-1 mb-2">
-                <h3 className="text-[20px] font-black text-[#0F172A]">Nhận diện thương hiệu</h3>
-                <p className="text-[13px] font-medium text-[#64748B] italic mt-1">Kích thước khuyên dùng cho logo: 400x400px. Định dạng: PNG, SVG.</p>
-              </div>
+            
+            {/* Cover Upload Overlay */}
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[2px]">
+              <input type="file" accept="image/*" className="hidden" ref={coverInputRef} onChange={(e) => e.target.files && handleUpload(e.target.files[0], "cover")} />
+              <button 
+                onClick={(e) => { e.preventDefault(); coverInputRef.current?.click() }} 
+                disabled={isUploadingCover} 
+                className="bg-white/95 backdrop-blur-md hover:bg-white text-[#0F172A] px-6 py-3 rounded-full font-bold shadow-xl flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 disabled:opacity-80 border border-white/50"
+              >
+                {isUploadingCover ? <Loader2 className="w-5 h-5 animate-spin text-[#00307c]" /> : <span className="material-symbols-outlined text-[20px] text-[#00307c]">add_photo_alternate</span>}
+                {isUploadingCover ? "Đang tải ảnh bìa lên..." : "Tải ảnh bìa mới"}
+              </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-               <FormField
-                  control={form.control}
-                  name="logoUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Logo URL</FormLabel>
-                      <FormControl>
-                        <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            {/* Gradient bottom shadow to blend with content */}
+            <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+          </div>
 
-                <FormField
-                  control={form.control}
-                  name="coverUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Cover Image URL</FormLabel>
-                      <FormControl>
-                        <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+          <div className="px-8 pb-8 relative">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 relative -top-16">
+              
+              {/* Logo Area */}
+              <div className="relative group z-10">
+                <div className="w-36 h-36 rounded-3xl bg-white p-2 shadow-xl border-4 border-white relative overflow-hidden flex-shrink-0 transition-transform duration-300 group-hover:scale-[1.02]">
+                  {form.watch("logoUrl") ? (
+                    <img alt="Logo" className="w-full h-full object-contain rounded-2xl bg-white" src={form.watch("logoUrl")} />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] rounded-2xl flex flex-col items-center justify-center text-[#94A3B8]">
+                      <span className="material-symbols-outlined text-[48px] text-[#CBD5E1] mb-1">storefront</span>
+                    </div>
                   )}
-                />
+                  
+                  {/* Logo Upload Overlay */}
+                  <input type="file" accept="image/*" className="hidden" ref={logoInputRef} onChange={(e) => e.target.files && handleUpload(e.target.files[0], "logo")} />
+                  <div className="absolute inset-0 bg-[#0F172A]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm rounded-2xl cursor-pointer" onClick={() => logoInputRef.current?.click()}>
+                    <div className="flex flex-col items-center text-white transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                      {isUploadingLogo ? <Loader2 className="w-8 h-8 animate-spin mb-2" /> : <span className="material-symbols-outlined text-[32px] mb-1">linked_camera</span>}
+                      <span className="text-[12px] font-bold tracking-wide">{isUploadingLogo ? "ĐANG TẢI..." : "THAY LOGO"}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Text Info */}
+              <div className="flex-1 text-center md:text-left pt-2 md:pt-16 pb-2">
+                <h3 className="text-[24px] font-black text-[#0F172A] tracking-tight">{form.watch("name") || "Tên công ty"}</h3>
+                <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3 mt-2">
+                  <span className="text-[14px] font-medium text-[#64748B] flex items-center justify-center md:justify-start gap-1">
+                    <span className="material-symbols-outlined text-[16px]">fingerprint</span>
+                    Nhận diện thương hiệu
+                  </span>
+                  <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-[#E2E8F0]"></span>
+                  <p className="text-[13px] text-[#94A3B8]">Khuyên dùng logo <span className="font-semibold text-[#64748B]">400x400px</span> (PNG, SVG)</p>
+                </div>
+              </div>
+              
             </div>
           </div>
         </section>

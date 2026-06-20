@@ -4,8 +4,9 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginEmployer } from '@/features/auth/types/authSlice';
+import { loginEmployer, googleLoginEmployer } from '@/features/auth/types/authSlice';
 import { loginSchema, LoginRequest } from '@/../../backend/src/module/auth/auth.request';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   Mail,
   Lock,
@@ -50,6 +51,23 @@ const EmployerLoginPage: React.FC = () => {
       toast.error(resultAction.payload as string || 'Đăng nhập thất bại');
     }
   };
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const resultAction = await dispatch(googleLoginEmployer(tokenResponse.access_token));
+        if (googleLoginEmployer.fulfilled.match(resultAction)) {
+          toast.success('Đăng nhập bằng Google thành công!');
+          navigate('/employer');
+        } else {
+          toast.error(resultAction.payload as string || 'Đăng nhập bằng Google thất bại');
+        }
+      } catch (error) {
+        toast.error('Đăng nhập bằng Google thất bại');
+      }
+    },
+    onError: () => toast.error('Đăng nhập bằng Google thất bại'),
+  });
 
   return (
     <div
@@ -277,6 +295,7 @@ const EmployerLoginPage: React.FC = () => {
           {/* Google Sign In */}
           <button
             type="button"
+            onClick={() => loginWithGoogle()}
             className="w-full h-12 border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[#0F172A] text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3"
           >
             <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24">

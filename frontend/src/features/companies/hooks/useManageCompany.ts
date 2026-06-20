@@ -108,3 +108,16 @@ export const useDistricts = (provinceId?: number) => {
     staleTime: 1000 * 60 * 5, // Cache 5 phút
   });
 };
+
+// Hook để lấy danh sách các kỹ năng
+export const useSkills = () => {
+  return useQuery({
+    queryKey: ['skills'],
+    queryFn: async () => {
+      const { data } = await axios.get(`${API_BASE_URL}/skills?limit=500`);
+      return data.data || [];
+    },
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
+};

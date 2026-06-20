@@ -139,6 +139,36 @@ export class EmployerVerificationService {
   }
 
   /**
+   * Cập nhật trạng thái đã xác thực SĐT
+   * Ràng buộc: 1 số điện thoại chỉ được xác thực cho 1 user duy nhất
+   */
+  async markPhoneAsVerified(userId: string, phone: string) {
+    // Kiểm tra số điện thoại đã được dùng bởi user khác chưa
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        phone: phone,
+        id: { not: userId }, // Loại trừ chính user hiện tại
+      },
+      select: { id: true },
+    });
+
+    if (existingUser) {
+      throw new AppError(
+        "Số điện thoại này đã được xác thực bởi một tài khoản khác. Vui lòng sử dụng số điện thoại khác.",
+        409
+      );
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        phoneVerified: true,
+        phone: phone,
+      }
+    });
+  }
+
+  /**
    * Lấy tiến trình hiện tại cho UI EmployerSettingsPage
    */
   async getVerificationProgress(userId: string) {
@@ -157,6 +187,10 @@ export class EmployerVerificationService {
       step1: {
         isCompleted: user.emailVerified,
         email: user.email
+      },
+      step1_5: {
+        isCompleted: user.phoneVerified,
+        phone: user.phone
       },
       step2: {
         isCompleted: !!(company?.name && company?.address),

@@ -5,6 +5,7 @@ import { OtpService } from "@/module/auth/otp/otp.service";
 import { OtpRepository } from "@/module/auth/otp/otp.repository";
 import { UserRepository } from "@/module/user/user.repository";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
+import { uploadSettingImage, uploadLegalDocument } from "@/middleware/upload.middleware";
 import prisma from "@/lib/prisma";
 
 
@@ -28,8 +29,11 @@ router.use(requireAuth, requireRole("employer"));
 router.get("/verification-progress", controller.getProgress);
 router.post("/resend-otp", controller.resendEmailOtp);
 router.post("/verify-email", controller.verifyEmail);
+router.post("/verify-phone", controller.verifyPhone);
 router.get("/company-info", controller.getCompanyInfo);
 router.patch("/company-info", controller.updateInfo);
 router.post("/submit-legal", controller.submitLegal);
+router.post("/upload-image", uploadSettingImage, controller.uploadImage);
+router.post("/upload-document", uploadLegalDocument, controller.uploadDocument);
 
 export default router;
