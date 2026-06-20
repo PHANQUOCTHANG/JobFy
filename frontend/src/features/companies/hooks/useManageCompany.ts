@@ -79,7 +79,7 @@ export const useIndustries = () => {
       return data.data; // Giả sử backend trả về { status: "success", data: [...] }
     },
     staleTime: Infinity, // Dữ liệu ngành nghề ít thay đổi, có thể cache vô hạn
-    cacheTime: Infinity,
+    gcTime: Infinity,
   });
 };
 
@@ -92,7 +92,7 @@ export const useProvinces = () => {
       return data.data;
     },
     staleTime: Infinity, // Dữ liệu tỉnh/thành phố ít thay đổi
-    cacheTime: Infinity,
+    gcTime: Infinity,
   });
 };
 
@@ -118,6 +118,6 @@ export const useSkills = () => {
       return data.data || [];
     },
     staleTime: Infinity,
-    cacheTime: Infinity,
+    gcTime: Infinity,
   });
 };

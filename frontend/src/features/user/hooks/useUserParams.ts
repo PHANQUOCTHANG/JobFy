@@ -8,8 +8,7 @@ const DEFAULT_PARAMS: UserFilterParams = {
   keyword: "",
   role: undefined,
   sort: "newest",
-  isVerified: undefined,
-  isActive: undefined,
+  status: undefined,
 };
 
 export const useUserParams = (initialLimit = 10) => {

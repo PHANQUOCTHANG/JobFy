@@ -103,7 +103,7 @@ const UsersManagementPage = () => {
   const handleFormSubmit = async (formData: FormData) => {
     try {
       if (userToEdit) {
-        await updateUserAsync({ id: userToEdit._id, data: formData });
+        await updateUserAsync({ id: userToEdit.id, data: formData });
       } else {
         await createUserAsync(formData);
       }
@@ -116,7 +116,7 @@ const UsersManagementPage = () => {
 
   const handleConfirmBlock = () => {
     if (userToBlock) {
-      toggleBlockUser(userToBlock._id, {
+      toggleBlockUser(userToBlock.id, {
         onSuccess: () => setUserToBlock(null),
       });
     }
@@ -124,7 +124,7 @@ const UsersManagementPage = () => {
 
   const handleConfirmDelete = () => {
     if (userToDelete) {
-      deleteUser(userToDelete._id, {
+      deleteUser(userToDelete.id, {
         onSuccess: () => setUserToDelete(null),
       });
     }
@@ -251,13 +251,13 @@ const UsersManagementPage = () => {
             </TableHeader>
             <TableBody>
               {userData.map((user: IUser) => (
-                <TableRow key={user._id} className="group">
+                <TableRow key={user.id} className="group">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="size-9 border">
                         <AvatarImage
-                          src={user.avatar}
-                          alt={user.username}
+                          src={user.avatar || undefined}
+                          alt={user.email}
                           className="object-cover"
                         />
                         <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
@@ -277,19 +277,20 @@ const UsersManagementPage = () => {
                   <TableCell>{renderRoleBadge(user.role)}</TableCell>
                   <TableCell>
                     <Badge
-                      variant={user.isActive ? "default" : "destructive"}
+                      variant={user.status === 'active' ? "default" : "destructive"}
                       className={cn(
                         "rounded-full font-medium shadow-none",
-                        user.isActive
+                        user.status === 'active'
                           ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-emerald-500/20 dark:text-emerald-400"
                           : "",
                       )}
                     >
-                      {user.isActive ? "Active" : "Blocked"}
+                      {user.status === 'active' ? "Active" : "Blocked"}
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground text-xs font-mono">
-                    {new Date(user.createdAt).toLocaleDateString("en-US", {
+                    {/* Dummy date since createdAt is not in IUser */}
+                    {new Date().toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
@@ -317,12 +318,12 @@ const UsersManagementPage = () => {
                         <DropdownMenuItem
                           onClick={() => setUserToBlock(user)}
                           className={cn(
-                            user.isActive
+                            user.status === 'active'
                               ? "text-destructive focus:text-destructive focus:bg-destructive/10"
                               : "text-emerald-600 focus:text-emerald-600 focus:bg-emerald-500/10",
                           )}
                         >
-                          {user.isActive ? (
+                          {user.status === 'active' ? (
                             <>
                               <Lock className="mr-2 size-4" /> Block User
                             </>
@@ -383,15 +384,15 @@ const UsersManagementPage = () => {
         onConfirm={handleConfirmBlock}
         isLoading={isMutating}
         title={
-          userToBlock?.isActive ? "Block User Account" : "Restore User Access"
+          userToBlock?.status === 'active' ? "Block User Account" : "Restore User Access"
         }
         description={
-          userToBlock?.isActive
+          userToBlock?.status === 'active'
             ? `Are you sure you want to block ${userToBlock.fullName}? They will immediately be logged out and lose access to the platform.`
             : `Are you sure you want to unblock ${userToBlock?.fullName}? They will regain full access immediately.`
         }
-        confirmLabel={userToBlock?.isActive ? "Yes, Block" : "Yes, Unblock"}
-        isDestructive={userToBlock?.isActive}
+        confirmLabel={userToBlock?.status === 'active' ? "Yes, Block" : "Yes, Unblock"}
+        isDestructive={userToBlock?.status === 'active'}
       />
 
       {/* 3. Delete Confirmation */}

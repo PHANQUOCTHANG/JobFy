@@ -45,6 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isSidebarOpen,
   setIsSidebarOpen,
   isCollapsed,
+  toggleSidebar,
 }) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
@@ -79,8 +80,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       >
         {/* Logo */}
-        <div className="px-6 mb-8 flex items-center justify-between">
-          <Link to="/employer" className="flex items-center gap-3 outline-none group">
+        <div className={cn("px-6 mb-8 flex items-center", isCollapsed ? "justify-center" : "justify-between")}>
+          <Link to="/employer" className={cn("flex items-center gap-3 outline-none group", isCollapsed ? "hidden" : "flex")}>
             <div className="w-11 h-11 bg-gradient-to-br from-[#00307c] to-[#0052cc] shadow-[0_4px_12px_rgba(0,48,124,0.3)] flex items-center justify-center rounded-xl text-white shrink-0 group-hover:scale-105 transition-transform duration-300">
               <span
                 className="material-symbols-outlined text-[22px]"
@@ -100,6 +101,19 @@ const Sidebar: React.FC<SidebarProps> = ({
               </div>
             )}
           </Link>
+
+          {/* Desktop Toggle Button */}
+          <button
+            onClick={toggleSidebar}
+            className="hidden lg:flex items-center justify-center text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#00307c] p-2 rounded-xl transition-all"
+            title={isCollapsed ? "Mở rộng menu" : "Thu gọn menu"}
+          >
+            <span className="material-symbols-outlined text-[24px]">
+              {isCollapsed ? "menu_open" : "menu"}
+            </span>
+          </button>
+
+          {/* Mobile Close Button */}
           <button
             onClick={() => setIsSidebarOpen(false)}
             className="lg:hidden text-[#64748B] hover:bg-[#F1F5F9] p-2 rounded-full transition-colors"

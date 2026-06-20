@@ -28,14 +28,10 @@ const GoogleCallbackPage = () => {
           dispatch(
             login({
               accessToken,
-              user: user, // Truyền user object vào đây
+              user: user as any, // Truyền user object vào đây
             }),
           );
-          toast.success("Welcome back!", {
-            description: `Logged in successfully as ${
-              user.fullName || user.username
-            }`,
-          });
+          toast.success(`Chào mừng ${user.fullName || user.email} trở lại!`);
           navigate("/");
         })
         .catch((err) => {

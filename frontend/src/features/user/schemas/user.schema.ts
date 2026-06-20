@@ -31,11 +31,8 @@ const avatarRule = z
 export const adminUserSchema = z.object({
   fullName: z.string().trim().min(2, "Tên quá ngắn").max(50),
   email: z.string().email("Email không hợp lệ"),
-  role: z.enum(["user", "artist", "admin"]),
-
-  // Chỉ Admin mới được sửa các field này
-  isActive: z.boolean().default(true),
-  isVerified: z.boolean().default(false),
+  role: z.enum(["candidate", "employer", "admin"]),
+  status: z.enum(["active", "inactive", "banned"]).default("active"),
 
   // Password optional khi edit
   password: passwordRule,

@@ -84,12 +84,10 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
     }
   }, [isExpanded]);
 
-  // --- 4. ACTIVE COUNT ---
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (params.role && params.role !== "all") count++;
-    if (params.isActive !== undefined) count++;
-    if (params.isVerified !== undefined) count++;
+    if (params.role && params.role as any !== "all") count++;
+    if (params.status && params.status !== "all" as any) count++;
     return count;
   }, [params]);
 
@@ -227,13 +225,13 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                 </label>
                 <Select
                   value={
-                    params.isActive === undefined
+                    params.status === undefined
                       ? "all"
-                      : String(params.isActive)
+                      : String(params.status)
                   }
                   onValueChange={(val) => {
-                    const value = val === "all" ? undefined : val === "true";
-                    onFilterChange("isActive", value);
+                    const value = val === "all" ? undefined : val;
+                    onFilterChange("status", value);
                   }}
                 >
                   <SelectTrigger className="w-full bg-background h-10 text-sm shadow-sm focus:ring-1">
@@ -241,47 +239,18 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                    <SelectItem value="true">
+                    <SelectItem value="active">
                       <div className="flex items-center gap-2">
                         <div className="size-2 rounded-full bg-emerald-500" />
                         Đang hoạt động
                       </div>
                     </SelectItem>
-                    <SelectItem value="false">
+                    <SelectItem value="banned">
                       <div className="flex items-center gap-2">
                         <div className="size-2 rounded-full bg-destructive" />
                         Bị khóa (Banned)
                       </div>
                     </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* 3. Verification Filter */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold uppercase text-muted-foreground/80 tracking-widest flex items-center gap-1.5 ml-1">
-                  <ShieldCheck className="size-3" /> Xác thực
-                </label>
-                <Select
-                  value={
-                    params.isVerified === undefined
-                      ? "all"
-                      : String(params.isVerified)
-                  }
-                  onValueChange={(val) => {
-                    const value = val === "all" ? undefined : val === "true";
-                    onFilterChange("isVerified", value);
-                  }}
-                >
-                  <SelectTrigger className="w-full bg-background h-10 text-sm shadow-sm focus:ring-1">
-                    <SelectValue placeholder="Tất cả hồ sơ" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tất cả hồ sơ</SelectItem>
-                    <SelectItem value="true">
-                      Đã xác thực (Tích xanh)
-                    </SelectItem>
-                    <SelectItem value="false">Chưa xác thực</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -297,7 +266,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             </span>
 
             {/* Role Tag */}
-            {params.role && params.role !== "all" && (
+            {params.role && params.role as any !== "all" && (
               <Badge
                 variant="secondary"
                 className="h-7 pl-2 pr-1 gap-1.5 bg-background border border-border hover:bg-accent cursor-default"
@@ -316,50 +285,23 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             )}
 
             {/* Status Tag */}
-            {params.isActive !== undefined && (
+            {params.status !== undefined && params.status !== "all" as any && (
               <Badge
                 variant="secondary"
                 className="h-7 pl-2 pr-1 gap-1.5 bg-background border border-border hover:bg-accent cursor-default"
               >
-                {params.isActive ? (
+                {params.status === 'active' ? (
                   <UserCheck className="size-3 text-emerald-500" />
                 ) : (
                   <UserX className="size-3 text-destructive" />
                 )}
                 <span className="text-muted-foreground">Trạng thái:</span>
                 <span className="font-medium">
-                  {params.isActive ? "Hoạt động" : "Bị khóa"}
+                  {params.status === 'active' ? "Hoạt động" : "Bị khóa"}
                 </span>
                 <button
                   type="button"
-                  onClick={() => removeFilter("isActive")}
-                  className="ml-1 p-0.5 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
-                >
-                  <X className="size-3" />
-                </button>
-              </Badge>
-            )}
-
-            {/* Verification Tag */}
-            {params.isVerified !== undefined && (
-              <Badge
-                variant="secondary"
-                className="h-7 pl-2 pr-1 gap-1.5 bg-background border border-border hover:bg-accent cursor-default"
-              >
-                <ShieldCheck
-                  className={cn(
-                    "size-3",
-                    params.isVerified
-                      ? "text-blue-500"
-                      : "text-muted-foreground",
-                  )}
-                />
-                <span className="font-medium">
-                  {params.isVerified ? "Đã có tích xanh" : "Chưa xác thực"}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeFilter("isVerified")}
+                  onClick={() => removeFilter("status")}
                   className="ml-1 p-0.5 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
                 >
                   <X className="size-3" />

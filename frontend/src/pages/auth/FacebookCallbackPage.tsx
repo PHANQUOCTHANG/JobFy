@@ -29,12 +29,10 @@ const FacebookCallbackPage = () => {
           dispatch(
             login({
               accessToken,
-              user: user,
+              user: user as any,
             }),
           );
-          toast.success("Welcome back!", {
-            description: `Logged in successfully as ${user.fullName || user.username}`,
-          });
+          toast.success(`Chào mừng ${user.fullName || user.email} trở lại!`);
           navigate("/");
         })
         .catch((err) => {

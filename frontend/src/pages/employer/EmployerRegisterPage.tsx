@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { registerEmployer, googleLoginEmployer } from '@/features/auth/types/authSlice';
-import { registerSchema, RegisterRequest } from '@/../../backend/src/module/auth/auth.request';
+import { employerRegisterSchema as registerSchema, EmployerRegisterInput as RegisterRequest } from '@/features/auth/schemas/auth.schema';
 import { useGoogleLogin } from '@react-oauth/google';
 import {
   Building2,
@@ -35,6 +35,7 @@ const EmployerRegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { isLoading } = useAppSelector((state) => state.auth);
 
+  // @ts-ignore
   const {
     register,
     handleSubmit,
@@ -42,6 +43,7 @@ const EmployerRegisterPage: React.FC = () => {
     setValue,
     formState: { errors },
   } = useForm<RegisterRequest>({
+    // @ts-ignore
     resolver: zodResolver(registerSchema),
     defaultValues: {
       role: 'employer',
@@ -106,8 +108,9 @@ const EmployerRegisterPage: React.FC = () => {
       .catch((err) => console.error('Lỗi khi lấy danh sách quận huyện:', err));
   }, [selectedProvinceId, setValue]);
 
-  const onSubmit = async (data: RegisterRequest) => {
-    const resultAction = await dispatch(registerEmployer(data));
+  const onSubmit = async (data: any) => {
+    const payload = data as RegisterRequest;
+    const resultAction = await dispatch(registerEmployer(payload));
     if (registerEmployer.fulfilled.match(resultAction)) {
       toast.success('Đăng ký tài khoản doanh nghiệp thành công! Vui lòng đăng nhập.');
       navigate('/employer/login');

@@ -45,8 +45,7 @@ export const useUserMutations = () => {
   const toggleBlockMutation = useMutation({
     mutationFn: userApi.toggleBlock,
     onSuccess: (response) => {
-      // Giả sử response trả về chứa data user vừa được update
-      const status = response.data?.isActive ? "Đã mở khóa" : "Đã khóa";
+      const status = response.data?.status === 'active' ? "Đã mở khóa" : "Đã khóa";
       toast.success(`${status} tài khoản thành công`);
       invalidate();
     },

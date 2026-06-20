@@ -4,12 +4,10 @@ import { IUser } from "../types";
 export const USER_DEFAULT_VALUES: AdminUserFormValues = {
   fullName: "",
   email: "",
-  role: "user",
-  isActive: true,
-  isVerified: false,
+  role: "candidate",
+  status: "active",
   password: "",
   avatar: null,
-  bio: "",
 };
 
 export const mapUserToForm = (user?: IUser | null): AdminUserFormValues => {
@@ -19,10 +17,8 @@ export const mapUserToForm = (user?: IUser | null): AdminUserFormValues => {
     fullName: user.fullName,
     email: user.email,
     role: user.role,
-    isActive: user.isActive,
-    isVerified: user.isVerified,
+    status: user.status || "active",
     password: "", // Không bao giờ map password từ DB ngược về form
     avatar: user.avatar || null,
-    bio: user.bio || "",
   };
 };

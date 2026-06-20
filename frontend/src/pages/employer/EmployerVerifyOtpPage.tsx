@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { verifyOtp, sendOtp } from '@/features/auth/types/authSlice';
 import { ShieldCheck, ArrowLeft, Loader2, KeyRound, ChevronRight } from 'lucide-react';
 import { BackgroundPattern, FeatureBadge, InputField } from '../../components/ui/AuthComponents';
-import { VerifyOtpPage } from '../auth';
 
 const EmployerVerifyOtpPage: React.FC = () => {
   const dispatch = useAppDispatch();

@@ -71,9 +71,8 @@ const UserModal: React.FC<UserModalProps> = ({
     formState: { errors },
   } = form;
 
-  // Xem trực tiếp trạng thái các Switch để đổi màu UI
-  const isActive = useWatch({ control, name: "isActive" });
-  const isVerified = useWatch({ control, name: "isVerified" });
+  const status = useWatch({ control, name: "status" });
+  const isActive = status === 'active';
 
   const isLoading = isPending || isFormSubmitting;
 
@@ -132,7 +131,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 />
                 <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-widest">
                   {userToEdit
-                    ? `ID: ${userToEdit._id.slice(-8)}`
+                    ? `ID: ${userToEdit.id.slice(-8)}`
                     : "Admin Dashboard"}
                 </p>
               </div>
@@ -235,49 +234,12 @@ const UserModal: React.FC<UserModalProps> = ({
                   <Switch
                     checked={isActive}
                     onCheckedChange={(v) =>
-                      // 🔥 Bổ sung shouldValidate để cập nhật state ngay lập tức
-                      setValue("isActive", v, {
+                      setValue("status", v ? "active" : "inactive", {
                         shouldDirty: true,
                         shouldValidate: true,
                       })
                     }
                     className="data-[state=checked]:bg-emerald-500"
-                  />
-                </div>
-
-                {/* Verification Badge */}
-                <div className="p-4 rounded-xl border border-border bg-card shadow-sm flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={cn(
-                        "p-2.5 rounded-lg border",
-                        isVerified
-                          ? "bg-blue-500/10 border-blue-500/20 text-indigo-600 dark:text-blue-400"
-                          : "bg-secondary border-transparent text-muted-foreground",
-                      )}
-                    >
-                      <ShieldCheck className="size-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-foreground">
-                        Tích xanh
-                      </p>
-                      <p className="text-[11px] font-medium mt-0.5 text-muted-foreground">
-                        {isVerified
-                          ? "Tài khoản xác thực"
-                          : "Người dùng thường"}
-                      </p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={isVerified}
-                    onCheckedChange={(v) =>
-                      setValue("isVerified", v, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      })
-                    }
-                    className="data-[state=checked]:bg-blue-500"
                   />
                 </div>
               </aside>
@@ -342,11 +304,11 @@ const UserModal: React.FC<UserModalProps> = ({
                             <SelectValue placeholder="Chọn vai trò" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="user">
-                              Người nghe (User)
+                            <SelectItem value="candidate">
+                              Ứng viên (Candidate)
                             </SelectItem>
-                            <SelectItem value="artist">
-                              Nghệ sĩ (Artist)
+                            <SelectItem value="employer">
+                              Nhà tuyển dụng (Employer)
                             </SelectItem>
                             <SelectItem
                               value="admin"
@@ -391,27 +353,7 @@ const UserModal: React.FC<UserModalProps> = ({
                   <ErrorMessage message={errors.password?.message} />
                 </div>
 
-                <Separator className="my-2" />
 
-                {/* 5. Bio */}
-                <div>
-                  <div className="flex items-center gap-2 mb-2 ml-0.5">
-                    <FileText className="size-3.5 text-muted-foreground" />
-                    <span className="text-[11px] font-bold uppercase text-foreground/80 tracking-wider">
-                      Tiểu sử (Bio)
-                    </span>
-                  </div>
-                  <Textarea
-                    {...register("bio")}
-                    spellCheck="false"
-                    className={cn(
-                      "min-h-[120px] text-sm p-3 bg-background border-input shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 rounded-xl resize-none transition-all custom-scrollbar",
-                      errors.bio && "border-destructive bg-destructive/5",
-                    )}
-                    placeholder="Viết một vài dòng giới thiệu về người dùng này..."
-                  />
-                  <ErrorMessage message={errors.bio?.message} />
-                </div>
               </main>
             </div>
           </form>

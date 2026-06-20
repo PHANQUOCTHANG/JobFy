@@ -4,7 +4,6 @@ import type {
   User,
   UserFilterParams,
   ChangePasswordDTO,
-  ArtistRequest,
 } from "../types";
 
 const userApi = {
@@ -45,7 +44,7 @@ const userApi = {
 
   // Gửi form xin lên làm Artist (Nhận FormData vì có thể có tài liệu/avatar)
   requestBecomeArtist: async (data: FormData) => {
-    const res = await api.post<ApiResponse<ArtistRequest>>(
+    const res = await api.post<ApiResponse<any>>(
       "/users/request-artist",
       data,
       {
@@ -106,7 +105,7 @@ const userApi = {
   // ==========================================
 
   getArtistRequests: async () => {
-    const res = await api.get<ApiResponse<ArtistRequest[]>>(
+    const res = await api.get<ApiResponse<any[]>>(
       "/users/requests?status=pending",
     );
     return res.data;

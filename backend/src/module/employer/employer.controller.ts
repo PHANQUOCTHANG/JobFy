@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { EmployerVerificationService } from "./employer.service";
+import { EmployerDashboardService } from "./employer.dashboard";
+import { EmployerAIService } from "./employer.ai.service";
 import { IOtpService } from "@/module/auth/otp/otp.service";
 import AppError from "@/utils/appError";
 import { updateCompanyInfoSchema, submitLegalDocsSchema } from "./employer.request";
@@ -16,7 +18,9 @@ if (!firebaseAdmin.getApps().length) {
 export class EmployerController {
   constructor(
     private readonly verificationService: EmployerVerificationService,
-    private readonly otpService: IOtpService
+    private readonly otpService: IOtpService,
+    private readonly dashboardService: EmployerDashboardService,
+    private readonly aiService: EmployerAIService
   ) {}
 
   // Lấy trạng thái tiến trình 3 bước
@@ -152,6 +156,40 @@ export class EmployerController {
     }
   };
 
+  // Dashboard: Lấy thống kê tổng quan cho employer
+  getDashboard = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const employerId = req.user!.userId;
+      const { range } = req.query; // e.g., '30d', '7d', 'all'
+      
+      let startDate: Date | undefined = undefined;
+      
+      if (range === '7d') {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+      } else if (range === '30d') {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+      } // 'all' or undefined leaves startDate as undefined
+
+      const [overview, pipeline, recentJobs] = await Promise.all([
+        this.dashboardService.getOverview(employerId, startDate),
+        this.dashboardService.getPipeline(employerId, startDate),
+        this.dashboardService.getRecentJobs(employerId, 6, startDate),
+      ]);
+
+      // Gọi AI sau khi đã có dữ liệu overview và pipeline
+      const aiSuggestion = await this.aiService.generateRecruitmentAdvice(overview, pipeline);
+
+      res.status(200).json({
+        status: "success",
+        data: { overview, pipeline, recentJobs, aiSuggestion },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // Upload tài liệu pháp lý (PDF, JPG)
   uploadDocument = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -162,6 +200,44 @@ export class EmployerController {
         status: "success",
         data: { url: req.file.path }
       });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // Dashboard: Xuất báo cáo CSV
+  exportDashboard = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const employerId = req.user!.userId;
+      const { range } = req.query;
+      
+      let startDate: Date | undefined = undefined;
+      if (range === '7d') {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+      } else if (range === '30d') {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+      }
+
+      // Lấy danh sách tin đăng để xuất báo cáo (limit 100)
+      const jobs = await this.dashboardService.getRecentJobs(employerId, 100, startDate);
+      
+      const header = "Tiêu đề công việc,Hình thức,Trạng thái,Lượt xem,Lượt ứng tuyển,Ngày tạo\n";
+      const rows = jobs.map(job => {
+        const title = `"${job.title.replace(/"/g, '""')}"`;
+        const jobType = `"${job.jobType}"`;
+        const status = `"${job.status}"`;
+        const views = job.viewCount;
+        const applies = job._count?.applications || 0;
+        const date = `"${new Date(job.createdAt).toLocaleDateString('vi-VN')}"`;
+        return `${title},${jobType},${status},${views},${applies},${date}`;
+      }).join('\n');
+
+      const csvString = '\uFEFF' + header + rows; // BOM để Excel nhận tiếng Việt
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="bao-cao-jobfy-${Date.now()}.csv"`);
+      res.status(200).send(csvString);
     } catch (error) {
       next(error);
     }
