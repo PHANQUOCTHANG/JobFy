@@ -200,7 +200,8 @@ const UsersManagementPage = () => {
         action={
           <Button
             onClick={handleOpenCreate}
-            className="shadow-md bg-primary text-primary-foreground hover:bg-primary/90 font-bold px-6"
+            className="bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-lg shadow-[#4F46E5]/20 font-bold px-6 h-11 rounded-xl transition-all active:scale-[0.98]"
+            style={{ fontFamily: "'Manrope', sans-serif" }}
           >
             <Plus className="size-4 mr-2" /> Add User
           </Button>

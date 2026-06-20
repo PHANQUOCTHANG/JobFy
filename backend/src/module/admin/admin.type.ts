@@ -1,4 +1,4 @@
-import { AdminLog, JobView, User } from "@prisma/client";
+import { AdminLog, User } from "@prisma/client";
 
 export interface IAdminLog extends AdminLog {
   admin?: Pick<User, "id" | "email">;
@@ -21,10 +21,23 @@ export interface AdminLogPaginationParams {
   adminId?: string;
 }
 
+export interface ChartDataPoint {
+  date: string; // "MM/DD" format
+  value: number;
+}
+
 export interface DashboardStats {
   totalUsers: number;
+  totalCandidates: number;
+  totalEmployers: number;
   totalCompanies: number;
   totalJobs: number;
   totalApplications: number;
+  totalReports: number;
   newUsersToday: number;
+  pendingReports: number;
+  pendingCompanyVerifications: number;
+  userGrowth: ChartDataPoint[];       // last 7 days
+  jobGrowth: ChartDataPoint[];        // last 7 days
+  applicationGrowth: ChartDataPoint[]; // last 7 days
 }

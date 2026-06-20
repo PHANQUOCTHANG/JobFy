@@ -36,4 +36,22 @@ router
     jobCtrl.deleteJob
   );
 
+// Admin-only: update any job status (moderate)
+router.patch(
+  "/:id/status",
+  requireAuth,
+  requireRole("admin"),
+  validationMiddleware(IdParamSchema, "params"),
+  jobCtrl.adminUpdateJobStatus
+);
+
+// Admin-only: force delete any job
+router.delete(
+  "/:id/force",
+  requireAuth,
+  requireRole("admin"),
+  validationMiddleware(IdParamSchema, "params"),
+  jobCtrl.adminDeleteJob
+);
+
 export default router;

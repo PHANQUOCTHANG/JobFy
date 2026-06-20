@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { CreateAdminLogPayload, AdminLogPaginationParams, DashboardStats } from "./admin.type";
+import { CreateAdminLogPayload, AdminLogPaginationParams, DashboardStats, ChartDataPoint } from "./admin.type";
 
 export class AdminRepository {
   async logAction(data: CreateAdminLogPayload) {
@@ -36,28 +36,120 @@ export class AdminRepository {
       if (from) where.viewedAt.gte = from;
       if (to) where.viewedAt.lte = to;
     }
-
     return await prisma.jobView.count({ where });
+  }
+
+  private buildDateRange(days: number): { start: Date; dates: Date[] } {
+    const dates: Date[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      dates.push(d);
+    }
+    return { start: dates[0], dates };
+  }
+
+  private formatDate(d: Date): string {
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+  }
+
+  private async buildUserGrowth(days: number): Promise<ChartDataPoint[]> {
+    const { start, dates } = this.buildDateRange(days);
+    const rows = await prisma.$queryRaw<{ day: Date; count: bigint }[]>`
+      SELECT DATE_TRUNC('day', created_at) as day, COUNT(*) as count
+      FROM users
+      WHERE created_at >= ${start} AND deleted_at IS NULL
+      GROUP BY day ORDER BY day ASC
+    `;
+    const countMap: Record<string, number> = {};
+    for (const row of rows) {
+      const key = this.formatDate(new Date(row.day));
+      countMap[key] = Number(row.count);
+    }
+    return dates.map((d) => ({ date: this.formatDate(d), value: countMap[this.formatDate(d)] || 0 }));
+  }
+
+  private async buildJobGrowth(days: number): Promise<ChartDataPoint[]> {
+    const { start, dates } = this.buildDateRange(days);
+    const rows = await prisma.$queryRaw<{ day: Date; count: bigint }[]>`
+      SELECT DATE_TRUNC('day', created_at) as day, COUNT(*) as count
+      FROM jobs
+      WHERE created_at >= ${start} AND deleted_at IS NULL
+      GROUP BY day ORDER BY day ASC
+    `;
+    const countMap: Record<string, number> = {};
+    for (const row of rows) {
+      const key = this.formatDate(new Date(row.day));
+      countMap[key] = Number(row.count);
+    }
+    return dates.map((d) => ({ date: this.formatDate(d), value: countMap[this.formatDate(d)] || 0 }));
+  }
+
+  private async buildApplicationGrowth(days: number): Promise<ChartDataPoint[]> {
+    const { start, dates } = this.buildDateRange(days);
+    const rows = await prisma.$queryRaw<{ day: Date; count: bigint }[]>`
+      SELECT DATE_TRUNC('day', applied_at) as day, COUNT(*) as count
+      FROM applications
+      WHERE applied_at >= ${start}
+      GROUP BY day ORDER BY day ASC
+    `;
+    const countMap: Record<string, number> = {};
+    for (const row of rows) {
+      const key = this.formatDate(new Date(row.day));
+      countMap[key] = Number(row.count);
+    }
+    return dates.map((d) => ({ date: this.formatDate(d), value: countMap[this.formatDate(d)] || 0 }));
   }
 
   async getDashboardStats(): Promise<DashboardStats> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [totalUsers, totalCompanies, totalJobs, totalApplications, newUsersToday] = await Promise.all([
-      prisma.user.count(),
-      prisma.company.count(),
-      prisma.jobs.count(),
+    const [
+      totalUsers,
+      totalCandidates,
+      totalEmployers,
+      totalCompanies,
+      pendingCompanyVerifications,
+      totalJobs,
+      totalApplications,
+      totalReports,
+      pendingReports,
+      newUsersToday,
+      userGrowth,
+      jobGrowth,
+      applicationGrowth,
+    ] = await Promise.all([
+      prisma.user.count({ where: { deletedAt: null } }),
+      prisma.user.count({ where: { role: "candidate", deletedAt: null } }),
+      prisma.user.count({ where: { role: "employer", deletedAt: null } }),
+      prisma.company.count({ where: { deletedAt: null } }),
+      prisma.company.count({ where: { isVerified: false, deletedAt: null } }),
+      prisma.jobs.count({ where: { deletedAt: null } }),
       prisma.application.count(),
-      prisma.user.count({ where: { createdAt: { gte: today } } })
+      prisma.report.count(),
+      prisma.report.count({ where: { status: "pending" } }),
+      prisma.user.count({ where: { createdAt: { gte: today }, deletedAt: null } }),
+      this.buildUserGrowth(7),
+      this.buildJobGrowth(7),
+      this.buildApplicationGrowth(7),
     ]);
 
     return {
       totalUsers,
+      totalCandidates,
+      totalEmployers,
       totalCompanies,
       totalJobs,
       totalApplications,
-      newUsersToday
+      totalReports,
+      newUsersToday,
+      pendingReports,
+      pendingCompanyVerifications,
+      userGrowth,
+      jobGrowth,
+      applicationGrowth,
     };
   }
 }

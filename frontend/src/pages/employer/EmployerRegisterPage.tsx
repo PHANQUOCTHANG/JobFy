@@ -50,22 +50,20 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       </label>
       <div className="relative group">
         <div
-          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${
-            error
-              ? 'text-red-500'
-              : 'text-[#94A3B8] group-focus-within:text-[#00307c]'
-          }`}
+          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${error
+            ? 'text-red-500'
+            : 'text-[#94A3B8] group-focus-within:text-[#00307c]'
+            }`}
         >
           <Icon size={17} strokeWidth={2} />
         </div>
         <input
           ref={ref}
           id={id}
-          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 pr-4 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${
-            error
-              ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
-              : 'border-[#E2E8F0] focus:border-[#00307c] focus:shadow-[0_0_0_3px_rgba(0,48,124,0.10)]'
-          }`}
+          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 pr-4 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${error
+            ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
+            : 'border-[#E2E8F0] focus:border-[#00307c] focus:shadow-[0_0_0_3px_rgba(0,48,124,0.10)]'
+            }`}
           style={{ height: '50px' }}
           {...props}
         />

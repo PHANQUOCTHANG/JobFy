@@ -5,6 +5,8 @@ import {
   getJobCategories,
   saveJob,
   unsaveJob,
+  getSavedJobs,
+  getSavedJobIds,
   getProvinces
 } from '../api/jobs.api';
 import { JobFilterParams } from '../types';
@@ -40,13 +42,67 @@ export const useProvinces = () => {
   });
 };
 
+export const useSavedJobs = (params?: { page?: number; limit?: number }) => {
+  return useQuery({
+    queryKey: ['saved-jobs', params],
+    queryFn: () => getSavedJobs(params),
+  });
+};
+
+export const useSavedJobIds = (enabled: boolean = true) => {
+  return useQuery({
+    queryKey: ['saved-job-ids'],
+    queryFn: getSavedJobIds,
+    enabled,
+  });
+};
+
 export const useSaveJob = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: (jobId: string) => saveJob(jobId),
-    onSuccess: () => {
-      // Invalidate queries if needed
+    onMutate: async (jobId) => {
+      await queryClient.cancelQueries({ queryKey: ['saved-job-ids'] });
+      const previousIds = queryClient.getQueryData<string[]>(['saved-job-ids']);
+      if (previousIds) {
+        queryClient.setQueryData<string[]>(['saved-job-ids'], [...previousIds, jobId]);
+      }
+      return { previousIds };
+    },
+    onError: (err, jobId, context) => {
+      if (context?.previousIds) {
+        queryClient.setQueryData(['saved-job-ids'], context.previousIds);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['saved-job-ids'] });
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
+    },
+  });
+};
+
+export const useUnsaveJob = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (jobId: string) => unsaveJob(jobId),
+    onMutate: async (jobId) => {
+      await queryClient.cancelQueries({ queryKey: ['saved-job-ids'] });
+      const previousIds = queryClient.getQueryData<string[]>(['saved-job-ids']);
+      if (previousIds) {
+        queryClient.setQueryData<string[]>(['saved-job-ids'], previousIds.filter(id => id !== jobId));
+      }
+      return { previousIds };
+    },
+    onError: (err, jobId, context) => {
+      if (context?.previousIds) {
+        queryClient.setQueryData(['saved-job-ids'], context.previousIds);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['saved-job-ids'] });
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
     },
   });
 };

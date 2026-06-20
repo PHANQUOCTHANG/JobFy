@@ -34,7 +34,9 @@ enum GenderType {
 
 enum JobStatus {
   draft                 // Tin tuyển dụng nháp
+  pending               // Tin chờ duyệt
   published             // Tin đã xuất bản, đang hiển thị
+  rejected              // Tin bị từ chối
   closed                // Tin đã đóng chủ động
   expired               // Tin đã hết hạn hiển thị
   paused                // Tin tạm dừng tuyển dụng
@@ -362,6 +364,7 @@ model Company {
   slug              String             @unique @db.VarChar(255)
   logoUrl           String?            @map("logo_url") @db.VarChar(500)
   coverUrl          String?            @map("cover_url") @db.VarChar(500)
+  businessLicenseUrl String?           @map("business_license_url") @db.VarChar(500)
   website           String?            @db.VarChar(500)
   taxCode           String?            @unique @map("tax_code") @db.VarChar(50)
   foundedYear       Int?               @map("founded_year") @db.SmallInt
@@ -635,6 +638,7 @@ model Jobs {
   viewCount         Int                @default(0) @map("view_count")
   applyCount        Int                @default(0) @map("apply_count")
   saveCount         Int                @default(0) @map("save_count")
+  rejectedReason    String?            @map("rejected_reason") @db.Text
   metaTitle         String?            @map("meta_title") @db.VarChar(255)
   metaDescription   String?            @map("meta_description") @db.VarChar(500)
   createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz

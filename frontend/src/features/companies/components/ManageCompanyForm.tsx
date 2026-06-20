@@ -50,6 +50,7 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
       linkedinUrl: initialData?.linkedinUrl || "",
       logoUrl: initialData?.logoUrl || "",
       coverUrl: initialData?.coverUrl || "",
+      businessLicenseUrl: initialData?.businessLicenseUrl || "",
     },
   });
 
@@ -149,6 +150,21 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
                       <FormControl>
                         <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="businessLicenseUrl"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Giấy phép kinh doanh (Ảnh URL)</FormLabel>
+                      <FormControl>
+                        <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
+                      </FormControl>
+                      <FormDescription className="text-[12px] font-medium text-[#94A3B8]">Cung cấp ảnh chụp giấy phép KD để admin phê duyệt (Verify) công ty bạn.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

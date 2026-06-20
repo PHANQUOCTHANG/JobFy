@@ -84,6 +84,26 @@ export const loginUser = createAsyncThunk(
   },
 );
 
+export const googleLoginUser = createAsyncThunk(
+  "auth/googleLoginUser",
+  async ({ idToken, role }: { idToken: string; role: string }, { rejectWithValue }) => {
+    try {
+      const res = await authApi.googleLogin(idToken, role);
+      return res.data; // { accessToken, user }
+    } catch (error: unknown) {
+      const e: any = error;
+      const serverPayload = e?.response?.data;
+      if (serverPayload) {
+        return rejectWithValue({
+          ...serverPayload,
+          statusCode: serverPayload.statusCode ?? e?.response?.status,
+        });
+      }
+      return rejectWithValue({ message: e?.message ?? "Google Login failed" });
+    }
+  },
+);
+
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { dispatch }) => {
@@ -154,6 +174,12 @@ const authSlice = createSlice({
     });
     // --- Login User ---
     builder.addCase(loginUser.fulfilled, (state, action) => {
+      state.token = action.payload.accessToken;
+      state.user = action.payload.user;
+      state.isAuthChecking = false;
+    });
+    // --- Google Login User ---
+    builder.addCase(googleLoginUser.fulfilled, (state, action) => {
       state.token = action.payload.accessToken;
       state.user = action.payload.user;
       state.isAuthChecking = false;

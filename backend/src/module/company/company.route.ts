@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import * as companyCtrl from "./company.controller";
 import validationMiddleware from "@/middleware/validate.middleware";
-import { requireAuth } from "@/middleware/auth.middleware";
+import { requireAuth, requireRole } from "@/middleware/auth.middleware";
 import {
   CreateCompanySchema,
   UpdateCompanySchema,
@@ -42,6 +42,15 @@ router
     validationMiddleware(UuidParamSchema, "params"),
     companyCtrl.deleteCompany
   );
+
+// Admin-only: verify / unverify a company
+router.patch(
+  "/:id/verify",
+  requireAuth,
+  requireRole("admin"),
+  validationMiddleware(UuidParamSchema, "params"),
+  companyCtrl.verifyCompany
+);
 
 // ================= LOCATION =================
 router

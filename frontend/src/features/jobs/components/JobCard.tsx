@@ -5,6 +5,9 @@ import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { formatSalary } from '@/utils/formatters';
+import { useAppSelector } from '@/store/hooks';
+import { useSavedJobIds, useSaveJob, useUnsaveJob } from '../hooks/useJobs';
+import { toast } from 'sonner';
 
 interface JobCardProps {
   job: Job;
@@ -28,6 +31,33 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, viewMode = 'list'
   };
 
   const timeDisplay = formatTimeAgoText(timeAgo);
+
+  const { user } = useAppSelector((state) => state.auth);
+  const isCandidate = user?.role === 'candidate';
+  const { data: savedIds = [] } = useSavedJobIds(isCandidate);
+  const { mutate: saveJob } = useSaveJob();
+  const { mutate: unsaveJob } = useUnsaveJob();
+
+  const isSaved = savedIds.includes(job.id);
+
+  const handleToggleSave = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isCandidate) {
+      toast.info('Vui lòng đăng nhập với tư cách ứng viên để lưu công việc');
+      return;
+    }
+    if (isSaved) {
+      unsaveJob(job.id, {
+        onSuccess: () => toast.success('Đã bỏ lưu công việc'),
+      });
+    } else {
+      saveJob(job.id, {
+        onSuccess: () => toast.success('Đã lưu công việc'),
+      });
+    }
+    onSave?.(job.id);
+  };
 
   if (viewMode === 'compact') {
     return (
@@ -71,14 +101,15 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, viewMode = 'list'
           </div>
           
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onSave?.(job.id);
-            }}
-            className="w-7 h-7 rounded-full border border-[#4F46E5] text-[#4F46E5] flex items-center justify-center hover:bg-blue-50 transition-colors flex-shrink-0"
+            onClick={handleToggleSave}
+            className={cn(
+              "w-7 h-7 rounded-full border flex items-center justify-center transition-colors flex-shrink-0",
+              isSaved 
+                ? "border-[#4F46E5] bg-[#4F46E5] text-white hover:bg-[#4338CA] hover:border-[#4338CA]" 
+                : "border-[#4F46E5] text-[#4F46E5] hover:bg-blue-50"
+            )}
           >
-            <Heart size={14} />
+            <Heart size={14} className={isSaved ? "fill-white" : ""} />
           </button>
         </div>
       </div>
@@ -156,14 +187,15 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, viewMode = 'list'
           <div className="flex items-center gap-3 flex-shrink-0 ml-4">
             <span className="text-[12px] text-[#9ea5af] whitespace-nowrap">Đăng {timeDisplay}</span>
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onSave?.(job.id);
-              }}
-              className="w-8 h-8 rounded-full border border-[#4F46E5] text-[#4F46E5] flex items-center justify-center hover:bg-blue-50 transition-colors flex-shrink-0"
+              onClick={handleToggleSave}
+              className={cn(
+                "w-8 h-8 rounded-full border flex items-center justify-center transition-colors flex-shrink-0",
+                isSaved 
+                  ? "border-[#4F46E5] bg-[#4F46E5] text-white hover:bg-[#4338CA] hover:border-[#4338CA]" 
+                  : "border-[#4F46E5] text-[#4F46E5] hover:bg-blue-50"
+              )}
             >
-              <Heart size={16} />
+              <Heart size={16} className={isSaved ? "fill-white" : ""} />
             </button>
           </div>
         </div>

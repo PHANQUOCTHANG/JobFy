@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, Menu, Search, X, Command } from "lucide-react";
+import { Bell, Menu, Search, X, Command, Sun, Moon } from "lucide-react";
 
 import UserDropdown from "@/features/user/components/UserDropdown";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
+import { useTheme } from "next-themes";
 
 interface HeaderProps {
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,6 +16,7 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
   const [searchValue, setSearchValue] = useState("");
   const [hasNotif, setHasNotif] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { theme, setTheme } = useTheme();
 
   // Focus input khi mở search
   useEffect(() => {
@@ -67,11 +69,11 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
         <div className="hidden md:flex relative w-full max-w-xs lg:max-w-sm">
           <div
             className={cn(
-              "flex items-center w-full gap-2 px-3 rounded-xl cursor-text",
-              "bg-muted/50 border border-transparent",
-              "hover:bg-muted/70 hover:border-border/50",
-              "focus-within:bg-background focus-within:border-border focus-within:shadow-[0_0_0_3px_hsl(var(--ring)/0.12)]",
-              "transition-all duration-200 h-9",
+              "flex items-center w-full gap-2 px-4 rounded-xl cursor-text",
+              "bg-white dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-800",
+              "hover:bg-gray-50 dark:hover:bg-slate-800/80",
+              "focus-within:bg-white focus-within:border-[#4F46E5] focus-within:shadow-[0_0_0_4px_rgba(79,70,229,0.1)]",
+              "transition-all duration-300 h-[44px]",
             )}
             onClick={() => inputRef.current?.focus()}
           >
@@ -83,9 +85,10 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Tìm kiếm..."
               className={cn(
-                "flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50",
+                "flex-1 bg-transparent text-[14.5px] font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500",
                 "outline-none border-none",
               )}
+              style={{ fontFamily: "'Manrope', sans-serif" }}
             />
             {searchValue ? (
               <button
@@ -161,8 +164,18 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
         <div className="h-5 w-px bg-border/60 mx-1" />
 
         {/* Theme toggle */}
-
-
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className={cn(
+            "relative flex items-center justify-center size-9 rounded-xl",
+            "text-muted-foreground hover:text-foreground",
+            "hover:bg-muted/70 transition-all duration-150 active:scale-95",
+          )}
+          aria-label="Toggle theme"
+        >
+          <Sun className="size-4.5 absolute rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="size-4.5 absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        </button>
         {/* User dropdown */}
         {user && (
           <div className="ml-1">

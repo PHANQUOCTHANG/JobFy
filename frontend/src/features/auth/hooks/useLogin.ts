@@ -4,9 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/store/hooks";
-import { loginUser } from "../slice/authSlice";
+import { loginUser, googleLoginUser } from "../slice/authSlice";
 import { loginSchema, type LoginInput } from "../schemas/auth.schema";
 import { extractError } from "@/utils/extractError";
+import { useGoogleLogin as useReactGoogleLogin } from "@react-oauth/google";
 
 export const useLogin = () => {
   const navigate = useNavigate();
@@ -45,11 +46,39 @@ export const useLogin = () => {
     }
   };
 
+  const handleGoogleSuccess = async (tokenResponse: any, role: string) => {
+    // google sends access_token for implicit flow, but if we use useGoogleLogin with flow: 'implicit'
+    // actually we need idToken. Wait, let me check. If we use GoogleLogin component, it returns credential (idToken).
+    // If we use useReactGoogleLogin, it returns access_token. Let's just create a function that takes idToken from the component directly.
+  };
+
+  // Thay vì dùng useGoogleLogin, ta sẽ nhận credential trực tiếp từ GoogleLogin component
+  const onGoogleLoginSuccess = async (credential: string, role: string) => {
+    const resultAction = await dispatch(googleLoginUser({ idToken: credential, role }));
+
+    if (googleLoginUser.fulfilled.match(resultAction)) {
+      const { user } = resultAction.payload;
+      toast.success("Đăng nhập bằng Google thành công!", {
+        description: `Chào mừng trở lại, ${user.fullName || user.email}!`,
+      });
+      // Redirect dựa vào role (ví dụ role employer thì sang /employer, candidate thì sang /)
+      if (role === "employer") {
+        navigate("/employer");
+      } else {
+        navigate("/");
+      }
+    } else {
+      const errorPayload = resultAction.payload as any;
+      handleLoginError(errorPayload, setError, navigate);
+    }
+  };
+
   return {
     form,
     showPassword,
     toggleShowPassword: () => setShowPassword((prev) => !prev),
     onSubmit: form.handleSubmit(onSubmit),
+    onGoogleLoginSuccess,
   };
 };
 

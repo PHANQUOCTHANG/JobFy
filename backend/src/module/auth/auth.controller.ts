@@ -79,6 +79,13 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   sendAuthResponse(res, result, 200);
 });
 
+// [POST] /auth/google-login
+export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
+  const { idToken, role } = req.body;
+  const result = await authService.googleLogin(idToken, role);
+  sendAuthResponse(res, result, 200);
+});
+
 // POST | /api/auth/refresh
 export const refresh = asyncHandler(async (req: Request, res: Response) => {
   const refreshToken = req.cookies?.refreshToken;

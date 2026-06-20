@@ -17,7 +17,8 @@ import {
   Briefcase,
   Building2,
   FileText,
-  UserCheck
+  UserCheck,
+  Flag,
 } from "lucide-react";
 import Avatar, { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -50,11 +51,6 @@ const sidebarGroups = [
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.CANDIDATES}`,
         icon: FileText,
       },
-      {
-        label: "Verify Employers",
-        path: `${ADMIN_PATHS.ADMIN}/verify`,
-        icon: UserCheck,
-      },
     ],
   },
   {
@@ -65,7 +61,32 @@ const sidebarGroups = [
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.USERS}`,
         icon: Users,
       },
+      {
+        label: "Reports",
+        path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.REPORTS}`,
+        icon: Flag,
+      },
       { label: "Reviews", path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.REVIEWS}`, icon: MessageSquare },
+    ],
+  },
+  {
+    title: "Master Data",
+    items: [
+      {
+        label: "Industries",
+        path: `${ADMIN_PATHS.ADMIN}/industries`,
+        icon: Briefcase,
+      },
+      {
+        label: "Categories",
+        path: `${ADMIN_PATHS.ADMIN}/categories`,
+        icon: LayoutDashboard,
+      },
+      {
+        label: "Skills",
+        path: `${ADMIN_PATHS.ADMIN}/skills`,
+        icon: FileText,
+      },
     ],
   },
   {
@@ -155,20 +176,21 @@ const NavItem = memo(
         isCollapsed ? "justify-center w-10 h-10 mx-auto px-0" : "px-3 py-2.5",
         isActive
           ? [
-              "bg-[#4F46E5]/10 text-[#4F46E5]",
-              "shadow-[inset_0_1px_0_rgba(212,78,43,0.12),inset_0_-1px_0_rgba(212,78,43,0.06)]",
+              "bg-[#4F46E5] text-white",
+              "shadow-lg shadow-[#4F46E5]/30",
             ]
           : [
               "text-sidebar-foreground/60",
-              "hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground",
+              "hover:bg-slate-100 dark:hover:bg-sidebar-accent/70 hover:text-slate-900 dark:hover:text-sidebar-accent-foreground",
             ],
       )}
+      style={{ fontFamily: "'Manrope', sans-serif" }}
     >
       {isActive && !isCollapsed && (
         <span
           className={cn(
-            "absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full",
-            "bg-gradient-to-b from-[#4F46E5] to-[#F59E0B]",
+            "absolute left-0 top-2 bottom-2 w-[4px] rounded-r-full",
+            "bg-white/40",
           )}
         />
       )}
@@ -180,7 +202,7 @@ const NavItem = memo(
         className={cn(
           "size-[18px] shrink-0 transition-all duration-200",
           isActive
-            ? "text-[#4F46E5]"
+            ? "text-white"
             : "text-sidebar-foreground/50 group-hover:text-[#4F46E5] group-hover:scale-110",
         )}
       />

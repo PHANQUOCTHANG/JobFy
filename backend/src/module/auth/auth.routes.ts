@@ -6,6 +6,7 @@ import {
   loginSchema,
   resetPasswordSchema,
   changePasswordSchema,
+  googleLoginSchema,
 } from "@/module/auth/auth.request";
 import { sendOtpSchema, verifyOtpSchema } from "@/module/auth/otp/otp.request";
 import { requireAuth } from "@/middleware/auth.middleware";
@@ -24,6 +25,14 @@ router.post(
 
 // POST | /api/auth/login | Đăng nhập
 router.post("/login", authRateLimiter, validationMiddleware(loginSchema), authCtrl.login);
+
+// POST | /api/auth/google-login | Đăng nhập bằng Google
+router.post(
+  "/google-login",
+  authRateLimiter,
+  validationMiddleware(googleLoginSchema),
+  authCtrl.googleLogin,
+);
 
 // POST | /api/auth/refresh-token | Làm mới access token
 router.post("/refresh-token", authCtrl.refresh);

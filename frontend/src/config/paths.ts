@@ -48,6 +48,7 @@ export const ADMIN_PATHS = {
   CANDIDATES: "candidates",
   COMPANIES: "companies",
   JOBS: "jobs",
+  REPORTS: "reports",
   REVIEWS: "reviews",
   ANALYTICS: "analytics",
   SETTINGS: "settings",

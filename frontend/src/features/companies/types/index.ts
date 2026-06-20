@@ -5,6 +5,7 @@ export interface Company {
   slug: string;
   logoUrl?: string;
   coverUrl?: string;
+  businessLicenseUrl?: string;
   website?: string;
   taxCode?: string;
   foundedYear?: number;

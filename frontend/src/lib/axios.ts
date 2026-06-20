@@ -97,7 +97,8 @@ api.interceptors.response.use(
 
     if (!originalRequest) return Promise.reject(error);
 
-    const { status, data } = error.response as any;
+    const status = error.response?.status;
+    const data = error.response?.data;
     // ----------------------------------------------------------------
     // 🛑 CASE 1: TÀI KHOẢN BỊ KHÓA (BLOCK) - Ưu tiên xử lý trước
     // ----------------------------------------------------------------

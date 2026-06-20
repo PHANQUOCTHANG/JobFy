@@ -13,6 +13,7 @@ import {
 import { AuthResponseDto } from "./auth.response";
 import { getCache, setCache, deleteCache } from "@/utils/cache";
 import { emailService } from "@/config/container";
+import { OAuth2Client } from "google-auth-library";
 
 // Kết quả nội bộ — thêm refreshTokenExpiresAt để controller set cookie chính xác
 interface AuthResult {
@@ -33,6 +34,7 @@ export interface IAuthService {
   logout(refreshToken: string, accessToken?: string): Promise<void>;
   resetPassword(dto: ResetPasswordRequest): Promise<void>;
   changePassword(userId: string, dto: ChangePasswordRequest): Promise<void>;
+  googleLogin(idToken: string, role?: string): Promise<AuthResponseDto>;
 }
 
 export class AuthService implements IAuthService {
@@ -121,6 +123,83 @@ export class AuthService implements IAuthService {
 
 
     const result = await this.generateAuthResult(user, dto.rememberMe);
+    return AuthResponseDto.from(
+      result.user,
+      result.accessToken,
+      result.refreshToken,
+      result.refreshTokenExpiresAt,
+      result.rememberMe,
+    );
+  }
+
+  async googleLogin(idToken: string, role: string = "candidate"): Promise<AuthResponseDto> {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) throw new AppError("Chưa cấu hình Google OAuth Client ID", 500);
+
+    const client = new OAuth2Client(clientId);
+    
+    // Verify ID Token
+    let payload;
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: clientId,
+      });
+      payload = ticket.getPayload();
+    } catch (error) {
+      throw new AppError("Xác thực Google thất bại hoặc token đã hết hạn", 401);
+    }
+
+    if (!payload || !payload.email) {
+      throw new AppError("Không thể lấy thông tin email từ Google", 400);
+    }
+
+    const { email, name, picture, sub: googleId } = payload;
+
+    // Tìm user theo email hoặc googleId
+    let user = await this.userRepo.findByEmail(email);
+
+    if (!user) {
+      // User chưa tồn tại, tạo mới
+      user = await this.userRepo.create({
+        email,
+        passwordHash: null,
+        role: role as any,
+        status: "active",
+        emailVerified: true,
+        googleId,
+        avatarUrl: picture,
+      });
+      
+      // Khởi tạo profile rỗng cho ứng viên nếu là candidate
+      // Note: Theo hệ thống, phần profile sẽ được tạo khi cần thiết hoặc tùy thuộc vào database model
+    } else {
+      // Nếu user đã tồn tại, kiểm tra role
+      if (user.role !== role) {
+        throw new AppError(`Email này đã được đăng ký với vai trò ${user.role}. Bạn không thể dùng tài khoản này để đăng nhập vào trang ${role}.`, 403);
+      }
+      
+      // Update googleId, avatar nếu chưa có, và set active nếu trước đó là pending_verification
+      const updates: any = {};
+      if (!user.googleId) updates.googleId = googleId;
+      if (!user.avatarUrl && picture) updates.avatarUrl = picture;
+      if (user.status === "pending_verification") {
+        updates.status = "active";
+        updates.emailVerified = true;
+      }
+      
+      if (Object.keys(updates).length > 0) {
+        await this.userRepo.updateById(user.id, updates);
+        Object.assign(user, updates);
+      }
+      
+      // Check status
+      if (user.status === "inactive") throw new AppError("Tài khoản đã bị tạm khóa", 403);
+      if (user.status === "banned") throw new AppError("Tài khoản đã bị cấm vĩnh viễn", 403);
+    }
+
+    // Đăng nhập thành công, sinh token (mặc định cho rememberMe = false với OAuth)
+    const result = await this.generateAuthResult(user, false);
     return AuthResponseDto.from(
       result.user,
       result.accessToken,
