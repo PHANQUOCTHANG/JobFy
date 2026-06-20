@@ -1,14 +1,9 @@
-<<<<<<< HEAD
 import React, { useState, useRef, useEffect, useCallback } from "react";
-=======
-import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
->>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
 import UserDropdown from "@/features/user/components/UserDropdown";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
-import { useNavigate } from "react-router-dom";
 import { useMyCompany } from "@/features/companies/hooks/useManageCompany";
 
 interface HeaderProps {
@@ -21,14 +16,8 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
   const { data: myCompany } = useMyCompany();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-<<<<<<< HEAD
-
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const desktopInputRef = useRef<HTMLInputElement>(null);
-=======
-  const [hasNotif, setHasNotif] = useState(true);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchValue.trim()) {
@@ -37,7 +26,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
       setSearchOpen(false);
     }
   };
->>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
 
   // Focus input khi mở search trên mobile
   useEffect(() => {
@@ -137,14 +125,7 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
           </button>
 
           {/* Settings */}
-<<<<<<< HEAD
-          <button
-            onClick={() => navigate('/employer/settings')}
-            className="w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300"
-          >
-=======
           <Link to="/employer/settings" className="w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300">
->>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
             <span className="material-symbols-outlined text-[22px]">settings</span>
           </Link>
         </div>

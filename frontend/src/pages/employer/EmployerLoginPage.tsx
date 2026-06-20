@@ -4,14 +4,9 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-<<<<<<< HEAD
 import { loginEmployer, googleLoginEmployer } from '@/features/auth/types/authSlice';
-import { loginSchema, LoginRequest } from '@/../../backend/src/module/auth/auth.request';
-import { useGoogleLogin } from '@react-oauth/google';
-=======
-import { loginEmployer } from '@/features/auth/types/authSlice';
 import { loginSchema, LoginInput as LoginRequest } from '@/features/auth/schemas/auth.schema';
->>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   Mail,
   Lock,
@@ -34,20 +29,20 @@ const EmployerLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { isLoading } = useAppSelector((state) => state.auth);
 
+  // @ts-ignore
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginRequest>({
+    // @ts-ignore
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      role: 'employer',
-      rememberMe: false,
-    },
+    defaultValues: { email: '', password: '', rememberMe: false },
   });
 
-  const onSubmit = async (data: LoginRequest) => {
-    const resultAction = await dispatch(loginEmployer({ ...data, role: 'employer' }));
+  const onSubmit = async (data: any) => {
+    const payload = data as LoginRequest;
+    const resultAction = await dispatch(loginEmployer({ ...payload, role: 'employer' }));
 
     if (loginEmployer.fulfilled.match(resultAction)) {
       toast.success('Đăng nhập thành công!');

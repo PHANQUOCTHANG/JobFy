@@ -45,12 +45,13 @@ const formatCompanySizeForSelect = (prismaSize: string | undefined | null): stri
 export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialData }) => {
   const { mutate: updateCompany, isPending } = useUpdateMyCompany();
   
-  // Fetch data for select fields
   const { data: industries, isLoading: isLoadingIndustries } = useIndustries();
   const { data: provinces, isLoading: isLoadingProvinces } = useProvinces();
   
+  // @ts-ignore
   const form = useForm<CompanyProfileInput>({
-    resolver: zodResolver(companyProfileSchema) as any,
+    // @ts-ignore
+    resolver: zodResolver(companyProfileSchema),
     defaultValues: {
       name: initialData?.name || "",
       taxCode: initialData?.taxCode || "",

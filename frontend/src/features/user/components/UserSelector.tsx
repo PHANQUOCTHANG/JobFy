@@ -86,8 +86,8 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
     // Gộp fetched và initial, loại bỏ trùng lặp và loại trừ excludeIds
     const pool = [...initialArr, ...fetchedUsers].filter(
       (u, index, self) =>
-        index === self.findIndex((t) => t._id === u._id) &&
-        !excludeIds.includes(u._id),
+        index === self.findIndex((t) => t.id === u.id) &&
+        !excludeIds.includes(u.id),
     );
 
     return pool;
@@ -96,7 +96,7 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
   // Lấy chi tiết các user đang được chọn để hiển thị Tag
   const selectedUserDetails = useMemo(() => {
     return selectedIds
-      .map((id) => displayUsers.find((u) => u._id === id))
+      .map((id) => displayUsers.find((u) => u.id === id))
       .filter(Boolean) as User[];
   }, [selectedIds, displayUsers]);
 
@@ -187,13 +187,13 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
 
                 {/* --- DANH SÁCH USERS --- */}
                 {displayUsers.map((user) => {
-                  const isSelected = selectedIds.includes(user._id);
+                  const isSelected = selectedIds.includes(user.id);
                   return (
                     <div
-                      key={user._id}
+                      key={user.id}
                       onMouseDown={(e) => {
                         e.preventDefault();
-                        handleSelect(user._id);
+                        handleSelect(user.id);
                       }}
                       className={cn(
                         "flex items-center gap-3 p-2 rounded-md cursor-pointer transition-colors select-none",
@@ -204,7 +204,7 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                       <div className="relative shrink-0">
                         <Avatar className="size-8 border border-border">
                           <AvatarImage
-                            src={user.avatar}
+                            src={user.avatar || undefined}
                             className="object-cover"
                           />
                           <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">
@@ -274,12 +274,12 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
         <div className="flex flex-wrap gap-2 animate-in fade-in zoom-in-95 duration-200">
           {selectedUserDetails.map((user) => (
             <Badge
-              key={user._id}
+              key={user.id}
               variant="secondary"
               className="pl-1 pr-1.5 py-1 h-8 text-xs border bg-background hover:bg-muted transition-colors flex items-center gap-1.5 shadow-sm"
             >
               <Avatar className="size-5">
-                <AvatarImage src={user.avatar} className="object-cover" />
+                <AvatarImage src={user.avatar || undefined} className="object-cover" />
                 <AvatarFallback className="text-[8px] bg-primary/10 text-primary">
                   {getInitialsTextAvartar(user.fullName)}
                 </AvatarFallback>
@@ -291,7 +291,7 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleSelect(user._id);
+                  handleSelect(user.id);
                 }}
                 className="size-4 rounded-full hover:bg-destructive hover:text-white flex items-center justify-center transition-colors ml-0.5"
               >

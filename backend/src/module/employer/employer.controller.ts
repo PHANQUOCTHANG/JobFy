@@ -141,7 +141,6 @@ export class EmployerController {
     } catch (error) { next(error); }
   };
 
-<<<<<<< HEAD
   // Upload ảnh (Logo / Cover)
   uploadImage = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -151,7 +150,12 @@ export class EmployerController {
       res.status(200).json({
         status: "success",
         data: { url: req.file.path }
-=======
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // Dashboard: Lấy thống kê tổng quan cho employer
   getDashboard = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -180,14 +184,12 @@ export class EmployerController {
       res.status(200).json({
         status: "success",
         data: { overview, pipeline, recentJobs, aiSuggestion },
->>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
       });
     } catch (error) {
       next(error);
     }
   };
 
-<<<<<<< HEAD
   // Upload tài liệu pháp lý (PDF, JPG)
   uploadDocument = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -198,7 +200,11 @@ export class EmployerController {
         status: "success",
         data: { url: req.file.path }
       });
-=======
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // Dashboard: Xuất báo cáo CSV
   exportDashboard = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -232,7 +238,6 @@ export class EmployerController {
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', `attachment; filename="bao-cao-jobfy-${Date.now()}.csv"`);
       res.status(200).send(csvString);
->>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
     } catch (error) {
       next(error);
     }

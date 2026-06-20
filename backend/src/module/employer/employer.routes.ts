@@ -9,11 +9,8 @@ import { OtpService } from "@/module/auth/otp/otp.service";
 import { OtpRepository } from "@/module/auth/otp/otp.repository";
 import { UserRepository } from "@/module/user/user.repository";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
-<<<<<<< HEAD
 import { uploadSettingImage, uploadLegalDocument } from "@/middleware/upload.middleware";
-=======
 import { EmailService } from "@/module/auth/email/email.service";
->>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
 import prisma from "@/lib/prisma";
 
 
