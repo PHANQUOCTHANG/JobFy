@@ -1,11 +1,19 @@
 import { Router } from "express";
 import { EmployerController } from "./employer.controller";
 import { EmployerVerificationService } from "./employer.service";
+import { EmployerDashboardService } from "./employer.dashboard";
+import { EmployerAIService } from "./employer.ai.service";
+import { EmployerCandidateService } from "./employer.candidate.service";
+import { EmployerCandidateController } from "./employer.candidate.controller";
 import { OtpService } from "@/module/auth/otp/otp.service";
 import { OtpRepository } from "@/module/auth/otp/otp.repository";
 import { UserRepository } from "@/module/user/user.repository";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
+<<<<<<< HEAD
 import { uploadSettingImage, uploadLegalDocument } from "@/middleware/upload.middleware";
+=======
+import { EmailService } from "@/module/auth/email/email.service";
+>>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
 import prisma from "@/lib/prisma";
 
 
@@ -17,15 +25,23 @@ router.use((req, res, next) => {
 });
 
 const service = new EmployerVerificationService(prisma);
+const dashboardService = new EmployerDashboardService(prisma);
+const aiService = new EmployerAIService();
+const emailService = new EmailService();
+const candidateService = new EmployerCandidateService(prisma, emailService);
 
 // Khởi tạo OtpService thật thay vì dùng {}
 const otpRepo = new OtpRepository(prisma);
 const userRepo = new UserRepository(prisma);
 const otpService = new OtpService(otpRepo, userRepo);
-const controller = new EmployerController(service, otpService);
+
+const controller = new EmployerController(service, otpService, dashboardService, aiService);
+const candidateController = new EmployerCandidateController(candidateService, aiService);
 
 router.use(requireAuth, requireRole("employer"));
 
+router.get("/dashboard/export", controller.exportDashboard);
+router.get("/dashboard", controller.getDashboard);
 router.get("/verification-progress", controller.getProgress);
 router.post("/resend-otp", controller.resendEmailOtp);
 router.post("/verify-email", controller.verifyEmail);
@@ -35,5 +51,16 @@ router.patch("/company-info", controller.updateInfo);
 router.post("/submit-legal", controller.submitLegal);
 router.post("/upload-image", uploadSettingImage, controller.uploadImage);
 router.post("/upload-document", uploadLegalDocument, controller.uploadDocument);
+
+// Candidates
+router.get("/jobs/dropdown", candidateController.getJobsDropdown);
+router.get("/candidates", candidateController.getCandidates);
+router.get("/candidates/export", candidateController.exportCandidates);
+router.get("/candidates/ai-insights", candidateController.getAIInsights);
+router.get("/candidates/history", candidateController.getRecruitmentHistory);
+router.get("/candidates/conversion-report", candidateController.getConversionReport);
+router.patch("/candidates/bulk-status", candidateController.bulkUpdateStatus);
+router.get("/candidates/:id/detail", candidateController.getCandidateDetail);
+router.patch("/candidates/:id/status", candidateController.updateStatus);
 
 export default router;

@@ -4,9 +4,14 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+<<<<<<< HEAD
 import { registerEmployer, googleLoginEmployer } from '@/features/auth/types/authSlice';
 import { registerSchema, RegisterRequest } from '@/../../backend/src/module/auth/auth.request';
 import { useGoogleLogin } from '@react-oauth/google';
+=======
+import { registerEmployer } from '@/features/auth/types/authSlice';
+import { employerRegisterSchema as registerSchema, EmployerRegisterInput as RegisterRequest } from '@/features/auth/schemas/auth.schema';
+>>>>>>> f2380f0515dd1a970bd7025bee3e73dc8515eaf2
 import {
   Building2,
   Mail,

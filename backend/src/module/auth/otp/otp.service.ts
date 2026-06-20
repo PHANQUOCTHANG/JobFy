@@ -21,7 +21,7 @@ export class OtpService implements IOtpService {
   constructor(
     private readonly otpRepo: IOtpRepository,
     private readonly userRepo: IUserRepository,
-  ) {}
+  ) { }
 
   // Tạo, lưu trữ OTP và gửi qua email cho người dùng
   async send(email: string, purpose: OtpPurpose = "RESET_PASSWORD"): Promise<OtpSentResponseDto> {
