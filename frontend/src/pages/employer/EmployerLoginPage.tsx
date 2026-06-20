@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginEmployer } from '@/features/auth/types/authSlice';
-import { loginSchema, LoginRequest } from '@/../../backend/src/module/auth/auth.request';
+import { loginSchema, LoginInput as LoginRequest } from '@/features/auth/schemas/auth.schema';
 import {
   Mail,
   Lock,
