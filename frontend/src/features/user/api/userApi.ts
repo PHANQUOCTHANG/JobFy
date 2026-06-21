@@ -4,6 +4,8 @@ import type {
   User,
   UserFilterParams,
   ChangePasswordDTO,
+  CreateUserRequest,
+  UpdateUserRequest,
 } from "../types";
 
 const userApi = {
@@ -11,13 +13,7 @@ const userApi = {
   // 1. PUBLIC / CLIENT LOGIC (Hành động của cá nhân)
   // ==========================================
 
-  // Xem tường nhà người khác / profile public
-  getPublicProfile: async (userId: string) => {
-    const res = await api.get<ApiResponse<User>>(`/users/${userId}/profile`);
-    return res.data;
-  },
-
-  // Cập nhật Profile cá nhân (Nhận FormData vì có Avatar)
+  // Cập nhật Profile cá nhân (Nhận FormData vì có Avatar) - Giữ nguyên nếu backend hỗ trợ
   updateProfile: async (data: FormData) => {
     const res = await api.patch<ApiResponse<User>>("/users/profile", data, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -72,29 +68,19 @@ const userApi = {
     return res.data;
   },
 
-  // Admin tạo mới User (Nhận FormData)
-  create: async (data: FormData) => {
-    const res = await api.post<ApiResponse<User>>("/users", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+  // Admin tạo mới User (Gửi JSON)
+  create: async (data: CreateUserRequest) => {
+    const res = await api.post<ApiResponse<User>>("/users", data);
     return res.data;
   },
 
-  // Admin cập nhật User (Nhận FormData)
-  update: async (id: string, data: FormData) => {
-    const res = await api.patch<ApiResponse<User>>(`/users/${id}`, data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+  // Admin cập nhật User (Gửi JSON)
+  update: async (id: string, data: UpdateUserRequest) => {
+    const res = await api.patch<ApiResponse<User>>(`/users/${id}`, data);
     return res.data;
   },
 
-  // Khóa / Mở khóa tài khoản
-  toggleBlock: async (id: string) => {
-    const res = await api.post<ApiResponse<User>>(`/users/${id}/block`);
-    return res.data;
-  },
-
-  // Xóa tài khoản vĩnh viễn (Hard delete)
+  // Xóa tài khoản vĩnh viễn (Soft delete ở backend)
   delete: async (id: string) => {
     const res = await api.delete<ApiResponse<User>>(`/users/${id}`);
     return res.data;

@@ -23,6 +23,7 @@ export interface ICompanyService {
   findCompanyById(id: string): Promise<CompanyResponseDto>;
   updateCompany(id: string, userId: string, isAdmin: boolean, dto: UpdateCompanyRequestDto): Promise<CompanyResponseDto>;
   deleteCompany(id: string, userId: string, isAdmin: boolean): Promise<void>;
+  verifyCompany(id: string, verified: boolean): Promise<CompanyResponseDto>;
 
   getLocations(companyId: string): Promise<any[]>;
   addLocation(companyId: string, userId: string, isAdmin: boolean, dto: CreateCompanyLocationRequestDto): Promise<any>;
@@ -151,6 +152,15 @@ export class CompanyService implements ICompanyService {
     
     await this.companyRepo.softDelete(id);
     await this.invalidateCache(id);
+  }
+
+  async verifyCompany(id: string, verified: boolean): Promise<CompanyResponseDto> {
+    const company = await this.companyRepo.findById(id);
+    if (!company) throw new AppError("Công ty không tồn tại", 404);
+    const updated = await this.companyRepo.updateById(id, { isVerified: verified });
+    if (!updated) throw new AppError("Cập nhật thất bại", 500);
+    await this.invalidateCache(id);
+    return CompanyResponseDto.from(updated);
   }
 
   // ================= LOCATION =================

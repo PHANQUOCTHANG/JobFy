@@ -202,4 +202,41 @@ export class JobService {
     await this.jobRepo.incrementViewCount(id);
     await deleteCache(`${this.CACHE_KEY}:id:${id}`);
   }
+
+  async adminUpdateStatus(id: string, status: string, rejectedReason?: string): Promise<JobResponseDto> {
+    const job = await this.jobRepo.findById(id);
+    if (!job) throw new AppError("Không tìm thấy tin tuyển dụng", 404);
+
+    const updateData: any = { status };
+    
+    // Nếu duyệt tin
+    if (status === "published" && job.status !== "published" && !job.publishedAt) {
+      updateData.publishedAt = new Date();
+      updateData.rejectedReason = null; // Clear lý do từ chối nếu có
+    }
+
+    // Nếu từ chối tin
+    if (status === "rejected") {
+      updateData.rejectedReason = rejectedReason || "Không có lý do cụ thể.";
+    }
+
+    const updated = await this.jobRepo.updateById(id, updateData);
+    if (!updated) throw new AppError("Cập nhật thất bại", 500);
+
+    await Promise.all([
+      deleteCache(`${this.CACHE_KEY}:id:${id}`),
+      deleteCacheByPattern(`${this.CACHE_KEY}:list:*`),
+    ]);
+    return JobResponseDto.from(updated);
+  }
+
+  async adminDelete(id: string): Promise<void> {
+    const job = await this.jobRepo.findById(id);
+    if (!job) throw new AppError("Không tìm thấy tin tuyển dụng", 404);
+    await this.jobRepo.deleteById(id);
+    await Promise.all([
+      deleteCache(`${this.CACHE_KEY}:id:${id}`),
+      deleteCacheByPattern(`${this.CACHE_KEY}:list:*`),
+    ]);
+  }
 }

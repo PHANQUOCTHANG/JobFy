@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { resetPassword } from '@/features/auth/types/authSlice';
+import { resetPassword } from '@/features/auth/slice/authSlice';
 import { z } from 'zod';
 import { Lock, Eye, EyeOff, Loader2, CheckCircle2, ShieldCheck, ArrowLeft } from 'lucide-react';
 
@@ -28,7 +28,7 @@ const EmployerResetPasswordPage: React.FC = () => {
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { email, otp, newPassword: '' }
+    defaultValues: { email, otp, newPassword: '' } as any
   });
 
   const passwordValue = watch('newPassword', '');
@@ -95,7 +95,7 @@ const EmployerResetPasswordPage: React.FC = () => {
                 id="reset-password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                error={errors.newPassword?.message}
+                error={errors.newPassword?.message as string | undefined}
                 {...register('newPassword')}
                 rightElement={
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-slate-400">

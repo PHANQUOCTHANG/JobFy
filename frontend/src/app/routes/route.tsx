@@ -9,11 +9,12 @@ import {
 } from "@/layouts";
 
 import ProtectedRoute from "@/app/routes/ProtectedRoute";
+import AdminRoute from "@/app/routes/AdminRoute";
 import {
   HomePage,
   NotFoundPage,
   SettingsPage,
-  UsersManagementPage,
+
   CompanyListPage,
   CompanyDetailPage,
   CandidateProfilePage,
@@ -35,12 +36,24 @@ import {
   CvEditorPage,
   MyCvsPage,
   CoverLetterPage,
-  EmployerRegisterPage,
   EmployerLoginPage,
+  EmployerRegisterPage,
+  // Admin pages
+  UsersManagementPage,
+  AdminDashboardPage,
+  AdminCompaniesPage,
+  AdminJobsPage,
+  AdminReportsPage,
+  AdminLoginPage,
+  AdminIndustriesPage,
+  AdminCategoriesPage,
+  AdminSkillsPage,
+  AdminCandidatesPage,
+  AdminReviewsPage,
 } from "@/pages";
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
-import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS } from "@/config/paths";
+import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS, ADMIN_PATHS } from "@/config/paths";
 import EmployerForgotPasswordPage from "@/pages/employer/EmployerForgotPasswordPage";
 import EmployerVerifyOtpPage from "@/pages/employer/EmployerVerifyOtpPage";
 import EmployerResetPasswordPage from "@/pages/employer/EmployerResetPasswordPage";
@@ -193,7 +206,40 @@ export const router = createBrowserRouter([
       },
 
       // ===================================================
-      // 5. 404 NOT FOUND
+      // 5. NHÓM ADMIN PORTAL
+      // ===================================================
+
+      // 5a. Trang Login Admin — công khai, không cần auth
+      {
+        path: "/admin/login",
+        element: <AdminLoginPage />,
+      },
+
+      // 5b. Admin Dashboard — bảo vệ bởi AdminRoute
+      {
+        path: ADMIN_PATHS.ADMIN,
+        element: <AdminRoute />,   // ← guard: chưa đăng nhập → /admin/login, không phải admin → 403
+        children: [
+          {
+            element: <AdminLayout />,
+            children: [
+              { index: true, element: <AdminDashboardPage /> },
+              { path: ADMIN_PATHS.USERS, element: <UsersManagementPage /> },
+              { path: ADMIN_PATHS.COMPANIES, element: <AdminCompaniesPage /> },
+              { path: ADMIN_PATHS.CANDIDATES, element: <AdminCandidatesPage /> },
+              { path: ADMIN_PATHS.JOBS, element: <AdminJobsPage /> },
+              { path: ADMIN_PATHS.REPORTS, element: <AdminReportsPage /> },
+              { path: ADMIN_PATHS.REVIEWS, element: <AdminReviewsPage /> },
+              { path: "industries", element: <AdminIndustriesPage /> },
+              { path: "categories", element: <AdminCategoriesPage /> },
+              { path: "skills", element: <AdminSkillsPage /> },
+            ],
+          },
+        ],
+      },
+
+      // ===================================================
+      // 6. 404 NOT FOUND
       // ===================================================
       {
         path: "*",

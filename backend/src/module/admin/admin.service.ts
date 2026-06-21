@@ -22,7 +22,7 @@ export class AdminService {
     return { jobId, totalViews: count };
   }
 
-  async getDashboardStats() {
-    return await this.repository.getDashboardStats();
+  async getDashboardStats(days: number) {
+    return await this.repository.getDashboardStats(days);
   }
 }

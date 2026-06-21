@@ -37,7 +37,7 @@ export interface IAuthService {
   logout(refreshToken: string, accessToken?: string): Promise<void>;
   resetPassword(dto: ResetPasswordRequest): Promise<void>;
   changePassword(userId: string, dto: ChangePasswordRequest): Promise<void>;
-  googleLogin(idToken: string, role: string): Promise<AuthResponseDto>;
+  googleLogin(idToken: string, role?: string): Promise<AuthResponseDto>;
 }
 
 export class AuthService implements IAuthService {
@@ -154,6 +154,100 @@ export class AuthService implements IAuthService {
     // Bỏ qua kiểm tra pending_verification tại đây để cho phép đăng nhập trước
 
     const result = await this.generateAuthResult(user, dto.rememberMe);
+    return AuthResponseDto.from(
+      result.user,
+      result.accessToken,
+      result.refreshToken,
+      result.refreshTokenExpiresAt,
+      result.rememberMe,
+    );
+  }
+
+  async googleLogin(idToken: string, role: string = "candidate"): Promise<AuthResponseDto> {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) throw new AppError("Chưa cấu hình Google OAuth Client ID", 500);
+
+    let email, name, picture, googleId;
+
+    try {
+      // 1. Thử verify như idToken trước (để tương thích ngược nếu còn dùng GoogleLogin component)
+      const client = new OAuth2Client(clientId);
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: clientId,
+      });
+      const payload = ticket.getPayload();
+      if (payload) {
+        email = payload.email;
+        name = payload.name;
+        picture = payload.picture;
+        googleId = payload.sub;
+      }
+    } catch (error) {
+      // 2. Nếu thất bại, idToken thực chất là access_token (do useGoogleLogin trả về flow implicit)
+      try {
+        const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${idToken}` }
+        });
+        if (!response.ok) throw new Error("Fetch failed");
+        const data = await response.json();
+        email = data.email;
+        name = data.name;
+        picture = data.picture;
+        googleId = data.sub;
+      } catch (err) {
+        throw new AppError("Xác thực Google thất bại hoặc token đã hết hạn", 401);
+      }
+    }
+
+    if (!email) {
+      throw new AppError("Không thể lấy thông tin email từ Google", 400);
+    }
+
+    // Tìm user theo email hoặc googleId
+    let user = await this.userRepo.findByEmail(email);
+
+    if (!user) {
+      // User chưa tồn tại, tạo mới
+      user = await this.userRepo.create({
+        email,
+        passwordHash: null,
+        role: role as any,
+        status: "active",
+        emailVerified: true,
+        googleId,
+        avatarUrl: picture,
+      });
+
+      // Khởi tạo profile rỗng cho ứng viên nếu là candidate
+      // Note: Theo hệ thống, phần profile sẽ được tạo khi cần thiết hoặc tùy thuộc vào database model
+    } else {
+      // Nếu user đã tồn tại, kiểm tra role
+      if (user.role !== role) {
+        throw new AppError(`Email này đã được đăng ký với vai trò ${user.role}. Bạn không thể dùng tài khoản này để đăng nhập vào trang ${role}.`, 403);
+      }
+
+      // Update googleId, avatar nếu chưa có, và set active nếu trước đó là pending_verification
+      const updates: any = {};
+      if (!user.googleId) updates.googleId = googleId;
+      if (!user.avatarUrl && picture) updates.avatarUrl = picture;
+      if (user.status === "pending_verification") {
+        updates.status = "active";
+        updates.emailVerified = true;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await this.userRepo.updateById(user.id, updates);
+        Object.assign(user, updates);
+      }
+
+      // Check status
+      if (user.status === "inactive") throw new AppError("Tài khoản đã bị tạm khóa", 403);
+      if (user.status === "banned") throw new AppError("Tài khoản đã bị cấm vĩnh viễn", 403);
+    }
+
+    // Đăng nhập thành công, sinh token (mặc định cho rememberMe = false với OAuth)
+    const result = await this.generateAuthResult(user, false);
     return AuthResponseDto.from(
       result.user,
       result.accessToken,
@@ -302,85 +396,6 @@ export class AuthService implements IAuthService {
     ]);
   }
 
-  async googleLogin(accessToken: string, role: string): Promise<AuthResponseDto> {
-    // 1. Lấy thông tin user từ Google Access Token
-    let payload;
-    try {
-      const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      if (!response.ok) throw new Error();
-      payload = await response.json();
-    } catch {
-      throw new AppError("Google Access Token không hợp lệ", 401);
-    }
-
-    if (!payload || !payload.email) {
-      throw new AppError("Không lấy được thông tin từ Google", 400);
-    }
-
-    const { email, name, picture, sub: googleId } = payload;
-
-    // 2. Tìm user theo email hoặc googleId
-    let user = await this.userRepo.findByEmail(email);
-
-    if (user) {
-      // Cập nhật googleId nếu chưa có
-      if (!user.googleId) {
-        await this.userRepo.updateById(user.id, { googleId });
-        user.googleId = googleId;
-      }
-      // Kiểm tra role có khớp không
-      if (user.role !== role) {
-        throw new AppError(`Tài khoản này đã đăng ký với vai trò "${user.role}", không thể đăng nhập với vai trò "${role}"`, 403);
-      }
-      // Kiểm tra trạng thái tài khoản
-      if (user.status === "inactive") {
-        throw new AppError("Tài khoản đã bị tạm khóa", 403);
-      }
-      if (user.status === "banned") {
-        throw new AppError("Tài khoản đã bị cấm", 403);
-      }
-    } else {
-      // 3. Tạo user mới nếu chưa tồn tại
-      const validRole = (role === "employer" || role === "candidate") ? role : "candidate";
-      const userData: any = {
-        email,
-        googleId,
-        role: validRole,
-        status: "active",
-        emailVerified: true,
-      };
-
-      if (validRole === "candidate") {
-        userData.candidateProfile = {
-          create: { fullName: name || email.split("@")[0] }
-        };
-      } else if (validRole === "employer") {
-        const companyName = name || `Công ty của ${email.split("@")[0]}`;
-        const baseSlug = slugify(companyName, { lower: true, strict: true, locale: "vi" });
-        userData.companiesOwned = {
-          create: [{
-            name: companyName,
-            slug: `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`,
-            address: "",
-            shortDescription: "",
-          }]
-        };
-      }
-
-      user = await this.userRepo.create(userData);
-    }
-
-    const result = await this.generateAuthResult(user, false);
-    return AuthResponseDto.from(
-      result.user,
-      result.accessToken,
-      result.refreshToken,
-      result.refreshTokenExpiresAt,
-      result.rememberMe,
-    );
-  }
 
   private async generateAuthResult(
     user: any,

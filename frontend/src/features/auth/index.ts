@@ -15,7 +15,7 @@ export * from "./hooks/useForceChangePassword";
 
 // 🪄 Xuất services / slice nếu cần dùng global
 export * from "./api/authApi";
-export * from "./types/authSlice";
+export * from "./slice/authSlice";
 export * from "./routes/index";
 //Xuất schema
 export * from "./schemas/auth.schema";

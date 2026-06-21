@@ -20,9 +20,14 @@ export const useUsersQuery = (params: UserFilterParams) => {
 
     // Selector: Chỉ trích xuất những dữ liệu thực sự cần thiết cho Component (Table, Pagination)
     select: (response) => ({
-      users: response.data.data,
-      meta: response.data.meta,
-      isEmpty: response.data.data.length === 0,
+      users: response.data || [],
+      meta: {
+        totalItems: response.meta?.total || 0,
+        totalPages: response.meta?.totalPages || 1,
+        page: response.meta?.page || 1,
+        pageSize: response.meta?.limit || 10,
+      },
+      isEmpty: !response.data || response.data.length === 0,
     }),
   });
 };
@@ -43,27 +48,5 @@ export const useUserDetailQuery = (userId: string | undefined | null) => {
     staleTime: 1000 * 60 * 5,
 
     select: (response) => response.data,
-  });
-};
-
-// ==========================================
-// 3. QUERY: LẤY DANH SÁCH YÊU CẦU LÊN ARTIST
-// ==========================================
-export const useArtistRequestsQuery = () => {
-  return useQuery({
-    // Key riêng cho artist requests
-    queryKey: ["artist-requests", "list"],
-    queryFn: () => userApi.getArtistRequests(),
-
-    // Thường dữ liệu duyệt đơn cần tính real-time cao hơn
-    staleTime: 1000 * 30, // 30s
-
-    select: (response) => ({
-      requests: response.data,
-      isEmpty: response.data.length === 0,
-      // Tính toán badge notifications (Số lượng đơn đang chờ)
-      pendingCount: response.data.filter((req) => req.status === "pending")
-        .length,
-    }),
   });
 };

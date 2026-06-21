@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { EMPLOYER_PATHS } from "@/config/paths";
 import { cn } from "@/lib/utils";
 import { useAppDispatch } from "@/store/hooks";
-import { logoutUser } from "@/features/auth/types/authSlice";
+import { logoutUser } from "@/features/auth/slice/authSlice";
 import { toast } from "sonner";
 
 const sidebarItems = [

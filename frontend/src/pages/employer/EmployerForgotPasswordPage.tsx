@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { sendOtp } from '@/features/auth/types/authSlice';
+import { sendOtp } from '@/features/auth/slice/authSlice';
 import { Mail, ArrowLeft, Loader2, ChevronRight, KeyRound } from 'lucide-react';
 import { BackgroundPattern, FeatureBadge, InputField } from '../../components/ui/AuthComponents';
 

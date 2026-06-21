@@ -4,7 +4,7 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { registerEmployer, googleLoginEmployer } from '@/features/auth/types/authSlice';
+import { registerEmployer, googleLoginEmployer } from '@/features/auth/slice/authSlice';
 import { employerRegisterSchema as registerSchema, EmployerRegisterInput as RegisterRequest } from '@/features/auth/schemas/auth.schema';
 import { useGoogleLogin } from '@react-oauth/google';
 import {

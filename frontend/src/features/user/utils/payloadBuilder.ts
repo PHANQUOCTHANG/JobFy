@@ -4,34 +4,18 @@ export const buildUserPayload = (
   values: AdminUserFormValues,
   dirtyFields: Partial<Record<keyof AdminUserFormValues, boolean | any>>,
   isEditMode: boolean,
-): FormData => {
-  const formData = new FormData();
+): any => {
+  const payload: any = {};
 
-  const append = (key: string, value: any) => {
-    if (value !== undefined && value !== null) formData.append(key, value);
-  };
-
-  // 1. File Handling
-  if (values.avatar instanceof File) {
-    formData.append("avatar", values.avatar);
-  }
-
-  // 2. Data Fields
   (Object.keys(values) as Array<keyof AdminUserFormValues>).forEach((key) => {
-    if (key === "avatar") return;
-
     // Dirty Checking: Chỉ gửi field thay đổi (hoặc gửi hết nếu là create)
-    if (!isEditMode || dirtyFields[key]) {
-      const value = values[key];
+    // Đối với password, chỉ gửi nếu có nhập (kể cả tạo mới hay edit)
+    if (key === "password" && !values.password) return;
 
-      // Xử lý boolean sang string để gửi qua FormData
-      if (typeof value === "boolean") {
-        append(key, String(value));
-      } else {
-        append(key, String(value));
-      }
+    if (!isEditMode || dirtyFields[key]) {
+      payload[key] = values[key];
     }
   });
 
-  return formData;
+  return payload;
 };

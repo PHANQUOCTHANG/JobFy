@@ -47,7 +47,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         >
           <Avatar className="size-9 sm:size-10 border border-border/50 shadow-sm cursor-pointer">
             <AvatarImage
-              src={user?.avatar || undefined}
+              src={user?.avatarUrl || undefined}
               alt={user?.fullName || "User Avatar"}
               className="object-cover"
               referrerPolicy="no-referrer"
@@ -67,7 +67,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         <DropdownMenuLabel className="font-normal p-3 mb-2 rounded-lg bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 flex items-center gap-3">
           <Avatar className="size-11 border-2 border-background shadow-sm">
             <AvatarImage
-              src={user?.avatar || undefined}
+              src={user?.avatarUrl || undefined}
               alt={user?.fullName || "User Avatar"}
               className="object-cover"
               referrerPolicy="no-referrer"

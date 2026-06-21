@@ -1,52 +1,36 @@
 import { z } from "zod";
 
-const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-// --- SHARED RULES ---
 const passwordRule = z
   .string()
   .min(6, "Mật khẩu tối thiểu 6 ký tự")
   .optional()
   .or(z.literal(""));
-const avatarRule = z
-  .union([z.instanceof(File), z.string(), z.null()])
-  .refine((file) => {
-    if (file instanceof File) return file.size <= MAX_AVATAR_SIZE;
-    return true;
-  }, "Ảnh tối đa 5MB")
-  .refine((file) => {
-    if (file instanceof File) return ACCEPTED_IMAGE_TYPES.includes(file.type);
-    return true;
-  }, "Định dạng không hỗ trợ")
-  .optional()
-  .nullable();
 
-// --- 1. ADMIN CREATE/UPDATE USER ---
-export const adminUserSchema = z.object({
-  fullName: z.string().trim().min(2, "Tên quá ngắn").max(50),
+// --- 1. ADMIN USER SCHEMAS ---
+const baseAdminUserSchema = z.object({
+  fullName: z.string().trim().min(2, "Tên quá ngắn").max(150),
   email: z.string().email("Email không hợp lệ"),
   role: z.enum(["candidate", "employer", "admin"]),
-  status: z.enum(["active", "inactive", "banned"]).default("active"),
-
-  // Password optional khi edit
-  password: passwordRule,
-  avatar: avatarRule,
-  bio: z.string().max(500).optional(),
+  status: z.enum(["active", "inactive", "banned", "pending_verification"]),
+  avatarUrl: z.string().url("Phải là URL hợp lệ").optional().or(z.literal("")),
 });
 
-export type AdminUserFormValues = z.infer<typeof adminUserSchema>;
+// Schema khi tạo mới: Bắt buộc password
+export const createAdminUserSchema = baseAdminUserSchema.extend({
+  password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+});
+
+// Schema khi cập nhật: Password không bắt buộc (chỉ đổi khi nhập)
+export const updateAdminUserSchema = baseAdminUserSchema.extend({
+  password: passwordRule,
+});
+
+export type AdminUserFormValues = z.infer<typeof updateAdminUserSchema>;
 
 // --- 2. USER PROFILE UPDATE (Self) ---
 export const profileSchema = z.object({
-  fullName: z.string().trim().min(2).max(50),
-  bio: z.string().max(500).optional(),
-  avatar: avatarRule,
+  fullName: z.string().trim().min(2).max(150),
+  avatarUrl: z.string().url().optional().or(z.literal("")),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;

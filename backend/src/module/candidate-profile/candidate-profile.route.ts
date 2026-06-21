@@ -41,4 +41,21 @@ router
     profileCtrl.getProfileById
   );
 
+// APIs dành riêng cho ADMIN
+router
+  .route("/:id/admin")
+  .patch(
+    requireAuth,
+    requireRole("ADMIN"),
+    validationMiddleware(IdParamSchema, "params"),
+    validationMiddleware(UpdateCandidateProfileSchema),
+    profileCtrl.adminUpdateProfile
+  )
+  .delete(
+    requireAuth,
+    requireRole("ADMIN"),
+    validationMiddleware(IdParamSchema, "params"),
+    profileCtrl.adminDeleteProfile
+  );
+
 export default router;

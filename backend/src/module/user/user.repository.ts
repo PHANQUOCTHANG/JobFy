@@ -41,6 +41,8 @@ export class UserRepository implements IUserRepository {
     // Xây dựng điều kiện tìm kiếm (không phân biệt hoa thường)
     const where: Prisma.UserWhereInput = {
       deletedAt: null, // Chỉ lấy user chưa bị xóa mềm
+      ...(query.role && { role: query.role as any }),
+      ...(query.status && { status: query.status as any }),
       ...(query.search && {
         OR: [
           {

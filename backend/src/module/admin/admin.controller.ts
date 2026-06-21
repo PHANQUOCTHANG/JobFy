@@ -45,7 +45,9 @@ export const getLogs = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
-  const stats = await adminService.getDashboardStats();
+  const { days } = req.query;
+  const daysNum = days ? Number(days) : 7;
+  const stats = await adminService.getDashboardStats(daysNum);
   sendResponse(res, 200, "Success", stats);
 });
 

@@ -9,6 +9,7 @@ export interface ICandidateProfileRepository {
   findByUserId(userId: string): Promise<CandidateProfile | null>;
   updateById(id: string, data: Prisma.CandidateProfileUncheckedUpdateInput): Promise<CandidateProfile | null>;
   incrementViewCount(id: string): Promise<void>;
+  deleteById(id: string): Promise<void>;
 }
 
 export class CandidateProfileRepository implements ICandidateProfileRepository {
@@ -80,6 +81,17 @@ export class CandidateProfileRepository implements ICandidateProfileRepository {
       });
     } catch (error) {
       // Ignore if profile doesn't exist
+    }
+  }
+
+  async deleteById(id: string): Promise<void> {
+    try {
+      await this.prisma.candidateProfile.delete({
+        where: { id },
+      });
+    } catch (error: any) {
+      if (error.code === "P2025") return; // Not found
+      throw error;
     }
   }
 }

@@ -21,16 +21,17 @@ const EmployerDashboardPage = () => {
         params: { range: timeRange },
         responseType: 'blob',
       });
-      
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
-      link.href = url;      const contentDisposition = response.headers['content-disposition'];
+      link.href = url;
+      const contentDisposition = response.headers['content-disposition'];
       let filename = `bao-cao-tuyen-dung-${Date.now()}.csv`;
       if (contentDisposition) {
         const match = contentDisposition.match(/filename="?([^"]+)"?/);
         if (match && match[1]) filename = match[1];
       }
-      
+
       link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
@@ -44,8 +45,9 @@ const EmployerDashboardPage = () => {
   };
 
   useEffect(() => {
-    if (isLoading) return;    const cards = Array.from(document.querySelectorAll(".interactive-card"));
-    
+    if (isLoading) return;
+    const cards = Array.from(document.querySelectorAll(".interactive-card"));
+
     const mouseMove = (e: Event) => {
       const mouseEvent = e as MouseEvent;
       const el = mouseEvent.currentTarget as HTMLElement;
@@ -80,14 +82,15 @@ const EmployerDashboardPage = () => {
         card.removeEventListener("mouseleave", up);
       });
     };
-  }, [isLoading]);  const overview = data?.overview || { totalApplications: 0, totalJobs: 0, activeJobs: 0, totalViews: 0 };
+  }, [isLoading]);
+  const overview = data?.overview || { totalApplications: 0, totalJobs: 0, activeJobs: 0, totalViews: 0 };
   const pipeline = data?.pipeline || [];
-  
-  const getCount = (statuses: string[]) => 
+
+  const getCount = (statuses: string[]) =>
     pipeline.filter(p => statuses.includes(p.status)).reduce((sum, p) => sum + p.count, 0);
 
   const totalApps = overview.totalApplications;
-  
+
   const funnelSteps = [
     { label: "Ứng tuyển", count: totalApps },
     { label: "Sơ loại hồ sơ", count: getCount(['shortlisted', 'interviewed', 'offered', 'accepted']) },
@@ -97,14 +100,14 @@ const EmployerDashboardPage = () => {
   ];
 
   const maxCount = Math.max(funnelSteps[0].count, 1); // Avoid division by zero
-  
+
   const mappedFunnel = funnelSteps.map((step, idx) => {
     let width = Math.max((step.count / maxCount) * 100, 35); // Tăng min-width lên 35%
-    let rate = idx === 0 ? null : (funnelSteps[idx-1].count > 0 ? Math.round((step.count / funnelSteps[idx-1].count) * 100) + "%" : "0%");
-    
+    let rate = idx === 0 ? null : (funnelSteps[idx - 1].count > 0 ? Math.round((step.count / funnelSteps[idx - 1].count) * 100) + "%" : "0%");
+
     // Fallback backgrounds
     const bgs = ["bg-[#00307c]", "bg-blue-700", "bg-blue-600", "bg-blue-500", "bg-emerald-500"];
-    
+
     return {
       label: step.label,
       count: step.count.toString(),
@@ -115,11 +118,11 @@ const EmployerDashboardPage = () => {
     };
   });
 
-  const screeningRate = getCount(['pending', 'reviewing']) > 0 
-    ? ((getCount(['shortlisted', 'interviewed', 'offered', 'accepted']) / totalApps) * 100).toFixed(1) 
+  const screeningRate = getCount(['pending', 'reviewing']) > 0
+    ? ((getCount(['shortlisted', 'interviewed', 'offered', 'accepted']) / totalApps) * 100).toFixed(1)
     : "0.0";
-  const offerRate = getCount(['interviewed', 'offered', 'accepted']) > 0 
-    ? ((getCount(['offered', 'accepted']) / getCount(['interviewed', 'offered', 'accepted'])) * 100).toFixed(1) 
+  const offerRate = getCount(['interviewed', 'offered', 'accepted']) > 0
+    ? ((getCount(['offered', 'accepted']) / getCount(['interviewed', 'offered', 'accepted'])) * 100).toFixed(1)
     : "0.0";
 
   const recentJobs = data?.recentJobs || [];
@@ -147,7 +150,7 @@ const EmployerDashboardPage = () => {
           </div>
           <div className="flex flex-wrap gap-3 w-full md:w-auto">
             <div className="relative flex-1 md:flex-none">
-              <select 
+              <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
                 className="w-full appearance-none px-3 py-2 pl-9 pr-8 bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-lg text-[#475569] text-[14px] hover:text-[#0F172A] transition-all font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00307c] cursor-pointer"
@@ -159,7 +162,7 @@ const EmployerDashboardPage = () => {
               <span className="material-symbols-outlined text-[18px] absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none">calendar_today</span>
               <span className="material-symbols-outlined text-[18px] absolute right-2 top-1/2 -translate-y-1/2 text-[#64748B] pointer-events-none">expand_more</span>
             </div>
-            <button 
+            <button
               onClick={handleExport}
               disabled={isExporting}
               className="flex-1 md:flex-none px-4 py-2 bg-[#00307c] text-white rounded-lg flex items-center justify-center gap-1.5 text-[14px] hover:bg-[#002568] hover:shadow-[0_4px_12px_rgba(0,48,124,0.3)] transition-all duration-300 font-semibold disabled:opacity-70 disabled:cursor-not-allowed"
@@ -258,7 +261,7 @@ const EmployerDashboardPage = () => {
                 <span className="material-symbols-outlined">more_vert</span>
               </button>
             </div>
-            
+
             <div className="flex-1 flex flex-col gap-3">
               {totalApps === 0 ? (
                 <div className="py-10 text-center text-gray-500 font-medium bg-[#F8FAFC] rounded-2xl border border-dashed border-[#CBD5E1]">
@@ -267,7 +270,7 @@ const EmployerDashboardPage = () => {
               ) : (
                 mappedFunnel.map((step, idx) => (
                   <div key={idx} className="relative flex items-center group/funnel" style={{ marginLeft: step.ml }}>
-                    <div 
+                    <div
                       className={`funnel-step h-[68px] ${step.bg} flex items-center justify-between pl-6 pr-10 text-white shadow-md transition-all duration-300 group-hover/funnel:scale-[1.01] cursor-pointer`}
                       style={{ width: step.width }}
                     >
@@ -308,7 +311,7 @@ const EmployerDashboardPage = () => {
                             return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
                           })}
                         </Pie>
-                        <Tooltip 
+                        <Tooltip
                           contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
                           itemStyle={{ color: '#0F172A', fontWeight: 'bold' }}
                           formatter={(value, name, props) => [`${value} CV (${props.payload.percent}%)`, props.payload.source]}
@@ -332,7 +335,7 @@ const EmployerDashboardPage = () => {
                   </div>
                 </div>
               ) : (
-                 <div className="text-center text-gray-500 text-sm py-4">Chưa có dữ liệu</div>
+                <div className="text-center text-gray-500 text-sm py-4">Chưa có dữ liệu</div>
               )}
             </div>
 
@@ -380,14 +383,14 @@ const EmployerDashboardPage = () => {
                 <AreaChart data={trendData || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00307c" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#00307c" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#00307c" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#00307c" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="month" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
                     itemStyle={{ color: '#0F172A', fontWeight: 'bold' }}
                   />
@@ -408,7 +411,7 @@ const EmployerDashboardPage = () => {
                 Xem tất cả
               </Link>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[900px]">
                 <thead>
@@ -423,11 +426,11 @@ const EmployerDashboardPage = () => {
                 </thead>
                 <tbody className="divide-y divide-[#F1F5F9]">
                   {recentJobs.length === 0 ? (
-                     <tr>
-                       <td colSpan={6} className="px-8 py-10 text-center text-gray-500 font-medium">
-                         Chưa có tin tuyển dụng nào. Hãy tạo tin đăng đầu tiên của bạn!
-                       </td>
-                     </tr>
+                    <tr>
+                      <td colSpan={6} className="px-8 py-10 text-center text-gray-500 font-medium">
+                        Chưa có tin tuyển dụng nào. Hãy tạo tin đăng đầu tiên của bạn!
+                      </td>
+                    </tr>
                   ) : (
                     recentJobs.map((job) => {
                       const jobTypeMap: Record<string, string> = {

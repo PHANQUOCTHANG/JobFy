@@ -11,6 +11,8 @@ router.get(
   savedJobCtrl.getSavedJobs
 );
 
+router.get("/ids", savedJobCtrl.getSavedJobIds);
+
 router.post(
   "/:jobId",
   validationMiddleware(JobIdParamSchema, "params"),

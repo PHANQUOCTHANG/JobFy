@@ -25,6 +25,7 @@ export class JobResponseDto {
   viewCount: number;
   applyCount: number;
   saveCount: number;
+  rejectedReason: string | null;
   createdAt: string;
 
   // Relations
@@ -62,6 +63,7 @@ export class JobResponseDto {
     this.viewCount = job.viewCount;
     this.applyCount = job.applyCount;
     this.saveCount = job.saveCount;
+    this.rejectedReason = job.rejectedReason || null;
     this.createdAt = job.createdAt.toISOString();
 
     if (job.company) this.company = job.company;

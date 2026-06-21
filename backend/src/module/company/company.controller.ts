@@ -33,6 +33,12 @@ export const deleteCompany = asyncHandler(async (req: Request, res: Response) =>
   return res.status(200).json(ApiResponse.success(null, "Đã xóa công ty"));
 });
 
+export const verifyCompany = asyncHandler(async (req: Request, res: Response) => {
+  const { verified } = req.body; // boolean: true = verify, false = unverify
+  const data = await companyService.verifyCompany(req.params.id as string, Boolean(verified));
+  return res.status(200).json(ApiResponse.success(data, verified ? "Đã xác thực công ty" : "Đã hủy xác thực công ty"));
+});
+
 // ================= LOCATION =================
 export const getLocations = asyncHandler(async (req: Request, res: Response) => {
   const data = await companyService.getLocations(req.params.companyId as string);

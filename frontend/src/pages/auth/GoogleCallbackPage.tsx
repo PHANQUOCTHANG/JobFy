@@ -31,7 +31,10 @@ const GoogleCallbackPage = () => {
               user: user as any, // Truyền user object vào đây
             }),
           );
-          toast.success(`Chào mừng ${user.fullName || user.email} trở lại!`);
+          toast.success("Welcome back!", {
+            description: `Logged in successfully as ${user.fullName || user.email
+              }`,
+          });
           navigate("/");
         })
         .catch((err) => {

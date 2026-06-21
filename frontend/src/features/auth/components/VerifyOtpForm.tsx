@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 // Logic Imports
 import authApi from "@/features/auth/api/authApi";
-import { login } from "@/features/auth/types/authSlice";
+import { login } from "@/features/auth/slice/authSlice";
 import type { ApiErrorResponse } from "@/types";
 import { useAppDispatch } from "@/store/hooks";
 
@@ -212,7 +212,7 @@ const VerifyOtpForm: React.FC<VerifyOtpFormProps> = ({ email }) => {
     setIsLoading(true);
 
     try {
-      const res = await authApi.verifyEmail({ email, otp: codeToVerify });
+      const res = await authApi.verifyAccount(email, codeToVerify);
 
       // Nếu có token -> Login luôn
       if (res.data.accessToken) {
@@ -262,7 +262,7 @@ const VerifyOtpForm: React.FC<VerifyOtpFormProps> = ({ email }) => {
     setOtp(""); // Xóa ô nhập liệu cũ tránh nhầm lẫn
 
     try {
-      await authApi.resendOtp(email);
+      await authApi.resendVerifyAccountOtp(email);
       toast.success("Đã gửi mã mới vào email!");
       resetTimer(); // Chỉ reset đồng hồ khi gửi thành công
     } catch (error: unknown) {

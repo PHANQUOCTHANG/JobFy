@@ -2,7 +2,7 @@ import { Job } from '../types';
 
 export const mockJobs: Job[] = [
   {
-    id: 'job-1',
+    id: '550e8400-e29b-41d4-a716-446655440001',
     companyId: 'comp-1',
     title: 'Senior Frontend Developer (React/Vue)',
     slug: 'senior-frontend-developer-react-vue',
@@ -43,13 +43,13 @@ export const mockJobs: Job[] = [
       updatedAt: new Date().toISOString(),
     },
     jobSkills: [
-      { id: 1, jobId: 'job-1', skillId: 1, isRequired: true, skill: { id: 1, name: 'ReactJS' } },
-      { id: 2, jobId: 'job-1', skillId: 2, isRequired: true, skill: { id: 2, name: 'TypeScript' } },
-      { id: 3, jobId: 'job-1', skillId: 3, isRequired: false, skill: { id: 3, name: 'VueJS' } }
+      { id: 1, jobId: '550e8400-e29b-41d4-a716-446655440001', skillId: 1, isRequired: true, skill: { id: 1, name: 'ReactJS' } },
+      { id: 2, jobId: '550e8400-e29b-41d4-a716-446655440001', skillId: 2, isRequired: true, skill: { id: 2, name: 'TypeScript' } },
+      { id: 3, jobId: '550e8400-e29b-41d4-a716-446655440001', skillId: 3, isRequired: false, skill: { id: 3, name: 'VueJS' } }
     ]
   },
   {
-    id: 'job-2',
+    id: '550e8400-e29b-41d4-a716-446655440002',
     companyId: 'comp-2',
     title: 'Middle Backend Engineer (NodeJS/Go)',
     slug: 'middle-backend-engineer-nodejs-go',
@@ -90,13 +90,13 @@ export const mockJobs: Job[] = [
       updatedAt: new Date().toISOString(),
     },
     jobSkills: [
-      { id: 4, jobId: 'job-2', skillId: 4, isRequired: true, skill: { id: 4, name: 'NodeJS' } },
-      { id: 5, jobId: 'job-2', skillId: 5, isRequired: true, skill: { id: 5, name: 'Golang' } },
-      { id: 6, jobId: 'job-2', skillId: 6, isRequired: false, skill: { id: 6, name: 'Microservices' } }
+      { id: 4, jobId: '550e8400-e29b-41d4-a716-446655440002', skillId: 4, isRequired: true, skill: { id: 4, name: 'NodeJS' } },
+      { id: 5, jobId: '550e8400-e29b-41d4-a716-446655440002', skillId: 5, isRequired: true, skill: { id: 5, name: 'Golang' } },
+      { id: 6, jobId: '550e8400-e29b-41d4-a716-446655440002', skillId: 6, isRequired: false, skill: { id: 6, name: 'Microservices' } }
     ]
   },
   {
-    id: 'job-3',
+    id: '550e8400-e29b-41d4-a716-446655440003',
     companyId: 'comp-3',
     title: 'Senior DevOps Engineer',
     slug: 'senior-devops-engineer',
@@ -137,13 +137,13 @@ export const mockJobs: Job[] = [
       updatedAt: new Date().toISOString(),
     },
     jobSkills: [
-      { id: 7, jobId: 'job-3', skillId: 7, isRequired: true, skill: { id: 7, name: 'AWS' } },
-      { id: 8, jobId: 'job-3', skillId: 8, isRequired: true, skill: { id: 8, name: 'Kubernetes' } },
-      { id: 9, jobId: 'job-3', skillId: 9, isRequired: true, skill: { id: 9, name: 'Docker' } }
+      { id: 7, jobId: '550e8400-e29b-41d4-a716-446655440003', skillId: 7, isRequired: true, skill: { id: 7, name: 'AWS' } },
+      { id: 8, jobId: '550e8400-e29b-41d4-a716-446655440003', skillId: 8, isRequired: true, skill: { id: 8, name: 'Kubernetes' } },
+      { id: 9, jobId: '550e8400-e29b-41d4-a716-446655440003', skillId: 9, isRequired: true, skill: { id: 9, name: 'Docker' } }
     ]
   },
   {
-    id: 'job-4',
+    id: '550e8400-e29b-41d4-a716-446655440004',
     companyId: 'comp-4',
     title: 'Fresher / Junior Data Analyst',
     slug: 'fresher-junior-data-analyst',
@@ -184,9 +184,9 @@ export const mockJobs: Job[] = [
       updatedAt: new Date().toISOString(),
     },
     jobSkills: [
-      { id: 10, jobId: 'job-4', skillId: 10, isRequired: true, skill: { id: 10, name: 'SQL' } },
-      { id: 11, jobId: 'job-4', skillId: 11, isRequired: true, skill: { id: 11, name: 'Python' } },
-      { id: 12, jobId: 'job-4', skillId: 12, isRequired: false, skill: { id: 12, name: 'Data Analysis' } }
+      { id: 10, jobId: '550e8400-e29b-41d4-a716-446655440004', skillId: 10, isRequired: true, skill: { id: 10, name: 'SQL' } },
+      { id: 11, jobId: '550e8400-e29b-41d4-a716-446655440004', skillId: 11, isRequired: true, skill: { id: 11, name: 'Python' } },
+      { id: 12, jobId: '550e8400-e29b-41d4-a716-446655440004', skillId: 12, isRequired: false, skill: { id: 12, name: 'Data Analysis' } }
     ]
   }
 ];
