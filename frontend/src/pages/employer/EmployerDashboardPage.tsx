@@ -24,10 +24,7 @@ const EmployerDashboardPage = () => {
       
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
-      link.href = url;
-      
-      // Extract filename from header if possible, else fallback
-      const contentDisposition = response.headers['content-disposition'];
+      link.href = url;      const contentDisposition = response.headers['content-disposition'];
       let filename = `bao-cao-tuyen-dung-${Date.now()}.csv`;
       if (contentDisposition) {
         const match = contentDisposition.match(/filename="?([^"]+)"?/);
@@ -47,10 +44,7 @@ const EmployerDashboardPage = () => {
   };
 
   useEffect(() => {
-    if (isLoading) return;
-    
-    // Advanced micro-interaction for cards
-    const cards = Array.from(document.querySelectorAll(".interactive-card"));
+    if (isLoading) return;    const cards = Array.from(document.querySelectorAll(".interactive-card"));
     
     const mouseMove = (e: Event) => {
       const mouseEvent = e as MouseEvent;
@@ -86,10 +80,7 @@ const EmployerDashboardPage = () => {
         card.removeEventListener("mouseleave", up);
       });
     };
-  }, [isLoading]);
-
-  // Derived calculations from data
-  const overview = data?.overview || { totalApplications: 0, totalJobs: 0, activeJobs: 0, totalViews: 0 };
+  }, [isLoading]);  const overview = data?.overview || { totalApplications: 0, totalJobs: 0, activeJobs: 0, totalViews: 0 };
   const pipeline = data?.pipeline || [];
   
   const getCount = (statuses: string[]) => 

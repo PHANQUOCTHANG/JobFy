@@ -8,10 +8,7 @@ import { ConversionReportModal } from "@/features/employer/components/candidates
 import { RecruitmentHistoryModal } from "@/features/employer/components/candidates/RecruitmentHistoryModal";
 import { useUpdateBulkCandidateStatus } from "@/features/employer/hooks/useCandidates";
 import { toast } from "sonner";
-import api from "@/lib/axios";
-
-// Custom hook for debounce
-function useDebounce<T>(value: T, delay: number): T {
+import api from "@/lib/axios";function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedValue(value), delay);
@@ -160,9 +157,7 @@ const EmployerCandidatePage = () => {
           </div>
 
           <div className="space-y-6">
-            {isLoading ? (
-              // Skeleton Loading
-              Array(3).fill(0).map((_, i) => (
+            {isLoading ? (              Array(3).fill(0).map((_, i) => (
                 <div key={i} className="bg-white rounded-3xl p-6 border border-[#F1F5F9] animate-pulse">
                   <div className="flex gap-4">
                     <div className="w-14 h-14 bg-slate-200 rounded-full"></div>

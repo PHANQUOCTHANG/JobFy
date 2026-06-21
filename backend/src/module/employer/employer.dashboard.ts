@@ -7,7 +7,6 @@ export class EmployerDashboardService {
    * Lấy thống kê tổng quan (StatCards)
    */
   async getOverview(userId: string, startDate?: Date) {
-    // Tìm company của employer
     const company = await this.prisma.company.findFirst({
       where: { ownerId: userId },
       select: { id: true },
@@ -27,15 +26,12 @@ export class EmployerDashboardService {
 
     const [totalApplications, totalJobs, activeJobs, viewsAgg] =
       await Promise.all([
-        // Tổng CV nhận được
         this.prisma.application.count({
           where: { job: { companyId: company.id }, ...appDateFilter },
         }),
-        // Tổng tin đã đăng
         this.prisma.jobs.count({
           where: { companyId: company.id, deletedAt: null, ...jobDateFilter },
         }),
-        // Tin đang tuyển (published)
         this.prisma.jobs.count({
           where: {
             companyId: company.id,
@@ -44,7 +40,6 @@ export class EmployerDashboardService {
             ...jobDateFilter,
           },
         }),
-        // Tổng lượt xem
         this.prisma.jobs.aggregate({
           where: { companyId: company.id, deletedAt: null, ...jobDateFilter },
           _sum: { viewCount: true },

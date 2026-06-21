@@ -50,9 +50,7 @@ export class EmployerCandidateService {
       };
     }
 
-    if (experience && experience.length > 0) {
-      // experience is enum ExperienceLevel
-      whereClause.candidate = {
+    if (experience && experience.length > 0) {      whereClause.candidate = {
         ...whereClause.candidate,
         experienceLevel: { in: experience },
       };
@@ -85,10 +83,7 @@ export class EmployerCandidateService {
           },
         },
       });
-      total = allApps.length;
-      
-      // We will map and sort below
-      applications = allApps;
+      total = allApps.length;      applications = allApps;
     } else {
       [total, applications] = await Promise.all([
         this.prisma.application.count({ where: whereClause }),
@@ -122,10 +117,7 @@ export class EmployerCandidateService {
 
     let mappedData = applications.map(app => {
       // Map data để Frontend dễ dùng
-      const primaryResume = app.candidate.resumes[0];
-
-      // --- BACKEND AI SCORE HEURISTIC ---
-      // Tính điểm AI dựa trên dữ liệu thật ở backend
+      const primaryResume = app.candidate.resumes[0];      // Tính điểm AI dựa trên dữ liệu thật ở backend
       let aiScore = 65;
       const skillsCount = primaryResume?.skills?.length || 0;
       aiScore += Math.min(skillsCount * 2, 15);
@@ -137,10 +129,7 @@ export class EmployerCandidateService {
       
       const hash = app.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
       aiScore += (hash % 10);
-      aiScore = Math.min(aiScore, 98);
-      // ------------------------------------
-
-      return {
+      aiScore = Math.min(aiScore, 98);      return {
         id: app.id,
         status: app.status,
         appliedAt: app.appliedAt,
@@ -373,16 +362,10 @@ export class EmployerCandidateService {
       }
     });
 
-    if (!application) throw new Error("Không tìm thấy hồ sơ ứng tuyển.");
-
-    // Update
-    const updated = await this.prisma.application.update({
+    if (!application) throw new Error("Không tìm thấy hồ sơ ứng tuyển.");    const updated = await this.prisma.application.update({
       where: { id: applicationId },
       data: { status, reviewedBy: userId, reviewedAt: new Date() },
-    });
-
-    // Fire-and-forget emails
-    const candidateEmail = application.candidate.user?.email;
+    });    const candidateEmail = application.candidate.user?.email;
     const candidateName = application.candidate.fullName;
     const jobTitle = application.job.title;
     const companyName = company.name;
@@ -412,10 +395,7 @@ export class EmployerCandidateService {
       where: { ownerId: userId },
       select: { id: true, name: true },
     });
-    if (!company) throw new Error("Không có quyền thực hiện.");
-
-    // Lọc ra các hồ sơ thực sự thuộc về công ty này
-    const applications = await this.prisma.application.findMany({
+    if (!company) throw new Error("Không có quyền thực hiện.");    const applications = await this.prisma.application.findMany({
       where: { 
         id: { in: applicationIds },
         job: { companyId: company.id } 
@@ -430,16 +410,10 @@ export class EmployerCandidateService {
 
     if (applications.length === 0) throw new Error("Không tìm thấy hồ sơ ứng tuyển hợp lệ.");
 
-    const validIds = applications.map(app => app.id);
-
-    // Update DB hàng loạt
-    const result = await this.prisma.application.updateMany({
+    const validIds = applications.map(app => app.id);    const result = await this.prisma.application.updateMany({
       where: { id: { in: validIds } },
       data: { status, reviewedBy: userId, reviewedAt: new Date() },
-    });
-
-    // Fire-and-forget emails
-    for (const app of applications) {
+    });    for (const app of applications) {
       const candidateEmail = app.candidate.user?.email;
       const candidateName = app.candidate.fullName;
       const jobTitle = app.job.title;

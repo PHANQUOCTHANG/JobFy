@@ -6,18 +6,10 @@
     "rootDir": "./src",
     "outDir": "./dist",
 
-    // --- Cấu hình Alias bắt đầu từ đây ---
     "baseUrl": "./src",
     "paths": {
-      // Định nghĩa alias @. Nó trỏ đến thư mục gốc của baseUrl, tức là ./src/
       "@/*": ["*"]
-
-      // Ví dụ cụ thể nếu bạn muốn rõ ràng hơn:
-      // "@utils/*": ["utils/*"],
-      // "@services/*": ["services/*"],
-      // "@interface/*": ["interface/*"]
     },
-    // --- Cấu hình Alias kết thúc ---
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
