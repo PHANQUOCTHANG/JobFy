@@ -8,6 +8,7 @@ export interface CandidateQuery {
   keyword?: string;
   experience?: string[];
   jobId?: string;
+  sort?: string;
 }
 
 export interface CandidateResponse {
@@ -25,6 +26,7 @@ export interface CandidateItem {
   status: string;
   appliedAt: string;
   jobTitle: string;
+  aiScore?: number;
   candidate: {
     id: string;
     fullName: string;

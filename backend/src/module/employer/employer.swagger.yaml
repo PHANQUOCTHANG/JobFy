@@ -412,6 +412,176 @@ paths:
           description: Tạo bản sao thành công (trạng thái Draft).
 
   # ==========================================
+  # SUB-MODULE: CANDIDATE MANAGEMENT
+  # ==========================================
+  /api/v1/employer/candidates:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lấy danh sách hồ sơ ứng viên ứng tuyển
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: keyword
+          schema: { type: string }
+        - in: query
+          name: jobId
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Danh sách ứng viên.
+
+  /api/v1/employer/candidates/jobs-dropdown:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lấy danh sách tin tuyển dụng cho dropdown lọc
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Danh sách tin.
+
+  /api/v1/employer/candidates/export:
+    get:
+      tags: [Employer - Candidates]
+      summary: Xuất danh sách ứng viên ra file CSV
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: keyword
+          schema: { type: string }
+        - in: query
+          name: jobId
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: File CSV dữ liệu ứng viên.
+
+  /api/v1/employer/candidates/bulk-status:
+    patch:
+      tags: [Employer - Candidates]
+      summary: Cập nhật trạng thái hàng loạt ứng viên
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [applicationIds, status]
+              properties:
+                applicationIds:
+                  type: array
+                  items: { type: string, format: uuid }
+                status:
+                  type: string
+      responses:
+        200:
+          description: Cập nhật thành công.
+
+  /api/v1/employer/candidates/conversion-report:
+    get:
+      tags: [Employer - Candidates]
+      summary: Báo cáo tỷ lệ chuyển đổi tuyển dụng
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Báo cáo chuyển đổi.
+
+  /api/v1/employer/candidates/recruitment-history:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lịch sử hoạt động tuyển dụng
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Lịch sử hoạt động.
+
+  /api/v1/employer/candidates/ai-insights:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lấy gợi ý / phân tích AI cho danh sách ứng viên
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Gợi ý của AI.
+
+  /api/v1/employer/candidates/{id}/detail:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lấy chi tiết hồ sơ ứng tuyển
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Chi tiết hồ sơ.
+
+  /api/v1/employer/candidates/{id}/ai-questions:
+    get:
+      tags: [Employer - Candidates]
+      summary: Gợi ý câu hỏi phỏng vấn tự động từ AI cho ứng viên
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Danh sách câu hỏi gợi ý.
+
+  /api/v1/employer/candidates/{id}/ai-fit:
+    get:
+      tags: [Employer - Candidates]
+      summary: Đánh giá độ phù hợp của ứng viên với công việc bằng AI
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Phân tích độ phù hợp.
+
+  /api/v1/employer/candidates/{id}/status:
+    patch:
+      tags: [Employer - Candidates]
+      summary: Cập nhật trạng thái của một hồ sơ ứng viên
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string }
+      responses:
+        200:
+          description: Trạng thái được cập nhật thành công.
+
+  # ==========================================
   # SUB-MODULE: INTERVIEW SCHEDULING
   # ==========================================
   /api/v1/employer/interviews:

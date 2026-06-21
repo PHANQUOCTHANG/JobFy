@@ -52,10 +52,7 @@ export class SkillService implements ISkillService {
       ...(dto.categoryId && { category: { connect: { id: dto.categoryId } } }),
       name: dto.name,
       slug,
-      description: dto.description,
       isVerified: dto.isVerified ?? false,
-      isActive: dto.isActive ?? true,
-      sortOrder: dto.sortOrder ?? 0,
     });
 
     await deleteCacheByPattern(`${this.CACHE_KEY}:list:*`);

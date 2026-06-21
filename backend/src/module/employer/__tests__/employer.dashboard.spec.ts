@@ -84,7 +84,7 @@ describe("EmployerDashboardService", () => {
       expect(mockPrisma.application.count).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            createdAt: { gte: startDate },
+            appliedAt: { gte: startDate },
           })
         })
       );

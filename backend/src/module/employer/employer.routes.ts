@@ -59,6 +59,7 @@ router.use(requireAuth, requireRole("employer"));
 
 router.get("/dashboard/export", controller.exportDashboard);
 router.get("/dashboard", controller.getDashboard);
+router.get("/dashboard/ai-advice", controller.getDashboardAIAdvice);
 
 // Analytics
 router.get("/analytics/trends", analyticsController.getApplicationTrends);
@@ -86,6 +87,8 @@ router.get("/candidates/history", candidateController.getRecruitmentHistory);
 router.get("/candidates/conversion-report", candidateController.getConversionReport);
 router.patch("/candidates/bulk-status", candidateController.bulkUpdateStatus);
 router.get("/candidates/:id/detail", candidateController.getCandidateDetail);
+router.get("/candidates/:id/ai-questions", candidateController.getAIQuestions);
+router.get("/candidates/:id/ai-fit", candidateController.getAIFitAnalysis);
 router.patch("/candidates/:id/status", candidateController.updateStatus);
 
 // Application Notes

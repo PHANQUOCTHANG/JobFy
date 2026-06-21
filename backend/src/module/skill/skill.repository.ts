@@ -26,7 +26,6 @@ export class SkillRepository implements ISkillRepository {
     const limit = Math.min(query.limit ?? 10, 100);
 
     const where: Prisma.SkillWhereInput = {
-      ...(query.isActive !== undefined && { isActive: String(query.isActive) === "true" }),
       ...(query.isVerified !== undefined && { isVerified: String(query.isVerified) === "true" }),
       ...(query.categoryId !== undefined && { categoryId: Number(query.categoryId) }),
       ...(query.search && {
@@ -44,7 +43,7 @@ export class SkillRepository implements ISkillRepository {
         take: limit,
         orderBy: [
           { usageCount: "desc" },
-          query.sort === "sortOrder" ? { sortOrder: "asc" } : { createdAt: "desc" }
+          { createdAt: "desc" }
         ],
       }),
       this.prisma.skill.count({ where }),
@@ -88,9 +87,8 @@ export class SkillRepository implements ISkillRepository {
 
   // Xóa mềm kỹ năng
   async softDelete(id: number): Promise<void> {
-    await this.prisma.skill.update({
+    await this.prisma.skill.delete({
       where: { id },
-      data: { isActive: false },
     });
   }
 }
