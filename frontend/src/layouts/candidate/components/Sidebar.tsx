@@ -48,11 +48,6 @@ const sidebarGroups = [
     title: "Việc làm của tôi",
     items: [
       {
-        label: "Đã ứng tuyển",
-        path: `${CANDIDATE_PATHS.DASHBOARD}/${CANDIDATE_PATHS.MY_APPLICATIONS}`,
-        icon: Send,
-      },
-      {
         label: "Việc làm đã lưu",
         path: `${CANDIDATE_PATHS.DASHBOARD}/${CANDIDATE_PATHS.SAVED_JOBS}`,
         icon: Heart,

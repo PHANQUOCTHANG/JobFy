@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Mail, Disc, ChevronLeft, AlertCircle, Briefcase, KeyRound, Lock, CheckCircle2 } from "lucide-react";
+import { Mail, Disc, ChevronLeft, AlertCircle, Briefcase, KeyRound, Lock, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -36,32 +36,55 @@ const Button = ({ children, className, isLoading, variant = "primary", ...props 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const InputField = React.forwardRef<HTMLInputElement, any>(
-  ({ icon: Icon, className, error, ...props }, ref) => (
-    <div className="relative group w-full">
-      <div className={cn(
-        "absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-300",
-        error ? "text-red-500" : "text-[#94A3B8] group-focus-within:text-[#4F46E5]"
-      )}>
-        <Icon size={18} />
-      </div>
-      <input
-        ref={ref}
-        className={cn(
-          "w-full h-13 bg-white hover:bg-gray-50 focus:bg-white rounded-xl border pl-11 pr-4 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-300",
-          error ? "border-red-500 focus:border-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.1)]" 
-                : "border-[#E2E8F0] focus:border-[#4F46E5] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.1)]",
-          className
-        )}
-        style={{ height: "52px" }}
-        {...props}
-      />
-      {error && (
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
-          <AlertCircle size={16} />
+  ({ icon: Icon, className, error, type, ...props }, ref) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const isPassword = type === "password";
+    const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
+    return (
+      <div className="relative group w-full">
+        <div className={cn(
+          "absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-300",
+          error ? "text-red-500" : "text-[#94A3B8] group-focus-within:text-[#4F46E5]"
+        )}>
+          <Icon size={18} />
         </div>
-      )}
-    </div>
-  )
+        <input
+          ref={ref}
+          type={inputType}
+          className={cn(
+            "w-full h-13 bg-white hover:bg-gray-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-300",
+            error ? "border-red-500 focus:border-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.1)]" 
+                  : "border-[#E2E8F0] focus:border-[#4F46E5] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.1)]",
+            isPassword ? (error ? "pr-[4.5rem]" : "pr-12") : (error ? "pr-12" : "pr-4"),
+            className
+          )}
+          style={{ height: "52px" }}
+          {...props}
+        />
+        {isPassword ? (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            {error && (
+              <div className="text-red-500">
+                <AlertCircle size={16} />
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-[#94A3B8] hover:text-[#4F46E5] transition-colors focus:outline-none flex items-center justify-center"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+        ) : error && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
+            <AlertCircle size={16} />
+          </div>
+        )}
+      </div>
+    );
+  }
 );
 InputField.displayName = "InputField";
 

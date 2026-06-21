@@ -57,6 +57,14 @@ export class ResumeService {
     return response;
   }
 
+  async findByCandidate(userId: string): Promise<ResumeResponseDto[]> {
+    const profile = await this.candidateProfileRepo.findByUserId(userId);
+    if (!profile) return [];
+
+    const result = await this.resumeRepo.findAll({ candidateId: profile.id, page: 1, limit: 100 });
+    return ResumeResponseDto.fromList(result.data);
+  }
+
   async findById(id: string): Promise<ResumeResponseDto> {
     const cacheKey = `${this.CACHE_KEY}:id:${id}`;
     const cached = await getCache<ResumeResponseDto>(cacheKey);

@@ -79,6 +79,7 @@ export interface JobFilterParams {
   categorySlug?: string;
   industryId?: number;
   provinceId?: number;
+  districtIds?: string; // Comma-separated string of district IDs (e.g., "1,2,3")
   jobType?: string;
   experienceLevel?: string;
   salaryMin?: number;

@@ -47,6 +47,7 @@ export interface CvData {
     avatarUrl?: string;
     website?: string;
     linkedin?: string;
+    settings?: any;
   };
   experiences: Experience[];
   educations: Education[];

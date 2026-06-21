@@ -7,7 +7,7 @@ import { toReportListResponse, toReportResponse } from "./report.response";
 const reportService = new ReportService();
 
 export const createReport = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const report = await reportService.createReport({
@@ -38,7 +38,7 @@ export const getReports = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const updateReportStatus = catchAsync(async (req: Request, res: Response) => {
-  const adminId = req.user?.id;
+  const adminId = req.user?.userId;
   if (!adminId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;

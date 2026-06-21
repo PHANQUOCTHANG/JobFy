@@ -86,8 +86,9 @@ export const TopCompaniesSection: React.FC = () => {
   } as any);
 
   const companies = React.useMemo(() => {
-    if (!apiCompanies || apiCompanies.length === 0) return FALLBACK_COMPANIES;
-    return apiCompanies.slice(0, 4).map(c => ({
+    const companiesList = apiCompanies?.data || [];
+    if (companiesList.length === 0) return FALLBACK_COMPANIES;
+    return companiesList.slice(0, 4).map(c => ({
       id: c.id,
       slug: c.slug,
       name: c.name,

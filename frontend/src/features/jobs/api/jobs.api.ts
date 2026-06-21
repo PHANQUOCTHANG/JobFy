@@ -29,6 +29,10 @@ export const getJobs = async (
     if (apiParams.provinceId) {
       filteredJobs = filteredJobs.filter(job => job.provinceId === apiParams.provinceId);
     }
+    if (apiParams.districtIds) {
+      const selectedDistrictIds = apiParams.districtIds.split(',').map(Number);
+      filteredJobs = filteredJobs.filter(job => job.districtId && selectedDistrictIds.includes(job.districtId));
+    }
     if (apiParams.salaryMin !== undefined) {
       filteredJobs = filteredJobs.filter(job => job.salaryMin != null && job.salaryMin >= apiParams.salaryMin!);
     }
@@ -217,5 +221,72 @@ export const getIndustries = async (): Promise<{ id: number; name: string; slug:
       { id: 3, name: "Bất động sản", slug: "real-estate" },
       { id: 4, name: "Giáo dục", slug: "education" },
     ];
+  }
+};
+
+export const getDistricts = async (provinceId: number): Promise<{ id: number; provinceId: number; name: string }[]> => {
+  try {
+    const response = await api.get(`/locations/provinces/${provinceId}/districts`);
+    const data = response.data?.data || response.data;
+    if (Array.isArray(data) && data.length > 0) return data;
+    throw new Error("Empty response");
+  } catch {
+    const mockDistricts: Record<number, { id: number; provinceId: number; name: string }[]> = {
+      1: [ // Hà Nội
+        { id: 101, provinceId: 1, name: "Quận Ba Đình" },
+        { id: 102, provinceId: 1, name: "Quận Hoàn Kiếm" },
+        { id: 103, provinceId: 1, name: "Quận Tây Hồ" },
+        { id: 104, provinceId: 1, name: "Quận Long Biên" },
+        { id: 105, provinceId: 1, name: "Quận Cầu Giấy" },
+        { id: 106, provinceId: 1, name: "Quận Đống Đa" },
+        { id: 107, provinceId: 1, name: "Quận Hai Bà Trưng" },
+        { id: 108, provinceId: 1, name: "Quận Hoàng Mai" },
+        { id: 109, provinceId: 1, name: "Quận Thanh Xuân" },
+        { id: 110, provinceId: 1, name: "Quận Nam Từ Liêm" },
+      ],
+      2: [ // Hồ Chí Minh
+        { id: 201, provinceId: 2, name: "Quận 1" },
+        { id: 202, provinceId: 2, name: "Quận 3" },
+        { id: 203, provinceId: 2, name: "Quận 4" },
+        { id: 204, provinceId: 2, name: "Quận 5" },
+        { id: 205, provinceId: 2, name: "Quận 6" },
+        { id: 206, provinceId: 2, name: "Quận 7" },
+        { id: 207, provinceId: 2, name: "Quận 8" },
+        { id: 208, provinceId: 2, name: "Quận 10" },
+        { id: 209, provinceId: 2, name: "Quận 11" },
+        { id: 210, provinceId: 2, name: "Quận Tân Bình" },
+      ],
+      33: [ // Kiên Giang
+        { id: 3301, provinceId: 33, name: "Thành phố Rạch Giá" },
+        { id: 3302, provinceId: 33, name: "Thành phố Hà Tiên" },
+        { id: 3303, provinceId: 33, name: "Thành phố Phú Quốc" },
+        { id: 3304, provinceId: 33, name: "Huyện Kiên Lương" },
+        { id: 3305, provinceId: 33, name: "Huyện Hòn Đất" },
+        { id: 3306, provinceId: 33, name: "Huyện Tân Hiệp" },
+        { id: 3307, provinceId: 33, name: "Huyện Châu Thành" },
+        { id: 3308, provinceId: 33, name: "Huyện Giồng Riềng" },
+        { id: 3309, provinceId: 33, name: "Huyện Gò Quao" },
+        { id: 3310, provinceId: 33, name: "Huyện An Biên" },
+      ],
+      3: [ // Đà Nẵng
+        { id: 301, provinceId: 3, name: "Quận Hải Châu" },
+        { id: 302, provinceId: 3, name: "Quận Thanh Khê" },
+        { id: 303, provinceId: 3, name: "Quận Sơn Trà" },
+        { id: 304, provinceId: 3, name: "Quận Ngũ Hành Sơn" },
+        { id: 305, provinceId: 3, name: "Quận Liên Chiểu" },
+        { id: 306, provinceId: 3, name: "Quận Cẩm Lệ" },
+        { id: 307, provinceId: 3, name: "Huyện Hòa Vang" },
+      ]
+    };
+    
+    // Default mock districts for other provinces
+    const genericDistricts = [
+      { id: provinceId * 100 + 1, provinceId, name: "Huyện 1" },
+      { id: provinceId * 100 + 2, provinceId, name: "Huyện 2" },
+      { id: provinceId * 100 + 3, provinceId, name: "Huyện 3" },
+      { id: provinceId * 100 + 4, provinceId, name: "Huyện 4" },
+    ];
+    
+    return mockDistricts[provinceId] || genericDistricts;
   }
 };

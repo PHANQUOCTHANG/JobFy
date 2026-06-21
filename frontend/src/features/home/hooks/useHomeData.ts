@@ -211,7 +211,8 @@ export function useHomeData() {
 
   const LOGO_COLORS = ["#FF6B2C", "#0066FF", "#1A94FF", "#00B14F", "#E31837", "#F05A28", "#A50064", "#0F146D"];
 
-  const mappedCompanies = (companies || []).map((comp, idx) => {
+  const companiesList = companies?.data || [];
+  const mappedCompanies = companiesList.map((comp, idx) => {
     // Generate an abbreviation from the name (e.g. FPT Software -> FPT, VNG Corporation -> VNG)
     const words = comp.name.split(' ');
     const logoText = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : comp.name.substring(0, 3).toUpperCase();

@@ -7,7 +7,7 @@ import { toJobAlertListResponse, toJobAlertResponse } from "./job-alert.response
 const alertService = new JobAlertService();
 
 export const getAlerts = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { page, limit } = req.query;
@@ -28,7 +28,7 @@ export const getAlerts = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const createAlert = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const alert = await alertService.createAlert(userId, req.body);
@@ -36,7 +36,7 @@ export const createAlert = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const updateAlert = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -45,7 +45,7 @@ export const updateAlert = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const deleteAlert = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -54,7 +54,7 @@ export const deleteAlert = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const toggleAlert = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;

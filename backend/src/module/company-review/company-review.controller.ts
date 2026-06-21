@@ -27,7 +27,7 @@ export const getReviews = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const createReview = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const review = await reviewService.createReview({
@@ -38,7 +38,7 @@ export const createReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const updateReview = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -47,7 +47,7 @@ export const updateReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const deleteReview = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   const role = req.user?.role;
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
 

@@ -100,14 +100,19 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
 
   return (
     <div className="min-h-screen bg-[#f0f0f0] pb-10">
-      <div className="bg-[#4F46E5] pt-10 pb-6 px-4">
-        <div className="max-w-[1140px] mx-auto text-center">
-          <h1 className="text-[28px] md:text-[32px] font-bold text-white mb-2">
+      <div className="bg-gradient-to-r from-[#e3f2fd] via-[#e3f2fd]/80 to-[#f6f7fa] pt-10 pb-6 px-4 relative z-40">
+        <div className="max-w-[1140px] mx-auto text-center relative z-40">
+          <h1 className="text-[28px] md:text-[32px] font-bold text-[#1e40af] mb-3 tracking-tight">
             Tìm việc làm nhanh 24h, việc làm mới nhất trên toàn quốc
           </h1>
-          <p className="text-white/90 text-[15px] mb-8">
+          <p className="text-slate-700 text-[16px] font-medium">
             Tiếp cận 60.000+ tin tuyển dụng việc làm mỗi ngày từ hàng nghìn doanh nghiệp uy tín tại Việt Nam
           </p>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-[#e3f2fd] via-[#e3f2fd]/80 to-[#f6f7fa] py-3 px-4 sticky top-0 z-[60] shadow-sm border-b border-blue-100 transition-all duration-300">
+        <div className="max-w-[1140px] mx-auto">
           <JobFilters onSearch={onSearch} initialProvinceId={provinceId} />
         </div>
       </div>

@@ -33,6 +33,15 @@ router
     resumeCtrl.createResume
   );
 
+// ================= My Resumes (current user) - MUST be before /:id =================
+router
+  .route("/my")
+  .get(
+    requireAuth,
+    requireRole("candidate"),
+    resumeCtrl.getMyResumes
+  );
+
 // ================= Resume Upload =================
 router
   .route("/upload")

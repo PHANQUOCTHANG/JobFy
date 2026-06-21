@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { useJobCategories, useProvinces } from "../hooks/useJobs";
+import { useJobCategories, useProvinces, useDistricts } from "../hooks/useJobs";
 import { JobFilterParams } from "../types";
 import { Search, MapPin, ChevronDown } from "lucide-react";
 import { JobSearchSuggestion } from "./JobSearchSuggestion";
@@ -9,6 +9,7 @@ interface JobFiltersProps {
   onSearch: (filters: Partial<JobFilterParams>) => void;
   initialKeyword?: string;
   initialProvinceId?: number;
+  initialDistrictIds?: string;
   initialCategorySlug?: string;
 }
 
@@ -16,6 +17,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   onSearch,
   initialKeyword = "",
   initialProvinceId,
+  initialDistrictIds,
   initialCategorySlug,
 }) => {
   const [keyword, setKeyword] = React.useState(initialKeyword ?? "");
@@ -25,6 +27,16 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   const [categorySlug, setCategorySlug] = React.useState<string>(
     initialCategorySlug ? String(initialCategorySlug) : "all",
   );
+  
+  // District & 2-column layout state
+  const [activeProvinceTab, setActiveProvinceTab] = useState<string>(
+    initialProvinceId ? String(initialProvinceId) : "all",
+  );
+  const [districtIds, setDistrictIds] = useState<number[]>(
+    initialDistrictIds ? initialDistrictIds.split(",").map(Number) : []
+  );
+  const [provinceSearch, setProvinceSearch] = useState("");
+
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -37,7 +49,16 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
 
   useEffect(() => {
     setProvinceId(initialProvinceId ? String(initialProvinceId) : "all");
+    setActiveProvinceTab(initialProvinceId ? String(initialProvinceId) : "all");
   }, [initialProvinceId]);
+
+  useEffect(() => {
+    if (initialDistrictIds) {
+      setDistrictIds(initialDistrictIds.split(",").map(Number));
+    } else {
+      setDistrictIds([]);
+    }
+  }, [initialDistrictIds]);
 
   useEffect(() => {
     setCategorySlug(initialCategorySlug ? String(initialCategorySlug) : "all");
@@ -49,6 +70,9 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
 
   const { data: categories, isLoading: isLoadingCategories } = useJobCategories();
   const { data: provinces, isLoading: isLoadingProvinces } = useProvinces();
+  const { data: districts, isLoading: isLoadingDistricts } = useDistricts(
+    activeProvinceTab !== "all" ? Number(activeProvinceTab) : undefined
+  );
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -73,6 +97,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
     onSearch({
       keyword: keyword || undefined,
       provinceId: provinceId !== "all" ? Number(provinceId) : undefined,
+      districtIds: districtIds.length > 0 ? districtIds.join(",") : undefined,
       categorySlug: categorySlug !== "all" ? categorySlug : undefined,
     });
   };
@@ -125,7 +150,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
           </button>
 
           {showCategoryDropdown && (
-            <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-[#e8e8e8] rounded-xl shadow-xl z-[200] max-h-72 overflow-y-auto scrollbar-hide">
+            <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-[#e8e8e8] rounded-xl shadow-xl z-[1000] max-h-72 overflow-y-auto scrollbar-hide">
               <div
                 className="px-4 py-2.5 text-[13px] text-[#6f7882] hover:bg-[#f5f5f5] cursor-pointer flex justify-start text-left w-full"
                 onClick={() => {
@@ -194,45 +219,134 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
           </button>
 
           {showProvinceDropdown && (
-            <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-[#e8e8e8] rounded-xl shadow-xl z-[200] max-h-72 overflow-y-auto scrollbar-hide">
-              <div
-                className="px-4 py-2.5 text-[13px] text-[#6f7882] hover:bg-[#f5f5f5] cursor-pointer flex justify-start text-left w-full"
-                onClick={() => {
-                  setProvinceId("all");
-                  setShowProvinceDropdown(false);
-                  // Auto-trigger search clearing province
-                  onSearch({
-                    keyword: keyword || undefined,
-                    provinceId: undefined,
-                    categorySlug: categorySlug !== "all" ? categorySlug : undefined,
-                  });
-                }}
-              >
-                Tất cả địa điểm
-              </div>
-              {(provinces || []).map((prov) => (
-                <div
-                  key={prov.id}
-                  className={`px-4 py-2.5 text-[13px] cursor-pointer hover:bg-[#f5f5f5] transition-colors flex justify-start text-left w-full ${
-                    provinceId === String(prov.id)
-                      ? "text-[#4F46E5] font-semibold bg-blue-50"
-                      : "text-[#212f3f]"
-                  }`}
-                  onClick={() => {
-                    const newProvinceId = String(prov.id);
-                    setProvinceId(newProvinceId);
-                    setShowProvinceDropdown(false);
-                    // Auto-trigger search when province selected
-                    onSearch({
-                      keyword: keyword || undefined,
-                      provinceId: Number(newProvinceId),
-                      categorySlug: categorySlug !== "all" ? categorySlug : undefined,
-                    });
-                  }}
-                >
-                  {prov.name}
+            <div className="absolute top-full right-0 mt-2 w-[550px] bg-white border border-[#e8e8e8] rounded-xl shadow-xl z-[1000] flex h-[350px]">
+              {/* Cột trái: Tỉnh/Thành */}
+              <div className="w-1/2 border-r border-[#e8e8e8] flex flex-col bg-white rounded-l-xl">
+                <div className="p-3 border-b border-[#e8e8e8]">
+                  <input
+                    type="text"
+                    placeholder="Tìm Tỉnh/Thành"
+                    className="w-full h-9 px-3 text-[13px] border border-[#e8e8e8] rounded-md outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                    value={provinceSearch}
+                    onChange={(e) => setProvinceSearch(e.target.value)}
+                  />
                 </div>
-              ))}
+                <div className="flex-1 overflow-y-auto scrollbar-hide py-2">
+                  <div className="px-4 py-2">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <div className="relative flex items-center justify-center w-5 h-5">
+                        <input
+                          type="radio"
+                          name="province"
+                          className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                          checked={activeProvinceTab === "all"}
+                          onChange={() => setActiveProvinceTab("all")}
+                        />
+                      </div>
+                      <span className={`text-[14px] ${activeProvinceTab === "all" ? "text-blue-600 font-semibold" : "text-[#212f3f] group-hover:text-blue-600"}`}>
+                        Tất cả địa điểm
+                      </span>
+                    </label>
+                  </div>
+                  {(provinces || [])
+                    .filter((p) => p.name.toLowerCase().includes(provinceSearch.toLowerCase()))
+                    .map((prov) => (
+                      <div key={prov.id} className="px-4 py-2 hover:bg-[#f8f8f8] transition-colors">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                          <div className="relative flex items-center justify-center w-5 h-5">
+                            <input
+                              type="radio"
+                              name="province"
+                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                              checked={activeProvinceTab === String(prov.id)}
+                              onChange={() => setActiveProvinceTab(String(prov.id))}
+                            />
+                          </div>
+                          <span className={`text-[14px] ${activeProvinceTab === String(prov.id) ? "text-blue-600 font-semibold" : "text-[#212f3f] group-hover:text-blue-600"}`}>
+                            {prov.name}
+                          </span>
+                        </label>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              {/* Cột phải: Quận/Huyện */}
+              <div className="w-1/2 flex flex-col bg-white rounded-r-xl">
+                <div className="p-3 border-b border-[#e8e8e8] flex items-center justify-between">
+                  <span className="font-bold text-[14px] text-[#212f3f]">Quận/Huyện</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProvinceId(activeProvinceTab);
+                      setShowProvinceDropdown(false);
+                      onSearch({
+                        keyword: keyword || undefined,
+                        provinceId: activeProvinceTab !== "all" ? Number(activeProvinceTab) : undefined,
+                        districtIds: districtIds.length > 0 ? districtIds.join(",") : undefined,
+                        categorySlug: categorySlug !== "all" ? categorySlug : undefined,
+                      });
+                    }}
+                    className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-semibold px-4 py-1.5 rounded-full transition-colors"
+                  >
+                    Áp dụng
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto scrollbar-hide py-2">
+                  {activeProvinceTab === "all" ? (
+                    <div className="px-4 py-8 text-center text-[13px] text-gray-500">
+                      Vui lòng chọn Tỉnh/Thành phố để xem danh sách Quận/Huyện
+                    </div>
+                  ) : isLoadingDistricts ? (
+                    <div className="px-4 py-8 text-center text-[13px] text-gray-500">
+                      Đang tải danh sách...
+                    </div>
+                  ) : (
+                    <>
+                      <div className="px-4 py-2">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            checked={districts && districtIds.length === districts.length && districts.length > 0}
+                            onChange={(e) => {
+                              if (e.target.checked && districts) {
+                                setDistrictIds(districts.map(d => d.id));
+                              } else {
+                                setDistrictIds([]);
+                              }
+                            }}
+                          />
+                          <span className="text-[14px] text-[#212f3f] font-medium group-hover:text-blue-600">
+                            Tất cả
+                          </span>
+                        </label>
+                      </div>
+                      {(districts || []).map((dist) => (
+                        <div key={dist.id} className="px-4 py-2 hover:bg-[#f8f8f8] transition-colors">
+                          <label className="flex items-center gap-3 cursor-pointer group">
+                            <input
+                              type="checkbox"
+                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              checked={districtIds.includes(dist.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setDistrictIds(prev => [...prev, dist.id]);
+                                } else {
+                                  setDistrictIds(prev => prev.filter(id => id !== dist.id));
+                                }
+                              }}
+                            />
+                            <span className={`text-[14px] ${districtIds.includes(dist.id) ? "text-[#212f3f] font-semibold" : "text-gray-600"}`}>
+                              {dist.name}
+                            </span>
+                          </label>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -241,7 +355,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
 
         <button
           type="submit"
-          className="px-6 h-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[15px] rounded-lg transition-colors whitespace-nowrap flex-shrink-0"
+          className="px-6 h-full bg-[#1e40af] hover:bg-blue-800 text-white font-bold text-[15px] rounded-lg transition-colors whitespace-nowrap flex-shrink-0"
         >
           Tìm kiếm
         </button>

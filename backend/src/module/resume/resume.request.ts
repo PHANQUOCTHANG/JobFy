@@ -2,16 +2,29 @@ import { z } from "zod";
 import { DegreeType, JobType, SkillLevel } from "@prisma/client";
 
 // ================= Resume Base =================
-export const CreateResumeSchema = z.object({
+const FileUrlSchema = z
+  .string()
+  .max(500)
+  .nullable()
+  .optional()
+  .transform((val) => (val === "" ? null : val))
+  .refine((val) => val == null || /^https?:\/\//.test(val), { message: "fileUrl phải là URL hợp lệ" });
+
+const CreateResumeBaseSchema = z.object({
   title: z.string().trim().min(1, "Tiêu đề CV không được trống").max(255),
   templateId: z.string().max(100).nullable().optional(),
   personalData: z.any().nullable().optional(),
-  fileUrl: z.string().url().max(500).nullable().optional(),
   isPrimary: z.boolean().default(false),
   isPublic: z.boolean().default(true),
 });
 
-export const UpdateResumeSchema = CreateResumeSchema.partial();
+export const CreateResumeSchema = CreateResumeBaseSchema.extend({
+  fileUrl: FileUrlSchema,
+});
+
+export const UpdateResumeSchema = CreateResumeBaseSchema.partial().extend({
+  fileUrl: FileUrlSchema,
+});
 
 // ================= Resume Education =================
 export const CreateResumeEducationSchema = z.object({

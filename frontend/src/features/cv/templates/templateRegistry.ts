@@ -22,6 +22,13 @@ export interface TemplateRendererProps {
   onUpdateArrayField?: <K extends 'experiences' | 'educations' | 'skills' | 'certificates'>(
     field: K, data: CvData[K]
   ) => void;
+  // AI Feature
+  onGenerateSummary?: () => void;
+  isGeneratingSummary?: boolean;
+  onSuggestSkills?: () => void;
+  isSuggestingSkills?: boolean;
+  suggestedSkills?: string[];
+  onAddSuggestedSkill?: (skillName: string) => void;
 }
 
 export type TemplateComponent = React.ForwardRefExoticComponent<TemplateRendererProps & React.RefAttributes<HTMLDivElement>>;

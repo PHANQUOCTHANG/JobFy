@@ -1,21 +1,17 @@
 /**
- * MusicResult — Universal Result State System
+ * AppResult — Universal Result State System
  * ============================================
  * Một bộ component thống nhất cho mọi trạng thái kết quả trong ứng dụng:
  * Empty, Error, Loading, NoPermission, Offline, SearchEmpty
  *
- * Design: Obsidian Luxury / Neural Audio — đồng bộ với SOUNDWAVE CSS system
  * Tất cả màu sắc dùng CSS variables từ global stylesheet.
  */
 
 import React, { memo } from "react";
 import {
-  Music2,
-  DiscAlbum,
-  ListMusic,
-  MicVocal,
-  Radio,
-  Headphones,
+  FileText,
+  Briefcase,
+  Building,
   AlertCircle,
   WifiOff,
   SearchX,
@@ -23,9 +19,9 @@ import {
   RefreshCw,
   ArrowLeft,
   type LucideIcon,
-  KeyboardMusic,
   X,
   LogInIcon,
+  Inbox
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -55,12 +51,9 @@ type WaveVar =
 type ResultVariant =
   | "empty" // Danh sách trống
   | "empty-search" // Tìm kiếm không có kết quả
-  | "empty-tracks" // Chưa có bài hát
-  | "empty-albums" // Chưa có album
-  | "empty-playlists" // Chưa có playlist
-  | "empty-artists" // Chưa có nghệ sĩ
-  | "empty-radio" // Chưa có radio
-  | "empty-genres" // Chưa có radio
+  | "empty-jobs" // Chưa có việc làm
+  | "empty-applications" // Chưa có đơn ứng tuyển
+  | "empty-companies" // Chưa có công ty
   | "error" // Lỗi chung
   | "error-network" // Mất kết nối
   | "no-permission" // Không có quyền
@@ -80,7 +73,7 @@ interface ActionConfig {
   variant?: "primary" | "outline" | "ghost";
 }
 
-export interface MusicResultProps {
+export interface AppResultProps {
   // ── Core ──────────────────────────────────────────────────
   variant?: ResultVariant;
 
@@ -116,10 +109,6 @@ export interface MusicResultProps {
   layout?: ResultLayout;
   className?: string;
 
-  // ── Animation ─────────────────────────────────────────────
-  /** Dùng animated EQ bars thay vì icon tĩnh */
-  animated?: boolean;
-
   // ── A11y ──────────────────────────────────────────────────
   role?: "status" | "alert" | "none";
 }
@@ -142,7 +131,7 @@ const PRESETS: Record<
   PresetConfig
 > = {
   empty: {
-    icon: Music2,
+    icon: Inbox,
     title: "Chưa có nội dung",
     description: "Danh sách này hiện đang trống.",
     wave: "--primary",
@@ -157,50 +146,26 @@ const PRESETS: Record<
     borderStyle: "dashed",
     role: "status",
   },
-  "empty-tracks": {
-    icon: Music2,
-    title: "Chưa có bài hát",
-    description: "Bạn chưa yêu thích bài hát nào.",
+  "empty-jobs": {
+    icon: Briefcase,
+    title: "Chưa có việc làm",
+    description: "Hiện tại chưa có công việc nào khả dụng.",
     wave: "--primary",
     borderStyle: "dashed",
     role: "status",
   },
-  "empty-albums": {
-    icon: DiscAlbum,
-    title: "Chưa có album",
-    description: "Bạn chưa yêu thích album nào.",
+  "empty-applications": {
+    icon: FileText,
+    title: "Chưa có hồ sơ ứng tuyển",
+    description: "Bạn chưa nộp hồ sơ ứng tuyển nào.",
     wave: "--primary",
     borderStyle: "dashed",
     role: "status",
   },
-  "empty-playlists": {
-    icon: ListMusic,
-    title: "Chưa có playlist",
-    description: "Bạn chưa tạo hoặc yêu thích playlist nào.",
-    wave: "--primary",
-    borderStyle: "dashed",
-    role: "status",
-  },
-  "empty-artists": {
-    icon: MicVocal,
-    title: "Chưa có nghệ sĩ",
-    description: "Bạn chưa theo dõi nghệ sĩ nào.",
-    wave: "--primary",
-    borderStyle: "dashed",
-    role: "status",
-  },
-  "empty-genres": {
-    icon: KeyboardMusic,
-    title: "Chưa có genre",
-    description: "Chưa có thể loại genre nào khả dụng.",
-    wave: "--primary",
-    borderStyle: "dashed",
-    role: "status",
-  },
-  "empty-radio": {
-    icon: Radio,
-    title: "Chưa có radio",
-    description: "Chưa có kênh radio nào khả dụng.",
+  "empty-companies": {
+    icon: Building,
+    title: "Chưa có công ty",
+    description: "Danh sách công ty hiện đang trống.",
     wave: "--primary",
     borderStyle: "dashed",
     role: "status",
@@ -213,14 +178,6 @@ const PRESETS: Record<
     borderStyle: "solid",
     role: "alert",
   },
-  // warning: {
-  //   icon: AlertCircle,
-  //   title: "Cảnh báo",
-  //   description: "Không thể tải dữ liệu. Vui lòng thử lại.",
-  //   wave: "--wave-4",
-  //   borderStyle: "solid",
-  //   role: "alert",
-  // },
   "error-network": {
     icon: WifiOff,
     title: "Mất kết nối mạng",
@@ -251,7 +208,6 @@ const SIZE_MAP: Record<
     iconSize: string;
     title: string;
     desc: string;
-    eqHeight: string;
   }
 > = {
   sm: {
@@ -260,7 +216,6 @@ const SIZE_MAP: Record<
     iconSize: "size-4",
     title: "text-sm font-semibold",
     desc: "text-xs",
-    eqHeight: "h-4",
   },
   md: {
     container: "py-12 px-6 gap-3",
@@ -268,7 +223,6 @@ const SIZE_MAP: Record<
     iconSize: "size-5",
     title: "text-sm font-semibold",
     desc: "text-xs",
-    eqHeight: "h-5",
   },
   lg: {
     container: "py-16 px-8 gap-4",
@@ -276,7 +230,6 @@ const SIZE_MAP: Record<
     iconSize: "size-6",
     title: "text-base font-semibold",
     desc: "text-sm",
-    eqHeight: "h-6",
   },
   xl: {
     container: "py-20 px-10 gap-5",
@@ -284,33 +237,12 @@ const SIZE_MAP: Record<
     iconSize: "size-7",
     title: "text-lg font-semibold",
     desc: "text-sm",
-    eqHeight: "h-8",
   },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SUB-COMPONENTS
 // ─────────────────────────────────────────────────────────────────────────────
-
-/** Mini EQ animation thay thế icon — dùng khi animated=true */
-const AnimatedEQ = memo(
-  ({ wave, height }: { wave: WaveVar; height: string }) => (
-    <div
-      className={cn("eq-bars", height)}
-      aria-hidden="true"
-      style={{ color: `hsl(var(${wave}))` }}
-    >
-      {[1, 2, 3, 4, 5].map((i) => (
-        <div
-          key={i}
-          className="eq-bar"
-          style={{ background: `hsl(var(${wave}))` }}
-        />
-      ))}
-    </div>
-  ),
-);
-AnimatedEQ.displayName = "AnimatedEQ";
 
 /** Single action button */
 const ActionButton = memo(({ action }: { action: ActionConfig }) => {
@@ -335,7 +267,7 @@ const ActionButton = memo(({ action }: { action: ActionConfig }) => {
 });
 ActionButton.displayName = "ActionButton";
 
-/** Loading skeleton — khớp với kích thước MusicResult */
+/** Loading skeleton — khớp với kích thước AppResult */
 const LoadingSkeleton = memo(
   ({ size, className }: { size: ResultSize; className?: string }) => {
     const s = SIZE_MAP[size];
@@ -365,7 +297,7 @@ LoadingSkeleton.displayName = "LoadingSkeleton";
 // MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const MusicResult = memo(
+export const AppResult = memo(
   ({
     variant = "empty",
     icon: customIcon,
@@ -384,9 +316,8 @@ export const MusicResult = memo(
     size = "md",
     layout = "vertical",
     className,
-    animated = false,
     role: customRole,
-  }: MusicResultProps) => {
+  }: AppResultProps) => {
     // ── Loading variant ─────────────────────────────────────────────────────
     if (variant === "loading") {
       return <LoadingSkeleton size={size} className={className} />;
@@ -407,13 +338,10 @@ export const MusicResult = memo(
     }
 
     // ── Resolve icon ────────────────────────────────────────────────────────
-    // ── Resolve icon ────────────────────────────────────────────────────────
     const s = SIZE_MAP[size];
     let iconNode: React.ReactNode;
 
-    if (animated) {
-      iconNode = <AnimatedEQ wave={wave} height={s.eqHeight} />;
-    } else if (customIcon) {
+    if (customIcon) {
       // KIỂM TRA: Nếu customIcon là một Function (Component), ta render nó
       if (
         typeof customIcon === "function" ||
@@ -428,7 +356,7 @@ export const MusicResult = memo(
       }
     } else {
       // Dùng preset icon
-      const IconComp = (preset?.icon ?? Headphones) as LucideIcon;
+      const IconComp = (preset?.icon ?? Inbox) as LucideIcon;
       iconNode = <IconComp className={s.iconSize} aria-hidden="true" />;
     }
 
@@ -556,7 +484,7 @@ export const MusicResult = memo(
     );
   },
 );
-MusicResult.displayName = "MusicResult";
+AppResult.displayName = "AppResult";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONVENIENCE WRAPPERS — Drop-in replacements cho EmptyState & ErrorState cũ
@@ -565,88 +493,39 @@ MusicResult.displayName = "MusicResult";
 /** Backward-compatible: thay thế EmptyState cũ */
 export const EmptyState = memo(
   (
-    props: Omit<MusicResultProps, "variant"> & {
+    props: Omit<AppResultProps, "variant"> & {
       variant?: Extract<
         ResultVariant,
         | "empty"
-        | "empty-tracks"
-        | "empty-albums"
-        | "empty-playlists"
-        | "empty-artists"
+        | "empty-jobs"
+        | "empty-applications"
+        | "empty-companies"
         | "empty-search"
-        | "empty-radio"
       >;
     },
-  ) => <MusicResult {...props} variant={props.variant ?? "empty"} />,
+  ) => <AppResult {...props} variant={props.variant ?? "empty"} />,
 );
 EmptyState.displayName = "EmptyState";
 
 /** Backward-compatible: thay thế ErrorState cũ */
 export const ErrorState = memo(
   (
-    props: Omit<MusicResultProps, "variant"> & {
+    props: Omit<AppResultProps, "variant"> & {
       variant?: Extract<
         ResultVariant,
         "error" | "error-network" | "no-permission"
       >;
     },
-  ) => <MusicResult {...props} variant={props.variant ?? "error"} />,
+  ) => <AppResult {...props} variant={props.variant ?? "error"} />,
 );
 ErrorState.displayName = "ErrorState";
 
 /** Convenience: loading skeleton */
 export const LoadingState = memo(
-  (props: Pick<MusicResultProps, "size" | "className">) => (
-    <MusicResult variant="loading" {...props} />
+  (props: Pick<AppResultProps, "size" | "className">) => (
+    <AppResult variant="loading" {...props} />
   ),
 );
 LoadingState.displayName = "LoadingState";
 
-export default MusicResult;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// USAGE EXAMPLES
-// ─────────────────────────────────────────────────────────────────────────────
-/*
-// 1. Preset variants (zero config)
-<MusicResult variant="empty-tracks" />
-<MusicResult variant="empty-search" searchQuery="lo-fi" />
-<MusicResult variant="error" onRetry={refetch} />
-<MusicResult variant="error-network" onRetry={refetch} onBack={() => router.back()} />
-<MusicResult variant="no-permission" />
-<MusicResult variant="loading" />
-
-// 2. Tùy chỉnh nội dung
-<MusicResult
-  variant="empty-playlists"
-  title="Playlist của bạn"
-  description="Tạo playlist đầu tiên để bắt đầu."
-  action={{ label: "Tạo playlist", icon: Plus, onClick: openModal, variant: "primary" }}
-/>
-
-// 3. Hoàn toàn custom (không dùng preset)
-<MusicResult
-  variant="custom"
-  icon={Radio}
-  wave="--wave-6"
-  title="Radio chưa sẵn sàng"
-  description="Tính năng đang được phát triển."
-  size="lg"
-/>
-
-// 4. Horizontal layout (dành cho sidebar hoặc banner)
-<MusicResult
-  variant="empty-albums"
-  layout="horizontal"
-  size="sm"
-  action={{ label: "Khám phá", icon: Headphones, onClick: goDiscover }}
-/>
-
-// 5. Animated EQ icon
-<MusicResult variant="empty-tracks" animated size="lg" />
-
-// 6. Backward compatible (giữ nguyên code cũ)
-<EmptyState variant="empty-tracks" />
-<ErrorState onRetry={refetch} />
-<LoadingState size="md" />
-*/
+export default AppResult;

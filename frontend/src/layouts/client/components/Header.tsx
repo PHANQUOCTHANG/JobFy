@@ -18,8 +18,10 @@ export function Header() {
     { label: "Cẩm nang", href: "/guide" },
   ];
 
+  const isJobPage = path.startsWith('/jobs');
+
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <header className={`bg-white border-b border-slate-200 z-50 shadow-sm ${isJobPage ? 'relative' : 'sticky top-0'}`}>
       <div className="max-w-7xl mx-auto px-5 lg:px-10 flex items-center justify-between h-[64px]">
         
         <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
@@ -38,8 +40,7 @@ export function Header() {
             if (href === '/cv') {
               return (
                 <div key={href} className="relative group">
-                  <Link
-                    to={href}
+                  <button
                     className={`px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all flex items-center gap-1 ${
                       isActive
                         ? "text-[#4F46E5] bg-[#EEF2FF] font-semibold"
@@ -47,10 +48,10 @@ export function Header() {
                     }`}
                   >
                     Hồ sơ & CV <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
-                  </Link>
+                  </button>
                   <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-56 z-50">
                     <div className="bg-white border border-gray-100 shadow-xl rounded-xl p-2 flex flex-col">
-                      <Link to="/cv" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu CV theo style</Link>
+                      <Link to="/cv" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Tạo CV</Link>
                       <Link to="/cv/my-cvs" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Quản lý CV</Link>
                       <Link to="/cv/cover-letter" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu Cover Letter</Link>
                     </div>

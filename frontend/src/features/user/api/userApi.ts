@@ -23,6 +23,12 @@ const userApi = {
     return res.data;
   },
 
+  // Cập nhật User cơ bản (SĐT, Avatar)
+  updateMe: async (data: { phone?: string; avatarUrl?: string }) => {
+    const res = await api.patch<ApiResponse<User>>("/users/me", data);
+    return res.data;
+  },
+
   // Đổi mật khẩu (Gửi JSON thuần)
   changePassword: async (data: ChangePasswordDTO) => {
     const res = await api.post<ApiResponse<void>>(

@@ -6,6 +6,7 @@ import {
   getJobCategories,
   saveJob,
   getProvinces,
+  getDistricts,
   getIndustries
 } from '../api/jobs.api';
 import { JobFilterParams } from '../types';
@@ -46,6 +47,15 @@ export const useProvinces = () => {
   return useQuery({
     queryKey: ['provinces'],
     queryFn: getProvinces,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+};
+
+export const useDistricts = (provinceId?: number) => {
+  return useQuery({
+    queryKey: ['districts', provinceId],
+    queryFn: () => getDistricts(provinceId!),
+    enabled: !!provinceId,
     staleTime: 1000 * 60 * 60, // 1 hour
   });
 };

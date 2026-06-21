@@ -7,7 +7,7 @@ import { toConversationListResponse, toConversationResponse, toMessageListRespon
 const messagingService = new MessagingService();
 
 export const getConversations = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   const role = req.user?.role;
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
 
@@ -29,7 +29,7 @@ export const getConversations = catchAsync(async (req: Request, res: Response) =
 });
 
 export const createConversation = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   const role = req.user?.role;
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
 
@@ -38,7 +38,7 @@ export const createConversation = catchAsync(async (req: Request, res: Response)
 });
 
 export const getMessages = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   const role = req.user?.role;
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
 
@@ -61,7 +61,7 @@ export const getMessages = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const sendMessage = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -74,7 +74,7 @@ export const sendMessage = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const markAsRead = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -83,7 +83,7 @@ export const markAsRead = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const archiveConversation = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;

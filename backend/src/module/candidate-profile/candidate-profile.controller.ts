@@ -6,7 +6,7 @@ import { normalizeCandidateProfileQuery } from "./candidate-profile.type";
 
 // [POST] /api/v1/candidate-profiles/me - Tạo profile (Chỉ candidate)
 export const createMyProfile = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.id;
+  const userId = req.user!.userId;
   const data = await candidateProfileService.create(userId, req.body);
 
   return res.status(201).json(ApiResponse.success(data, "Tạo hồ sơ thành công"));
@@ -14,7 +14,7 @@ export const createMyProfile = asyncHandler(async (req: Request, res: Response) 
 
 // [GET] /api/v1/candidate-profiles/me - Lấy profile của chính mình
 export const getMyProfile = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.id;
+  const userId = req.user!.userId;
   const data = await candidateProfileService.findByUserId(userId);
 
   return res.status(200).json(ApiResponse.success(data));
@@ -22,7 +22,7 @@ export const getMyProfile = asyncHandler(async (req: Request, res: Response) => 
 
 // [PATCH] /api/v1/candidate-profiles/me - Cập nhật profile của chính mình
 export const updateMyProfile = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.id;
+  const userId = req.user!.userId;
   const data = await candidateProfileService.updateByUserId(userId, req.body);
 
   return res.status(200).json(ApiResponse.success(data, "Cập nhật hồ sơ thành công"));

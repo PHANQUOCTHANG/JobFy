@@ -12,7 +12,7 @@ export const getPlans = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getActiveSubscription = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { companyId } = req.query;
@@ -25,7 +25,7 @@ export const getActiveSubscription = catchAsync(async (req: Request, res: Respon
 });
 
 export const createSubscription = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const sub = await subscriptionService.createSubscription(req.body, userId);
@@ -33,7 +33,7 @@ export const createSubscription = catchAsync(async (req: Request, res: Response)
 });
 
 export const cancelSubscription = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -42,7 +42,7 @@ export const cancelSubscription = catchAsync(async (req: Request, res: Response)
 });
 
 export const getPayments = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { companyId, page, limit } = req.query;
@@ -67,7 +67,7 @@ export const getPayments = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const createPayment = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const payment = await subscriptionService.createPayment(req.body, userId);

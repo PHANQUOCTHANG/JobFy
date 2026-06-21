@@ -19,6 +19,8 @@ export class ResumeResponseDto {
   projects?: any[];
 
   constructor(resume: any) {
+    const toISO = (d: any) => d ? (typeof d === 'string' ? d : new Date(d).toISOString()) : null;
+
     this.id = resume.id;
     this.candidateId = resume.candidateId;
     this.title = resume.title;
@@ -28,28 +30,42 @@ export class ResumeResponseDto {
     this.isPrimary = resume.isPrimary;
     this.isPublic = resume.isPublic;
     this.viewCount = resume.viewCount;
-    this.createdAt = resume.createdAt.toISOString();
-    this.updatedAt = resume.updatedAt.toISOString();
+    this.createdAt = toISO(resume.createdAt) as string;
+    this.updatedAt = toISO(resume.updatedAt) as string;
 
     if (resume.educations) {
       this.educations = resume.educations.map((e: any) => ({
         ...e,
-        startDate: e.startDate.toISOString(),
-        endDate: e.endDate ? e.endDate.toISOString() : null,
+        startDate: toISO(e.startDate),
+        endDate: toISO(e.endDate),
       }));
     }
     
     if (resume.experiences) {
       this.experiences = resume.experiences.map((e: any) => ({
         ...e,
-        startDate: e.startDate.toISOString(),
-        endDate: e.endDate ? e.endDate.toISOString() : null,
+        startDate: toISO(e.startDate),
+        endDate: toISO(e.endDate),
       }));
     }
 
     if (resume.skills) this.skills = resume.skills;
-    if (resume.certifications) this.certifications = resume.certifications;
-    if (resume.projects) this.projects = resume.projects;
+    
+    if (resume.certifications) {
+      this.certifications = resume.certifications.map((c: any) => ({
+        ...c,
+        issueDate: toISO(c.issueDate),
+        expireDate: toISO(c.expireDate),
+      }));
+    }
+    
+    if (resume.projects) {
+      this.projects = resume.projects.map((p: any) => ({
+        ...p,
+        startDate: toISO(p.startDate),
+        endDate: toISO(p.endDate),
+      }));
+    }
   }
 
   static from(resume: any): ResumeResponseDto {

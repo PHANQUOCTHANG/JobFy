@@ -15,7 +15,7 @@ const ClientLayout = () => {
     >
       <Header />
 
-      <main className="flex-1 w-full relative z-0">
+      <main className="flex-1 w-full">
         <Outlet />
       </main>
 

@@ -23,7 +23,7 @@ let store: Store | null = null; // Lưu biến Store ở đây
 // 1. INJECT STORE (Cách phá vòng lặp dependency chuẩn nhất)
 export const injectStore = (_store: Store) => {
   store = _store;
-};
+};  
 
 // Hàm update token từ bên ngoài (được gọi bởi store.subscribe)
 export const setGlobalAccessToken = (token: string | null) => {

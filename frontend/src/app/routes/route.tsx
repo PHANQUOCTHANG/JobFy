@@ -14,7 +14,8 @@ import {
   SettingsPage,
   CompanyListPage,
   CompanyDetailPage,
-  CandidateProfilePage,
+  ProfileSettingsPage,
+  SecuritySettingsPage,
   CandidatePublicPage,
   JobSearchPage,
   JobDetailPage,
@@ -33,8 +34,8 @@ import {
   CvEditorPage,
   MyCvsPage,
   CoverLetterPage,
+  MyCoverLettersPage,
 } from "@/pages";
-
 
 import EmployerRegisterPage from "@/pages/employer/EmployerRegisterPage";
 import EmployerLoginPage from "@/pages/employer/EmployerLoginPage";
@@ -85,6 +86,24 @@ export const router = createBrowserRouter([
           { path: "/cv/editor/:templateId", element: <CvEditorPage /> },
           { path: "/cv/my-cvs", element: <MyCvsPage /> },
           { path: "/cv/cover-letter", element: <CoverLetterPage /> },
+          {
+            element: <ProtectedRoute requiredRole="candidate" />,
+            children: [
+              { path: "/my-cover-letters", element: <MyCoverLettersPage /> },
+              {
+                path: CLIENT_PATHS.MY_APPLICATIONS,
+                element: <MyApplicationsPage />,
+              },
+              {
+                path: CLIENT_PATHS.PROFILE,
+                element: <ProfileSettingsPage />,
+              },
+              {
+                path: CLIENT_PATHS.SECURITY_SETTINGS,
+                element: <SecuritySettingsPage />,
+              },
+            ]
+          },
         ],
       },
 
@@ -99,14 +118,6 @@ export const router = createBrowserRouter([
               {
                 index: true,
                 element: <CandidateDashboardPage />,
-              },
-              {
-                path: CANDIDATE_PATHS.PROFILE,
-                element: <CandidateProfilePage />,
-              },
-              {
-                path: CANDIDATE_PATHS.MY_APPLICATIONS,
-                element: <MyApplicationsPage />,
               },
               {
                 path: CANDIDATE_PATHS.SAVED_JOBS,

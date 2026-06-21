@@ -12,6 +12,7 @@ export * from "./hooks/useLogin";
 export * from "./hooks/useRegister";
 export * from "./hooks/useForgotPassword";
 export * from "./hooks/useForceChangePassword";
+export * from "./hooks/useChangePassword";
 
 // 🪄 Xuất services / slice nếu cần dùng global
 export * from "./api/authApi";

@@ -132,3 +132,12 @@ export const applicationService: ApplicationService = new ApplicationService(
   resumeRepository
 );
 
+// AI
+import { AiService } from "@/module/ai/ai.service";
+export const aiService = new AiService();
+
+// Cover Letter
+import { CoverLetterService } from "@/module/cover-letter/cover-letter.service";
+import { CoverLetterController } from "@/module/cover-letter/cover-letter.controller";
+export const coverLetterService = new CoverLetterService(prisma);
+export const coverLetterController = new CoverLetterController(coverLetterService);

@@ -80,5 +80,14 @@ export const IdParamSchema = z.object({
   id: z.string().uuid("ID phải là UUID hợp lệ"),
 });
 
+// Validation cập nhật thông tin cá nhân (dành cho User)
+export const UpdateMeSchema = userBase
+  .pick({
+    phone: true,
+    avatarUrl: true,
+  })
+  .partial();
+
 export type CreateUserRequestDto = z.infer<typeof CreateUserSchema>;
 export type UpdateUserRequestDto = z.infer<typeof UpdateUserSchema>;
+export type UpdateMeRequestDto = z.infer<typeof UpdateMeSchema>;

@@ -64,7 +64,7 @@ export const BigBrandsSection: React.FC = () => {
                   <div className="h-3 bg-gray-100 rounded w-1/2" />
                 </div>
               ))
-            : (apiCompanies && apiCompanies.length > 0 ? apiCompanies : []).slice(0, 8).map(company => (
+            : (apiCompanies?.data && apiCompanies.data.length > 0 ? apiCompanies.data : []).slice(0, 8).map(company => (
                 <Link
                   key={company.id}
                   to={`/companies/${company.slug || company.id}`}

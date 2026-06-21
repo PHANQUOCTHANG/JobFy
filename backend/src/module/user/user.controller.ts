@@ -41,3 +41,11 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 
   return res.status(200).json(ApiResponse.success(null, "Đã xóa người dùng"));
 });
+
+// [PATCH] /api/v1/users/me - Cập nhật thông tin cá nhân
+export const updateMe = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const data = await userService.update(userId, req.body);
+
+  return res.status(200).json(ApiResponse.success(data, "Cập nhật thông tin thành công"));
+});

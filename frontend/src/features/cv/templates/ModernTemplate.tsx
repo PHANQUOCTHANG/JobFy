@@ -5,9 +5,11 @@ import { EditableField } from './shared/EditableField';
 import { SectionBlock } from './shared/SectionBlock';
 import { ItemBlock } from './shared/ItemBlock';
 import { v4 as uuidv4 } from 'uuid';
+import { SkillSuggestionChips } from '../../ai/components/SkillSuggestionChips';
+import { Sparkles, Loader2 } from 'lucide-react';
 
 export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
-  ({ data, color, font, fontSize, lineHeight, background, mode, onUpdatePersonalInfo, onUpdateArrayField }, ref) => {
+  ({ data, color, font, fontSize, lineHeight, background, mode, onUpdatePersonalInfo, onUpdateArrayField, onGenerateSummary, isGeneratingSummary, onSuggestSkills, isSuggestingSkills, suggestedSkills, onAddSuggestedSkill }, ref) => {
     
     const updateInfo = (field: keyof typeof data.personalInfo, value: string) => {
       if (onUpdatePersonalInfo) onUpdatePersonalInfo({ [field]: value });
@@ -120,7 +122,24 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
                   </ItemBlock>
                 ))}
                 {data.skills.length === 0 && mode === 'editor' && (
-                  <button onClick={() => handleAddItem('skills', { name: 'Kỹ năng mới', description: '' })} className="text-sm text-blue-500 underline mt-2">+ Thêm kỹ năng</button>
+                  <button onClick={() => handleAddItem('skills', { name: 'Kỹ năng mới', description: '' })} className="text-sm text-blue-500 underline mt-2 mr-4">+ Thêm kỹ năng</button>
+                )}
+                {mode === 'editor' && (
+                  <>
+                    <button 
+                      onClick={onSuggestSkills}
+                      disabled={isSuggestingSkills}
+                      className={`inline-flex items-center gap-1 mt-2 text-[13px] font-medium px-2 py-1 bg-purple-50 text-purple-600 rounded border border-purple-200 hover:bg-purple-100 transition-colors ${isSuggestingSkills ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    >
+                      {isSuggestingSkills ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                      Gợi ý kỹ năng
+                    </button>
+                    <SkillSuggestionChips 
+                      skills={suggestedSkills || []} 
+                      onAdd={(skill) => onAddSuggestedSkill && onAddSuggestedSkill(skill)} 
+                      onDismiss={() => {}} 
+                    />
+                  </>
                 )}
               </div>
             </div>
@@ -139,7 +158,18 @@ export const ModernTemplate = forwardRef<HTMLDivElement, TemplateRendererProps>(
             <div className="mb-6">
               <SectionBlock title="MỤC TIÊU NGHỀ NGHIỆP" color={color} mode={mode} />
               <div className="mt-3 text-gray-700">
-                <EditableField mode={mode} color={color} font={font} value={data.personalInfo.summary} onChange={(v) => updateInfo('summary', v)} placeholder="Giới thiệu bản thân và mục tiêu nghề nghiệp..." multiline />
+                <EditableField 
+                  mode={mode} 
+                  color={color} 
+                  font={font} 
+                  value={data.personalInfo.summary} 
+                  onChange={(v) => updateInfo('summary', v)} 
+                  placeholder="Giới thiệu bản thân và mục tiêu nghề nghiệp..." 
+                  multiline 
+                  showAiButton={true}
+                  onAiClick={onGenerateSummary}
+                  isAiLoading={isGeneratingSummary}
+                />
               </div>
             </div>
 

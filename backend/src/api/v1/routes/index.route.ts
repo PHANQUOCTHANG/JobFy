@@ -19,6 +19,8 @@ import subscriptionRoute, { paymentRouter } from "@/module/subscription/subscrip
 import reportRoute from "@/module/report/report.route";
 import adminRoute from "@/module/admin/admin.route";
 import locationRoute from "@/module/location/location.route";
+import aiRoute from "@/module/ai/ai.route";
+import coverLetterRoute from "@/module/cover-letter/cover-letter.route";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
 
 const clientRoute = (app: Application) => {
@@ -47,6 +49,8 @@ const clientRoute = (app: Application) => {
   app.use(path + "/subscriptions", subscriptionRoute);
   app.use(path + "/payments", requireAuth, paymentRouter);
   app.use(path + "/reports", reportRoute);
+  app.use(path + "/ai", requireAuth, aiRoute);
+  app.use(path + "/cover-letters", coverLetterRoute);
   
   // Admin Module
   app.use(path + "/admin", requireAuth, requireRole("admin"), adminRoute);

@@ -201,7 +201,7 @@ export const JobDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-[#4F46E5] py-3 px-4">
+      <div className="bg-gradient-to-r from-[#e3f2fd] via-[#e3f2fd]/80 to-[#f6f7fa] py-3 px-4 border-b border-blue-100 sticky top-0 z-[60] shadow-sm transition-all duration-300">
         <div className="max-w-6xl mx-auto">
           <JobFilters onSearch={handleSearch} />
         </div>

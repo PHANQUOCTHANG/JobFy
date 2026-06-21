@@ -6,6 +6,7 @@ import { CvData, initialCvData } from '../../types';
 interface MiniCvPreviewProps {
   templateStyle: string;
   color?: string;
+  scale?: number;
 }
 
 /**
@@ -13,7 +14,7 @@ interface MiniCvPreviewProps {
  * at a very small scale. This gives an authentic preview of what the template
  * actually looks like with real data.
  */
-export const MiniCvPreview: React.FC<MiniCvPreviewProps> = ({ templateStyle, color = '#4F46E5' }) => {
+export const MiniCvPreview: React.FC<MiniCvPreviewProps> = ({ templateStyle, color = '#4F46E5', scale = 0.31 }) => {
   const TemplateRenderer = useMemo(() => getTemplateRenderer(templateStyle), [templateStyle]);
 
   const previewData: CvData = useMemo(() => ({
@@ -27,7 +28,7 @@ export const MiniCvPreview: React.FC<MiniCvPreviewProps> = ({ templateStyle, col
     <div className="w-full h-full overflow-hidden bg-white">
       <div
         style={{
-          transform: 'scale(0.31)',
+          transform: `scale(${scale})`,
           transformOrigin: 'top left',
           width: '794px',       // A4 width in px
           minHeight: '1123px',  // A4 height in px

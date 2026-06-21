@@ -15,10 +15,16 @@ interface InlineCvEditorProps {
     field: K,
     data: CvData[K]
   ) => void;
+  onGenerateSummary?: () => void;
+  isGeneratingSummary?: boolean;
+  onSuggestSkills?: () => void;
+  isSuggestingSkills?: boolean;
+  suggestedSkills?: string[];
+  onAddSuggestedSkill?: (skillName: string) => void;
 }
 
 export const InlineCvEditor = forwardRef<HTMLDivElement, InlineCvEditorProps>(
-  ({ data, color, font = 'Roboto', fontSize = 'medium', lineHeight = 1.5, background = 'white', templateStyle = 'Hiện đại', onUpdatePersonalInfo, onUpdateArrayField }, ref) => {
+  ({ data, color, font = 'Roboto', fontSize = 'medium', lineHeight = 1.5, background = 'white', templateStyle = 'Hiện đại', onUpdatePersonalInfo, onUpdateArrayField, onGenerateSummary, isGeneratingSummary, onSuggestSkills, isSuggestingSkills, suggestedSkills, onAddSuggestedSkill }, ref) => {
     
     const TemplateRenderer = getTemplateRenderer(templateStyle);
 
@@ -39,6 +45,12 @@ export const InlineCvEditor = forwardRef<HTMLDivElement, InlineCvEditorProps>(
           mode="editor"
           onUpdatePersonalInfo={onUpdatePersonalInfo}
           onUpdateArrayField={onUpdateArrayField}
+          onGenerateSummary={onGenerateSummary}
+          isGeneratingSummary={isGeneratingSummary}
+          onSuggestSkills={onSuggestSkills}
+          isSuggestingSkills={isSuggestingSkills}
+          suggestedSkills={suggestedSkills}
+          onAddSuggestedSkill={onAddSuggestedSkill}
         />
       </div>
     );

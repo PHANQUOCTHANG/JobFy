@@ -7,7 +7,7 @@ import { catchAsync } from "@/utils/catchAsync";
 const notificationService = new NotificationService();
 
 export const getUserNotifications = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { page, limit, isRead } = req.query;
@@ -29,7 +29,7 @@ export const getUserNotifications = catchAsync(async (req: Request, res: Respons
 });
 
 export const getUnreadCount = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const count = await notificationService.getUnreadCount(userId);
@@ -37,7 +37,7 @@ export const getUnreadCount = catchAsync(async (req: Request, res: Response) => 
 });
 
 export const markAsRead = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -46,7 +46,7 @@ export const markAsRead = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const markAllAsRead = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const result = await notificationService.markAllAsRead(userId);
@@ -54,7 +54,7 @@ export const markAllAsRead = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const deleteNotification = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;

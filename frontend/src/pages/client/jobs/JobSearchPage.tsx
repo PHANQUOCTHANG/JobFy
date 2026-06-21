@@ -21,6 +21,7 @@ export const JobSearchPage: React.FC = () => {
   const initialProvinceId = searchParams.get("provinceId")
     ? Number(searchParams.get("provinceId"))
     : undefined;
+  const initialDistrictIds = searchParams.get("districtIds") || undefined;
   const initialIndustryId = searchParams.get("industryId")
     ? Number(searchParams.get("industryId"))
     : undefined;
@@ -46,6 +47,7 @@ export const JobSearchPage: React.FC = () => {
     limit: 10,
     keyword: initialKeyword,
     provinceId: initialProvinceId,
+    districtIds: initialDistrictIds,
     industryId: initialIndustryId,
     categorySlug: initialCategorySlug,
     jobType: initialJobType,
@@ -61,6 +63,7 @@ export const JobSearchPage: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(
       !!initialKeyword ||
       !!initialProvinceId ||
+      !!initialDistrictIds ||
       !!initialIndustryId ||
       !!initialCategorySlug ||
       !!initialJobType ||
@@ -97,6 +100,8 @@ export const JobSearchPage: React.FC = () => {
     if (filters.categorySlug) params.set("categorySlug", filters.categorySlug);
     if (filters.provinceId)
       params.set("provinceId", String(filters.provinceId));
+    if (filters.districtIds)
+      params.set("districtIds", filters.districtIds);
     if (filters.industryId)
       params.set("industryId", String(filters.industryId));
     if (filters.jobType) params.set("jobType", filters.jobType);
@@ -150,12 +155,13 @@ export const JobSearchPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f0f0f0] pb-10">
-      <div className="bg-[#4F46E5] py-3 px-4 sticky top-[72px] z-40 shadow-sm">
+      <div className="bg-gradient-to-r from-[#e3f2fd] via-[#e3f2fd]/80 to-[#f6f7fa] py-3 px-4 sticky top-0 z-[60] shadow-sm border-b border-blue-100 transition-all duration-300">
         <div className="max-w-[1140px] mx-auto">
           <JobFilters
             onSearch={handleSearch}
             initialKeyword={filters.keyword}
             initialProvinceId={filters.provinceId}
+            initialDistrictIds={filters.districtIds}
             initialCategorySlug={filters.categorySlug}
           />
         </div>

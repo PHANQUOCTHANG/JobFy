@@ -1,10 +1,11 @@
 import { Router } from "express";
 import * as userCtrl from "./user.controller";
 import validationMiddleware from "@/middleware/validate.middleware";
-import { requireRole } from "@/middleware/auth.middleware";
+import { requireAuth, requireRole } from "@/middleware/auth.middleware";
 import {
   CreateUserSchema,
   UpdateUserSchema,
+  UpdateMeSchema,
   IdParamSchema,
 } from "./user.request";
 
@@ -18,6 +19,15 @@ router
     requireRole("admin"),
     validationMiddleware(CreateUserSchema),
     userCtrl.createUser,
+  );
+
+// [PATCH] cập nhật cá nhân
+router
+  .route("/me")
+  .patch(
+    requireAuth,
+    validationMiddleware(UpdateMeSchema),
+    userCtrl.updateMe
   );
 
 // [GET] chi tiết & [PATCH] cập nhật & [DELETE] xóa (chỉ ADMIN)

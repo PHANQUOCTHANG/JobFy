@@ -7,7 +7,7 @@ import { toSavedJobListResponse, toSavedJobResponse } from "./saved-job.response
 const savedJobService = new SavedJobService();
 
 export const getSavedJobs = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { page, limit } = req.query;
@@ -28,7 +28,7 @@ export const getSavedJobs = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const saveJob = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;
@@ -37,7 +37,7 @@ export const saveJob = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const unsaveJob = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;
@@ -46,7 +46,7 @@ export const unsaveJob = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const checkIsSaved = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;

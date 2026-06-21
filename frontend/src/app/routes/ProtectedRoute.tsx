@@ -1,5 +1,5 @@
 import { ThemedLoader } from "@/components/ui/ThemedLoader";
-import MusicResult from "@/components/ui/Result";
+import AppResult from "@/components/ui/Result";
 import { useAppSelector } from "@/store/hooks";
 import { AlertCircle, LogInIcon } from "lucide-react";
 import React from "react";
@@ -24,7 +24,7 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
   if (!token) {
     return (
       <div className="section-container min-h-screen flex items-center justify-center">
-        <MusicResult
+        <AppResult
           variant="no-permission"
           title="Yêu cầu đăng nhập"
           description="Vui lòng đăng nhập để truy cập nội dung này."
@@ -41,7 +41,7 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
   if (user?.mustChangePassword) {
     return (
       <div className="section-container min-h-screen flex items-center justify-center">
-        <MusicResult
+        <AppResult
           variant="custom"
           icon={AlertCircle}
           title="Cảnh báo bảo mật"
@@ -63,7 +63,7 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
   if (requiredRole && user?.role !== requiredRole) {
     return (
       <div className="section-container min-h-screen flex items-center justify-center">
-        <MusicResult
+        <AppResult
           variant="no-permission"
           action={{
             label: "Quay lại trang chủ",
