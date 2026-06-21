@@ -73,8 +73,38 @@ export class EmployerJobService {
     }
 
     // Validate workflow transition
+    if (job.status === status) {
+      return job; // No change needed
+    }
+
+    if (job.status === JobStatus.closed && status === JobStatus.draft) {
+      throw new AppError("Không thể chuyển tin đã đóng về trạng thái nháp", 400);
+    }
+
+    if (job.status === JobStatus.expired && (status === JobStatus.draft || status === JobStatus.paused)) {
+      throw new AppError("Tin tuyển dụng đã hết hạn không thể quay về trạng thái nháp hoặc tạm dừng", 400);
+    }
+
     if (job.status === JobStatus.draft && status === JobStatus.closed) {
-      throw new AppError("Không thể đóng tin đang ở nháp", 400);
+      throw new AppError("Không thể đóng tin đang ở nháp trực tiếp", 400);
+    }
+
+    // Check quota if publishing
+    if (status === JobStatus.published) {
+      const activeJobs = await this.prisma.jobs.count({
+        where: { companyId: company.id, status: JobStatus.published, deletedAt: null },
+      });
+
+      const currentPlan = await this.prisma.employerSubscription.findFirst({
+        where: { companyId: company.id, expiresAt: { gt: new Date() } },
+        include: { plan: true },
+      });
+
+      const maxJobs = currentPlan ? currentPlan.plan.maxJobs : 1;
+      
+      if (activeJobs >= maxJobs) {
+        throw new AppError(`Bạn đã đạt giới hạn đăng tin (${maxJobs} tin) của gói hiện tại. Không thể đăng thêm tin này.`, 403);
+      }
     }
 
     return this.repository.updateStatus(jobId, status);

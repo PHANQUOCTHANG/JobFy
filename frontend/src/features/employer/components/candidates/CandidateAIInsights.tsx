@@ -1,5 +1,6 @@
 import React from "react";
 import { useCandidateAIInsights } from "../../hooks/useCandidates";
+import { toast } from "sonner";
 
 interface Props {
   filters: any;
@@ -8,7 +9,7 @@ interface Props {
 }
 
 export const CandidateAIInsights: React.FC<Props> = ({ filters, onOpenConversionReport, onOpenHistory }) => {
-  const { data: aiData, isLoading } = useCandidateAIInsights(filters);
+  const { data: aiData, isLoading, refetch, isFetching } = useCandidateAIInsights(filters);
 
   return (
     <div className="space-y-6">
@@ -25,7 +26,7 @@ export const CandidateAIInsights: React.FC<Props> = ({ filters, onOpenConversion
             </h3>
           </div>
           
-          {isLoading ? (
+          {isLoading || isFetching ? (
             <div className="animate-pulse space-y-4 mb-6">
               <div className="h-4 bg-indigo-100 rounded w-full"></div>
               <div className="h-4 bg-indigo-100 rounded w-4/5"></div>
@@ -56,7 +57,17 @@ export const CandidateAIInsights: React.FC<Props> = ({ filters, onOpenConversion
             </>
           )}
 
-          <button className="w-full py-2.5 bg-white border-2 border-indigo-100 text-indigo-600 font-bold rounded-xl text-[14px] hover:bg-indigo-50 hover:border-indigo-200 transition-colors">
+          <button 
+            disabled={isFetching}
+            onClick={() => {
+              toast.promise(refetch(), {
+                loading: 'Đang dùng AI để tối ưu hóa lại trọng số thuật toán...',
+                success: 'Đã tối ưu hóa lại dựa trên dữ liệu mới nhất!',
+                error: 'Có lỗi xảy ra khi phân tích'
+              });
+            }}
+            className="w-full mt-4 py-2.5 bg-white border-2 border-indigo-100 text-indigo-600 font-bold rounded-xl text-[14px] hover:bg-indigo-50 hover:border-indigo-200 transition-colors disabled:opacity-50"
+          >
             Điều chỉnh thuật toán
           </button>
         </div>

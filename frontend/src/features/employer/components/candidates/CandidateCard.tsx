@@ -32,10 +32,13 @@ export const CandidateCard: React.FC<Props> = ({
   const { fullName, avatarUrl, experienceLevel, latestExperience, skills, expectedSalaryMin, expectedSalaryMax } = candidate.candidate;
 
   const statusInfo = statusMap[status] || { label: "Khác", color: "bg-gray-100 text-gray-700" };
-  const timeAgo = formatDistanceToNow(new Date(appliedAt), { addSuffix: true, locale: vi });
+  const appliedDate = new Date(appliedAt);
+  const isFuture = appliedDate > new Date();
+  const displayDate = isFuture ? new Date(Date.now() - 1000 * 60) : appliedDate;
+  const timeAgo = formatDistanceToNow(displayDate, { addSuffix: true, locale: vi });
 
-  // Mock AI Score for now (random between 70 and 98)
-  const aiScore = React.useMemo(() => Math.floor(Math.random() * (98 - 70 + 1) + 70), [id]);
+  // Use AI Score from backend, fallback to 65 if not present
+  const aiScore = candidate.aiScore ?? 65;
   const scoreColor = aiScore >= 90 ? "text-emerald-500 border-emerald-500" : aiScore >= 80 ? "text-blue-500 border-blue-500" : "text-amber-500 border-amber-500";
   const scoreText = aiScore >= 90 ? "Rất cao" : aiScore >= 80 ? "Khá tốt" : "Phù hợp";
 
@@ -96,14 +99,14 @@ export const CandidateCard: React.FC<Props> = ({
             </div>
 
             {/* Skills */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-1">
               {skills.slice(0, 4).map((skill, idx) => (
-                <span key={idx} className="px-3 py-1 bg-blue-50 text-[#00307c] rounded-lg text-[12px] font-bold">
+                <span key={idx} className="px-2.5 py-1 bg-blue-50 text-[#00307c] rounded-md text-[11px] font-bold border border-blue-100/50">
                   {skill}
                 </span>
               ))}
               {skills.length > 4 && (
-                <span className="px-3 py-1 bg-[#F1F5F9] text-[#64748B] rounded-lg text-[12px] font-bold">
+                <span className="px-2.5 py-1 bg-[#F1F5F9] text-[#64748B] rounded-md text-[11px] font-bold border border-slate-200/50">
                   +{skills.length - 4}
                 </span>
               )}
@@ -142,14 +145,14 @@ export const CandidateCard: React.FC<Props> = ({
           <button 
             disabled={isUpdating || status === 'rejected'}
             onClick={() => onUpdateStatus(id, 'rejected')}
-            className="px-4 py-2 text-[14px] font-bold text-[#475569] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] hover:text-[#0F172A] rounded-xl transition-all disabled:opacity-50"
+            className="px-4 py-2 text-[14px] font-bold text-[#475569] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] hover:text-[#0F172A] rounded-xl transition-all disabled:opacity-50 hover:-translate-y-0.5"
           >
             Từ chối
           </button>
           <button 
             disabled={isUpdating || status === 'interviewed'}
             onClick={() => onUpdateStatus(id, 'interviewed')}
-            className="px-5 py-2 text-[14px] font-bold text-white bg-[#00307c] hover:bg-[#002568] rounded-xl transition-all shadow-[0_4px_12px_rgba(0,48,124,0.2)] hover:shadow-[0_6px_16px_rgba(0,48,124,0.3)] disabled:opacity-70 disabled:shadow-none"
+            className="px-5 py-2 text-[14px] font-bold text-white bg-[#00307c] hover:bg-[#002568] rounded-xl transition-all shadow-[0_4px_12px_rgba(0,48,124,0.2)] hover:shadow-[0_6px_16px_rgba(0,48,124,0.3)] hover:-translate-y-0.5 disabled:opacity-70 disabled:shadow-none disabled:hover:translate-y-0"
           >
             Hẹn phỏng vấn
           </button>

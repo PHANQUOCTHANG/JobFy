@@ -7,7 +7,6 @@ export class EmployerDashboardService {
    * Lấy thống kê tổng quan (StatCards)
    */
   async getOverview(userId: string, startDate?: Date) {
-    // Tìm company của employer
     const company = await this.prisma.company.findFirst({
       where: { ownerId: userId },
       select: { id: true },
@@ -22,30 +21,27 @@ export class EmployerDashboardService {
       };
     }
 
-    const dateFilter = startDate ? { createdAt: { gte: startDate } } : {};
+    const jobDateFilter = startDate ? { createdAt: { gte: startDate } } : {};
+    const appDateFilter = startDate ? { appliedAt: { gte: startDate } } : {};
 
     const [totalApplications, totalJobs, activeJobs, viewsAgg] =
       await Promise.all([
-        // Tổng CV nhận được
         this.prisma.application.count({
-          where: { job: { companyId: company.id }, ...dateFilter },
+          where: { job: { companyId: company.id }, ...appDateFilter },
         }),
-        // Tổng tin đã đăng
         this.prisma.jobs.count({
-          where: { companyId: company.id, deletedAt: null, ...dateFilter },
+          where: { companyId: company.id, deletedAt: null, ...jobDateFilter },
         }),
-        // Tin đang tuyển (published)
         this.prisma.jobs.count({
           where: {
             companyId: company.id,
             status: "published",
             deletedAt: null,
-            ...dateFilter,
+            ...jobDateFilter,
           },
         }),
-        // Tổng lượt xem
         this.prisma.jobs.aggregate({
-          where: { companyId: company.id, deletedAt: null, ...dateFilter },
+          where: { companyId: company.id, deletedAt: null, ...jobDateFilter },
           _sum: { viewCount: true },
         }),
       ]);
@@ -70,11 +66,12 @@ export class EmployerDashboardService {
 
     if (!company) return [];
 
-    const dateFilter = startDate ? { createdAt: { gte: startDate } } : {};
+    // FIX: Use appliedAt (not createdAt) for filtering applications
+    const appDateFilter = startDate ? { appliedAt: { gte: startDate } } : {};
 
     const grouped = await this.prisma.application.groupBy({
       by: ["status"],
-      where: { job: { companyId: company.id }, ...dateFilter },
+      where: { job: { companyId: company.id }, ...appDateFilter },
       _count: { status: true },
     });
 
@@ -119,5 +116,35 @@ export class EmployerDashboardService {
         },
       },
     });
+  }
+
+  /**
+   * Lấy dữ liệu Nguồn CV (Application Sources)
+   */
+  async getApplicationSources(userId: string, startDate?: Date) {
+    const company = await this.prisma.company.findFirst({
+      where: { ownerId: userId },
+      select: { id: true },
+    });
+
+    if (!company) return [];
+
+    const appDateFilter = startDate ? { appliedAt: { gte: startDate } } : {};
+
+    const grouped = await this.prisma.application.groupBy({
+      by: ["source"],
+      where: { job: { companyId: company.id }, ...appDateFilter },
+      _count: { source: true },
+    });
+
+    const total = grouped.reduce((sum, g) => sum + g._count.source, 0);
+
+    return grouped
+      .map((g) => ({
+        source: g.source || "Khác",
+        count: g._count.source,
+        percent: total > 0 ? Math.round((g._count.source / total) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
   }
 }

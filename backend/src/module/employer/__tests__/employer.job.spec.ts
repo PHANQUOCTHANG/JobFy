@@ -42,8 +42,8 @@ describe("EmployerJobService", () => {
       (mockPrisma.company.findFirst as jest.Mock).mockResolvedValue(null);
       
       await expect(service.createJob("user-1", {
-        categoryId: 1, title: "Job 1", description: "Desc",
-      })).rejects.toThrow("Không tìm thấy công ty");
+        categoryId: 1, title: "Job 1", description: "Desc", requirements: "", benefits: "",
+      } as any)).rejects.toThrow("Không tìm thấy công ty");
     });
 
     it("should throw error if active jobs exceed quota", async () => {
@@ -54,8 +54,8 @@ describe("EmployerJobService", () => {
       });
 
       await expect(service.createJob("user-1", {
-        categoryId: 1, title: "Job 1", description: "Desc",
-      })).rejects.toThrow("đã đạt giới hạn đăng tin");
+        categoryId: 1, title: "Job 1", description: "Desc", requirements: "", benefits: "",
+      } as any)).rejects.toThrow("đã đạt giới hạn đăng tin");
     });
 
     it("should create job successfully", async () => {
@@ -66,9 +66,9 @@ describe("EmployerJobService", () => {
       (mockPrisma.jobs.create as jest.Mock).mockResolvedValue({ id: "new-job-id" });
 
       const result = await service.createJob("user-1", {
-        categoryId: 1, title: "Backend Developer", description: "Mô tả công việc",
+        categoryId: 1, title: "Backend Developer", description: "Mô tả công việc", requirements: "", benefits: "",
         skillIds: [1, 2],
-      });
+      } as any);
 
       expect(result).toHaveProperty("id", "new-job-id");
       expect(mockPrisma.jobSkill.createMany).toHaveBeenCalled();

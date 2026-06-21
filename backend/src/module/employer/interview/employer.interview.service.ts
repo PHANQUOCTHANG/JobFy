@@ -98,6 +98,7 @@ export class EmployerInterviewService {
   private async getCompanyByOwnerId(ownerId: string) {
     const company = await this.prisma.company.findFirst({
       where: { ownerId },
+      // FIX: select both id and name (name is needed in scheduleInterview email)
       select: { id: true, name: true },
     });
 

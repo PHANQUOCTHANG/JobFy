@@ -172,18 +172,16 @@ export class EmployerController {
         startDate.setDate(startDate.getDate() - 30);
       } // 'all' or undefined leaves startDate as undefined
 
-      const [overview, pipeline, recentJobs] = await Promise.all([
+      const [overview, pipeline, recentJobs, sources] = await Promise.all([
         this.dashboardService.getOverview(employerId, startDate),
         this.dashboardService.getPipeline(employerId, startDate),
         this.dashboardService.getRecentJobs(employerId, 6, startDate),
+        this.dashboardService.getApplicationSources(employerId, startDate),
       ]);
-
-      // Gọi AI sau khi đã có dữ liệu overview và pipeline
-      const aiSuggestion = await this.aiService.generateRecruitmentAdvice(overview, pipeline);
 
       res.status(200).json({
         status: "success",
-        data: { overview, pipeline, recentJobs, aiSuggestion },
+        data: { overview, pipeline, recentJobs, sources },
       });
     } catch (error) {
       next(error);
@@ -205,6 +203,37 @@ export class EmployerController {
     }
   };
 
+  // Lấy AI Suggestion cho Dashboard (Lazy load)
+  getDashboardAIAdvice = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const employerId = req.user!.userId;
+      const { range } = req.query;
+      
+      let startDate: Date | undefined = undefined;
+      if (range === '7d') {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+      } else if (range === '30d') {
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+      }
+
+      const [overview, pipeline] = await Promise.all([
+        this.dashboardService.getOverview(employerId, startDate),
+        this.dashboardService.getPipeline(employerId, startDate),
+      ]);
+
+      const aiSuggestion = await this.aiService.generateRecruitmentAdvice(overview, pipeline);
+
+      res.status(200).json({
+        status: "success",
+        data: { aiSuggestion },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // Dashboard: Xuất báo cáo CSV
   exportDashboard = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -220,9 +249,30 @@ export class EmployerController {
         startDate.setDate(startDate.getDate() - 30);
       }
 
-      // Lấy danh sách tin đăng để xuất báo cáo (limit 100)
-      const jobs = await this.dashboardService.getRecentJobs(employerId, 100, startDate);
+      const [overview, pipeline, jobs] = await Promise.all([
+        this.dashboardService.getOverview(employerId, startDate),
+        this.dashboardService.getPipeline(employerId, startDate),
+        this.dashboardService.getRecentJobs(employerId, 100, startDate)
+      ]);
       
+      let csvString = '\uFEFF'; // BOM để Excel nhận tiếng Việt
+      
+      // Section 1: Overview
+      csvString += "BÁO CÁO TỔNG QUAN HIỆU SUẤT\n\n";
+      csvString += "Tổng CV nhận được,Tin đang tuyển,Tổng lượt xem,Tỉ lệ chuyển đổi (Dự kiến)\n";
+      const conversionRate = overview.totalApplications > 0 ? ((pipeline.find(p => p.status === 'accepted')?.count || 0) / overview.totalApplications * 100).toFixed(1) : "0.0";
+      csvString += `${overview.totalApplications},${overview.activeJobs},${overview.totalViews},${conversionRate}%\n\n`;
+      
+      // Section 2: Pipeline
+      csvString += "TIẾN TRÌNH TUYỂN DỤNG\n\n";
+      csvString += "Trạng thái,Số lượng\n";
+      pipeline.forEach(p => {
+        csvString += `"${p.status}",${p.count}\n`;
+      });
+      csvString += "\n";
+      
+      // Section 3: Chi tiết tin đăng
+      csvString += "CHI TIẾT TIN TUYỂN DỤNG\n\n";
       const header = "Tiêu đề công việc,Hình thức,Trạng thái,Lượt xem,Lượt ứng tuyển,Ngày tạo\n";
       const rows = jobs.map(job => {
         const title = `"${job.title.replace(/"/g, '""')}"`;
@@ -234,7 +284,7 @@ export class EmployerController {
         return `${title},${jobType},${status},${views},${applies},${date}`;
       }).join('\n');
 
-      const csvString = '\uFEFF' + header + rows; // BOM để Excel nhận tiếng Việt
+      csvString += header + rows;
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', `attachment; filename="bao-cao-jobfy-${Date.now()}.csv"`);
       res.status(200).send(csvString);

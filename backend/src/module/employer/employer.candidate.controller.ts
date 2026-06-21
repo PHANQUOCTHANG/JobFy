@@ -13,6 +13,7 @@ const getCandidatesSchema = z.object({
     return Array.isArray(val) ? val : [val];
   }),
   jobId: z.string().uuid().optional(),
+  sort: z.string().optional(),
 });
 
 import { EmployerAIService } from "./employer.ai.service";
@@ -80,13 +81,13 @@ export class EmployerCandidateController {
   getAIInsights = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const employerId = req.user!.userId;
-      const params = getCandidatesSchema.parse(req.query);
       
-      // Get candidates based on current filters to analyze
-      const result = await this.candidateService.getCandidates(employerId, params);
+      // FIX (Bug 5 & 8): Use getRawCandidatesForAI to get data with full resumes/skills
+      // getCandidates() maps away the skills structure that AI service needs
+      const rawCandidates = await this.candidateService.getRawCandidatesForAI(employerId, 50);
       
-      // Pass candidates to AI Service
-      const insights = await this.aiService.generateCandidateInsights(result.data as any[]);
+      // Pass raw candidates (with resumes.skills intact) to AI Service
+      const insights = await this.aiService.generateCandidateInsights(rawCandidates as any[]);
 
       res.status(200).json({
         status: "success",
@@ -172,6 +173,70 @@ export class EmployerCandidateController {
       res.status(200).json({
         status: "success",
         data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAIQuestions = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const employerId = req.user!.userId;
+      const { id } = req.params;
+
+      const detail = await this.candidateService.getCandidateDetail(employerId, id as string);
+      
+      const primaryResume = detail.candidate.resumes.find(r => r.isPrimary) || detail.candidate.resumes[0];
+      const skills = primaryResume?.skills.map(s => s.skill.name) || [];
+      
+      const questions = await this.aiService.generateInterviewQuestions(detail.job.title, skills);
+
+      res.status(200).json({
+        status: "success",
+        data: { questions },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAIFitAnalysis = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const employerId = req.user!.userId;
+      const { id } = req.params;
+
+      const detail = await this.candidateService.getCandidateDetail(employerId, id as string);
+      
+      const primaryResume = detail.candidate.resumes.find(r => r.isPrimary) || detail.candidate.resumes[0];
+      
+      const skills = primaryResume?.skills.map(s => s.skill.name).join(", ") || "Không có";
+      const experiences = primaryResume?.experiences.map(exp => 
+        `- Vị trí: ${exp.jobTitle} tại ${exp.companyName}. Mô tả: ${exp.description || 'Không có'}`
+      ).join("\n") || "Không có";
+      
+      const educations = primaryResume?.educations.map(edu => 
+        `- Trường: ${edu.schoolName}, Ngành: ${edu.fieldOfStudy || 'Không có'}, Bằng cấp: ${edu.degree}`
+      ).join("\n") || "Không có";
+
+      const candidateResumeText = `
+Tên ứng viên: ${detail.candidate.fullName}
+Tiêu đề: ${detail.candidate.headline || 'Không có'}
+Cấp bậc kinh nghiệm: ${detail.candidate.experienceLevel}
+Kỹ năng: ${skills}
+Kinh nghiệm làm việc:
+${experiences}
+Học vấn:
+${educations}
+      `.trim();
+
+      const fitAnalysis = await this.aiService.analyzeApplicationFit(
+        detail.job.description || "",
+        candidateResumeText
+      );
+
+      res.status(200).json({
+        status: "success",
+        data: fitAnalysis,
       });
     } catch (error) {
       next(error);

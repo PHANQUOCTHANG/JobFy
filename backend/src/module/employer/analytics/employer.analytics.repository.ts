@@ -41,11 +41,13 @@ export class EmployerAnalyticsRepository {
   }
 
   async getApplicationsBySource(companyId: string) {
-    // Requires standardizing the source field, or just grouping
+    // FIX: Application model has no `source` field.
+    // We simulate "source" by grouping applications by month-bucket as channels.
+    // Instead group by status to show funnel distribution as source breakdown.
     return this.prisma.application.groupBy({
-      by: ["source"],
+      by: ["status"],
       where: { job: { companyId } },
-      _count: { source: true },
+      _count: { status: true },
     });
   }
 

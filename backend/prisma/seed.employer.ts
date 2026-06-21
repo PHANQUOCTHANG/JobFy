@@ -92,14 +92,22 @@ async function main() {
       },
     });
 
-    // Tạo skill cho Resume
-    const skill = await prisma.skill.findFirst() || await prisma.skill.create({
-      data: { name: 'ReactJS', slug: 'reactjs' },
-    });
-
-    await prisma.resumeSkill.create({
-      data: { resumeId: resume.id, skillId: skill.id },
-    });
+    // Tạo skill ngẫu nhiên cho Resume
+    const skillList = ['ReactJS', 'Node.js', 'Figma', 'Python', 'Marketing', 'UI/UX', 'SEO', 'DevOps', 'Sales', 'Data Analysis'];
+    // Chọn 1-3 kỹ năng ngẫu nhiên
+    const randomSkills = faker.helpers.arrayElements(skillList, faker.number.int({ min: 1, max: 3 }));
+    
+    for (const skillName of randomSkills) {
+      let skill = await prisma.skill.findFirst({ where: { name: skillName } });
+      if (!skill) {
+        skill = await prisma.skill.create({
+          data: { name: skillName, slug: faker.helpers.slugify(skillName).toLowerCase() },
+        });
+      }
+      await prisma.resumeSkill.create({
+        data: { resumeId: resume.id, skillId: skill.id },
+      });
+    }
 
     candidates.push({ user, profile, resume });
   }

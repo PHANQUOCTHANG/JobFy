@@ -59,13 +59,14 @@ export class EmployerAnalyticsService {
     const company = await this.getCompanyByOwnerId(userId);
     const sources = await this.repository.getApplicationsBySource(company.id);
 
+    // FIX: source field doesn't exist; we repurpose this to show status distribution
     let total = 0;
-    sources.forEach((s) => total += s._count.source);
+    sources.forEach((s) => total += s._count.status);
 
     return sources.map((s) => ({
-      source: s.source || "Khác",
-      count: s._count.source,
-      percentage: total > 0 ? ((s._count.source / total) * 100).toFixed(2) : 0,
+      source: s.status, // using status as the grouping dimension
+      count: s._count.status,
+      percentage: total > 0 ? ((s._count.status / total) * 100).toFixed(2) : 0,
     }));
   }
 

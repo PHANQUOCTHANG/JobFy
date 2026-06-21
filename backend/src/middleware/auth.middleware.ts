@@ -46,10 +46,16 @@ export const requireAuth = async (
     }
 
     // Kiểm tra token có trong blacklist không (đã logout)
-    // auth:blacklist:{token} được set trong logout() với TTL = thời gian còn lại của token
-    const isBlacklisted = await getCache<string>(`auth:blacklist:${token}`);
-    if (isBlacklisted) {
-      return next(new AppError("Token đã bị thu hồi, vui lòng đăng nhập lại", 401));
+    // FIX (Bug 6): Wrap in try/catch — if Redis is down/restarting we fail-open
+    // (allow the request) rather than blocking all traffic with ClientClosedError
+    try {
+      const isBlacklisted = await getCache<string>(`auth:blacklist:${token}`);
+      if (isBlacklisted) {
+        return next(new AppError("Token đã bị thu hồi, vui lòng đăng nhập lại", 401));
+      }
+    } catch (redisErr) {
+      // Redis unavailable (e.g. after container restart) — log and continue
+      console.warn("[requireAuth] Redis blacklist check failed, skipping:", (redisErr as Error).message);
     }
 
     // Xác thực và giải mã token

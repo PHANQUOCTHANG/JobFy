@@ -24,11 +24,17 @@ export interface RecentJob {
   _count: { applications: number };
 }
 
+export interface SourceItem {
+  source: string;
+  count: number;
+  percent: number;
+}
+
 export interface DashboardData {
   overview: DashboardOverview;
   pipeline: PipelineItem[];
   recentJobs: RecentJob[];
-  aiSuggestion?: string;
+  sources?: SourceItem[];
 }
 
 export const useDashboardStats = (timeRange: string = "all") =>
@@ -37,5 +43,28 @@ export const useDashboardStats = (timeRange: string = "all") =>
     queryFn: () =>
       api.get("/employer/dashboard", { params: { range: timeRange } }).then((r) => r.data.data),
     staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+
+export const useDashboardAI = (timeRange: string = "all") =>
+  useQuery<{ aiSuggestion: string }>({
+    queryKey: ["employer", "dashboard-ai", timeRange],
+    queryFn: () =>
+      api.get("/employer/dashboard/ai-advice", { params: { range: timeRange } }).then((r) => r.data.data),
+    staleTime: 15 * 60 * 1000, // Cache longer to save Groq API calls
+    retry: 1,
+  });
+
+export interface TrendItem {
+  month: string;
+  count: number;
+}
+
+export const useApplicationTrends = () =>
+  useQuery<TrendItem[]>({
+    queryKey: ["employer", "analytics", "trends"],
+    queryFn: () =>
+      api.get("/employer/analytics/trends").then((r) => r.data.data),
+    staleTime: 10 * 60 * 1000,
     retry: 1,
   });
