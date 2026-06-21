@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useDashboardStats } from "@/features/employer/hooks/useDashboardStats";
+import { Link, useNavigate } from "react-router-dom";
+import { useDashboardStats, useDashboardAI, useApplicationTrends } from "@/features/employer/hooks/useDashboardStats";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import ReactMarkdown from "react-markdown";
 import api from "@/lib/axios";
 import { toast } from "sonner";
 
 const EmployerDashboardPage = () => {
+  const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState("all");
   const [isExporting, setIsExporting] = useState(false);
   const { data, isLoading } = useDashboardStats(timeRange);
+  const { data: aiData, isLoading: isAILoading } = useDashboardAI(timeRange);
+  const { data: trendData } = useApplicationTrends();
 
   const handleExport = async () => {
     try {
@@ -93,17 +98,17 @@ const EmployerDashboardPage = () => {
   const totalApps = overview.totalApplications;
   
   const funnelSteps = [
-    { label: "Ứng tuyển", count: getCount(['pending', 'reviewing']) },
-    { label: "Sơ loại hồ sơ", count: getCount(['shortlisted']) },
-    { label: "Phỏng vấn", count: getCount(['interviewed']) },
-    { label: "Mời làm việc", count: getCount(['offered']) },
+    { label: "Ứng tuyển", count: totalApps },
+    { label: "Sơ loại hồ sơ", count: getCount(['shortlisted', 'interviewed', 'offered', 'accepted']) },
+    { label: "Phỏng vấn", count: getCount(['interviewed', 'offered', 'accepted']) },
+    { label: "Mời làm việc", count: getCount(['offered', 'accepted']) },
     { label: "Tuyển thành công", count: getCount(['accepted']) },
   ];
 
   const maxCount = Math.max(funnelSteps[0].count, 1); // Avoid division by zero
   
   const mappedFunnel = funnelSteps.map((step, idx) => {
-    let width = Math.max((step.count / maxCount) * 100, 30); // Minimum width for visibility
+    let width = Math.max((step.count / maxCount) * 100, 35); // Tăng min-width lên 35%
     let rate = idx === 0 ? null : (funnelSteps[idx-1].count > 0 ? Math.round((step.count / funnelSteps[idx-1].count) * 100) + "%" : "0%");
     
     // Fallback backgrounds
@@ -119,8 +124,12 @@ const EmployerDashboardPage = () => {
     };
   });
 
-  const conversionRate = totalApps > 0 ? ((getCount(['accepted']) / totalApps) * 100).toFixed(1) : "0.0";
-  const interviewSuccessRate = getCount(['interviewed']) > 0 ? ((getCount(['accepted']) / getCount(['interviewed'])) * 100).toFixed(1) : "0.0";
+  const screeningRate = getCount(['pending', 'reviewing']) > 0 
+    ? ((getCount(['shortlisted', 'interviewed', 'offered', 'accepted']) / totalApps) * 100).toFixed(1) 
+    : "0.0";
+  const offerRate = getCount(['interviewed', 'offered', 'accepted']) > 0 
+    ? ((getCount(['offered', 'accepted']) / getCount(['interviewed', 'offered', 'accepted'])) * 100).toFixed(1) 
+    : "0.0";
 
   const recentJobs = data?.recentJobs || [];
 
@@ -202,11 +211,11 @@ const EmployerDashboardPage = () => {
                   <span className="material-symbols-outlined text-[18px]">sync_alt</span>
                 </div>
               </div>
-              <p className="text-[#64748B] text-[12px] font-semibold uppercase tracking-wider mb-1">Tỉ lệ Chuyển đổi</p>
-              <p className="text-2xl font-bold text-[#0F172A] tracking-tight">{conversionRate}%</p>
+              <p className="text-[#64748B] text-[12px] font-semibold uppercase tracking-wider mb-1">Tỉ lệ Sơ loại</p>
+              <p className="text-2xl font-bold text-[#0F172A] tracking-tight">{screeningRate}%</p>
             </div>
             <div className="absolute bottom-0 left-0 w-full h-1.5 bg-[#F1F5F9]">
-              <div className="h-full bg-emerald-500 transition-all duration-1000 ease-out" style={{ width: `${conversionRate}%` }} />
+              <div className="h-full bg-emerald-500 transition-all duration-1000 ease-out" style={{ width: `${screeningRate}%` }} />
             </div>
           </div>
 
@@ -219,11 +228,11 @@ const EmployerDashboardPage = () => {
                   <span className="material-symbols-outlined text-[18px]">task_alt</span>
                 </div>
               </div>
-              <p className="text-[#64748B] text-[12px] font-semibold uppercase tracking-wider mb-1">Phỏng vấn Đạt</p>
-              <p className="text-2xl font-bold text-[#0F172A] tracking-tight">{interviewSuccessRate}%</p>
+              <p className="text-[#64748B] text-[12px] font-semibold uppercase tracking-wider mb-1">Phỏng vấn → Offer</p>
+              <p className="text-2xl font-bold text-[#0F172A] tracking-tight">{offerRate}%</p>
             </div>
             <div className="absolute bottom-0 left-0 w-full h-1.5 bg-[#F1F5F9]">
-              <div className="h-full bg-amber-500 transition-all duration-1000 ease-out" style={{ width: `${interviewSuccessRate}%` }} />
+              <div className="h-full bg-amber-500 transition-all duration-1000 ease-out" style={{ width: `${offerRate}%` }} />
             </div>
           </div>
 
@@ -246,9 +255,9 @@ const EmployerDashboardPage = () => {
         </div>
 
         {/* Main Dashboard Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Recruitment Pipeline */}
-          <div className="lg:col-span-8 bg-white rounded-3xl border border-[#F1F5F9] p-8 flex flex-col shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+          <div className="lg:col-span-8 bg-white rounded-3xl border border-[#F1F5F9] p-8 flex flex-col shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)] h-fit">
             <div className="flex justify-between items-center mb-8">
               <div>
                 <h3 className="text-xl font-bold text-[#0F172A]">Tiến trình Tuyển dụng Tổng thể</h3>
@@ -268,11 +277,11 @@ const EmployerDashboardPage = () => {
                 mappedFunnel.map((step, idx) => (
                   <div key={idx} className="relative flex items-center group/funnel" style={{ marginLeft: step.ml }}>
                     <div 
-                      className={`funnel-step h-[68px] ${step.bg} flex items-center justify-between px-8 text-white shadow-md transition-all duration-300 group-hover/funnel:scale-[1.01] cursor-pointer`}
+                      className={`funnel-step h-[68px] ${step.bg} flex items-center justify-between pl-6 pr-10 text-white shadow-md transition-all duration-300 group-hover/funnel:scale-[1.01] cursor-pointer`}
                       style={{ width: step.width }}
                     >
-                      <span className="text-[15px] font-bold whitespace-nowrap overflow-hidden">{step.label}</span>
-                      <span className="text-xl font-bold tracking-tight ml-2">{step.count}</span>
+                      <span className="text-[14px] md:text-[15px] font-bold whitespace-nowrap shrink-0">{step.label}</span>
+                      <span className="text-lg md:text-xl font-bold tracking-tight ml-2">{step.count}</span>
                     </div>
                     {step.rate && (
                       <span className="absolute -left-12 text-[13px] font-bold text-[#64748B]">
@@ -287,30 +296,49 @@ const EmployerDashboardPage = () => {
 
           {/* Right Column */}
           <div className="lg:col-span-4 flex flex-col gap-8">
-            {/* Source Mock - Vẫn giữ tĩnh vì chưa có backend phần này */}
             <div className="bg-white rounded-3xl border border-[#F1F5F9] p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
               <h3 className="text-xl font-bold text-[#0F172A] mb-8">Nguồn CV Hàng Đầu</h3>
-              {totalApps > 0 ? (
-                <div className="space-y-7">
-                  {[
-                    { label: "Tìm kiếm tự nhiên", percent: "45%", width: "45%", color: "bg-[#0A66C2]" },
-                    { label: "Trang Tuyển dụng", percent: "25%", width: "25%", color: "bg-[#1877F2]" },
-                    { label: "Giới thiệu (Referral)", percent: "18%", width: "18%", color: "bg-emerald-500" },
-                    { label: "Khác", percent: "12%", width: "12%", color: "bg-amber-500" },
-                  ].map((source, idx) => (
-                    <div key={idx} className="space-y-2 group/source">
-                      <div className="flex justify-between text-[14px] font-semibold text-[#0F172A]">
-                        <span>{source.label}</span>
-                        <span className="text-[#64748B]">{source.percent}</span>
-                      </div>
-                      <div className="h-2.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${source.color} rounded-full transition-all duration-1000 ease-out group-hover/source:brightness-110`} 
-                          style={{ width: source.width }} 
+              {data?.sources && data.sources.length > 0 ? (
+                <div className="flex flex-col items-center">
+                  <div className="w-[200px] h-[200px] mb-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={data.sources}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={80}
+                          paddingAngle={5}
+                          dataKey="count"
+                        >
+                          {data.sources.map((entry, index) => {
+                            const colors = ["#0A66C2", "#1877F2", "#10B981", "#F59E0B", "#8B5CF6"];
+                            return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                          })}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                          itemStyle={{ color: '#0F172A', fontWeight: 'bold' }}
+                          formatter={(value, name, props) => [`${value} CV (${props.payload.percent}%)`, props.payload.source]}
                         />
-                      </div>
-                    </div>
-                  ))}
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="w-full space-y-3">
+                    {data.sources.map((source, idx) => {
+                      const colors = ["bg-[#0A66C2]", "bg-[#1877F2]", "bg-emerald-500", "bg-amber-500", "bg-purple-500"];
+                      return (
+                        <div key={idx} className="flex justify-between items-center text-[14px] font-semibold text-[#0F172A]">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-3 h-3 rounded-full ${colors[idx % colors.length]}`}></span>
+                            <span>{source.source}</span>
+                          </div>
+                          <span className="text-[#64748B]">{source.percent}% ({source.count})</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               ) : (
                  <div className="text-center text-gray-500 text-sm py-4">Chưa có dữ liệu</div>
@@ -332,17 +360,49 @@ const EmployerDashboardPage = () => {
                   </h3>
                 </div>
                 <div className="text-[15px] text-[#475569] leading-relaxed font-medium">
-                  {isLoading || !data?.aiSuggestion ? (
+                  {isAILoading || !aiData?.aiSuggestion ? (
                     <div className="space-y-2 mt-2">
                       <div className="h-4 bg-indigo-100 rounded animate-pulse w-full"></div>
                       <div className="h-4 bg-indigo-100 rounded animate-pulse w-5/6"></div>
                       <div className="h-4 bg-indigo-100 rounded animate-pulse w-4/6"></div>
                     </div>
                   ) : (
-                    <p>{data.aiSuggestion}</p>
+                    <div className="prose prose-sm prose-indigo max-w-none text-[#475569] marker:text-indigo-500">
+                      <ReactMarkdown>{aiData.aiSuggestion}</ReactMarkdown>
+                    </div>
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Trend Chart Area */}
+          <div className="lg:col-span-12 bg-white rounded-3xl border border-[#F1F5F9] p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-[#0F172A]">Biểu đồ Ứng tuyển</h3>
+                <p className="text-[#64748B] text-sm mt-1 font-medium">Lượng hồ sơ nhận được trong 12 tháng qua</p>
+              </div>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendData || []} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00307c" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#00307c" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="month" stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} axisLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+                    itemStyle={{ color: '#0F172A', fontWeight: 'bold' }}
+                  />
+                  <Area type="monotone" dataKey="count" name="Hồ sơ" stroke="#00307c" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
@@ -379,14 +439,22 @@ const EmployerDashboardPage = () => {
                      </tr>
                   ) : (
                     recentJobs.map((job) => {
+                      const jobTypeMap: Record<string, string> = {
+                        full_time: "Toàn thời gian", part_time: "Bán thời gian",
+                        contract: "Hợp đồng", internship: "Thực tập",
+                        freelance: "Tự do", remote: "Từ xa",
+                      };
+
                       let statusColor = "text-gray-700 bg-gray-50 border-gray-200";
                       let statusText = job.status;
                       if (job.status === "published") { statusColor = "text-emerald-700 bg-emerald-50 border-emerald-200"; statusText = "Đang tuyển"; }
                       else if (job.status === "draft") { statusColor = "text-amber-700 bg-amber-50 border-amber-200"; statusText = "Bản nháp"; }
                       else if (job.status === "closed") { statusColor = "text-red-700 bg-red-50 border-red-200"; statusText = "Đã đóng"; }
+                      else if (job.status === "expired") { statusColor = "text-gray-700 bg-gray-50 border-gray-200"; statusText = "Đã hết hạn"; }
+                      else if (job.status === "paused") { statusColor = "text-purple-700 bg-purple-50 border-purple-200"; statusText = "Tạm dừng"; }
 
                       return (
-                        <tr key={job.id} className="hover:bg-[#F8FAFC] transition-colors group/row cursor-pointer">
+                        <tr key={job.id} onClick={() => navigate(`/employer/jobs/${job.id}`)} className="hover:bg-[#F8FAFC] transition-colors group/row cursor-pointer">
                           <td className="px-8 py-5">
                             <div className="flex items-center gap-4">
                               <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-blue-600 bg-blue-50">
@@ -394,7 +462,7 @@ const EmployerDashboardPage = () => {
                               </div>
                               <div>
                                 <p className="text-[15px] font-bold text-[#0F172A] group-hover/row:text-[#00307c] transition-colors">{job.title}</p>
-                                <p className="text-[13px] text-[#64748B] font-medium mt-0.5 capitalize">{job.jobType.replace('_', ' ')}</p>
+                                <p className="text-[13px] text-[#64748B] font-medium mt-0.5 capitalize">{jobTypeMap[job.jobType] || job.jobType}</p>
                               </div>
                             </div>
                           </td>

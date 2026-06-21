@@ -23,20 +23,26 @@ export class EmployerAIService {
       }
 
       const prompt = `
-Bạn là một chuyên gia quản trị nhân sự cấp cao. Hãy xem xét số liệu tuyển dụng sau của một công ty:
-- Tổng số chiến dịch/tin tuyển dụng: ${overview.totalJobs} (trong đó đang tuyển: ${overview.activeJobs})
-- Tổng số lượt xem tin: ${overview.totalViews}
-- Tổng số hồ sơ nhận được: ${overview.totalApplications}
-- Trạng thái các hồ sơ (Phễu):
-${pipeline.map((p) => `  + ${p.status}: ${p.count}`).join("\n")}
+Bạn là Giám đốc Nhân sự (CHRO) kiêm Chuyên gia Phân tích Dữ liệu AI. Dưới đây là dữ liệu tuyển dụng thực tế của công ty tôi:
+- Tổng số chiến dịch đang chạy: ${overview.activeJobs} / ${overview.totalJobs}
+- Lượt xem tin tuyển dụng: ${overview.totalViews}
+- Số lượng CV nhận được: ${overview.totalApplications}
+- Hiện trạng Phễu (Pipeline):
+${pipeline.map((p) => `  + Vòng ${p.status}: ${p.count} ứng viên`).join("\n")}
 
-Dựa vào các số liệu trên, hãy viết ĐÚNG 2 CÂU ngắn gọn (dưới 40 từ) bằng tiếng Việt để đưa ra một nhận xét sắc bén và một đề xuất hành động (actionable advice) giúp công ty tối ưu hóa hiệu quả tuyển dụng. Trả lời trực tiếp, không cần chào hỏi, không dùng markdown.`;
+Dựa vào số liệu trên, hãy đưa ra 1 đoạn phân tích SIÊU CHI TIẾT và ĐỘT PHÁ (khoảng 80-100 từ) bằng tiếng Việt.
+Yêu cầu bắt buộc:
+1. Phải nhắc trực tiếp đến CÁC CON SỐ ở trên để chứng minh bạn đang phân tích số liệu thật.
+2. Nêu ra 1 "Điểm nghẽn" (Bottleneck) lớn nhất đang gặp phải trong phễu.
+3. Đề xuất 1 giải pháp mang tính chiến lược, đột phá (ví dụ: thay đổi JD, chạy quảng cáo, tối ưu thời gian phản hồi).
+4. Sử dụng emoji phù hợp (📈, ⚠️, 💡) để làm nổi bật văn bản.
+Trả lời ngay nội dung, không cần dạo đầu. Không dùng markdown block code.`;
 
       const chatCompletion = await this.groq.chat.completions.create({
         messages: [{ role: "user", content: prompt }],
         model: "llama-3.3-70b-versatile",
-        temperature: 0.5,
-        max_tokens: 150,
+        temperature: 0.7,
+        max_tokens: 300,
       });
 
       return (
@@ -75,20 +81,30 @@ Dựa vào các số liệu trên, hãy viết ĐÚNG 2 CÂU ngắn gọn (dư�
       // Rút gọn bớt dữ liệu để khỏi bị over token
       const skillsStr = allSkills.slice(0, 50).join(", ");
 
-      const prompt = `
-Bạn là một AI phân tích dữ liệu tuyển dụng. Dưới đây là danh sách các kỹ năng của tập ứng viên đang ứng tuyển:
-[${skillsStr}]
+      const experienceLevels = candidates.map(c => c.candidate?.experienceLevel).filter(Boolean);
+      const expCounts = experienceLevels.reduce((acc: any, curr: string) => {
+        acc[curr] = (acc[curr] || 0) + 1;
+        return acc;
+      }, {});
+      const expStr = Object.entries(expCounts).map(([level, count]) => `${level}: ${count}`).join(", ");
 
-Dựa vào danh sách kỹ năng này, hãy chọn ra 2 kỹ năng nổi bật nhất và đánh giá tỷ lệ phần trăm mức độ phù hợp/phổ biến của chúng. 
-Hãy trả lời CHỈ BẰNG 1 JSON hợp lệ có định dạng chính xác như sau (không kèm theo bất kỳ văn bản nào khác, không có markdown formatting code blocks):
+      const prompt = `
+Bạn là Giám đốc Nhân sự (CHRO) phân tích tập dữ liệu ứng viên.
+Các kỹ năng xuất hiện trong CV: [${skillsStr}].
+Trình độ kinh nghiệm: ${expStr}.
+Tổng số ứng viên: ${candidates.length}.
+
+Hãy phân tích SÂU SẮC chất lượng của tập ứng viên này. Tìm ra những xu hướng kỹ năng nổi bật và điểm yếu nếu có.
+Trả lời CHỈ BẰNG 1 JSON định dạng chính xác như sau:
 {
-  "overview": "Một câu nhận xét ngắn (dưới 20 từ) về chất lượng kỹ năng của tập ứng viên này.",
+  "overview": "Một đoạn nhận xét khoảng 30-40 từ đánh giá tổng quan trình độ, mức độ phù hợp của tập ứng viên và đề xuất hướng xử lý.",
   "skills": [
-    { "name": "Tên kỹ năng 1", "percentage": "+X% Phù hợp", "match": X },
-    { "name": "Tên kỹ năng 2", "percentage": "+Y% Phù hợp", "match": Y }
+    { "name": "Kỹ năng mạnh nhất", "percentage": "+X% Phù hợp", "match": X },
+    { "name": "Kỹ năng tiềm năng/Thiếu hụt", "percentage": "Y% Có kỹ năng này", "match": Y }
   ]
 }
-Giá trị X, Y là số nguyên từ 1 đến 99.`;
+X, Y là số nguyên từ 1 đến 99.
+Không kèm theo markdown hay văn bản ngoài JSON.`;
 
       const chatCompletion = await this.groq.chat.completions.create({
         messages: [{ role: "user", content: prompt }],
@@ -110,4 +126,95 @@ Giá trị X, Y là số nguyên từ 1 đến 99.`;
       };
     }
   }
+
+  async generateJobDescription(jobTitle: string, requirements: string): Promise<string> {
+    try {
+      if (!process.env.GROQ_API_KEY) {
+        return "Chưa cấu hình API Key. Không thể tạo mô tả tự động lúc này.";
+      }
+
+      const prompt = `Bạn là chuyên gia nhân sự. Hãy viết một đoạn Mô tả công việc (Job Description) ngắn gọn, chuyên nghiệp bằng tiếng Việt cho vị trí: "${jobTitle}".
+      Yêu cầu thêm: ${requirements || 'Không có yêu cầu đặc biệt'}.
+      Mô tả bao gồm 3 phần ngắn: 1. Giới thiệu chung, 2. Trách nhiệm chính (3-4 bullet points), 3. Yêu cầu (3-4 bullet points).
+      Trả lời ngay nội dung, không cần dạo đầu.`;
+
+      const chatCompletion = await this.groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.7,
+        max_tokens: 500,
+      });
+
+      return chatCompletion.choices[0]?.message?.content?.trim() || "";
+    } catch (error) {
+      console.error("Lỗi khi gọi Groq AI Job Description:", error);
+      return "";
+    }
+  }
+
+  async analyzeApplicationFit(jobDescription: string, candidateResumeText: string): Promise<{score: number, analysis: string}> {
+    try {
+      if (!process.env.GROQ_API_KEY) {
+        return { score: 0, analysis: "Chưa cấu hình API Key." };
+      }
+
+      const prompt = `Phân tích độ phù hợp của ứng viên với công việc.
+      Mô tả công việc: ${jobDescription.substring(0, 1000)}
+      CV Ứng viên: ${candidateResumeText.substring(0, 1000)}
+
+      Hãy trả lời CHỈ BẰNG 1 JSON hợp lệ với định dạng:
+      {
+        "score": X, // X là số nguyên từ 1 đến 100 đánh giá mức độ phù hợp
+        "analysis": "Một đoạn phân tích ngắn (dưới 50 từ) giải thích lý do cho điểm số này."
+      }`;
+
+      const chatCompletion = await this.groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.2,
+        max_tokens: 200,
+        response_format: { type: "json_object" }
+      });
+
+      const content = chatCompletion.choices[0]?.message?.content?.trim();
+      if (!content) throw new Error("No content");
+      return JSON.parse(content);
+    } catch (error) {
+      console.error("Lỗi khi gọi Groq AI Fit Analysis:", error);
+      return { score: 0, analysis: "Không thể phân tích ngay lúc này do lỗi hệ thống AI." };
+    }
+  }
+
+  async generateInterviewQuestions(jobTitle: string, skills: string[]): Promise<string[]> {
+    try {
+      if (!process.env.GROQ_API_KEY) {
+        return ["Hãy chia sẻ về kinh nghiệm làm việc trước đây của bạn.", "Điểm mạnh và điểm yếu lớn nhất của bạn là gì?"];
+      }
+
+      const prompt = `Tạo danh sách 5 câu hỏi phỏng vấn kỹ thuật và văn hóa bằng tiếng Việt cho vị trí: "${jobTitle}".
+      Các kỹ năng chính của ứng viên: ${skills.join(", ")}.
+      
+      Trả lời CHỈ BẰNG 1 JSON hợp lệ định dạng:
+      {
+        "questions": ["Câu 1", "Câu 2", "Câu 3", "Câu 4", "Câu 5"]
+      }`;
+
+      const chatCompletion = await this.groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.5,
+        max_tokens: 300,
+        response_format: { type: "json_object" }
+      });
+
+      const content = chatCompletion.choices[0]?.message?.content?.trim();
+      if (!content) throw new Error("No content");
+      const parsed = JSON.parse(content);
+      return parsed.questions || [];
+    } catch (error) {
+      console.error("Lỗi khi gọi Groq AI Interview Questions:", error);
+      return ["Bạn có thể mô tả chi tiết hơn về dự án gần đây nhất bạn tham gia không?"];
+    }
+  }
 }
+

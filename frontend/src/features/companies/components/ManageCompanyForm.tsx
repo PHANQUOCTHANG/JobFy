@@ -48,10 +48,9 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
   const { data: industries, isLoading: isLoadingIndustries } = useIndustries();
   const { data: provinces, isLoading: isLoadingProvinces } = useProvinces();
   
-  // @ts-ignore
   const form = useForm<CompanyProfileInput>({
-    // @ts-ignore
-    resolver: zodResolver(companyProfileSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(companyProfileSchema) as any,
     defaultValues: {
       name: initialData?.name || "",
       taxCode: initialData?.taxCode || "",

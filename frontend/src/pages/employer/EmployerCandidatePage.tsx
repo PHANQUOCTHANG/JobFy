@@ -31,6 +31,7 @@ const EmployerCandidatePage = () => {
     experience: [] as string[],
     status: "",
     jobId: "",
+    sort: "newest",
     page: 1,
     limit: 10,
   });
@@ -124,7 +125,7 @@ const EmployerCandidatePage = () => {
         <div className="lg:col-span-6 flex flex-col gap-6">
           <div className="flex items-end justify-between bg-white rounded-3xl p-6 border border-[#F1F5F9] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.06)]">
             <div>
-              <h2 className="text-3xl font-bold text-[#0F172A] tracking-tight">Danh sách ứng viên</h2>
+              <h2 className="text-2xl font-black text-[#0F172A] tracking-tight">Danh sách ứng viên</h2>
               <p className="text-[#64748B] text-[15px] font-medium mt-1">
                 {isLoading ? "Đang tải..." : `Có ${data?.pagination.total || 0} hồ sơ phù hợp`}
               </p>
@@ -143,7 +144,11 @@ const EmployerCandidatePage = () => {
                 </label>
               )}
 
-              <select className="px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[14px] font-semibold text-[#0F172A] focus:outline-none focus:ring-2 focus:border-[#00307c]">
+              <select 
+                value={filters.sort}
+                onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value }))}
+                className="px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[14px] font-semibold text-[#0F172A] focus:outline-none focus:ring-2 focus:border-[#00307c]"
+              >
                 <option value="newest">Mới nhất</option>
                 <option value="ai_score">Điểm AI</option>
               </select>

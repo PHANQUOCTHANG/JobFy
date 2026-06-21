@@ -40,7 +40,7 @@ export class SkillCategoryRepository implements ISkillCategoryRepository {
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: query.sort === "sortOrder" ? { sortOrder: "asc" } : { createdAt: "desc" },
+        orderBy: { id: "asc" },
       }),
       this.prisma.skillCategory.count({ where }),
     ]);

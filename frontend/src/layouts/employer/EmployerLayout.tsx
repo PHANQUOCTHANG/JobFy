@@ -17,7 +17,14 @@ const EmployerLayout = () => {
         toggleSidebar={toggleSidebar}
       />
 
-      <main className="flex-1 flex flex-col h-screen overflow-y-auto relative">
+      <main 
+        className="flex-1 flex flex-col h-screen overflow-y-auto relative"
+        onClick={() => {
+          if (!isCollapsed && window.innerWidth >= 1024) {
+            setIsCollapsed(true);
+          }
+        }}
+      >
         <Header setIsSidebarOpen={setIsSidebarOpen} />
         
         {/* Child Pages Content will render here */}
