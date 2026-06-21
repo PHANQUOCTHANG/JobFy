@@ -8,7 +8,8 @@
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/server.ts",
     "build": "tsc && tsc-alias",
     "serve": "node dist/server.js",
-    "prisma:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts"
+    "prisma:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
+    "prisma:seed-employer": "ts-node -r tsconfig-paths/register prisma/seed.employer.ts"
   },
   "keywords": [],
   "author": "",
@@ -65,6 +66,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "i": "^0.3.7",
     "nodemon": "^3.1.11",
     "npm": "^11.12.0",

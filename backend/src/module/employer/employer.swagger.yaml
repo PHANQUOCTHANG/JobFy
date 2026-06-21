@@ -275,6 +275,319 @@ paths:
         400:
           description: Dữ liệu trạng thái không hợp lệ.
 
+  # ==========================================
+  # SUB-MODULE: JOB MANAGEMENT
+  # ==========================================
+  /api/v1/employer/jobs:
+    get:
+      tags: [Employer - Jobs]
+      summary: Lấy danh sách tin tuyển dụng của công ty
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: status
+          schema: { type: string, enum: [draft, published, closed, expired] }
+        - in: query
+          name: keyword
+          schema: { type: string }
+      responses:
+        200:
+          description: Danh sách tin tuyển dụng.
+    post:
+      tags: [Employer - Jobs]
+      summary: Đăng tin tuyển dụng mới
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [categoryId, title, description]
+              properties:
+                categoryId: { type: integer }
+                title: { type: string }
+                description: { type: string }
+                requirements: { type: string }
+                benefits: { type: string }
+                jobType: { type: string, enum: [full_time, part_time, freelance, contract, internship] }
+                experienceLevel: { type: string, enum: [fresher, junior, mid_level, senior, manager, director] }
+                quantity: { type: integer, default: 1 }
+                salaryMin: { type: integer }
+                salaryMax: { type: integer }
+                salaryType: { type: string, enum: [hourly, daily, monthly, yearly, project, negotiate] }
+                skillIds: { type: array, items: { type: integer } }
+      responses:
+        201:
+          description: Tin tuyển dụng đã được tạo (Draft).
+
+  /api/v1/employer/jobs/{id}:
+    get:
+      tags: [Employer - Jobs]
+      summary: Lấy chi tiết tin tuyển dụng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Chi tiết tin tuyển dụng.
+    patch:
+      tags: [Employer - Jobs]
+      summary: Cập nhật thông tin tin tuyển dụng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                description: { type: string }
+      responses:
+        200:
+          description: Cập nhật thành công.
+    delete:
+      tags: [Employer - Jobs]
+      summary: Xóa (Soft delete) tin tuyển dụng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Đã xóa thành công.
+
+  /api/v1/employer/jobs/{id}/status:
+    patch:
+      tags: [Employer - Jobs]
+      summary: Thay đổi trạng thái tin (Publish, Close)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [draft, published, closed, expired] }
+      responses:
+        200:
+          description: Cập nhật trạng thái thành công.
+
+  /api/v1/employer/jobs/{id}/duplicate:
+    post:
+      tags: [Employer - Jobs]
+      summary: Nhân bản tin tuyển dụng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        201:
+          description: Tạo bản sao thành công (trạng thái Draft).
+
+  # ==========================================
+  # SUB-MODULE: INTERVIEW SCHEDULING
+  # ==========================================
+  /api/v1/employer/interviews:
+    get:
+      tags: [Employer - Interview]
+      summary: Lấy danh sách lịch phỏng vấn
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Danh sách ứng viên đang ở trạng thái Interviewed.
+    post:
+      tags: [Employer - Interview]
+      summary: Lên lịch phỏng vấn
+      description: Chuyển trạng thái ứng viên sang interviewed và gửi email mời.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [applicationId, scheduledAt, type, location]
+              properties:
+                applicationId: { type: string, format: uuid }
+                scheduledAt: { type: string, format: date-time }
+                duration: { type: integer, default: 60 }
+                type: { type: string, enum: [online, offline] }
+                location: { type: string }
+                note: { type: string }
+      responses:
+        201:
+          description: Lên lịch thành công.
+
+  /api/v1/employer/interviews/{id}:
+    delete:
+      tags: [Employer - Interview]
+      summary: Hủy lịch phỏng vấn
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string }
+      responses:
+        200:
+          description: Hủy lịch thành công.
+
+  # ==========================================
+  # SUB-MODULE: APPLICATION NOTES
+  # ==========================================
+  /api/v1/employer/candidates/{id}/notes:
+    get:
+      tags: [Employer - Note]
+      summary: Xem ghi chú nội bộ của ứng viên
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Danh sách ghi chú.
+
+  /api/v1/employer/candidates/notes:
+    post:
+      tags: [Employer - Note]
+      summary: Thêm ghi chú mới
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [applicationId, content]
+              properties:
+                applicationId: { type: string, format: uuid }
+                content: { type: string }
+                isInternal: { type: boolean, default: true }
+      responses:
+        201:
+          description: Đã thêm ghi chú.
+
+  /api/v1/employer/candidates/notes/{noteId}:
+    patch:
+      tags: [Employer - Note]
+      summary: Sửa ghi chú (chỉ tác giả mới được sửa)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: noteId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string }
+      responses:
+        200:
+          description: Cập nhật thành công.
+    delete:
+      tags: [Employer - Note]
+      summary: Xóa ghi chú
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: noteId
+          required: true
+          schema: { type: integer }
+      responses:
+        200:
+          description: Đã xóa.
+
+  # ==========================================
+  # SUB-MODULE: ANALYTICS
+  # ==========================================
+  /api/v1/employer/analytics/trends:
+    get:
+      tags: [Employer - Analytics]
+      summary: Biểu đồ xu hướng nộp đơn (12 tháng qua)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Dữ liệu line chart.
+
+  /api/v1/employer/analytics/job-performance:
+    get:
+      tags: [Employer - Analytics]
+      summary: Báo cáo hiệu quả tin đăng (Views, Applies, Tỷ lệ chuyển đổi)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Danh sách hiệu năng các tin.
+
+  /api/v1/employer/analytics/source:
+    get:
+      tags: [Employer - Analytics]
+      summary: Thống kê nguồn ứng viên
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Dữ liệu pie chart.
+
+  /api/v1/employer/analytics/time-to-hire:
+    get:
+      tags: [Employer - Analytics]
+      summary: Đo thời gian trung bình tuyển dụng thành công
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Số liệu time-to-hire.
+
+  /api/v1/employer/analytics/top-skills:
+    get:
+      tags: [Employer - Analytics]
+      summary: Top 10 kỹ năng xuất hiện nhiều nhất trong tập ứng viên
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Danh sách kỹ năng.
+
 components:
   securitySchemes:
     bearerAuth:
