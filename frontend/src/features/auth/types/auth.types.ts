@@ -1,4 +1,4 @@
-import { RegisterRequest, LoginRequest } from "@/../../backend/src/module/auth/auth.request";
+import { EmployerRegisterInput as RegisterRequest, LoginInput as LoginRequest } from "@/features/auth/schemas/auth.schema";
 import type { IUser as UserProfile } from "@/features/user/types";
 
 export type EmployerRegisterInput = RegisterRequest;

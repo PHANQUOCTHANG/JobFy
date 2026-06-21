@@ -97,6 +97,10 @@ api.interceptors.response.use(
 
     if (!originalRequest) return Promise.reject(error);
 
+    if (!error.response) {
+      return Promise.reject(error);
+    }
+
     const status = error.response?.status;
     const data = error.response?.data as any;
     // ----------------------------------------------------------------

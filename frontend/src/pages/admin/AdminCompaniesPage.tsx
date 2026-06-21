@@ -70,9 +70,9 @@ const AdminCompaniesPage: React.FC = () => {
     queryKey: ["admin", "companies", "stats"],
     queryFn: async () => {
       const [allRes, verifiedRes, unverifiedRes] = await Promise.all([
-        axios.get("/api/v1/companies?limit=1", { withCredentials: true }),
-        axios.get("/api/v1/companies?isVerified=true&limit=1", { withCredentials: true }),
-        axios.get("/api/v1/companies?isVerified=false&limit=1", { withCredentials: true }),
+        api.get("/api/v1/companies?limit=1", { withCredentials: true }),
+        api.get("/api/v1/companies?isVerified=true&limit=1", { withCredentials: true }),
+        api.get("/api/v1/companies?isVerified=false&limit=1", { withCredentials: true }),
       ]);
       return {
         all: allRes.data.meta?.totalItems || 0,
@@ -153,7 +153,7 @@ const AdminCompaniesPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-card shadow-sm border-border/50 overflow-hidden group hover:border-emerald-500/50 transition-colors">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
@@ -183,8 +183,8 @@ const AdminCompaniesPage: React.FC = () => {
         {/* Filters & Tabs */}
         <div className="p-4 sm:px-6 border-b border-border/50 space-y-4">
           <div className="flex flex-col sm:flex-row justify-between gap-4">
-            <Tabs 
-              value={verifiedFilter} 
+            <Tabs
+              value={verifiedFilter}
               onValueChange={(val) => { setVerifiedFilter(val); setPage(1); }}
               className="w-full sm:w-auto overflow-x-auto"
             >
@@ -254,10 +254,10 @@ const AdminCompaniesPage: React.FC = () => {
                             <p className="font-bold text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors cursor-pointer" onClick={() => setEditingCompany(company)}>
                               {company.name}
                             </p>
-                            <a 
-                              href={company.website} 
-                              target="_blank" 
-                              rel="noreferrer" 
+                            <a
+                              href={company.website}
+                              target="_blank"
+                              rel="noreferrer"
                               className="text-[12px] text-muted-foreground hover:text-primary hover:underline truncate max-w-[200px]"
                             >
                               {company.website ?? "Chưa có website"}
@@ -292,7 +292,7 @@ const AdminCompaniesPage: React.FC = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-lg border-border/50">
                             <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">Tùy chọn</DropdownMenuLabel>
-                            
+
                             <DropdownMenuItem asChild>
                               <a href={`/companies/${company.slug}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 cursor-pointer font-medium">
                                 <ExternalLink className="size-4 text-primary" /> Xem trang Public
@@ -304,7 +304,7 @@ const AdminCompaniesPage: React.FC = () => {
                             </DropdownMenuItem>
 
                             <DropdownMenuSeparator className="bg-border/50" />
-                            
+
                             <DropdownMenuItem
                               onClick={() => setConfirmVerify({ id: company.id, name: company.name, verified: !company.isVerified, businessLicenseUrl: company.businessLicenseUrl })}
                               className={cn(
@@ -352,7 +352,7 @@ const AdminCompaniesPage: React.FC = () => {
       </div>
 
       {/* Edit Company Modal */}
-      <AdminCompanyFormModal 
+      <AdminCompanyFormModal
         isOpen={!!editingCompany}
         onClose={() => setEditingCompany(null)}
         company={editingCompany}
@@ -381,9 +381,9 @@ const AdminCompaniesPage: React.FC = () => {
                 </div>
                 {confirmVerify.businessLicenseUrl ? (
                   <div className="relative flex items-center justify-center bg-black/5 p-4 min-h-[200px]">
-                    <img 
-                      src={confirmVerify.businessLicenseUrl} 
-                      alt="Business License" 
+                    <img
+                      src={confirmVerify.businessLicenseUrl}
+                      alt="Business License"
                       className="max-w-full max-h-[400px] object-contain rounded-lg shadow-sm"
                     />
                   </div>

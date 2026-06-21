@@ -50,6 +50,7 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
   const { data: provinces, isLoading: isLoadingProvinces } = useProvinces();
 
   const form = useForm<CompanyProfileInput>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(companyProfileSchema) as any,
     defaultValues: {
       name: initialData?.name || "",

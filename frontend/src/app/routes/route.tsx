@@ -26,7 +26,7 @@ import {
   ManageCompanyPage,
   ManageJobsPage,
   CreateJobPage,
-  ManageApplicationsPage,
+  EmployerCandidatePage,
   CandidateDetailPage,
   EmployerSettingsPage,
   CandidateDashboardPage,
@@ -190,7 +190,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: EMPLOYER_PATHS.APPLICATIONS,
-                element: <ManageApplicationsPage />,
+                element: <EmployerCandidatePage />,
               },
               {
                 path: EMPLOYER_PATHS.CANDIDATE_DETAIL(":id"),

@@ -68,7 +68,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   }, [debouncedSearch, params.search, onSearch]);
 
   const handleClearSearch = () => {
-    setLocalSearch(""); 
+    setLocalSearch("");
   };
 
   // --- 3. ANIMATION LOGIC (Overflow Fix) ---
@@ -81,7 +81,6 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
     }
   }, [isExpanded]);
 
-  // --- 4. ACTIVE COUNT ---
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (params.role && params.role !== "all") count++;
@@ -114,7 +113,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             />
             {localSearch && (
               <button
-                type="button" 
+                type="button"
                 onClick={handleClearSearch}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
               >
@@ -155,7 +154,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
               className={cn(
                 "h-10 px-4 gap-2 shadow-sm border-input hover:bg-accent/50 transition-all min-w-[100px] justify-between",
                 isExpanded &&
-                  "bg-primary/10 text-primary border-primary/30 hover:bg-primary/15",
+                "bg-primary/10 text-primary border-primary/30 hover:bg-primary/15",
               )}
             >
               <div className="flex items-center gap-2">
@@ -271,7 +270,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             </span>
 
             {/* Role Tag */}
-            {params.role && params.role !== "all" && (
+            {params.role && params.role as any !== "all" && (
               <Badge
                 variant="secondary"
                 className="h-7 pl-2 pr-1 gap-1.5 bg-background border border-border hover:bg-accent cursor-default"

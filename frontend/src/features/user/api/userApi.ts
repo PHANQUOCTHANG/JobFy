@@ -30,6 +30,26 @@ const userApi = {
     return res.data;
   },
 
+  // Follow / Unfollow user khác
+  followUser: async (userId: string) => {
+    const res = await api.post<ApiResponse<{ isFollowing: boolean }>>(
+      `/users/${userId}/follow`,
+    );
+    return res.data;
+  },
+
+  // Gửi form xin lên làm Artist (Nhận FormData vì có thể có tài liệu/avatar)
+  requestBecomeArtist: async (data: FormData) => {
+    const res = await api.post<ApiResponse<any>>(
+      "/users/request-artist",
+      data,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
+    return res.data;
+  },
+
   // ==========================================
   // 2. ADMIN LOGIC (Quản lý hệ thống)
   // ==========================================
@@ -63,6 +83,32 @@ const userApi = {
   // Xóa tài khoản vĩnh viễn (Soft delete ở backend)
   delete: async (id: string) => {
     const res = await api.delete<ApiResponse<User>>(`/users/${id}`);
+    return res.data;
+  },
+
+  // ==========================================
+  // 3. ADMIN REQUESTS (Duyệt đơn Artist)
+  // ==========================================
+
+  getArtistRequests: async () => {
+    const res = await api.get<ApiResponse<any[]>>(
+      "/users/requests?status=pending",
+    );
+    return res.data;
+  },
+
+  approveArtistRequest: async (requestId: string) => {
+    const res = await api.post<ApiResponse<any>>(
+      `/users/requests/${requestId}/approve`,
+    );
+    return res.data;
+  },
+
+  rejectArtistRequest: async (requestId: string, reason: string) => {
+    const res = await api.post<ApiResponse<any>>(
+      `/users/requests/${requestId}/reject`,
+      { reason },
+    );
     return res.data;
   },
 };

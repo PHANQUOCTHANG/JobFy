@@ -42,7 +42,7 @@ export const useUserMutations = () => {
   // 3. UPDATE STATUS USER
   // ==========================================
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: UserStatus }) => 
+    mutationFn: ({ id, status }: { id: string; status: UserStatus }) =>
       userApi.update(id, { status }),
     onSuccess: (response) => {
       const statusStr = response.data?.status === "active" ? "Đã mở khóa" : "Đã cập nhật trạng thái";

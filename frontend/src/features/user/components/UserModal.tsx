@@ -166,7 +166,7 @@ const UserModal: React.FC<UserModalProps> = ({
             {/* Section 1: Basic Info */}
             <div className="space-y-6">
               <h4 className="text-sm font-bold text-primary tracking-wide uppercase border-b pb-2">Thông tin cơ bản</h4>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2 space-y-6">
                   {/* Full Name */}

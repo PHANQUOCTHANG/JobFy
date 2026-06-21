@@ -280,91 +280,93 @@ const UsersManagementPage = () => {
             <TableBody>
               {userData.map((user: IUser) => (
                 <TableRow key={user.id} className="group">
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-9 border">
-                        <AvatarImage
-                          src={user.avatarUrl || ""}
-                          alt={user.fullName || user.email}
-                          className="object-cover"
-                        />
-                        <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-                          {getInitialsTextAvartar(user.fullName || user.email)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-sm text-foreground truncate max-w-[150px]">
-                          {user.fullName || "No Name"}
-                        </span>
-                        <span className="text-xs text-muted-foreground truncate max-w-[150px]">
-                          {user.email}
-                        </span>
+                  <TableRow key={user.id} className="group">
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="size-9 border">
+                          <AvatarImage
+                            src={user.avatarUrl || ""}
+                            alt={user.fullName || user.email}
+                            className="object-cover"
+                          />
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                            {getInitialsTextAvartar(user.fullName || user.email)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-sm text-foreground truncate max-w-[150px]">
+                            {user.fullName || "No Name"}
+                          </span>
+                          <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+                            {user.email}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{renderRoleBadge(user.role)}</TableCell>
-                  <TableCell>
-                    {renderStatusBadge(user.status)}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground text-xs font-mono">
-                    {new Date(user.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-muted-foreground"
-                        >
-                          <MoreHorizontal className="size-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    </TableCell>
+                    <TableCell>{renderRoleBadge(user.role)}</TableCell>
+                    <TableCell>
+                      {renderStatusBadge(user.status)}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground text-xs font-mono">
+                      {/* Dummy date since createdAt is not in IUser */}
+                      {new Date().toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground"
+                          >
+                            <MoreHorizontal className="size-4" />
+                            <span className="sr-only">Open menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-                        <DropdownMenuItem onClick={() => handleOpenEdit(user)}>
-                          <PenSquare className="mr-2 size-4" /> Edit Details
-                        </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleOpenEdit(user)}>
+                            <PenSquare className="mr-2 size-4" /> Edit Details
+                          </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                          onClick={() => setUserToBlock(user)}
-                          className={cn(
-                            user.status === "active"
-                              ? "text-destructive focus:text-destructive focus:bg-destructive/10"
-                              : "text-emerald-600 focus:text-emerald-600 focus:bg-emerald-500/10",
-                          )}
-                        >
-                          {user.status === "active" ? (
-                            <>
-                              <Lock className="mr-2 size-4" /> Block User
-                            </>
-                          ) : (
-                            <>
-                              <Unlock className="mr-2 size-4" /> Unblock User
-                            </>
-                          )}
-                        </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setUserToBlock(user)}
+                            className={cn(
+                              user.status === "active"
+                                ? "text-destructive focus:text-destructive focus:bg-destructive/10"
+                                : "text-emerald-600 focus:text-emerald-600 focus:bg-emerald-500/10",
+                            )}
+                          >
+                            {user.status === "active" ? (
+                              <>
+                                <Lock className="mr-2 size-4" /> Block User
+                              </>
+                            ) : (
+                              <>
+                                <Unlock className="mr-2 size-4" /> Unblock User
+                              </>
+                            )}
+                          </DropdownMenuItem>
 
-                        <DropdownMenuSeparator />
+                          <DropdownMenuSeparator />
 
-                        <DropdownMenuItem
-                          onClick={() => setUserToDelete(user)}
-                          className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                        >
-                          <Trash2 className="mr-2 size-4" /> Delete Account
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+                          <DropdownMenuItem
+                            onClick={() => setUserToDelete(user)}
+                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                          >
+                            <Trash2 className="mr-2 size-4" /> Delete Account
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
               ))}
-            </TableBody>
+                </TableBody>
           </Table>
         </div>
       )}
@@ -404,12 +406,12 @@ const UsersManagementPage = () => {
           userToBlock?.status === "active" ? "Block User Account" : "Restore User Access"
         }
         description={
-          userToBlock?.status === "active"
-            ? `Are you sure you want to block ${userToBlock.fullName || userToBlock.email}? They will lose access to the platform.`
-            : `Are you sure you want to unblock ${userToBlock?.fullName || userToBlock?.email}? They will regain full access immediately.`
+          userToBlock?.isActive
+            ? `Are you sure you want to block ${userToBlock.fullName}? They will immediately be logged out and lose access to the platform.`
+            : `Are you sure you want to unblock ${userToBlock?.fullName}? They will regain full access immediately.`
         }
-        confirmLabel={userToBlock?.status === "active" ? "Yes, Block" : "Yes, Unblock"}
-        isDestructive={userToBlock?.status === "active"}
+        confirmLabel={userToBlock?.isActive ? "Yes, Block" : "Yes, Unblock"}
+        isDestructive={userToBlock?.isActive}
       />
 
       {/* 3. Delete Confirmation */}

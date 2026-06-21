@@ -24,6 +24,20 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
+export const employerRegisterSchema = z
+  .object({
+    fullName: z.string().min(3, "Tên người đại diện phải từ 3 ký tự"),
+    companyName: z.string().min(2, "Tên công ty phải từ 2 ký tự"),
+    email: z.string().email("Email không hợp lệ"),
+    phone: z.string().optional(),
+    password: z.string().min(8, "Mật khẩu phải từ 8 ký tự"),
+    provinceId: z.string().min(1, "Vui lòng chọn Tỉnh/Thành phố"),
+    districtId: z.string().min(1, "Vui lòng chọn Quận/Huyện"),
+    role: UserRoleEnum.default("employer").optional(),
+  });
+
+export type EmployerRegisterInput = z.infer<typeof employerRegisterSchema>;
+
 // Schema OTP
 export const otpSchema = z.object({
   otp: z.string().length(6, "Mã OTP phải có đúng 6 số"),
