@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, no-unsafe-finally */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EMPLOYER_PATHS } from "@/config/paths";

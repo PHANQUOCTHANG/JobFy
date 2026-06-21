@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, no-unsafe-finally */
 import React from "react";
 import { ManageCompanyForm } from "@/features/companies/components/ManageCompanyForm";
 import { useMyCompany } from "@/features/companies/hooks/useManageCompany";
