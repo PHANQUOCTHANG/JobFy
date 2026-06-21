@@ -13,6 +13,10 @@ import {
 import { AuthResponseDto } from "./auth.response";
 import { getCache, setCache, deleteCache } from "@/utils/cache";
 import { emailService } from "@/config/container";
+import slugify from "slugify";
+import { OAuth2Client } from "google-auth-library";
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Kết quả nội bộ — thêm refreshTokenExpiresAt để controller set cookie chính xác
 interface AuthResult {
@@ -33,6 +37,7 @@ export interface IAuthService {
   logout(refreshToken: string, accessToken?: string): Promise<void>;
   resetPassword(dto: ResetPasswordRequest): Promise<void>;
   changePassword(userId: string, dto: ChangePasswordRequest): Promise<void>;
+  googleLogin(idToken: string, role?: string): Promise<AuthResponseDto>;
 }
 
 export class AuthService implements IAuthService {
@@ -44,18 +49,46 @@ export class AuthService implements IAuthService {
     private readonly refreshRepo: IRefreshTokenRepository,
     private readonly otpRepo: IOtpRepository,
     private readonly otpService: IOtpService,
-  ) {}
+  ) { }
 
   async register(dto: RegisterRequest): Promise<{ message: string }> {
     const existed = await this.userRepo.findByEmail(dto.email);
     if (existed) throw new AppError("Email đã tồn tại trên hệ thống", 409);
 
+    // Bảo mật: Mặc định là candidate nếu role không hợp lệ hoặc cố tình gửi admin
+    const role = (dto.role === "employer" || dto.role === "candidate") ? dto.role : "candidate";
+
     const hashedPassword = await bcrypt.hash(dto.password, 12);
-    await this.userRepo.create({
-      ...dto,
+
+    const userData: any = {
+      email: dto.email,
       passwordHash: hashedPassword,
-      role: dto.role || "candidate",
-    });
+      role: role,
+      phone: dto.phone,
+    };
+
+    const extraData = dto as any;
+    if (role === "candidate" && extraData.fullName) {
+      userData.candidateProfile = {
+        create: { fullName: extraData.fullName },
+      };
+    } else if (role === "employer" && extraData.companyName) {
+      const baseSlug = slugify(extraData.companyName, { lower: true, strict: true, locale: "vi" });
+      userData.companiesOwned = {
+        create: [
+          {
+            name: extraData.companyName,
+            // Thêm hậu tố ngẫu nhiên để tránh lỗi trùng lặp slug (Unique constraint failed)
+            slug: `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`,
+            // Các trường bắt buộc tối thiểu khác của model Company (nếu có)
+            address: "",
+            shortDescription: "",
+          },
+        ],
+      };
+    }
+
+    await this.userRepo.create(userData);
 
     // Thay vì generate Auth Result, gửi OTP để người dùng xác nhận
     await this.otpService.send(dto.email, "VERIFY_ACCOUNT");
@@ -112,15 +145,109 @@ export class AuthService implements IAuthService {
       (banError as any).errorCode = "ACCOUNT_LOCKED";
       throw banError;
     }
-    if (user.status === "pending_verification") {
-      const unverifiedError = new AppError("Tài khoản chưa được xác thực", 403);
-      (unverifiedError as any).errorCode = "UNVERIFIED_ACCOUNT";
-      (unverifiedError as any).data = { email: user.email };
-      throw unverifiedError;
+
+    // 4. Kiểm tra vai trò đăng nhập có khớp với tài khoản không
+    if (user.role !== dto.role) {
+      throw new AppError("Vai trò đăng nhập không khớp với tài khoản của bạn", 403);
     }
 
+    // Bỏ qua kiểm tra pending_verification tại đây để cho phép đăng nhập trước
 
     const result = await this.generateAuthResult(user, dto.rememberMe);
+    return AuthResponseDto.from(
+      result.user,
+      result.accessToken,
+      result.refreshToken,
+      result.refreshTokenExpiresAt,
+      result.rememberMe,
+    );
+  }
+
+  async googleLogin(idToken: string, role: string = "candidate"): Promise<AuthResponseDto> {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) throw new AppError("Chưa cấu hình Google OAuth Client ID", 500);
+
+    let email, name, picture, googleId;
+
+    try {
+      // 1. Thử verify như idToken trước (để tương thích ngược nếu còn dùng GoogleLogin component)
+      const client = new OAuth2Client(clientId);
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: clientId,
+      });
+      const payload = ticket.getPayload();
+      if (payload) {
+        email = payload.email;
+        name = payload.name;
+        picture = payload.picture;
+        googleId = payload.sub;
+      }
+    } catch (error) {
+      // 2. Nếu thất bại, idToken thực chất là access_token (do useGoogleLogin trả về flow implicit)
+      try {
+        const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${idToken}` }
+        });
+        if (!response.ok) throw new Error("Fetch failed");
+        const data = await response.json();
+        email = data.email;
+        name = data.name;
+        picture = data.picture;
+        googleId = data.sub;
+      } catch (err) {
+        throw new AppError("Xác thực Google thất bại hoặc token đã hết hạn", 401);
+      }
+    }
+
+    if (!email) {
+      throw new AppError("Không thể lấy thông tin email từ Google", 400);
+    }
+
+    // Tìm user theo email hoặc googleId
+    let user = await this.userRepo.findByEmail(email);
+
+    if (!user) {
+      // User chưa tồn tại, tạo mới
+      user = await this.userRepo.create({
+        email,
+        passwordHash: null,
+        role: role as any,
+        status: "active",
+        emailVerified: true,
+        googleId,
+        avatarUrl: picture,
+      });
+
+      // Khởi tạo profile rỗng cho ứng viên nếu là candidate
+      // Note: Theo hệ thống, phần profile sẽ được tạo khi cần thiết hoặc tùy thuộc vào database model
+    } else {
+      // Nếu user đã tồn tại, kiểm tra role
+      if (user.role !== role) {
+        throw new AppError(`Email này đã được đăng ký với vai trò ${user.role}. Bạn không thể dùng tài khoản này để đăng nhập vào trang ${role}.`, 403);
+      }
+
+      // Update googleId, avatar nếu chưa có, và set active nếu trước đó là pending_verification
+      const updates: any = {};
+      if (!user.googleId) updates.googleId = googleId;
+      if (!user.avatarUrl && picture) updates.avatarUrl = picture;
+      if (user.status === "pending_verification") {
+        updates.status = "active";
+        updates.emailVerified = true;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await this.userRepo.updateById(user.id, updates);
+        Object.assign(user, updates);
+      }
+
+      // Check status
+      if (user.status === "inactive") throw new AppError("Tài khoản đã bị tạm khóa", 403);
+      if (user.status === "banned") throw new AppError("Tài khoản đã bị cấm vĩnh viễn", 403);
+    }
+
+    // Đăng nhập thành công, sinh token (mặc định cho rememberMe = false với OAuth)
+    const result = await this.generateAuthResult(user, false);
     return AuthResponseDto.from(
       result.user,
       result.accessToken,
@@ -269,6 +396,7 @@ export class AuthService implements IAuthService {
     ]);
   }
 
+
   private async generateAuthResult(
     user: any,
     rememberMe: boolean = false,
@@ -281,7 +409,7 @@ export class AuthService implements IAuthService {
     const userIdStr = user.id.toString();
 
     const accessToken = jwt.sign(
-      { userId: userIdStr, role: user.role, rememberMe },
+      { userId: userIdStr, email: user.email, role: user.role, rememberMe },
       accessSecret,
       { expiresIn: "15m" },
     );

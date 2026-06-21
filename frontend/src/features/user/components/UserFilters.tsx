@@ -31,17 +31,15 @@ import { useDebounce } from "@/hooks/useDebounce";
 
 interface UserFiltersProps {
   params: UserFilterParams;
-  onSearch: (keyword: string) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSearch: (search: string) => void;
   onFilterChange: (key: keyof UserFilterParams, value: any) => void;
   onReset: () => void;
 }
 
-// Đồng bộ SORT_OPTIONS khớp chính xác với getUsersSchema của Zod
+// Đồng bộ SORT_OPTIONS khớp chính xác với backend
 const SORT_OPTIONS = [
   { label: "Mới nhất", value: "newest" },
   { label: "Cũ nhất", value: "oldest" },
-  { label: "Phổ biến", value: "popular" },
   { label: "Tên (A-Z)", value: "name" },
 ] as const;
 
@@ -55,23 +53,22 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [overflowVisible, setOverflowVisible] = useState(false);
 
-  // 2. SEARCH LOGIC ---
-  const [localSearch, setLocalSearch] = useState(params.keyword || "");
+  // --- 2. SEARCH LOGIC ---
+  const [localSearch, setLocalSearch] = useState(params.search || "");
   const debouncedSearch = useDebounce(localSearch, 400);
 
   useEffect(() => {
-    setLocalSearch(params.keyword || "");
-  }, [params.keyword]);
+    setLocalSearch(params.search || "");
+  }, [params.search]);
 
   useEffect(() => {
-    if (debouncedSearch !== (params.keyword || "")) {
+    if (debouncedSearch !== (params.search || "")) {
       onSearch(debouncedSearch);
     }
-  }, [debouncedSearch, params.keyword, onSearch]);
+  }, [debouncedSearch, params.search, onSearch]);
 
-  // Xử lý xóa từ khóa tìm kiếm
   const handleClearSearch = () => {
-    setLocalSearch(""); // Cập nhật state local, debounce sẽ trigger onSearch sau 400ms
+    setLocalSearch("");
   };
 
   // 3. ANIMATION LOGIC (Overflow Fix) ---
@@ -84,11 +81,10 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
     }
   }, [isExpanded]);
 
-  // 4. ACTIVE COUNT ---
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (params.role) count++;
-    if (params.status) count++;
+    if (params.role && params.role !== "all") count++;
+    if (params.status && params.status !== "all") count++;
     return count;
   }, [params]);
 
@@ -107,14 +103,14 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             <Input
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
-              placeholder="Tìm kiếm theo Tên, Username hoặc Email..."
+              placeholder="Tìm kiếm theo Tên, hoặc Email..."
               autoComplete="off"
               spellCheck="false"
               className="pl-9 pr-9 h-10 bg-background border-input shadow-sm focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary transition-all"
             />
             {localSearch && (
               <button
-                type="button" // Ngăn submit form mặc định
+                type="button"
                 onClick={handleClearSearch}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
               >
@@ -154,7 +150,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
               className={cn(
                 "h-10 px-4 gap-2 shadow-sm border-input hover:bg-accent/50 transition-all min-w-[100px] justify-between",
                 isExpanded &&
-                  "bg-primary/10 text-primary border-primary/30 hover:bg-primary/15",
+                "bg-primary/10 text-primary border-primary/30 hover:bg-primary/15",
               )}
             >
               <div className="flex items-center gap-2">
@@ -190,7 +186,8 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
               overflowVisible ? "overflow-visible" : "overflow-hidden",
             )}
           >
-            <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+            <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
+              {/* 1. Role Filter */}
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold uppercase text-muted-foreground/80 tracking-widest flex items-center gap-1.5 ml-1">
                   <UserCog className="size-3" /> Phân quyền
@@ -206,8 +203,8 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tất cả phân quyền</SelectItem>
-                    <SelectItem value="candidate">Ứng viên</SelectItem>
-                    <SelectItem value="employer">Nhà tuyển dụng</SelectItem>
+                    <SelectItem value="candidate">Ứng viên (Candidate)</SelectItem>
+                    <SelectItem value="employer">Nhà tuyển dụng (Employer)</SelectItem>
                     <SelectItem value="admin">Quản trị viên (Admin)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -219,7 +216,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                 </label>
                 <Select
                   value={params.status || "all"}
-                  onValueChange={(val: string) => {
+                  onValueChange={(val) => {
                     onFilterChange("status", val === "all" ? undefined : val);
                   }}
                 >
@@ -231,13 +228,19 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                     <SelectItem value="active">
                       <div className="flex items-center gap-2">
                         <div className="size-2 rounded-full bg-emerald-500" />
-                        Đang hoạt động
+                        Hoạt động (Active)
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="pending_verification">
+                      <div className="flex items-center gap-2">
+                        <div className="size-2 rounded-full bg-amber-500" />
+                        Chờ xác thực
                       </div>
                     </SelectItem>
                     <SelectItem value="inactive">
                       <div className="flex items-center gap-2">
-                        <div className="size-2 rounded-full bg-orange-500" />
-                        Chưa kích hoạt
+                        <div className="size-2 rounded-full bg-muted-foreground" />
+                        Vô hiệu hóa (Inactive)
                       </div>
                     </SelectItem>
                     <SelectItem value="banned">
@@ -259,7 +262,8 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
               Đang lọc:
             </span>
 
-            {params.role && (
+            {/* Role Tag */}
+            {params.role && params.role as any !== "all" && (
               <Badge
                 variant="secondary"
                 className="h-7 pl-2 pr-1 gap-1.5 bg-background border border-border hover:bg-accent cursor-default"
@@ -277,19 +281,20 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
               </Badge>
             )}
 
-            {params.status && (
+            {/* Status Tag */}
+            {params.status && params.status !== "all" && (
               <Badge
                 variant="secondary"
                 className="h-7 pl-2 pr-1 gap-1.5 bg-background border border-border hover:bg-accent cursor-default"
               >
-                {params.status === 'active' ? (
+                {params.status === "active" ? (
                   <UserCheck className="size-3 text-emerald-500" />
                 ) : (
                   <UserX className="size-3 text-destructive" />
                 )}
                 <span className="text-muted-foreground">Trạng thái:</span>
                 <span className="font-medium capitalize">
-                  {params.status}
+                  {params.status.replace('_', ' ')}
                 </span>
                 <button
                   type="button"

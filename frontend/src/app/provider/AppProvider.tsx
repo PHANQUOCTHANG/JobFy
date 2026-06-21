@@ -52,7 +52,8 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({
     >
       <QueryClientProvider client={queryClient}>
         <SocketProvider>
-          <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          {/* Thay đổi mặc định về 'light' để lấy lại màu trắng */}
+          <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
             <InnerProviders>{children}</InnerProviders>
 
             <Toaster

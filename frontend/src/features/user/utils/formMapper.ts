@@ -7,18 +7,20 @@ export const USER_DEFAULT_VALUES: AdminUserFormValues = {
   role: "candidate",
   status: "active",
   password: "",
-  avatar: null,
+  avatarUrl: "",
 };
 
 export const mapUserToForm = (user?: IUser | null): AdminUserFormValues => {
   if (!user) return USER_DEFAULT_VALUES;
 
   return {
-    fullName: user.fullName,
+    fullName: user.fullName || "",
     email: user.email,
     role: user.role,
+    status: user.status,
     status: user.status || "active",
     password: "", // Không bao giờ map password từ DB ngược về form
+    avatarUrl: user.avatarUrl || "",
     avatar: user.avatar || null,
   };
 };

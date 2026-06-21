@@ -5,6 +5,9 @@ import { formatDistanceToNow, differenceInDays } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { formatSalary } from '@/utils/formatters';
+import { useAppSelector } from '@/store/hooks';
+import { useSavedJobIds, useSaveJob, useUnsaveJob } from '../hooks/useJobs';
+import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   HoverCard,
@@ -67,6 +70,33 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
   };
 
   const timeDisplay = formatTimeAgoText(timeAgo);
+
+  const { user } = useAppSelector((state) => state.auth);
+  const isCandidate = user?.role === 'candidate';
+  const { data: savedIds = [] } = useSavedJobIds(isCandidate);
+  const { mutate: saveJob } = useSaveJob();
+  const { mutate: unsaveJob } = useUnsaveJob();
+
+  const isSaved = savedIds.includes(job.id);
+
+  const handleToggleSave = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isCandidate) {
+      toast.info('Vui lòng đăng nhập với tư cách ứng viên để lưu công việc');
+      return;
+    }
+    if (isSaved) {
+      unsaveJob(job.id, {
+        onSuccess: () => toast.success('Đã bỏ lưu công việc'),
+      });
+    } else {
+      saveJob(job.id, {
+        onSuccess: () => toast.success('Đã lưu công việc'),
+      });
+    }
+    onSave?.(job.id);
+  };
   const daysLeft = job.expiresAt ? differenceInDays(new Date(job.expiresAt), new Date()) : null;
 
   const handleApplyClick = (e: React.MouseEvent) => {

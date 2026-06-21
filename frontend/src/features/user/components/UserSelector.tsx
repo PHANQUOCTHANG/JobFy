@@ -64,7 +64,7 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
   const { data: userRes, isLoading } = useUsersQuery({
     page: 1,
     limit: 15,
-    keyword: debouncedSearch,
+    search: debouncedSearch,
   });
 
   const fetchedUsers = useMemo(() => userRes?.users || [], [userRes]);
@@ -197,11 +197,11 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                       <div className="relative shrink-0">
                         <Avatar className="size-8 border border-border">
                           <AvatarImage
-                            src={user.avatar || undefined}
+                            src={user.avatarUrl || undefined}
                             className="object-cover"
                           />
                           <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">
-                            {getInitialsTextAvartar(user.fullName)}
+                            {getInitialsTextAvartar(user.fullName || "U")}
                           </AvatarFallback>
                         </Avatar>
                         {isSelected && (
@@ -220,7 +220,7 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
                               : "font-medium text-foreground",
                           )}
                         >
-                          {user.fullName}
+                          {user.fullName || "No Name"}
                         </p>
                         <p className="text-[11px] text-muted-foreground truncate">
                           {user.email}
@@ -268,13 +268,13 @@ export const UserSelector: React.FC<UserSelectorProps> = ({
               className="pl-1 pr-1.5 py-1 h-8 text-xs border bg-background hover:bg-muted transition-colors flex items-center gap-1.5 shadow-sm"
             >
               <Avatar className="size-5">
-                <AvatarImage src={user.avatar || undefined} className="object-cover" />
+                <AvatarImage src={user.avatarUrl || undefined} className="object-cover" />
                 <AvatarFallback className="text-[8px] bg-primary/10 text-primary">
-                  {getInitialsTextAvartar(user.fullName)}
+                  {getInitialsTextAvartar(user.fullName || "U")}
                 </AvatarFallback>
               </Avatar>
               <span className="font-semibold max-w-[120px] truncate">
-                {user.fullName}
+                {user.fullName || "No Name"}
               </span>
               <button
                 type="button"

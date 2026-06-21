@@ -5,7 +5,7 @@ import { UserFilterParams } from "../types";
 const DEFAULT_PARAMS: UserFilterParams = {
   page: 1,
   limit: 10,
-  keyword: "",
+  search: "",
   role: undefined,
   sort: "newest",
   status: undefined,
@@ -23,7 +23,7 @@ export const useUserParams = (initialLimit = 10) => {
   );
 
   const handleSearch = useCallback(
-    (keyword: string) => setParams({ keyword, page: 1 }),
+    (search: string) => setParams({ search, page: 1 }),
     [setParams],
   );
   const handlePageChange = useCallback(

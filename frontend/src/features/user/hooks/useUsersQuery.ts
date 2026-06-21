@@ -18,9 +18,14 @@ export const useUsersQuery = (params: UserFilterParams) => {
 
     // Selector: Chỉ trích xuất những dữ liệu thực sự cần thiết cho Component (Table, Pagination)
     select: (response) => ({
-      users: response.data.data,
-      meta: response.data.meta,
-      isEmpty: response.data.data.length === 0,
+      users: response.data || [],
+      meta: {
+        totalItems: response.meta?.total || 0,
+        totalPages: response.meta?.totalPages || 1,
+        page: response.meta?.page || 1,
+        pageSize: response.meta?.limit || 10,
+      },
+      isEmpty: !response.data || response.data.length === 0,
     }),
   });
 };

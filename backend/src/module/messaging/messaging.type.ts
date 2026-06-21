@@ -7,6 +7,7 @@ export interface IConversation extends Conversation {
   messages?: Message[];
 }
 
+
 export interface IMessage extends Message {
   sender?: User;
 }

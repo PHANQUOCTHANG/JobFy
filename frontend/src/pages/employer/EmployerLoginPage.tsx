@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm, type FieldValues } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginEmployer, googleLoginEmployer } from '@/features/auth/slice/authSlice';
+import { loginSchema, LoginInput as LoginRequest } from '@/features/auth/schemas/auth.schema';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   Mail,
   Lock,
@@ -9,10 +16,12 @@ import {
   Users,
   Zap,
   Shield,
-  Briefcase,
   ArrowLeft,
+  Loader2,
+  Briefcase,
   type LucideIcon,
 } from 'lucide-react';
+import GoogleLoginButton from '@/features/auth/components/GoogleLoginButton';
 
 /* ─── Background Pattern (same as Register) ─── */
 const BackgroundPattern = () => (
@@ -50,24 +59,21 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       </div>
       <div className="relative group">
         <div
-          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${
-            error
-              ? 'text-red-500'
-              : 'text-[#94A3B8] group-focus-within:text-[#00307c]'
-          }`}
+          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${error
+            ? 'text-red-500'
+            : 'text-[#94A3B8] group-focus-within:text-[#00307c]'
+            }`}
         >
           <Icon size={17} strokeWidth={2} />
         </div>
         <input
           ref={ref}
           id={id}
-          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${
-            rightElement ? 'pr-11' : 'pr-4'
-          } ${
-            error
+          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${rightElement ? 'pr-11' : 'pr-4'
+            } ${error
               ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
               : 'border-[#E2E8F0] focus:border-[#00307c] focus:shadow-[0_0_0_3px_rgba(0,48,124,0.10)]'
-          }`}
+            }`}
           style={{ height: '50px' }}
           {...props}
         />
@@ -109,6 +115,49 @@ const FeatureBadge = ({
 /* ─── Main Page ─── */
 const EmployerLoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isLoading } = useAppSelector((state) => state.auth);
+
+  // @ts-ignore
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginRequest>({
+    // @ts-ignore
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '', rememberMe: false },
+  });
+
+  const onSubmit = async (data: any) => {
+    const payload = data as LoginRequest;
+    const resultAction = await dispatch(loginEmployer({ ...payload, role: 'employer' }));
+
+    if (loginEmployer.fulfilled.match(resultAction)) {
+      toast.success('Đăng nhập thành công!');
+      navigate('/employer');
+    } else {
+      toast.error(resultAction.payload as string || 'Đăng nhập thất bại');
+    }
+  };
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const resultAction = await dispatch(googleLoginEmployer(tokenResponse.access_token));
+        if (googleLoginEmployer.fulfilled.match(resultAction)) {
+          toast.success('Đăng nhập bằng Google thành công!');
+          navigate('/employer');
+        } else {
+          toast.error(resultAction.payload as string || 'Đăng nhập bằng Google thất bại');
+        }
+      } catch (error) {
+        toast.error('Đăng nhập bằng Google thất bại');
+      }
+    },
+    onError: () => toast.error('Đăng nhập bằng Google thất bại'),
+  });
 
   return (
     <div
@@ -242,13 +291,17 @@ const EmployerLoginPage: React.FC = () => {
             </p>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Email */}
             <InputField
               icon={Mail}
               label="Email doanh nghiệp"
               id="login-email"
               type="email"
               placeholder="email@congty.com"
+              error={errors.email?.message}
+              {...register('email')}
             />
 
             <InputField
@@ -259,12 +312,14 @@ const EmployerLoginPage: React.FC = () => {
               placeholder="••••••••"
               labelRight={
                 <Link
-                  to="#"
+                  to="/employer/forgot-password"
                   className="text-[12px] font-bold text-[#00307c] hover:underline underline-offset-2"
                 >
                   Quên mật khẩu?
                 </Link>
               }
+              error={errors.password?.message}
+              {...register('password')}
               rightElement={
                 <button
                   type="button"
@@ -281,6 +336,7 @@ const EmployerLoginPage: React.FC = () => {
                 id="remember"
                 type="checkbox"
                 className="w-4 h-4 rounded border-[#CBD5E1] text-[#00307c] accent-[#00307c] cursor-pointer"
+                {...register('rememberMe')}
               />
               <label
                 htmlFor="remember"
@@ -292,9 +348,17 @@ const EmployerLoginPage: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full h-12 bg-[#00307c] hover:bg-[#002568] text-white text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center shadow-lg shadow-[#00307c]/25 mt-2"
+              disabled={isLoading}
+              className="w-full h-12 bg-[#00307c] hover:bg-[#002568] text-white text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center shadow-lg shadow-[#00307c]/25 mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Đăng nhập ngay
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : (
+                'Đăng nhập ngay'
+              )}
             </button>
           </form>
 
@@ -306,18 +370,10 @@ const EmployerLoginPage: React.FC = () => {
             <div className="flex-1 h-px bg-[#E2E8F0]" />
           </div>
 
-          <button
-            type="button"
-            className="w-full h-12 border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[#0F172A] text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3"
-          >
-            <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-            </svg>
-            <span>Đăng nhập với Google</span>
-          </button>
+          {/* Google Sign In */}
+          <div className="w-full relative mt-[-10px] [&>div]:justify-center">
+            <GoogleLoginButton role="employer" />
+          </div>
 
           <div className="flex items-center justify-center gap-6 mt-8 pt-6 border-t border-[#F1F5F9]">
             {[

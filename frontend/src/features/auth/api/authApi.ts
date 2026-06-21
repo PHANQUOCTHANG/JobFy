@@ -24,6 +24,15 @@ const authApi = {
     return res.data;
   },
 
+  // 1b. Đăng nhập bằng Google
+  googleLogin: async (idToken: string, role: string): Promise<ApiResponse<LoginResponse>> => {
+    const res = await api.post<ApiResponse<LoginResponse>>(
+      "/auth/google-login",
+      { idToken, role }
+    );
+    return res.data;
+  },
+
   // 2. Đăng ký
   register: async (
     payload: RegisterRequest,

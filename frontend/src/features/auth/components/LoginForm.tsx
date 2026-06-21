@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { useLogin } from "../hooks/useLogin";
 import { env } from "@/config/env";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 const BackgroundPattern = () => (
   <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -204,11 +205,10 @@ export default function LoginForm() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <a href={`${env.API_URL}/auth/google`} className="flex items-center justify-center gap-2.5 h-12 rounded-xl border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[14px] font-bold text-[#0F172A] transition-all">
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-              Google
-            </a>
-            <a href={`${env.API_URL}/auth/facebook`} className="flex items-center justify-center gap-2.5 h-12 rounded-xl border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[14px] font-bold text-[#0F172A] transition-all">
+            <div className="flex items-center justify-center [&>div]:justify-center [&>div]:mt-0 w-full overflow-hidden rounded-xl border-2 border-[#E2E8F0] hover:border-[#0F172A] transition-all">
+              <GoogleLoginButton role="candidate" />
+            </div>
+            <a href={`${env.API_URL}/auth/facebook`} className="flex items-center justify-center gap-2.5 h-[40px] mt-0 rounded-xl border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[14px] font-bold text-[#0F172A] transition-all">
               <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook" className="w-5 h-5" />
               Facebook
             </a>

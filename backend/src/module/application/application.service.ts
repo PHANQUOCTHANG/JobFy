@@ -13,7 +13,7 @@ export class ApplicationService {
     private readonly jobRepo: IJobRepository,
     private readonly candidateProfileRepo: ICandidateProfileRepository,
     private readonly resumeRepo: IResumeRepository
-  ) {}
+  ) { }
 
   async apply(userId: string, dto: CreateApplicationRequestDto): Promise<ApplicationResponseDto> {
     const candidate = await this.candidateProfileRepo.findByUserId(userId);
@@ -86,7 +86,6 @@ export class ApplicationService {
   async updateStatus(id: string, userId: string, dto: UpdateApplicationStatusRequestDto): Promise<ApplicationResponseDto> {
     const app = await this.appRepo.findById(id);
     if (!app) throw new AppError("Không tìm thấy đơn ứng tuyển", 404);
-    
     // In real app: check if userId belongs to company that posted the job
     
     const updated = await this.appRepo.updateStatus(id, dto.status, userId, dto.note ?? undefined);
@@ -96,7 +95,7 @@ export class ApplicationService {
   async addNote(id: string, userId: string, dto: any): Promise<any> {
     const app = await this.appRepo.findById(id);
     if (!app) throw new AppError("Không tìm thấy đơn ứng tuyển", 404);
-    
+
     const note = await this.appRepo.addNote({
       application: { connect: { id } },
       author: { connect: { id: userId } },

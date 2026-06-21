@@ -35,3 +35,14 @@ export const deleteJob = asyncHandler(async (req: Request, res: Response) => {
   await jobService.delete((req.params.id as string), userId);
   return res.status(200).json(ApiResponse.success(null, "Đã xóa tin tuyển dụng"));
 });
+
+export const adminUpdateJobStatus = asyncHandler(async (req: Request, res: Response) => {
+  const { status, rejectedReason } = req.body;
+  const data = await jobService.adminUpdateStatus(req.params.id as string, status, rejectedReason);
+  return res.status(200).json(ApiResponse.success(data, "Cập nhật trạng thái thành công"));
+});
+
+export const adminDeleteJob = asyncHandler(async (req: Request, res: Response) => {
+  await jobService.adminDelete(req.params.id as string);
+  return res.status(200).json(ApiResponse.success(null, "Admin đã xóa tin tuyển dụng"));
+});

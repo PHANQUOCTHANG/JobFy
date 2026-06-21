@@ -16,6 +16,7 @@ export const companyProfileSchema = z.object({
   linkedinUrl: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
   logoUrl: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
   coverUrl: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
+  businessLicenseUrl: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
 });
 
 export type CompanyProfileInput = z.infer<typeof companyProfileSchema>;

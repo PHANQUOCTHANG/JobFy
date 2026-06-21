@@ -46,6 +46,7 @@ export const updateReview = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 200, "Review updated", toCompanyReviewResponse(review));
 });
 
+
 export const deleteReview = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   const role = req.user?.role;
@@ -56,8 +57,10 @@ export const deleteReview = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 200, "Review deleted");
 });
 
+
 export const approveReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const review = await reviewService.approveReview(id as string);
   sendResponse(res, 200, "Review approved", toCompanyReviewResponse(review));
 });
+

@@ -57,7 +57,11 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
-    navigate("/");
+    if (user?.role === 'employer') {
+      navigate("/employer/login");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -73,7 +77,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         >
           <Avatar className="size-9 sm:size-10 border border-border/50 shadow-sm cursor-pointer bg-white">
             <AvatarImage
-              src={user?.avatar || undefined}
+              src={user?.avatarUrl || undefined}
               alt={user?.fullName || "User Avatar"}
               className="object-cover"
               referrerPolicy="no-referrer"
@@ -102,7 +106,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
         <div className="flex items-center gap-4 p-5 border-b border-slate-100">
           <Avatar className="size-14 border border-slate-100 shadow-sm bg-slate-100">
             <AvatarImage
-              src={user?.avatar || undefined}
+              src={user?.avatarUrl || undefined}
               alt={user?.fullName || "User Avatar"}
               className="object-cover"
               referrerPolicy="no-referrer"
@@ -238,6 +242,36 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
                     <Award className="size-[20px]" strokeWidth={2} />
                   </div>
                   <span className="font-bold text-[14.5px]">Nâng cấp tài khoản</span>
+        </DropdownMenuLabel>
+
+        <DropdownMenuGroup>
+          <DropdownMenuItem 
+            onClick={() => {
+              if (user.role === 'employer') {
+                navigate("/employer/company");
+              } else {
+                navigate("/profile?tab=overview");
+              }
+            }} 
+            className="p-2.5 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group"
+          >
+            <div className="w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center mr-3 group-hover:bg-background group-hover:shadow-sm transition-all duration-200">
+              <UserIcon className="size-4 text-foreground/70 group-hover:text-primary transition-colors" />
+            </div>
+            <span className="font-semibold text-[13.5px]">
+              {user.role === 'employer' ? 'Hồ sơ công ty' : 'Hồ sơ cá nhân'}
+            </span>
+            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        {user.role === "admin" && (
+          <>
+            <DropdownMenuSeparator className="my-1 border-border/40" />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => navigate("/admin")} className="p-2.5 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group">
+                <div className="w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center mr-3 group-hover:bg-background group-hover:shadow-sm transition-all duration-200">
+                  <ChartColumn className="size-4 text-foreground/70 group-hover:text-primary transition-colors" />
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-1 pt-1">

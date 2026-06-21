@@ -1,0 +1,873 @@
+tags:
+  - name: Employer
+    description: Quản lý các API liên quan đến nhà tuyển dụng, bao gồm tiến trình xác thực tài khoản, cập nhật thông tin công ty và gửi hồ sơ pháp lý.
+paths:
+  # Các endpoint danh mục (industries, provinces, districts) đã được chuyển sang location.swagger.yaml
+  # và không còn nằm trong module employer nữa.
+
+  /api/v1/employer/verification-progress:
+    get:
+      tags:
+        - Employer
+      summary: Lấy tiến trình xác thực tài khoản (3 bước)
+      description: Trả về trạng thái hoàn thành của Email, Thông tin công ty và Hồ sơ pháp lý.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Trạng thái tiến trình xác thực
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationProgressResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+
+  /api/v1/employer/resend-otp:
+    post:
+      tags:
+        - Employer
+      summary: Gửi lại mã OTP xác thực email (Bước 1)
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: OTP đã được gửi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessageResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        429:
+          description: Quá nhiều yêu cầu gửi mã (Rate limit)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/employer/verify-email:
+    post:
+      tags:
+        - Employer
+      summary: Xác thực email bằng mã OTP (Bước 1)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - otp
+              properties:
+                otp:
+                  type: string
+                  example: "123456"
+      responses:
+        200:
+          description: Xác thực email thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessageResponse'
+        400:
+          description: Dữ liệu gửi lên không hợp lệ hoặc OTP sai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/employer/company-info:
+    get:
+      tags:
+        - Employer
+      summary: Xem thông tin hồ sơ công ty
+      description: Lấy thông tin chi tiết hiện tại của công ty.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Trả về thông tin chi tiết của công ty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyProfileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+    patch:
+      tags:
+        - Employer
+      summary: Cập nhật thông tin cơ bản của công ty (Bước 2)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - industryId
+                - address
+                - provinceId
+                - districtId
+              properties:
+                name:
+                  type: string
+                  minLength: 5
+                  example: "Công ty Công nghệ JobFy"
+                industryId:
+                  type: integer
+                  example: 1
+                address:
+                  type: string
+                  minLength: 10
+                  example: "Số 1 Duy Tân, Cầu Giấy"
+                provinceId:
+                  type: integer
+                  example: 1
+                districtId:
+                  type: integer
+                  example: 10
+                website:
+                  type: string
+                  format: url
+                  example: "https://jobfy.vn"
+                size:
+                  type: string
+                  enum: ['1_10', '11_50', '51_200', '201_500', '501_1000', '1001_5000', '5000_plus']
+                  example: "11_50"
+                description:
+                  type: string
+                  example: "Chúng tôi là nền tảng tuyển dụng hàng đầu..."
+                logoUrl:
+                  type: string
+                  format: url
+                taxCode:
+                  type: string
+                  example: "0123456789"
+                  nullable: true
+      responses:
+        200:
+          description: Cập nhật thông tin công ty thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessageResponse'
+        400:
+          description: Dữ liệu gửi lên không hợp lệ (Validation Error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/v1/employer/submit-legal:
+    post:
+      tags:
+        - Employer
+      summary: Gửi hồ sơ pháp lý và mã số thuế để xác thực (Bước 3)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - taxCode
+                - businessLicenseUrl
+              properties:
+                taxCode:
+                  type: string
+                  pattern: '^[0-9]{10,13}$'
+                  example: "0123456789"
+                businessLicenseUrl:
+                  type: string
+                  format: url
+                  example: "https://cloudinary.com/jobfy/license_01.pdf"
+      responses:
+        200:
+          description: Hồ sơ đã được nhận và đang chờ duyệt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessageResponse'
+        400:
+          description: Lỗi logic (Ví dụ mã số thuế sai định dạng hoặc chưa làm bước 2)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/v1/admin/employer/pending:
+    get:
+      tags: 
+        - Employer
+      summary: Danh sách hồ sơ chờ duyệt (Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+      responses:
+        200:
+          description: Trả về danh sách công ty kèm thông tin phân trang.
+
+  /api/v1/admin/employer/{companyId}:
+    get:
+      tags:  
+        - Employer
+      summary: Xem chi tiết hồ sơ công ty
+      description: Lấy toàn bộ thông tin công ty và tài liệu pháp lý để review.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Chi tiết hồ sơ.
+        404:
+          description: Không tìm thấy công ty.
+
+  /api/v1/admin/employer/{companyId}/verify:
+    patch:
+      tags: 
+        - Employer
+      summary: Phê duyệt hoặc từ chối hồ sơ (Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyCompanyRequest'
+      responses:
+        200:
+          description: Cập nhật trạng thái thành công.
+        400:
+          description: Dữ liệu trạng thái không hợp lệ.
+
+  # ==========================================
+  # SUB-MODULE: JOB MANAGEMENT
+  # ==========================================
+  /api/v1/employer/jobs:
+    get:
+      tags: [Employer - Jobs]
+      summary: Lấy danh sách tin tuyển dụng của công ty
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: status
+          schema: { type: string, enum: [draft, published, closed, expired] }
+        - in: query
+          name: keyword
+          schema: { type: string }
+      responses:
+        200:
+          description: Danh sách tin tuyển dụng.
+    post:
+      tags: [Employer - Jobs]
+      summary: Đăng tin tuyển dụng mới
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [categoryId, title, description]
+              properties:
+                categoryId: { type: integer }
+                title: { type: string }
+                description: { type: string }
+                requirements: { type: string }
+                benefits: { type: string }
+                jobType: { type: string, enum: [full_time, part_time, freelance, contract, internship] }
+                experienceLevel: { type: string, enum: [fresher, junior, mid_level, senior, manager, director] }
+                quantity: { type: integer, default: 1 }
+                salaryMin: { type: integer }
+                salaryMax: { type: integer }
+                salaryType: { type: string, enum: [hourly, daily, monthly, yearly, project, negotiate] }
+                skillIds: { type: array, items: { type: integer } }
+      responses:
+        201:
+          description: Tin tuyển dụng đã được tạo (Draft).
+
+  /api/v1/employer/jobs/{id}:
+    get:
+      tags: [Employer - Jobs]
+      summary: Lấy chi tiết tin tuyển dụng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Chi tiết tin tuyển dụng.
+    patch:
+      tags: [Employer - Jobs]
+      summary: Cập nhật thông tin tin tuyển dụng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                description: { type: string }
+      responses:
+        200:
+          description: Cập nhật thành công.
+    delete:
+      tags: [Employer - Jobs]
+      summary: Xóa (Soft delete) tin tuyển dụng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: Đã xóa thành công.
+
+  /api/v1/employer/jobs/{id}/status:
+    patch:
+      tags: [Employer - Jobs]
+      summary: Thay đổi trạng thái tin (Publish, Close)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [draft, published, closed, expired] }
+      responses:
+        200:
+          description: Cập nhật trạng thái thành công.
+
+  /api/v1/employer/jobs/{id}/duplicate:
+    post:
+      tags: [Employer - Jobs]
+      summary: Nhân bản tin tuyển dụng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        201:
+          description: Tạo bản sao thành công (trạng thái Draft).
+
+  # ==========================================
+  # SUB-MODULE: CANDIDATE MANAGEMENT
+  # ==========================================
+  /api/v1/employer/candidates:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lấy danh sách hồ sơ ứng viên ứng tuyển
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: keyword
+          schema: { type: string }
+        - in: query
+          name: jobId
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Danh sách ứng viên.
+
+  /api/v1/employer/candidates/jobs-dropdown:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lấy danh sách tin tuyển dụng cho dropdown lọc
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Danh sách tin.
+
+  /api/v1/employer/candidates/export:
+    get:
+      tags: [Employer - Candidates]
+      summary: Xuất danh sách ứng viên ra file CSV
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: keyword
+          schema: { type: string }
+        - in: query
+          name: jobId
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: File CSV dữ liệu ứng viên.
+
+  /api/v1/employer/candidates/bulk-status:
+    patch:
+      tags: [Employer - Candidates]
+      summary: Cập nhật trạng thái hàng loạt ứng viên
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [applicationIds, status]
+              properties:
+                applicationIds:
+                  type: array
+                  items: { type: string, format: uuid }
+                status:
+                  type: string
+      responses:
+        200:
+          description: Cập nhật thành công.
+
+  /api/v1/employer/candidates/conversion-report:
+    get:
+      tags: [Employer - Candidates]
+      summary: Báo cáo tỷ lệ chuyển đổi tuyển dụng
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Báo cáo chuyển đổi.
+
+  /api/v1/employer/candidates/recruitment-history:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lịch sử hoạt động tuyển dụng
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Lịch sử hoạt động.
+
+  /api/v1/employer/candidates/ai-insights:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lấy gợi ý / phân tích AI cho danh sách ứng viên
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Gợi ý của AI.
+
+  /api/v1/employer/candidates/{id}/detail:
+    get:
+      tags: [Employer - Candidates]
+      summary: Lấy chi tiết hồ sơ ứng tuyển
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Chi tiết hồ sơ.
+
+  /api/v1/employer/candidates/{id}/ai-questions:
+    get:
+      tags: [Employer - Candidates]
+      summary: Gợi ý câu hỏi phỏng vấn tự động từ AI cho ứng viên
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Danh sách câu hỏi gợi ý.
+
+  /api/v1/employer/candidates/{id}/ai-fit:
+    get:
+      tags: [Employer - Candidates]
+      summary: Đánh giá độ phù hợp của ứng viên với công việc bằng AI
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Phân tích độ phù hợp.
+
+  /api/v1/employer/candidates/{id}/status:
+    patch:
+      tags: [Employer - Candidates]
+      summary: Cập nhật trạng thái của một hồ sơ ứng viên
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string }
+      responses:
+        200:
+          description: Trạng thái được cập nhật thành công.
+
+  # ==========================================
+  # SUB-MODULE: INTERVIEW SCHEDULING
+  # ==========================================
+  /api/v1/employer/interviews:
+    get:
+      tags: [Employer - Interview]
+      summary: Lấy danh sách lịch phỏng vấn
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Danh sách ứng viên đang ở trạng thái Interviewed.
+    post:
+      tags: [Employer - Interview]
+      summary: Lên lịch phỏng vấn
+      description: Chuyển trạng thái ứng viên sang interviewed và gửi email mời.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [applicationId, scheduledAt, type, location]
+              properties:
+                applicationId: { type: string, format: uuid }
+                scheduledAt: { type: string, format: date-time }
+                duration: { type: integer, default: 60 }
+                type: { type: string, enum: [online, offline] }
+                location: { type: string }
+                note: { type: string }
+      responses:
+        201:
+          description: Lên lịch thành công.
+
+  /api/v1/employer/interviews/{id}:
+    delete:
+      tags: [Employer - Interview]
+      summary: Hủy lịch phỏng vấn
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string }
+      responses:
+        200:
+          description: Hủy lịch thành công.
+
+  # ==========================================
+  # SUB-MODULE: APPLICATION NOTES
+  # ==========================================
+  /api/v1/employer/candidates/{id}/notes:
+    get:
+      tags: [Employer - Note]
+      summary: Xem ghi chú nội bộ của ứng viên
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Danh sách ghi chú.
+
+  /api/v1/employer/candidates/notes:
+    post:
+      tags: [Employer - Note]
+      summary: Thêm ghi chú mới
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [applicationId, content]
+              properties:
+                applicationId: { type: string, format: uuid }
+                content: { type: string }
+                isInternal: { type: boolean, default: true }
+      responses:
+        201:
+          description: Đã thêm ghi chú.
+
+  /api/v1/employer/candidates/notes/{noteId}:
+    patch:
+      tags: [Employer - Note]
+      summary: Sửa ghi chú (chỉ tác giả mới được sửa)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: noteId
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string }
+      responses:
+        200:
+          description: Cập nhật thành công.
+    delete:
+      tags: [Employer - Note]
+      summary: Xóa ghi chú
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: noteId
+          required: true
+          schema: { type: integer }
+      responses:
+        200:
+          description: Đã xóa.
+
+  # ==========================================
+  # SUB-MODULE: ANALYTICS
+  # ==========================================
+  /api/v1/employer/analytics/trends:
+    get:
+      tags: [Employer - Analytics]
+      summary: Biểu đồ xu hướng nộp đơn (12 tháng qua)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Dữ liệu line chart.
+
+  /api/v1/employer/analytics/job-performance:
+    get:
+      tags: [Employer - Analytics]
+      summary: Báo cáo hiệu quả tin đăng (Views, Applies, Tỷ lệ chuyển đổi)
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Danh sách hiệu năng các tin.
+
+  /api/v1/employer/analytics/source:
+    get:
+      tags: [Employer - Analytics]
+      summary: Thống kê nguồn ứng viên
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Dữ liệu pie chart.
+
+  /api/v1/employer/analytics/time-to-hire:
+    get:
+      tags: [Employer - Analytics]
+      summary: Đo thời gian trung bình tuyển dụng thành công
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Số liệu time-to-hire.
+
+  /api/v1/employer/analytics/top-skills:
+    get:
+      tags: [Employer - Analytics]
+      summary: Top 10 kỹ năng xuất hiện nhiều nhất trong tập ứng viên
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Danh sách kỹ năng.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    VerificationProgressResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        data:
+          type: object
+          properties:
+            step1:
+              type: object
+              properties:
+                isCompleted: { type: boolean, example: true }
+                email: { type: string, example: "employer@example.com" }
+            step2:
+              type: object
+              properties:
+                isCompleted: { type: boolean, example: false }
+            step3:
+              type: object
+              properties:
+                isVerified: { type: boolean, example: false }
+                hasTaxCode: { type: boolean, example: false }
+
+    CompanyProfileResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        data:
+          type: object
+          properties:
+            companyName: { type: string, example: "Công ty Công nghệ JobFy" }
+            industryId: { type: integer, example: 1 }
+            address: { type: string, example: "Số 1 Duy Tân, Cầu Giấy" }
+            provinceId: { type: integer, example: 1 }
+            districtId: { type: integer, example: 10 }
+            website: { type: string, example: "https://jobfy.vn" }
+            size:
+              type: string
+              enum: ['1_10', '11_50', '51_200', '201_500', '501_1000', '1001_5000', '5000_plus']
+              example: "11_50"
+
+    VerifyCompanyRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [approved, rejected]
+          example: approved
+        reason:
+          type: string
+          description: Lý do từ chối (bắt buộc nếu status là rejected)
+          example: "Giấy phép kinh doanh đã hết hạn hoặc mờ không đọc được."
+
+    SuccessMessageResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string, example: "Thao tác thành công" }
+
+    ErrorResponse:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string, example: "Thông báo lỗi chi tiết" }
+
+  responses:
+    UnauthorizedError:
+      description: Token không hợp lệ hoặc đã hết hạn
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: fail
+            message: "Bạn chưa đăng nhập hoặc phiên làm việc đã hết hạn"
+
+    ForbiddenError:
+      description: Người dùng không có quyền truy cập (không phải Employer)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: fail
+            message: "Bạn không có quyền thực hiện hành động này"
+
+    NotFoundError:
+      description: Tài nguyên không tìm thấy
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: fail
+            message: "Thông tin hồ sơ chưa được cập nhật"
+
+    InternalServerError:
+      description: Lỗi hệ thống không xác định
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: error
+            message: "Đã có lỗi xảy ra trên hệ thống, vui lòng thử lại sau"
