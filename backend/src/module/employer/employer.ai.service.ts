@@ -110,4 +110,95 @@ Giá trị X, Y là số nguyên từ 1 đến 99.`;
       };
     }
   }
+
+  async generateJobDescription(jobTitle: string, requirements: string): Promise<string> {
+    try {
+      if (!process.env.GROQ_API_KEY) {
+        return "Chưa cấu hình API Key. Không thể tạo mô tả tự động lúc này.";
+      }
+
+      const prompt = `Bạn là chuyên gia nhân sự. Hãy viết một đoạn Mô tả công việc (Job Description) ngắn gọn, chuyên nghiệp bằng tiếng Việt cho vị trí: "${jobTitle}".
+      Yêu cầu thêm: ${requirements || 'Không có yêu cầu đặc biệt'}.
+      Mô tả bao gồm 3 phần ngắn: 1. Giới thiệu chung, 2. Trách nhiệm chính (3-4 bullet points), 3. Yêu cầu (3-4 bullet points).
+      Trả lời ngay nội dung, không cần dạo đầu.`;
+
+      const chatCompletion = await this.groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.7,
+        max_tokens: 500,
+      });
+
+      return chatCompletion.choices[0]?.message?.content?.trim() || "";
+    } catch (error) {
+      console.error("Lỗi khi gọi Groq AI Job Description:", error);
+      return "";
+    }
+  }
+
+  async analyzeApplicationFit(jobDescription: string, candidateResumeText: string): Promise<{score: number, analysis: string}> {
+    try {
+      if (!process.env.GROQ_API_KEY) {
+        return { score: 0, analysis: "Chưa cấu hình API Key." };
+      }
+
+      const prompt = `Phân tích độ phù hợp của ứng viên với công việc.
+      Mô tả công việc: ${jobDescription.substring(0, 1000)}
+      CV Ứng viên: ${candidateResumeText.substring(0, 1000)}
+
+      Hãy trả lời CHỈ BẰNG 1 JSON hợp lệ với định dạng:
+      {
+        "score": X, // X là số nguyên từ 1 đến 100 đánh giá mức độ phù hợp
+        "analysis": "Một đoạn phân tích ngắn (dưới 50 từ) giải thích lý do cho điểm số này."
+      }`;
+
+      const chatCompletion = await this.groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.2,
+        max_tokens: 200,
+        response_format: { type: "json_object" }
+      });
+
+      const content = chatCompletion.choices[0]?.message?.content?.trim();
+      if (!content) throw new Error("No content");
+      return JSON.parse(content);
+    } catch (error) {
+      console.error("Lỗi khi gọi Groq AI Fit Analysis:", error);
+      return { score: 0, analysis: "Không thể phân tích ngay lúc này do lỗi hệ thống AI." };
+    }
+  }
+
+  async generateInterviewQuestions(jobTitle: string, skills: string[]): Promise<string[]> {
+    try {
+      if (!process.env.GROQ_API_KEY) {
+        return ["Hãy chia sẻ về kinh nghiệm làm việc trước đây của bạn.", "Điểm mạnh và điểm yếu lớn nhất của bạn là gì?"];
+      }
+
+      const prompt = `Tạo danh sách 5 câu hỏi phỏng vấn kỹ thuật và văn hóa bằng tiếng Việt cho vị trí: "${jobTitle}".
+      Các kỹ năng chính của ứng viên: ${skills.join(", ")}.
+      
+      Trả lời CHỈ BẰNG 1 JSON hợp lệ định dạng:
+      {
+        "questions": ["Câu 1", "Câu 2", "Câu 3", "Câu 4", "Câu 5"]
+      }`;
+
+      const chatCompletion = await this.groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.5,
+        max_tokens: 300,
+        response_format: { type: "json_object" }
+      });
+
+      const content = chatCompletion.choices[0]?.message?.content?.trim();
+      if (!content) throw new Error("No content");
+      const parsed = JSON.parse(content);
+      return parsed.questions || [];
+    } catch (error) {
+      console.error("Lỗi khi gọi Groq AI Interview Questions:", error);
+      return ["Bạn có thể mô tả chi tiết hơn về dự án gần đây nhất bạn tham gia không?"];
+    }
+  }
 }
+
