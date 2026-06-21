@@ -20,6 +20,10 @@ import reportRoute from "@/module/report/report.route";
 import adminRoute from "@/module/admin/admin.route";
 import locationRoute from "@/module/location/location.route";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
+import employerRoute from "@/module/employer/employer.routes";
+import adminEmployerRoute from "@/module/admin-employer/admin-employer.routes";
+
+
 
 const clientRoute = (app: Application) => {
   const path = "/api/v1";
@@ -36,7 +40,7 @@ const clientRoute = (app: Application) => {
   app.use(path + "/resumes", resumeRoute);
   app.use(path + "/jobs", jobRoute);
   app.use(path + "/applications", applicationRoute);
-  app.use(path + "/locations", locationRoute);
+  app.use(path, locationRoute);
   
   // New Modules
   app.use(path + "/saved-jobs", requireAuth, savedJobRoute);
@@ -47,9 +51,16 @@ const clientRoute = (app: Application) => {
   app.use(path + "/subscriptions", subscriptionRoute);
   app.use(path + "/payments", requireAuth, paymentRouter);
   app.use(path + "/reports", reportRoute);
-  
+
+  // Employer Module
+  app.use(path + "/employer", employerRoute);
+
   // Admin Module
   app.use(path + "/admin", requireAuth, requireRole("admin"), adminRoute);
+
+  // Admin Employer Module (pending/verify)
+  app.use(path + "/admin/employer", adminEmployerRoute);
 };
+
 
 export default clientRoute;

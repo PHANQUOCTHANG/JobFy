@@ -1,0 +1,454 @@
+tags:
+  - name: Job
+    description: Quản lý các API liên quan đến việc làm, bao gồm tạo, xem, cập nhật, xóa và tìm kiếm việc làm.
+paths:
+  /api/v1/jobs:
+    get:
+      tags:
+        - Job
+      summary: Lấy danh sách việc làm
+      description: Trả về danh sách các việc làm, có thể lọc theo từ khóa, địa điểm, ngành nghề, loại hình công việc, v.v. Hỗ trợ phân trang.
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Từ khóa tìm kiếm (tiêu đề, mô tả)
+        - in: query
+          name: location
+          schema:
+            type: string
+          description: Địa điểm (tỉnh/thành phố)
+        - in: query
+          name: categoryId
+          schema:
+            type: integer
+          description: ID danh mục việc làm (category)
+        - in: query
+          name: employmentType
+          schema:
+            type: string
+            enum: ['Full-time', 'Part-time', 'Contract', 'Internship']
+          description: Loại hình công việc
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Số trang
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Số lượng kết quả trên mỗi trang
+      responses:
+        200:
+          description: Danh sách việc làm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListResponse'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Job
+      summary: Tạo việc làm mới
+      description: Tạo một bài đăng việc làm mới. Chỉ dành cho nhà tuyển dụng.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCreateRequest'
+      responses:
+        201:
+          description: Việc làm đã được tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        400:
+          description: Dữ liệu gửi lên không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/jobs/{id}:
+    get:
+      tags:
+        - Job
+      summary: Lấy thông tin chi tiết việc làm
+      description: Trả về thông tin chi tiết của một việc làm cụ thể bằng ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID của việc làm
+      responses:
+        200:
+          description: Thông tin chi tiết việc làm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags:
+        - Job
+      summary: Cập nhật thông tin việc làm
+      description: Cập nhật thông tin của một việc làm cụ thể. Chỉ dành cho nhà tuyển dụng sở hữu việc làm đó.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID của việc làm cần cập nhật
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobUpdateRequest'
+      responses:
+        200:
+          description: Việc làm đã được cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        400:
+          description: Dữ liệu gửi lên không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Job
+      summary: Xóa việc làm
+      description: Xóa một bài đăng việc làm. Chỉ dành cho nhà tuyển dụng sở hữu việc làm đó hoặc Admin.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID của việc làm cần xóa
+      responses:
+        200:
+          description: Việc làm đã được xóa thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessageResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/jobs/{id}/apply:
+    post:
+      tags:
+        - Job
+      summary: Ứng tuyển vào việc làm
+      description: Cho phép ứng viên nộp hồ sơ vào một việc làm cụ thể.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID của việc làm muốn ứng tuyển
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobApplicationRequest'
+      responses:
+        201:
+          description: Ứng tuyển thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessageResponse'
+        400:
+          description: Dữ liệu gửi lên không hợp lệ hoặc đã ứng tuyển
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          description: Người dùng không phải ứng viên
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Job:
+      type: object
+      properties:
+        id: { type: string, format: uuid, example: "a1b2c3d4-e5f6-7890-1234-567890abcdef" }
+        title: { type: string, example: "Kỹ sư Phần mềm Frontend" }
+        description: { type: string, example: "Mô tả chi tiết công việc..." }
+        requirements: { type: string, example: "Yêu cầu: React, JavaScript, HTML, CSS..." }
+        benefits: { type: string, example: "Phúc lợi: Lương cạnh tranh, bảo hiểm, du lịch..." }
+        salaryMin: { type: number, example: 1000 }
+        salaryMax: { type: number, example: 2000 }
+        currency: { type: string, example: "USD" }
+        location: { type: string, example: "Hà Nội, Việt Nam" }
+        provinceId: { type: integer, example: 1 }
+        districtId: { type: integer, example: 10 }
+        employmentType:
+          type: string
+          enum: ['Full-time', 'Part-time', 'Contract', 'Internship']
+          example: "Full-time"
+        experienceLevel:
+          type: string
+          enum: ['Entry', 'Mid', 'Senior', 'Director']
+          example: "Mid"
+        industryId: { type: integer, example: 5 }
+        employerId: { type: string, format: uuid, example: "f1e2d3c4-b5a6-9876-5432-10fedcba9876" }
+        postedDate: { type: string, format: date-time, example: "2023-10-27T10:00:00Z" }
+        applicationDeadline: { type: string, format: date-time, example: "2023-11-27T23:59:59Z" }
+        status:
+          type: string
+          enum: ['Active', 'Closed', 'Draft']
+          example: "Active"
+        views: { type: integer, example: 150 }
+        applicantsCount: { type: integer, example: 25 }
+        skills:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer, example: 1 }
+              name: { type: string, example: "ReactJS" }
+              isRequired: { type: boolean, example: true }
+
+    JobResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        data:
+          $ref: '#/components/schemas/Job'
+
+    JobListResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+        pagination:
+          type: object
+          properties:
+            totalItems: { type: integer, example: 100 }
+            totalPages: { type: integer, example: 10 }
+            currentPage: { type: integer, example: 1 }
+            itemsPerPage: { type: integer, example: 10 }
+
+    JobCreateRequest:
+      type: object
+      required:
+        - companyId
+        - categoryId
+        - title
+        - description
+        - salaryMin
+        - salaryMax
+        - jobType
+        - status
+        - expiresAt
+        - experienceLevel
+        - industryId
+      properties:
+        title: { type: string, minLength: 5, example: "Kỹ sư Phần mềm Frontend" }
+        description: { type: string, minLength: 50, example: "Mô tả chi tiết công việc và trách nhiệm..." }
+        companyId: { type: string, format: uuid, example: "f1e2d3c4-b5a6-9876-5432-10fedcba9876" }
+        categoryId: { type: integer, example: 1 }
+        requirements: { type: string, minLength: 50, example: "Yêu cầu kỹ năng và kinh nghiệm cần thiết..." }
+        benefits: { type: string, example: "Các phúc lợi và chế độ đãi ngộ..." }
+        salaryMin: { type: number, minimum: 0, example: 1000 }
+        salaryMax: { type: number, minimum: 0, example: 2000 }
+        salaryType:
+          type: string
+          enum: ['hourly', 'daily', 'monthly', 'yearly', 'negotiable']
+          example: "monthly"
+        salaryCurrency: { type: string, example: "VND" }
+        isSalaryPublic: { type: boolean, example: true }
+        provinceId: { type: integer, example: 1 }
+        districtId: { type: integer, example: 10 }
+        address: { type: string, example: "Hà Nội, Việt Nam" }
+        isRemote: { type: boolean, example: false }
+        jobType:
+          type: string
+          enum: ['full_time', 'part_time', 'contract', 'internship', 'freelance', 'remote']
+          example: "full_time"
+        experienceLevel:
+          type: string
+          enum: ['intern', 'fresher', 'junior', 'mid', 'senior', 'lead', 'manager', 'director', 'executive']
+          example: "mid"
+        industryId: { type: integer, example: 5 }
+        expiresAt: { type: string, format: date-time, example: "2023-11-27T23:59:59Z" }
+        status:
+          type: string
+          enum: ['draft', 'published', 'closed', 'expired', 'paused']
+          example: "draft"
+        quantity: { type: integer, example: 1 }
+        metaTitle: { type: string, example: "Senior Frontend Engineer" }
+        metaDescription: { type: string, example: "Mô tả SEO" }
+        skills:
+          type: array
+          items:
+            type: object
+            properties:
+              skillId: { type: integer, example: 1 }
+              isRequired: { type: boolean, example: true }
+
+    JobUpdateRequest:
+      type: object
+      properties:
+        title: { type: string, minLength: 5, example: "Kỹ sư Phần mềm Frontend (Cập nhật)" }
+        description: { type: string, minLength: 50, example: "Mô tả chi tiết công việc và trách nhiệm đã cập nhật..." }
+        requirements: { type: string, minLength: 50, example: "Yêu cầu kỹ năng và kinh nghiệm cần thiết đã cập nhật..." }
+        benefits: { type: string, example: "Các phúc lợi và chế độ đãi ngộ đã cập nhật..." }
+        salaryMin: { type: number, minimum: 0, example: 1200 }
+        salaryMax: { type: number, minimum: 0, example: 2500 }
+        currency: { type: string, example: "USD" }
+        location: { type: string, example: "Hà Nội, Việt Nam" }
+        provinceId: { type: integer, example: 1 }
+        districtId: { type: integer, example: 10 }
+        employmentType:
+          type: string
+          enum: ['Full-time', 'Part-time', 'Contract', 'Internship']
+          example: "Full-time"
+        experienceLevel:
+          type: string
+          enum: ['Entry', 'Mid', 'Senior', 'Director']
+          example: "Senior"
+        industryId: { type: integer, example: 5 }
+        applicationDeadline: { type: string, format: date-time, example: "2023-12-31T23:59:59Z" }
+        status:
+          type: string
+          enum: ['Active', 'Closed', 'Draft']
+          example: "Active"
+        skills:
+          type: array
+          items:
+            type: object
+            properties:
+              skillId: { type: integer, example: 1 }
+              isRequired: { type: boolean, example: true }
+
+    JobApplicationRequest:
+      type: object
+      required:
+        - resumeUrl
+      properties:
+        resumeUrl: { type: string, format: url, example: "https://cdn.example.com/resumes/my_resume.pdf" }
+        coverLetter: { type: string, example: "Kính gửi nhà tuyển dụng, tôi rất quan tâm đến vị trí này..." }
+
+    SuccessMessageResponse:
+      type: object
+      properties:
+        status: { type: string, example: success }
+        message: { type: string, example: "Thao tác thành công" }
+
+    ErrorResponse:
+      type: object
+      properties:
+        status: { type: string, example: fail }
+        message: { type: string, example: "Thông báo lỗi chi tiết" }
+
+  responses:
+    UnauthorizedError:
+      description: Token không hợp lệ hoặc đã hết hạn
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: fail
+            message: "Bạn chưa đăng nhập hoặc phiên làm việc đã hết hạn"
+
+    ForbiddenError:
+      description: Người dùng không có quyền truy cập
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: fail
+            message: "Bạn không có quyền thực hiện hành động này"
+
+    NotFoundError:
+      description: Tài nguyên không tìm thấy
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: fail
+            message: "Không tìm thấy việc làm"
+
+    InternalServerError:
+      description: Lỗi hệ thống không xác định
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: error
+            message: "Đã có lỗi xảy ra trên hệ thống, vui lòng thử lại sau"

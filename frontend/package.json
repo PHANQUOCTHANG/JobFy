@@ -55,6 +55,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.19",
     "embla-carousel-react": "^8.6.0",
+    "firebase": "^12.15.0",
     "framer-motion": "^12.23.21",
     "hls.js": "^1.6.15",
     "html2canvas": "^1.4.1",

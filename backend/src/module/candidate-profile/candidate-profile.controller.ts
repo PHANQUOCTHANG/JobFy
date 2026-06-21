@@ -38,12 +38,26 @@ export const getProfiles = asyncHandler(async (req: Request, res: Response) => {
 
 // [GET] /api/v1/candidate-profiles/:id - Lấy chi tiết 1 profile (Công khai)
 export const getProfileById = asyncHandler(async (req: Request, res: Response) => {
-  const id = req.params.id;
-  
+  const id = req.params.id as string;
+
   // Tăng view count async không block response
   candidateProfileService.incrementViewCount(id as string).catch(console.error);
   
   const data = await candidateProfileService.findById(id as string);
 
   return res.status(200).json(ApiResponse.success(data));
+});
+
+// [PATCH] /api/v1/candidate-profiles/:id/admin - Admin cập nhật profile
+export const adminUpdateProfile = asyncHandler(async (req: Request, res: Response) => {
+  const data = await candidateProfileService.updateById(req.params.id, req.body);
+
+  return res.status(200).json(ApiResponse.success(data, "Admin cập nhật hồ sơ thành công"));
+});
+
+// [DELETE] /api/v1/candidate-profiles/:id/admin - Admin xóa profile
+export const adminDeleteProfile = asyncHandler(async (req: Request, res: Response) => {
+  await candidateProfileService.deleteById(req.params.id);
+
+  return res.status(200).json(ApiResponse.success(null, "Admin đã xóa hồ sơ ứng viên"));
 });

@@ -321,3 +321,78 @@ const settingUpload = multer({
 });
 
 export const uploadSettingImage = settingUpload.single("image");
+
+// ─── Custom storage engine cho Legal Document ─────────────────────────────────────
+class CloudinaryDocumentStorage implements StorageEngine {
+  _handleFile(
+    _req: Request,
+    file: Express.Multer.File,
+    cb: (error?: any, info?: Partial<Express.Multer.File>) => void,
+  ): void {
+    const isPdf = file.mimetype === "application/pdf";
+    const uploadOptions: any = {
+      folder: "legal_documents",
+      resource_type: isPdf ? "raw" : "image",
+    };
+
+    if (!isPdf) {
+      uploadOptions.transformation = [
+        { width: 1600, height: 1600, crop: "limit", quality: "auto:good" },
+      ];
+    }
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      uploadOptions,
+      (error, result) => {
+        if (error || !result) {
+          return cb(error ?? new Error("Upload document thất bại"));
+        }
+        cb(undefined, {
+          path: result.secure_url,
+          filename: result.public_id,
+        });
+      },
+    );
+
+    file.stream.pipe(uploadStream);
+  }
+
+  _removeFile(
+    _req: Request,
+    file: Express.Multer.File & { filename: string },
+    cb: (error: Error | null) => void,
+  ): void {
+    const isPdf = file.mimetype === "application/pdf";
+    cloudinary.uploader.destroy(
+      file.filename,
+      { resource_type: isPdf ? "raw" : "image" },
+      (error) => {
+        cb(error ?? null);
+      },
+    );
+  }
+}
+
+const documentFileFilter = (
+  _req: Express.Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+): void => {
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];
+
+  if (ALLOWED_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Chỉ chấp nhận ảnh (JPG, PNG) hoặc PDF", 400));
+  }
+};
+
+const documentUpload = multer({
+  storage: new CloudinaryDocumentStorage(),
+  fileFilter: documentFileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+});
+
+export const uploadLegalDocument = documentUpload.single("document");

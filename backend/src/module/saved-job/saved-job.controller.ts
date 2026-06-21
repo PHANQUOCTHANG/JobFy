@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
 import { SavedJobService } from "./saved-job.service";
+import { ApiResponse } from "@/utils/apiResponse";
+import asyncHandler from "@/utils/asyncHandler";
+import { toSavedJobListResponse, toSavedJobResponse } from "./saved-job.response";
 import { sendResponse } from "@/utils/sendResponse";
 import { catchAsync } from "@/utils/catchAsync";
-import { toSavedJobListResponse, toSavedJobResponse } from "./saved-job.response";
 
 const savedJobService = new SavedJobService();
 
-export const getSavedJobs = catchAsync(async (req: Request, res: Response) => {
+export const getSavedJobs = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -36,7 +38,7 @@ export const getSavedJobIds = catchAsync(async (req: Request, res: Response) => 
   sendResponse(res, 200, "Success", result.data);
 });
 
-export const saveJob = catchAsync(async (req: Request, res: Response) => {
+export const saveJob = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -45,7 +47,7 @@ export const saveJob = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 201, "Job saved successfully");
 });
 
-export const unsaveJob = catchAsync(async (req: Request, res: Response) => {
+export const unsaveJob = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -54,7 +56,7 @@ export const unsaveJob = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 200, "Job removed from saved list");
 });
 
-export const checkIsSaved = catchAsync(async (req: Request, res: Response) => {
+export const checkIsSaved = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 

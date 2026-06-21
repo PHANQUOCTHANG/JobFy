@@ -48,10 +48,15 @@ import {
   AdminIndustriesPage,
   AdminCategoriesPage,
   AdminSkillsPage,
+  AdminCandidatesPage,
+  AdminReviewsPage,
 } from "@/pages";
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
 import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS, ADMIN_PATHS } from "@/config/paths";
+import EmployerForgotPasswordPage from "@/pages/employer/EmployerForgotPasswordPage";
+import EmployerVerifyOtpPage from "@/pages/employer/EmployerVerifyOtpPage";
+import EmployerResetPasswordPage from "@/pages/employer/EmployerResetPasswordPage";
 
 export const router = createBrowserRouter([
   {
@@ -152,6 +157,18 @@ export const router = createBrowserRouter([
             element: <EmployerLoginPage />
           },
           {
+            path: "forgot-password",
+            element: <EmployerForgotPasswordPage />
+          },
+          {
+            path: "verify-otp",
+            element: <EmployerVerifyOtpPage />
+          },
+          {
+            path: "reset-password",
+            element: <EmployerResetPasswordPage />
+          },
+          {
             // element: <ProtectedRoute />,
             element: <EmployerLayout />,
             children: [
@@ -207,13 +224,15 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, element: <AdminDashboardPage /> },
-              { path: ADMIN_PATHS.USERS,     element: <UsersManagementPage /> },
+              { path: ADMIN_PATHS.USERS, element: <UsersManagementPage /> },
               { path: ADMIN_PATHS.COMPANIES, element: <AdminCompaniesPage /> },
-              { path: ADMIN_PATHS.JOBS,      element: <AdminJobsPage /> },
-              { path: ADMIN_PATHS.REPORTS,   element: <AdminReportsPage /> },
-              { path: "industries",   element: <AdminIndustriesPage /> },
-              { path: "categories",   element: <AdminCategoriesPage /> },
-              { path: "skills",   element: <AdminSkillsPage /> },
+              { path: ADMIN_PATHS.CANDIDATES, element: <AdminCandidatesPage /> },
+              { path: ADMIN_PATHS.JOBS, element: <AdminJobsPage /> },
+              { path: ADMIN_PATHS.REPORTS, element: <AdminReportsPage /> },
+              { path: ADMIN_PATHS.REVIEWS, element: <AdminReviewsPage /> },
+              { path: "industries", element: <AdminIndustriesPage /> },
+              { path: "categories", element: <AdminCategoriesPage /> },
+              { path: "skills", element: <AdminSkillsPage /> },
             ],
           },
         ],

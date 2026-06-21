@@ -45,6 +45,7 @@ export const markAsRead = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 200, "Notification marked as read", toNotificationResponse(notification));
 });
 
+
 export const markAllAsRead = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -61,3 +62,4 @@ export const deleteNotification = catchAsync(async (req: Request, res: Response)
   await notificationService.deleteNotification(id as string, userId);
   sendResponse(res, 200, "Notification deleted");
 });
+

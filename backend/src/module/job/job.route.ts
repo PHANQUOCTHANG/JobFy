@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as jobCtrl from "./job.controller";
 import validationMiddleware from "@/middleware/validate.middleware";
-import { requireAuth, requireRole } from "@/middleware/auth.middleware";
+import { requireAuth, requireRole, requireFullyVerified } from "@/middleware/auth.middleware";
 import { CreateJobSchema, UpdateJobSchema, IdParamSchema } from "./job.request";
 
 const router = Router();
@@ -11,7 +11,8 @@ router
   .get(jobCtrl.getJobs)
   .post(
     requireAuth,
-    requireRole("EMPLOYER"), // only employers can post jobs
+    requireRole("EMPLOYER"),       // chỉ employer được đăng tin
+    requireFullyVerified,           // phải hoàn tất 4 bước xác thực
     validationMiddleware(CreateJobSchema),
     jobCtrl.createJob
   );

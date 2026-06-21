@@ -1,8 +1,10 @@
 import { Router } from "express";
-import * as locationCtrl from "./location.controller";
+import { locationController } from "./location.controller";
 
 const router = Router();
 
-router.route("/provinces").get(locationCtrl.getProvinces);
+router.route("/industries").get(locationController.getIndustries);
+router.route("/provinces").get(locationController.getProvinces);
+router.route("/districts").get(locationController.getDistricts);
 
 export default router;

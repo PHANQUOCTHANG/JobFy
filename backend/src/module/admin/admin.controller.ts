@@ -8,12 +8,30 @@ const adminService = new AdminService();
 
 export const getLogs = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, action, adminId } = req.query;
+
+  // Express typings allow ParsedQs; normalize to plain string for service layer.
+  // Narrow ParsedQs | string | string[] to plain string at runtime.
+  const normalizedAction = Array.isArray(action)
+    ? action[0]
+    : typeof action === "string"
+      ? action
+      : undefined;
+  const normalizedAdminId = Array.isArray(adminId)
+    ? adminId[0]
+    : typeof adminId === "string"
+      ? adminId
+      : undefined;
+
+
   const result = await adminService.getLogs({
     page: page ? Number(page) : undefined,
     limit: limit ? Number(limit) : undefined,
-    action: action as string,
-    adminId: adminId as string
+    action: normalizedAction as string | undefined,
+    adminId: normalizedAdminId as string | undefined
   });
+
+
+
 
   sendResponse(res, 200, "Success", {
     data: toAdminLogListResponse(result.data),
@@ -27,7 +45,9 @@ export const getLogs = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
-  const stats = await adminService.getDashboardStats();
+  const { days } = req.query;
+  const daysNum = days ? Number(days) : 7;
+  const stats = await adminService.getDashboardStats(daysNum);
   sendResponse(res, 200, "Success", stats);
 });
 
@@ -36,3 +56,4 @@ export const getJobViewStats = catchAsync(async (req: Request, res: Response) =>
   const stats = await adminService.getJobViewStats(String(id));
   sendResponse(res, 200, "Success", stats);
 });
+

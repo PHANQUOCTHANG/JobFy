@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm, type FieldValues } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { registerEmployer, googleLoginEmployer } from '@/features/auth/slice/authSlice';
+import { registerSchema, RegisterRequest } from '@/../../backend/src/module/auth/auth.request';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   Building2,
   Mail,
@@ -11,101 +18,120 @@ import {
   CheckCircle2,
   Users,
   Zap,
+  MapPin,
   Shield,
   Briefcase,
   ArrowLeft,
-  type LucideIcon,
+  User,
+  Loader2,
 } from 'lucide-react';
-
-/* ─── Background Pattern ─── */
-const BackgroundPattern = () => (
-  <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-    <div
-      className="absolute inset-0"
-      style={{
-        backgroundImage:
-          'linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px)',
-        backgroundSize: '56px 56px',
-      }}
-    />
-    {/* Glows */}
-    <div className="absolute -top-32 -right-32 w-[480px] h-[480px] bg-white/10 rounded-full blur-[100px]" />
-    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-400/10 rounded-full blur-[80px]" />
-  </div>
-);
-
-/* ─── Reusable InputField ─── */
-interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  icon: LucideIcon;
-  label: string;
-  error?: string;
-  rightElement?: React.ReactNode;
-}
-
-const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ icon: Icon, label, error, rightElement, id, ...props }, ref) => (
-    <div className="flex flex-col gap-1.5 w-full">
-      <label htmlFor={id} className="text-[13px] font-bold text-[#0F172A]">
-        {label}
-      </label>
-      <div className="relative group">
-        <div
-          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${error
-            ? 'text-red-500'
-            : 'text-[#94A3B8] group-focus-within:text-[#00307c]'
-            }`}
-        >
-          <Icon size={17} strokeWidth={2} />
-        </div>
-        <input
-          ref={ref}
-          id={id}
-          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 pr-4 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${error
-            ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
-            : 'border-[#E2E8F0] focus:border-[#00307c] focus:shadow-[0_0_0_3px_rgba(0,48,124,0.10)]'
-            }`}
-          style={{ height: '50px' }}
-          {...props}
-        />
-        {rightElement && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
-            {rightElement}
-          </div>
-        )}
-      </div>
-      {error && (
-        <p className="text-red-500 text-[12px] font-medium mt-0.5">{error}</p>
-      )}
-    </div>
-  )
-);
-InputField.displayName = 'InputField';
-
-/* ─── Feature Badge ─── */
-const FeatureBadge = ({
-  icon: Icon,
-  title,
-  desc,
-}: {
-  icon: LucideIcon;
-  title: string;
-  desc: string;
-}) => (
-  <div className="flex items-center gap-4">
-    <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0 border border-white/20">
-      <Icon size={18} className="text-white" strokeWidth={2} />
-    </div>
-    <div>
-      <p className="text-white font-bold text-[14px]">{title}</p>
-      <p className="text-white/60 text-[12px]">{desc}</p>
-    </div>
-  </div>
-);
+import { BackgroundPattern, InputField, SelectField, FeatureBadge } from '../../components/ui/AuthComponents';
 
 /* ─── Main Page ─── */
 const EmployerRegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isLoading } = useAppSelector((state) => state.auth);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<RegisterRequest>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      role: 'employer',
+      provinceId: '',
+      districtId: '',
+    },
+  });
+
+  // Theo dõi mật khẩu để tính toán độ mạnh
+  const passwordValue = watch('password', '');
+
+  const getStrength = (pass: string) => {
+    if (!pass) return { score: 0, label: '', color: 'bg-slate-200', text: 'text-slate-400' };
+    const hasUpper = /[A-Z]/.test(pass);
+    const hasNumber = /[0-9]/.test(pass);
+    const hasSpecial = /[^A-Za-z0-9]/.test(pass);
+    const length = pass.length;
+
+    if (length < 8) return { score: 1, label: 'Yếu', color: 'bg-red-500', text: 'text-red-500' };
+
+    let strengthScore = 2;
+    if (hasUpper && (hasNumber || hasSpecial)) strengthScore = 3;
+    if (length >= 10 && hasUpper && hasNumber && hasSpecial) strengthScore = 4;
+
+    if (strengthScore === 2) return { score: 2, label: 'Trung bình', color: 'bg-yellow-500', text: 'text-yellow-500' };
+    if (strengthScore === 3) return { score: 3, label: 'Mạnh', color: 'bg-blue-500', text: 'text-blue-500' };
+    return { score: 4, label: 'Rất mạnh', color: 'bg-emerald-500', text: 'text-emerald-500' };
+  };
+
+  const passwordStrength = getStrength(passwordValue);
+
+  const [provinces, setProvinces] = useState<{ value: string; label: string }[]>([]);
+  const [districts, setDistricts] = useState<{ value: string; label: string }[]>([]);
+
+  const selectedProvinceId = watch('provinceId');
+
+  // Lấy danh sách Tỉnh/Thành phố khi component khởi tạo
+  useEffect(() => {
+    fetch('https://provinces.open-api.vn/api/p/')
+      .then((res) => res.json())
+      .then((data) => {
+        const formatted = data.map((p: any) => ({ value: String(p.code), label: p.name }));
+        setProvinces(formatted);
+      })
+      .catch((err) => console.error('Lỗi khi lấy danh sách tỉnh thành:', err));
+  }, []);
+
+  // Lấy danh sách Quận/Huyện khi Tỉnh/Thành phố thay đổi
+  useEffect(() => {
+    if (!selectedProvinceId) {
+      setDistricts([]);
+      return;
+    }
+
+    setValue('districtId', ''); // Reset quận huyện khi đổi tỉnh
+    fetch(`https://provinces.open-api.vn/api/p/${selectedProvinceId}?depth=2`)
+      .then((res) => res.json())
+      .then((data) => {
+        const formatted = data.districts.map((d: any) => ({ value: String(d.code), label: d.name }));
+        setDistricts(formatted);
+      })
+      .catch((err) => console.error('Lỗi khi lấy danh sách quận huyện:', err));
+  }, [selectedProvinceId, setValue]);
+
+  const onSubmit = async (data: RegisterRequest) => {
+    const resultAction = await dispatch(registerEmployer(data));
+    if (registerEmployer.fulfilled.match(resultAction)) {
+      toast.success('Đăng ký tài khoản doanh nghiệp thành công! Vui lòng đăng nhập.');
+      navigate('/employer/login');
+    } else {
+      toast.error(resultAction.payload as string || 'Đăng ký thất bại');
+    }
+  };
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const resultAction = await dispatch(googleLoginEmployer(tokenResponse.access_token));
+        if (googleLoginEmployer.fulfilled.match(resultAction)) {
+          toast.success('Đăng ký bằng Google thành công!');
+          navigate('/employer');
+        } else {
+          toast.error(resultAction.payload as string || 'Đăng ký bằng Google thất bại');
+        }
+      } catch (error) {
+        toast.error('Đăng ký bằng Google thất bại');
+      }
+    },
+    onError: () => toast.error('Đăng ký bằng Google thất bại'),
+  });
 
   return (
     <div
@@ -227,7 +253,7 @@ const EmployerRegisterPage: React.FC = () => {
               Quay lại trang chủ
             </Link>
             <Link
-              to="/login"
+              to="/employer/login"
               className="text-[13px] font-bold text-[#00307c] hover:underline underline-offset-4 transition-all"
             >
               Đăng nhập
@@ -248,7 +274,18 @@ const EmployerRegisterPage: React.FC = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+            {/* Full Name (Người đại diện) */}
+            <InputField
+              icon={User}
+              label="Họ và tên người đại diện"
+              id="fullName"
+              type="text"
+              placeholder="Ví dụ: Nguyễn Văn A"
+              error={errors.fullName?.message}
+              {...register('fullName')}
+            />
 
             {/* Company Name */}
             <InputField
@@ -257,7 +294,29 @@ const EmployerRegisterPage: React.FC = () => {
               id="company-name"
               type="text"
               placeholder="Ví dụ: Công ty TNHH Công nghệ ABC"
+              error={errors.companyName?.message}
+              {...register('companyName')}
             />
+
+            {/* Vị trí: Tỉnh & Quận */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SelectField
+                icon={MapPin}
+                label="Tỉnh / Thành phố"
+                id="provinceId"
+                options={provinces}
+                error={errors.provinceId?.message}
+                {...register('provinceId')}
+              />
+              <SelectField
+                icon={MapPin}
+                label="Quận / Huyện"
+                id="districtId"
+                options={districts}
+                error={errors.districtId?.message}
+                {...register('districtId')}
+              />
+            </div>
 
             {/* Business Email */}
             <InputField
@@ -266,6 +325,8 @@ const EmployerRegisterPage: React.FC = () => {
               id="email"
               type="email"
               placeholder="name@company.com"
+              error={errors.email?.message}
+              {...register('email')}
             />
 
             {/* Phone */}
@@ -275,26 +336,48 @@ const EmployerRegisterPage: React.FC = () => {
               id="phone"
               type="tel"
               placeholder="0123 456 789"
+              error={errors.phone?.message}
+              {...register('phone')}
             />
 
             {/* Password row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField
-                icon={Lock}
-                label="Mật khẩu"
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                rightElement={
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    className="text-[#94A3B8] hover:text-[#0F172A] transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                  </button>
-                }
-              />
+              <div className="space-y-2">
+                <InputField
+                  icon={Lock}
+                  label="Mật khẩu"
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  error={errors.password?.message}
+                  {...register('password')}
+                  rightElement={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="text-[#94A3B8] hover:text-[#0F172A] transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  }
+                />
+                {passwordValue && (
+                  <div className="px-1 animate-in fade-in slide-in-from-top-1 duration-300">
+                    <div className="flex gap-1 h-1">
+                      {[1, 2, 3, 4].map((step) => (
+                        <div
+                          key={step}
+                          className={`h-full flex-1 rounded-full transition-all duration-500 ${step <= passwordStrength.score ? passwordStrength.color : 'bg-slate-200'
+                            }`}
+                        />
+                      ))}
+                    </div>
+                    <p className={`text-[11px] font-bold mt-1.5 transition-colors duration-500 ${passwordStrength.text}`}>
+                      Độ mạnh: {passwordStrength.label}
+                    </p>
+                  </div>
+                )}
+              </div>
               <InputField
                 icon={Lock}
                 label="Nhập lại mật khẩu"
@@ -345,10 +428,20 @@ const EmployerRegisterPage: React.FC = () => {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full h-12 bg-[#00307c] hover:bg-[#002568] text-white text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-[#00307c]/25 mt-2"
+              disabled={isLoading}
+              className="w-full h-12 bg-[#00307c] hover:bg-[#002568] text-white text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-[#00307c]/25 mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <span>Tạo tài khoản miễn phí</span>
-              <ChevronRight size={18} strokeWidth={2.5} />
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" size={18} />
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <span>Tạo tài khoản miễn phí</span>
+                  <ChevronRight size={18} strokeWidth={2.5} />
+                </>
+              )}
             </button>
           </form>
 
@@ -364,6 +457,7 @@ const EmployerRegisterPage: React.FC = () => {
           {/* Google Sign In */}
           <button
             type="button"
+            onClick={() => loginWithGoogle()}
             className="w-full h-12 border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[#0F172A] text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3"
           >
             <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24">

@@ -53,24 +53,21 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       </label>
       <div className="relative group">
         <div
-          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${
-            error
+          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${error
               ? "text-red-500"
               : "text-[#94A3B8] group-focus-within:text-[#4F46E5]"
-          }`}
+            }`}
         >
           <Icon size={17} strokeWidth={2} />
         </div>
         <input
           ref={ref}
           id={id}
-          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${
-            rightElement ? "pr-11" : "pr-4"
-          } ${
-            error
+          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${rightElement ? "pr-11" : "pr-4"
+            } ${error
               ? "border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]"
               : "border-[#E2E8F0] focus:border-[#4F46E5] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.12)]"
-          }`}
+            }`}
           style={{ height: "50px" }}
           {...props}
         />

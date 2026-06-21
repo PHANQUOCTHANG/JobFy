@@ -18,9 +18,6 @@ const FacebookCallbackPage = () => {
     calledRef.current = true;
 
     const accessToken = searchParams.get("token");
-    toast.success("Welcome back!", {
-      description: `Logged in successfully as ${accessToken}`,
-    });
     if (accessToken) {
       authApi
         .getMe(accessToken)
@@ -33,7 +30,9 @@ const FacebookCallbackPage = () => {
             }),
           );
           toast.success("Welcome back!", {
-            description: `Logged in successfully as ${user.fullName || user.username}`,
+            description: `Logged in successfully as ${
+              user.fullName || user.email
+            }`,
           });
           navigate("/");
         })

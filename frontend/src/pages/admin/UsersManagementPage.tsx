@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   Plus,
-  Shield,
   ShieldAlert,
   Users as UsersIcon,
   MoreHorizontal,
@@ -68,7 +67,7 @@ const UsersManagementPage = () => {
   const {
     createUserAsync,
     updateUserAsync,
-    toggleBlockUser,
+    updateUserStatus,
     deleteUser,
     isMutating,
   } = useUserMutations();
@@ -85,7 +84,7 @@ const UsersManagementPage = () => {
     totalPages: 1,
     totalItems: 0,
     page: 1,
-    pageSize: APP_CONFIG.PAGINATION_LIMIT,
+    limit: APP_CONFIG.PAGINATION_LIMIT,
   };
 
   // --- HANDLERS ---
@@ -99,32 +98,35 @@ const UsersManagementPage = () => {
     setIsModalOpen(true);
   };
 
-  // 🔥 Xử lý Form Submit (Nhận FormData từ UserModal)
-  const handleFormSubmit = async (formData: FormData) => {
+  // 🔥 Xử lý Form Submit (Nhận payload JSON từ UserModal)
+  const handleFormSubmit = async (payload: any) => {
     try {
       if (userToEdit) {
-        await updateUserAsync({ id: userToEdit._id, data: formData });
+        await updateUserAsync({ id: userToEdit.id, data: payload });
       } else {
-        await createUserAsync(formData);
+        await createUserAsync(payload);
       }
       setIsModalOpen(false);
     } catch (error) {
       console.error("Failed to save user", error);
-      // Giữ modal mở nếu lỗi để user sửa
     }
   };
 
   const handleConfirmBlock = () => {
     if (userToBlock) {
-      toggleBlockUser(userToBlock._id, {
-        onSuccess: () => setUserToBlock(null),
-      });
+      const newStatus = userToBlock.status === "active" ? "banned" : "active";
+      updateUserStatus(
+        { id: userToBlock.id, status: newStatus },
+        {
+          onSuccess: () => setUserToBlock(null),
+        }
+      );
     }
   };
 
   const handleConfirmDelete = () => {
     if (userToDelete) {
-      deleteUser(userToDelete._id, {
+      deleteUser(userToDelete.id, {
         onSuccess: () => setUserToDelete(null),
       });
     }
@@ -140,45 +142,70 @@ const UsersManagementPage = () => {
         </Badge>
       );
     }
-    if (roleLower === "artist") {
+    if (roleLower === "employer") {
       return (
         <Badge
           variant="secondary"
           className="bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 gap-1 hover:bg-amber-200"
         >
-          <Shield className="size-3" /> Artist
+          <UsersIcon className="size-3" /> Employer
         </Badge>
       );
     }
     return (
       <Badge variant="outline" className="gap-1 text-muted-foreground">
-        <UsersIcon className="size-3" /> User
+        <UsersIcon className="size-3" /> Candidate
       </Badge>
     );
   };
 
+  const renderStatusBadge = (status: string) => {
+    switch (status) {
+      case "active":
+        return (
+          <Badge className="rounded-full font-medium shadow-none bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-emerald-500/20 dark:text-emerald-400">
+            Active
+          </Badge>
+        );
+      case "pending_verification":
+        return (
+          <Badge variant="outline" className="rounded-full font-medium shadow-none text-amber-600 border-amber-500/30">
+            Pending
+          </Badge>
+        );
+      case "banned":
+        return (
+          <Badge variant="destructive" className="rounded-full font-medium shadow-none">
+            Banned
+          </Badge>
+        );
+      case "inactive":
+        return (
+          <Badge variant="secondary" className="rounded-full font-medium shadow-none">
+            Inactive
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   const onBack = useSmartBack();
   const hasResults = userData.length > 0;
-  const isFiltering = Boolean(filterParams.keyword);
+  const isFiltering = Boolean(filterParams.search || filterParams.role || filterParams.status);
 
   const isOffline = !navigator.onLine;
-  // ── Error state ─────────────────────────────────────────────────────────
 
-  // Switching
   if (isLoading && hasResults) {
     return <ThemedLoader />;
   }
-  // Deep Error
   if (isError && !hasResults) {
     return (
-      <>
-        <div className="section-container space-y-6 sm:space-y-8 pt-4 pb-4">
-          <Result variant="error" onRetry={refetch} />
-        </div>
-      </>
+      <div className="section-container space-y-6 sm:space-y-8 pt-4 pb-4">
+        <Result variant="error" onRetry={refetch} />
+      </div>
     );
   }
-  // Offline
   if (isOffline) {
     return (
       <div className="section-container space-y-6 sm:space-y-8 pt-4 pb-4">
@@ -218,7 +245,7 @@ const UsersManagementPage = () => {
       </div>
       {isLoading ? (
         <TableSkeleton
-          rows={meta.pageSize || APP_CONFIG.PAGINATION_LIMIT}
+          rows={(meta as any).pageSize || APP_CONFIG.PAGINATION_LIMIT}
           cols={5}
           hasAvatar={true}
         />
@@ -226,12 +253,12 @@ const UsersManagementPage = () => {
         !isLoading && !isFiltering ? (
           <Result
             variant="empty-genres"
-            description="Genre hiện đang trống"
+            description="Chưa có người dùng nào"
           />
         ) : (
           <Result
             variant="empty-genres"
-            description="Không có kết quả! Thử bộ lọc khác "
+            description="Không có kết quả! Thử bộ lọc khác"
             onClearFilters={clearFilters}
             onBack={onBack}
           />
@@ -252,22 +279,22 @@ const UsersManagementPage = () => {
             </TableHeader>
             <TableBody>
               {userData.map((user: IUser) => (
-                <TableRow key={user._id} className="group">
+                <TableRow key={user.id} className="group">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="size-9 border">
                         <AvatarImage
-                          src={user.avatar}
-                          alt={user.username}
+                          src={user.avatarUrl || ""}
+                          alt={user.fullName || user.email}
                           className="object-cover"
                         />
                         <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-                          {getInitialsTextAvartar(user?.fullName)}
+                          {getInitialsTextAvartar(user.fullName || user.email)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
                         <span className="font-medium text-sm text-foreground truncate max-w-[150px]">
-                          {user.fullName}
+                          {user.fullName || "No Name"}
                         </span>
                         <span className="text-xs text-muted-foreground truncate max-w-[150px]">
                           {user.email}
@@ -277,17 +304,7 @@ const UsersManagementPage = () => {
                   </TableCell>
                   <TableCell>{renderRoleBadge(user.role)}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={user.isActive ? "default" : "destructive"}
-                      className={cn(
-                        "rounded-full font-medium shadow-none",
-                        user.isActive
-                          ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-emerald-500/20 dark:text-emerald-400"
-                          : "",
-                      )}
-                    >
-                      {user.isActive ? "Active" : "Blocked"}
-                    </Badge>
+                    {renderStatusBadge(user.status)}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground text-xs font-mono">
                     {new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -318,12 +335,12 @@ const UsersManagementPage = () => {
                         <DropdownMenuItem
                           onClick={() => setUserToBlock(user)}
                           className={cn(
-                            user.isActive
+                            user.status === "active"
                               ? "text-destructive focus:text-destructive focus:bg-destructive/10"
                               : "text-emerald-600 focus:text-emerald-600 focus:bg-emerald-500/10",
                           )}
                         >
-                          {user.isActive ? (
+                          {user.status === "active" ? (
                             <>
                               <Lock className="mr-2 size-4" /> Block User
                             </>
@@ -360,7 +377,7 @@ const UsersManagementPage = () => {
             totalPages={meta.totalPages}
             onPageChange={handlePageChange}
             totalItems={meta.totalItems}
-            pageSize={meta.pageSize || APP_CONFIG.PAGINATION_LIMIT}
+            pageSize={(meta as any).pageSize || APP_CONFIG.PAGINATION_LIMIT}
           />
         </div>
       )}
@@ -384,15 +401,15 @@ const UsersManagementPage = () => {
         onConfirm={handleConfirmBlock}
         isLoading={isMutating}
         title={
-          userToBlock?.isActive ? "Block User Account" : "Restore User Access"
+          userToBlock?.status === "active" ? "Block User Account" : "Restore User Access"
         }
         description={
-          userToBlock?.isActive
-            ? `Are you sure you want to block ${userToBlock.fullName}? They will immediately be logged out and lose access to the platform.`
-            : `Are you sure you want to unblock ${userToBlock?.fullName}? They will regain full access immediately.`
+          userToBlock?.status === "active"
+            ? `Are you sure you want to block ${userToBlock.fullName || userToBlock.email}? They will lose access to the platform.`
+            : `Are you sure you want to unblock ${userToBlock?.fullName || userToBlock?.email}? They will regain full access immediately.`
         }
-        confirmLabel={userToBlock?.isActive ? "Yes, Block" : "Yes, Unblock"}
-        isDestructive={userToBlock?.isActive}
+        confirmLabel={userToBlock?.status === "active" ? "Yes, Block" : "Yes, Unblock"}
+        isDestructive={userToBlock?.status === "active"}
       />
 
       {/* 3. Delete Confirmation */}
@@ -401,22 +418,21 @@ const UsersManagementPage = () => {
         onCancel={() => setUserToDelete(null)}
         onConfirm={handleConfirmDelete}
         isLoading={isMutating}
-        title="Permanently Delete User?"
+        title="Delete User Account?"
         description={
           <span>
             Are you sure you want to delete{" "}
             <strong className="text-foreground">
-              {userToDelete?.fullName}
+              {userToDelete?.fullName || userToDelete?.email}
             </strong>
             ?
             <br />
             <span className="text-destructive font-bold text-sm mt-2 block bg-destructive/10 p-2 rounded border border-destructive/20">
-              This action cannot be undone. All data associated with this user
-              will be permanently removed.
+              This action will soft-delete the user from the system.
             </span>
           </span>
         }
-        confirmLabel="Yes, Delete Permanently"
+        confirmLabel="Yes, Delete User"
         isDestructive
       />
     </div>

@@ -28,7 +28,7 @@ const sendAuthResponse = (
   statusCode: number = 200,
 ) => {
   console.log("Remember Me (Server):", result.rememberMe);
-  const expiresAt = result.rememberMe 
+  const expiresAt = result.rememberMe
     ? result.refreshTokenExpiresAt
     : undefined;
   const cookieOptions = getCookieOptions(expiresAt);
@@ -154,7 +154,7 @@ export const resetPassword = asyncHandler(
   },
 );
 
-// POST | /api/auth/change-password
+// POST | /api/auth/change-password | Thay đổi mật khẩu khi đã đăng nhập
 export const changePassword = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = getUserId(req);
@@ -162,3 +162,4 @@ export const changePassword = asyncHandler(
     res.status(204).send();
   },
 );
+

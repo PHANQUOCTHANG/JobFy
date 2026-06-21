@@ -44,6 +44,7 @@ export const updateAlert = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 200, "Job alert updated", toJobAlertResponse(alert));
 });
 
+
 export const deleteAlert = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -61,3 +62,4 @@ export const toggleAlert = catchAsync(async (req: Request, res: Response) => {
   const alert = await alertService.toggleAlert(id as string, userId);
   sendResponse(res, 200, `Job alert ${alert.isActive ? 'enabled' : 'disabled'}`, toJobAlertResponse(alert));
 });
+

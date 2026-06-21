@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import userApi from "../api/userApi";
 import { userKeys } from "../utils/userKeys";
 import { handleError } from "@/utils/handleError";
+import type { CreateUserRequest, UpdateUserRequest, UserStatus } from "../types";
 
 export const useUserMutations = () => {
   const queryClient = useQueryClient();
@@ -10,15 +11,13 @@ export const useUserMutations = () => {
   // Hàm tiện ích để làm mới danh sách sau khi thao tác thành công
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: userKeys.lists() });
-    // Nếu có query key riêng cho artist requests thì thêm vào đây, ví dụ:
-    // queryClient.invalidateQueries({ queryKey: ["artist-requests"] });
   };
 
   // ==========================================
   // 1. CREATE USER (Admin)
   // ==========================================
   const createMutation = useMutation({
-    mutationFn: (data: FormData) => userApi.create(data),
+    mutationFn: (data: CreateUserRequest) => userApi.create(data),
     onSuccess: () => {
       toast.success("Tạo người dùng thành công");
       invalidate();
@@ -30,7 +29,7 @@ export const useUserMutations = () => {
   // 2. UPDATE USER (Admin)
   // ==========================================
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: FormData }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateUserRequest }) =>
       userApi.update(id, data),
     onSuccess: () => {
       toast.success("Cập nhật thông tin thành công");
@@ -40,14 +39,14 @@ export const useUserMutations = () => {
   });
 
   // ==========================================
-  // 3. TOGGLE BLOCK USER
+  // 3. UPDATE STATUS USER
   // ==========================================
-  const toggleBlockMutation = useMutation({
-    mutationFn: userApi.toggleBlock,
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: UserStatus }) => 
+      userApi.update(id, { status }),
     onSuccess: (response) => {
-      // Giả sử response trả về chứa data user vừa được update
-      const status = response.data?.isActive ? "Đã mở khóa" : "Đã khóa";
-      toast.success(`${status} tài khoản thành công`);
+      const statusStr = response.data?.status === "active" ? "Đã mở khóa" : "Đã cập nhật trạng thái";
+      toast.success(`${statusStr} tài khoản thành công`);
       invalidate();
     },
     onError: (err) => handleError(err, "Lỗi thay đổi trạng thái"),
@@ -65,57 +64,26 @@ export const useUserMutations = () => {
     onError: (err) => handleError(err, "Lỗi xóa người dùng"),
   });
 
-  // ==========================================
-  // 5. APPROVE ARTIST REQUEST
-  // ==========================================
-  const approveArtistMutation = useMutation({
-    mutationFn: userApi.approveArtistRequest,
-    onSuccess: () => {
-      toast.success("Đã duyệt yêu cầu nâng cấp Artist");
-      invalidate();
-    },
-    onError: (err) => handleError(err, "Lỗi duyệt yêu cầu"),
-  });
-
-  // ==========================================
-  // 6. REJECT ARTIST REQUEST
-  // ==========================================
-  const rejectArtistMutation = useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      userApi.rejectArtistRequest(id, reason),
-    onSuccess: () => {
-      toast.success("Đã từ chối yêu cầu nâng cấp Artist");
-      invalidate();
-    },
-    onError: (err) => handleError(err, "Lỗi từ chối yêu cầu"),
-  });
-
   return {
     // --- Async Methods (Dùng trong Form submit) ---
     createUserAsync: createMutation.mutateAsync,
     updateUserAsync: updateMutation.mutateAsync,
-    rejectArtistAsync: rejectArtistMutation.mutateAsync,
 
     // --- Standard Methods (Dùng cho Button click trực tiếp) ---
-    toggleBlockUser: toggleBlockMutation.mutate,
+    updateUserStatus: updateStatusMutation.mutate,
     deleteUser: deleteMutation.mutate,
-    approveArtist: approveArtistMutation.mutate,
 
     // --- Loading States ---
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
-    isToggling: toggleBlockMutation.isPending,
+    isUpdatingStatus: updateStatusMutation.isPending,
     isDeleting: deleteMutation.isPending,
-    isApproving: approveArtistMutation.isPending,
-    isRejecting: rejectArtistMutation.isPending,
 
     // Aggregate Loading State (Disable UI chung)
     isMutating:
       createMutation.isPending ||
       updateMutation.isPending ||
-      toggleBlockMutation.isPending ||
-      deleteMutation.isPending ||
-      approveArtistMutation.isPending ||
-      rejectArtistMutation.isPending,
+      updateStatusMutation.isPending ||
+      deleteMutation.isPending,
   };
 };

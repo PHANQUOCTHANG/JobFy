@@ -1,14 +1,23 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Plus, MoreHorizontal, Pencil, Trash2, Search } from "lucide-react";
+import {
+  Plus,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Search,
+  Briefcase,
+  Layers,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import PageHeader from "@/components/ui/PageHeader";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -16,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
@@ -88,104 +98,148 @@ export default function AdminIndustriesPage() {
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-8 pb-12 animate-in fade-in duration-500">
       <PageHeader
         title="Ngành nghề kinh doanh"
-        subtitle={`Quản lý danh sách ngành nghề trên hệ thống.`}
+        subtitle="Thiết lập các danh mục ngành nghề hiển thị trên hệ thống cho Nhà tuyển dụng và Ứng viên."
       />
 
-      <div className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row gap-3 justify-between shadow-sm">
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            placeholder="Tìm ngành nghề..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-background"
-          />
-        </div>
-        <Button onClick={() => handleOpenModal()} className="gap-2">
-          <Plus className="size-4" /> Thêm mới
-        </Button>
+      {/* Stats Card */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-card shadow-sm border-border/50 overflow-hidden group hover:border-primary/50 transition-colors">
+          <CardContent className="p-5 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Tổng Số Ngành Nghề</p>
+              <h3 className="text-3xl font-bold text-foreground">{items.length}</h3>
+            </div>
+            <div className="bg-indigo-500/10 p-3 rounded-2xl group-hover:bg-indigo-500/20 transition-colors">
+              <Briefcase className="size-8 text-indigo-600" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {isLoading ? (
-        <TableSkeleton rows={5} cols={3} />
-      ) : (
-        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50 hover:bg-muted/50">
-                <TableHead className="w-[100px]">ID</TableHead>
-                <TableHead>Tên ngành nghề</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead className="text-right">Thao tác</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredItems.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center py-12 text-muted-foreground">
-                    Không có dữ liệu.
-                  </TableCell>
+      <div className="bg-card border border-border/50 shadow-sm rounded-2xl overflow-hidden">
+        {/* Filters */}
+        <div className="p-4 sm:px-6 border-b border-border/50 flex flex-col sm:flex-row justify-between gap-4">
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              placeholder="Tìm kiếm ngành nghề..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-11 bg-background border-input/50 rounded-xl focus-visible:ring-primary/20"
+            />
+          </div>
+          <Button onClick={() => handleOpenModal()} className="h-11 rounded-xl shadow-sm gap-2">
+            <Plus className="size-4" /> Thêm mới
+          </Button>
+        </div>
+
+        {/* Table */}
+        {isLoading ? (
+          <div className="p-6">
+            <TableSkeleton rows={5} cols={3} />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/50">
+                  <TableHead className="w-[120px] font-semibold pl-6">ID</TableHead>
+                  <TableHead className="font-semibold">Tên Ngành Nghề</TableHead>
+                  <TableHead className="text-right font-semibold pr-6">Thao tác</TableHead>
                 </TableRow>
-              ) : (
-                filteredItems.map((item: any) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-mono text-xs">{item.id}</TableCell>
-                    <TableCell className="font-semibold text-sm">{item.name}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{item.slug}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                            <MoreHorizontal className="size-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleOpenModal(item)}>
-                            <Pencil className="mr-2 size-4" /> Sửa
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => setConfirmDelete({ id: item.id, name: item.name })}
-                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                          >
-                            <Trash2 className="mr-2 size-4" /> Xóa
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+              </TableHeader>
+              <TableBody>
+                {filteredItems.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-24 text-muted-foreground">
+                      <div className="flex flex-col items-center gap-3">
+                        <Layers className="size-12 text-muted-foreground/30" />
+                        <p className="text-base font-medium">Không tìm thấy ngành nghề nào.</p>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+                ) : (
+                  filteredItems.map((item: any) => (
+                    <TableRow key={item.id} className="group hover:bg-muted/20 border-b border-border/50 transition-colors">
+                      <TableCell className="font-mono text-xs text-muted-foreground pl-6">
+                        #{item.id}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1 py-2">
+                          <span className="font-bold text-sm text-foreground hover:text-primary transition-colors cursor-pointer" onClick={() => handleOpenModal(item)}>
+                            {item.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground max-w-[300px] truncate">
+                            /{item.slug}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right pr-6">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-secondary">
+                              <MoreHorizontal className="size-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-lg border-border/50">
+                            <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">Tùy chọn</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => handleOpenModal(item)} className="font-medium cursor-pointer">
+                              <Pencil className="mr-2 size-4 text-blue-600" /> Sửa tên
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="bg-border/50" />
+                            <DropdownMenuItem
+                              onClick={() => setConfirmDelete({ id: item.id, name: item.name })}
+                              className="text-destructive focus:text-destructive focus:bg-destructive/10 font-bold cursor-pointer"
+                            >
+                              <Trash2 className="mr-2 size-4" /> Xóa dữ liệu
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
 
       {/* Add/Edit Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] rounded-2xl border-border/50 shadow-2xl">
           <form onSubmit={handleSave}>
-            <DialogHeader>
-              <DialogTitle>{editingItem ? "Sửa ngành nghề" : "Thêm ngành nghề mới"}</DialogTitle>
+            <DialogHeader className="p-6 pb-2">
+              <DialogTitle className="text-xl font-bold text-foreground">
+                {editingItem ? "Sửa Ngành Nghề" : "Thêm Ngành Nghề Mới"}
+              </DialogTitle>
+              <DialogDescription className="text-sm mt-1.5">
+                {editingItem 
+                  ? "Sửa tên ngành nghề. Slug sẽ được tự động cập nhật theo tên mới."
+                  : "Nhập tên cho ngành nghề kinh doanh mới. Tránh nhập trùng lặp."}
+              </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Tên ngành nghề</Label>
+            <div className="p-6 pt-2 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-semibold">Tên ngành nghề</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Nhập tên ngành nghề"
+                  placeholder="VD: Công nghệ thông tin, Kế toán..."
+                  className="h-11 rounded-xl"
                   autoFocus
                 />
               </div>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Hủy</Button>
-              <Button type="submit" disabled={saveMutation.isPending || !formData.name.trim()}>Lưu thay đổi</Button>
+            <DialogFooter className="pt-4 p-6 border-t border-border/50">
+              <Button type="button" variant="outline" className="rounded-xl" onClick={() => setIsModalOpen(false)}>Hủy bỏ</Button>
+              <Button type="submit" className="rounded-xl shadow-lg" disabled={saveMutation.isPending || !formData.name.trim()}>
+                {saveMutation.isPending ? "Đang xử lý..." : "Lưu thay đổi"}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -198,8 +252,8 @@ export default function AdminIndustriesPage() {
         onConfirm={() => confirmDelete && deleteMutation.mutate(confirmDelete.id)}
         isLoading={deleteMutation.isPending}
         title="Xóa ngành nghề?"
-        description={`Bạn có chắc chắn muốn xóa "${confirmDelete?.name}"? Các công ty thuộc ngành nghề này có thể bị ảnh hưởng.`}
-        confirmLabel="Xóa"
+        description={`Bạn có chắc chắn muốn xóa ngành nghề "${confirmDelete?.name}"? Các công ty và tin tuyển dụng thuộc danh mục này có thể bị ảnh hưởng hiển thị.`}
+        confirmLabel="Xóa dữ liệu"
         isDestructive
       />
     </div>

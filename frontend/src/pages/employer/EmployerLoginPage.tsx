@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm, type FieldValues } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginEmployer, googleLoginEmployer } from '@/features/auth/slice/authSlice';
+import { loginSchema, LoginRequest } from '@/../../backend/src/module/auth/auth.request';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   Mail,
   Lock,
@@ -9,8 +16,9 @@ import {
   Users,
   Zap,
   Shield,
-  Briefcase,
   ArrowLeft,
+  Loader2,
+  Briefcase,
   type LucideIcon,
 } from 'lucide-react';
 import GoogleLoginButton from '@/features/auth/components/GoogleLoginButton';
@@ -52,24 +60,21 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
       </div>
       <div className="relative group">
         <div
-          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${
-            error
+          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${error
               ? 'text-red-500'
               : 'text-[#94A3B8] group-focus-within:text-[#00307c]'
-          }`}
+            }`}
         >
           <Icon size={17} strokeWidth={2} />
         </div>
         <input
           ref={ref}
           id={id}
-          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${
-            rightElement ? 'pr-11' : 'pr-4'
-          } ${
-            error
+          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${rightElement ? 'pr-11' : 'pr-4'
+            } ${error
               ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
               : 'border-[#E2E8F0] focus:border-[#00307c] focus:shadow-[0_0_0_3px_rgba(0,48,124,0.10)]'
-          }`}
+            }`}
           style={{ height: '50px' }}
           {...props}
         />
@@ -111,6 +116,49 @@ const FeatureBadge = ({
 /* ─── Main Page ─── */
 const EmployerLoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isLoading } = useAppSelector((state) => state.auth);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginRequest>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      role: 'employer',
+      rememberMe: false,
+    },
+  });
+
+  const onSubmit = async (data: LoginRequest) => {
+    const resultAction = await dispatch(loginEmployer({ ...data, role: 'employer' }));
+
+    if (loginEmployer.fulfilled.match(resultAction)) {
+      toast.success('Đăng nhập thành công!');
+      navigate('/employer');
+    } else {
+      toast.error(resultAction.payload as string || 'Đăng nhập thất bại');
+    }
+  };
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const resultAction = await dispatch(googleLoginEmployer(tokenResponse.access_token));
+        if (googleLoginEmployer.fulfilled.match(resultAction)) {
+          toast.success('Đăng nhập bằng Google thành công!');
+          navigate('/employer');
+        } else {
+          toast.error(resultAction.payload as string || 'Đăng nhập bằng Google thất bại');
+        }
+      } catch (error) {
+        toast.error('Đăng nhập bằng Google thất bại');
+      }
+    },
+    onError: () => toast.error('Đăng nhập bằng Google thất bại'),
+  });
 
   return (
     <div
@@ -253,7 +301,7 @@ const EmployerLoginPage: React.FC = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Email */}
             <InputField
               icon={Mail}
@@ -261,6 +309,8 @@ const EmployerLoginPage: React.FC = () => {
               id="login-email"
               type="email"
               placeholder="email@congty.com"
+              error={errors.email?.message}
+              {...register('email')}
             />
 
             {/* Password */}
@@ -272,12 +322,14 @@ const EmployerLoginPage: React.FC = () => {
               placeholder="••••••••"
               labelRight={
                 <Link
-                  to="#"
+                  to="/employer/forgot-password"
                   className="text-[12px] font-bold text-[#00307c] hover:underline underline-offset-2"
                 >
                   Quên mật khẩu?
                 </Link>
               }
+              error={errors.password?.message}
+              {...register('password')}
               rightElement={
                 <button
                   type="button"
@@ -295,6 +347,7 @@ const EmployerLoginPage: React.FC = () => {
                 id="remember"
                 type="checkbox"
                 className="w-4 h-4 rounded border-[#CBD5E1] text-[#00307c] accent-[#00307c] cursor-pointer"
+                {...register('rememberMe')}
               />
               <label
                 htmlFor="remember"
@@ -307,9 +360,17 @@ const EmployerLoginPage: React.FC = () => {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full h-12 bg-[#00307c] hover:bg-[#002568] text-white text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center shadow-lg shadow-[#00307c]/25 mt-2"
+              disabled={isLoading}
+              className="w-full h-12 bg-[#00307c] hover:bg-[#002568] text-white text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center shadow-lg shadow-[#00307c]/25 mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Đăng nhập ngay
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : (
+                'Đăng nhập ngay'
+              )}
             </button>
           </form>
 

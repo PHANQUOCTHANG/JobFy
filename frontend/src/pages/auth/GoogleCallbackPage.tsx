@@ -33,7 +33,7 @@ const GoogleCallbackPage = () => {
           );
           toast.success("Welcome back!", {
             description: `Logged in successfully as ${
-              user.fullName || user.username
+              user.fullName || user.email
             }`,
           });
           navigate("/");

@@ -1,9 +1,12 @@
 import { Report, ReportType, ReportStatus, User } from "@prisma/client";
 
+export type ReportUserPreview = Pick<User, "id" | "email">;
+
 export interface IReport extends Report {
-  reporter?: User;
-  reviewer?: User;
+  reporter?: ReportUserPreview | null;
+  reviewer?: ReportUserPreview | null;
 }
+
 
 export type CreateReportPayload = {
   reporterId: string;

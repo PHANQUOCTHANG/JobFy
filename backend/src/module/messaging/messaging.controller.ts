@@ -43,6 +43,8 @@ export const getMessages = catchAsync(async (req: Request, res: Response) => {
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
+  const conversationId = Array.isArray(id) ? id[0] : id;
+  if (!conversationId) return res.status(400).json({ message: "Invalid id" });
   const { page, limit } = req.query;
   const result = await messagingService.getMessages(id as string, userId, role, {
     page: page ? Number(page) : undefined,
@@ -65,8 +67,11 @@ export const sendMessage = catchAsync(async (req: Request, res: Response) => {
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
+  const conversationId = Array.isArray(id) ? id[0] : id;
+  if (!conversationId) return res.status(400).json({ message: "Invalid id" });
   const message = await messagingService.sendMessage({
-    conversationId: id,
+    conversationId,
+
     senderId: userId,
     ...req.body
   });

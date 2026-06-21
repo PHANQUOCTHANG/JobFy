@@ -41,6 +41,7 @@ export const cancelSubscription = catchAsync(async (req: Request, res: Response)
   sendResponse(res, 200, "Subscription cancelled", toSubscriptionResponse(sub));
 });
 
+
 export const getPayments = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });

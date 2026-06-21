@@ -23,16 +23,25 @@ export const useLogin = () => {
   const { setError } = form;
 
   const onSubmit = async (data: LoginInput) => {
-    const resultAction = await dispatch(loginUser(data));
+    const resultAction = await dispatch(loginUser(data as any));
 
     if (loginUser.fulfilled.match(resultAction)) {
       const { user } = resultAction.payload;
 
-      if (user.mustChangePassword) {
+      if ((user as any).mustChangePassword) {
         toast.warning("Yêu cầu bảo mật", {
           description: "Vui lòng đổi mật khẩu mới trước khi tiếp tục.",
         });
         return navigate("/force-change-password");
+      }
+
+      if (user.status === "pending_verification") {
+        toast.warning("Tài khoản chưa được xác thực", {
+          description: "Vui lòng xác thực email của bạn để tiếp tục sử dụng đầy đủ tính năng.",
+        });
+        return navigate("/verify-otp", {
+          state: { email: user.email, isResend: true },
+        });
       }
 
       toast.success("Đăng nhập thành công!", {
@@ -61,11 +70,11 @@ export const useLogin = () => {
       toast.success("Đăng nhập bằng Google thành công!", {
         description: `Chào mừng trở lại, ${user.fullName || user.email}!`,
       });
-      // Redirect dựa vào role (ví dụ role employer thì sang /employer, candidate thì sang /)
+      // Redirect bằng window.location.href để đảm bảo load lại app state (sửa lỗi Header không update)
       if (role === "employer") {
-        navigate("/employer");
+        window.location.href = "/employer";
       } else {
-        navigate("/");
+        window.location.href = "/";
       }
     } else {
       const errorPayload = resultAction.payload as any;

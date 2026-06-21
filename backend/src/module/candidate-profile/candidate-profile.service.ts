@@ -16,6 +16,8 @@ export interface ICandidateProfileService {
   findById(id: string): Promise<CandidateProfileResponseDto>;
   findByUserId(userId: string): Promise<CandidateProfileResponseDto>;
   updateByUserId(userId: string, dto: UpdateCandidateProfileRequestDto): Promise<CandidateProfileResponseDto>;
+  updateById(id: string, dto: UpdateCandidateProfileRequestDto): Promise<CandidateProfileResponseDto>;
+  deleteById(id: string): Promise<void>;
   incrementViewCount(id: string): Promise<void>;
 }
 
@@ -27,7 +29,7 @@ export class CandidateProfileService implements ICandidateProfileService {
   constructor(
     private readonly profileRepo: ICandidateProfileRepository,
     private readonly userRepo: IUserRepository
-  ) {}
+  ) { }
 
   async create(userId: string, dto: CreateCandidateProfileRequestDto): Promise<CandidateProfileResponseDto> {
     const user = await this.userRepo.findById(userId);
@@ -45,8 +47,8 @@ export class CandidateProfileService implements ICandidateProfileService {
       headline: dto.headline,
       gender: dto.gender,
       dob: dobDate,
-      provinceId: dto.provinceId,
-      districtId: dto.districtId,
+      provinceId: dto.provinceId, // Sửa lỗi: Sử dụng provinceId trực tiếp
+      districtId: dto.districtId, // Sửa lỗi: Sử dụng districtId trực tiếp
       address: dto.address,
       linkedinUrl: dto.linkedinUrl,
       githubUrl: dto.githubUrl,
@@ -117,7 +119,13 @@ export class CandidateProfileService implements ICandidateProfileService {
     const dobDate = dto.dob ? new Date(dto.dob) : undefined;
     const updateData: Prisma.CandidateProfileUncheckedUpdateInput = { ...dto };
     if (dobDate !== undefined) updateData.dob = dobDate;
-
+    
+    if (dto.provinceId !== undefined) {
+      updateData.provinceId = dto.provinceId;
+    }
+    if (dto.districtId !== undefined) {
+      updateData.districtId = dto.districtId;
+    }
     const updated = await this.profileRepo.updateById(profile.id, updateData);
     if (!updated) throw new AppError("Cập nhật thất bại", 500);
 
@@ -128,6 +136,46 @@ export class CandidateProfileService implements ICandidateProfileService {
     ]);
 
     return CandidateProfileResponseDto.from(updated);
+  }
+
+  async updateById(id: string, dto: UpdateCandidateProfileRequestDto): Promise<CandidateProfileResponseDto> {
+    const profile = await this.profileRepo.findById(id);
+    if (!profile) throw new AppError("Không tìm thấy hồ sơ ứng viên", 404);
+
+    const dobDate = dto.dob ? new Date(dto.dob) : undefined;
+    const updateData: Prisma.CandidateProfileUncheckedUpdateInput = { ...dto };
+    if (dobDate !== undefined) updateData.dob = dobDate;
+    
+    if (dto.provinceId !== undefined) {
+      updateData.provinceId = dto.provinceId;
+    }
+    if (dto.districtId !== undefined) {
+      updateData.districtId = dto.districtId;
+    }
+    const updated = await this.profileRepo.updateById(profile.id, updateData);
+    if (!updated) throw new AppError("Cập nhật thất bại", 500);
+
+    await Promise.all([
+      deleteCache(`${this.CACHE_KEY}:id:${profile.id}`),
+      deleteCache(`${this.CACHE_KEY}:userId:${profile.userId}`),
+      deleteCacheByPattern(`${this.CACHE_KEY}:list:*`),
+    ]);
+
+    return CandidateProfileResponseDto.from(updated);
+  }
+
+  async deleteById(id: string): Promise<void> {
+    const profile = await this.profileRepo.findById(id);
+    if (!profile) throw new AppError("Không tìm thấy hồ sơ ứng viên", 404);
+
+    // Xóa cứng profile
+    await this.profileRepo.deleteById(id);
+
+    await Promise.all([
+      deleteCache(`${this.CACHE_KEY}:id:${id}`),
+      deleteCache(`${this.CACHE_KEY}:userId:${profile.userId}`),
+      deleteCacheByPattern(`${this.CACHE_KEY}:list:*`),
+    ]);
   }
 
   async incrementViewCount(id: string): Promise<void> {

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Building2, 
   MapPin, 
@@ -16,7 +17,10 @@ import {
   Banknote, 
   Calendar,
   CheckCircle,
-  XCircle
+  XCircle,
+  Clock,
+  Layers,
+  GraduationCap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,105 +45,130 @@ const AdminJobDetailsModal: React.FC<AdminJobDetailsModalProps> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-[100vw] sm:max-w-[600px] overflow-y-auto p-0 flex flex-col">
-        <SheetHeader className="p-6 border-b bg-muted/30 sticky top-0 z-10 backdrop-blur-md">
-          <div className="flex items-start justify-between gap-4 pr-6">
-            <div className="space-y-2">
-              <SheetTitle className="text-2xl font-bold leading-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                {job.title}
-              </SheetTitle>
-              <SheetDescription className="flex items-center gap-2">
-                <Building2 className="size-4" />
-                <span className="font-medium text-foreground">{job.company?.name || "Công ty chưa cập nhật"}</span>
-              </SheetDescription>
+      <SheetContent side="right" className="w-[100vw] sm:max-w-[700px] overflow-y-auto p-0 flex flex-col bg-slate-50/50 dark:bg-background">
+        <SheetHeader className="p-6 sm:p-8 border-b bg-white dark:bg-card sticky top-0 z-10 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pr-6">
+            <div className="flex items-start gap-4">
+              <Avatar className="size-16 rounded-xl border shadow-sm bg-white shrink-0 mt-1">
+                <AvatarImage src={job.company?.logoUrl || ""} className="object-contain p-1" />
+                <AvatarFallback className="rounded-xl font-bold bg-primary/10 text-primary text-xl">
+                  {job.company?.name?.charAt(0) || "C"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-2">
+                <SheetTitle className="text-2xl font-extrabold leading-tight tracking-tight text-foreground">
+                  {job.title}
+                </SheetTitle>
+                <SheetDescription className="flex items-center gap-2 text-base font-medium">
+                  <Building2 className="size-4.5 text-primary" />
+                  <span className="text-foreground/90">{job.company?.name || "Công ty ẩn danh"}</span>
+                </SheetDescription>
+              </div>
             </div>
             <Badge 
               variant="outline" 
               className={cn(
-                "capitalize shadow-none whitespace-nowrap",
-                job.status === "pending" ? "bg-amber-500/15 text-amber-600 border-amber-500/20" : "",
-                job.status === "published" ? "bg-emerald-500/15 text-emerald-600 border-emerald-500/20" : "",
-                job.status === "rejected" ? "bg-red-500/15 text-red-600 border-red-500/20" : "",
+                "capitalize shadow-none whitespace-nowrap text-xs font-bold px-3 py-1 self-start",
+                job.status === "pending" ? "bg-amber-500/10 text-amber-600 border-amber-500/30" : "",
+                job.status === "published" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/30" : "",
+                job.status === "rejected" ? "bg-red-500/10 text-red-600 border-red-500/30" : "",
+                job.status === "draft" ? "bg-muted text-muted-foreground border-border" : "",
               )}
             >
-              {job.status}
+              {job.status === "pending" ? "Chờ duyệt" : job.status === "published" ? "Đang hiển thị" : job.status === "rejected" ? "Bị từ chối" : job.status}
             </Badge>
           </div>
         </SheetHeader>
 
-        <div className="flex-1 p-6 space-y-8">
-          {/* Grid thông tin cơ bản */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5"><MapPin className="size-3.5" /> Địa điểm</p>
-              <p className="font-medium text-sm">{job.address || "Chưa cập nhật"} {job.isRemote && "(Remote)"}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Briefcase className="size-3.5" /> Loại hình</p>
-              <p className="font-medium text-sm capitalize">{job.jobType?.replace("_", " ")}</p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Banknote className="size-3.5" /> Mức lương</p>
-              <p className="font-medium text-sm text-emerald-600">
-                {job.isSalaryPublic ? (
-                  job.salaryMin && job.salaryMax 
-                    ? `${job.salaryMin} - ${job.salaryMax} ${job.salaryCurrency}`
-                    : "Thỏa thuận"
-                ) : "Thỏa thuận"}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Calendar className="size-3.5" /> Hết hạn</p>
-              <p className="font-medium text-sm">
-                {job.expiresAt ? new Date(job.expiresAt).toLocaleDateString("vi-VN") : "Không thời hạn"}
-              </p>
-            </div>
-          </div>
-
+        <div className="flex-1 p-6 sm:p-8 space-y-10">
           {/* Lý do từ chối nếu có */}
           {job.status === "rejected" && job.rejectedReason && (
-            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-4">
-              <p className="text-sm font-semibold text-red-600 dark:text-red-400 mb-1">Lý do từ chối:</p>
-              <p className="text-sm text-red-800 dark:text-red-300">{job.rejectedReason}</p>
+            <div className="bg-red-50 dark:bg-red-500/10 border-l-4 border-red-500 rounded-r-xl p-5 shadow-sm">
+              <div className="flex items-center gap-2 text-red-700 dark:text-red-400 font-bold mb-2">
+                <XCircle className="size-5" />
+                Lý do từ chối hiển thị:
+              </div>
+              <p className="text-sm text-red-800 dark:text-red-300 leading-relaxed font-medium">{job.rejectedReason}</p>
             </div>
           )}
 
+          {/* Grid thông tin cơ bản */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-primary mb-4 border-b pb-2">Thông tin chung</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+              <div className="bg-white dark:bg-card p-4 rounded-xl border border-border/50 shadow-sm space-y-1.5">
+                <p className="text-[11px] font-bold uppercase text-muted-foreground flex items-center gap-1.5"><MapPin className="size-3.5" /> Địa điểm</p>
+                <p className="font-semibold text-sm line-clamp-2">{job.address || "Chưa cập nhật"} {job.isRemote && <span className="text-primary">(Remote)</span>}</p>
+              </div>
+              <div className="bg-white dark:bg-card p-4 rounded-xl border border-border/50 shadow-sm space-y-1.5">
+                <p className="text-[11px] font-bold uppercase text-muted-foreground flex items-center gap-1.5"><Briefcase className="size-3.5" /> Loại hình</p>
+                <p className="font-semibold text-sm capitalize">{job.jobType?.replace("_", " ")}</p>
+              </div>
+              <div className="bg-white dark:bg-card p-4 rounded-xl border border-border/50 shadow-sm space-y-1.5">
+                <p className="text-[11px] font-bold uppercase text-muted-foreground flex items-center gap-1.5"><Banknote className="size-3.5" /> Mức lương</p>
+                <p className="font-bold text-sm text-emerald-600">
+                  {job.isSalaryPublic ? (
+                    job.salaryMin && job.salaryMax 
+                      ? `${job.salaryMin} - ${job.salaryMax} ${job.salaryCurrency}`
+                      : "Thỏa thuận"
+                  ) : "Thỏa thuận"}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-card p-4 rounded-xl border border-border/50 shadow-sm space-y-1.5">
+                <p className="text-[11px] font-bold uppercase text-muted-foreground flex items-center gap-1.5"><Layers className="size-3.5" /> Số lượng tuyển</p>
+                <p className="font-semibold text-sm">{job.quantity || 1} người</p>
+              </div>
+              <div className="bg-white dark:bg-card p-4 rounded-xl border border-border/50 shadow-sm space-y-1.5">
+                <p className="text-[11px] font-bold uppercase text-muted-foreground flex items-center gap-1.5"><GraduationCap className="size-3.5" /> Kinh nghiệm</p>
+                <p className="font-semibold text-sm capitalize">{job.experienceLevel || "Không yêu cầu"}</p>
+              </div>
+              <div className="bg-white dark:bg-card p-4 rounded-xl border border-border/50 shadow-sm space-y-1.5">
+                <p className="text-[11px] font-bold uppercase text-muted-foreground flex items-center gap-1.5"><Calendar className="size-3.5" /> Hạn nộp hồ sơ</p>
+                <p className="font-semibold text-sm text-amber-600">
+                  {job.expiresAt ? new Date(job.expiresAt).toLocaleDateString("vi-VN") : "Không thời hạn"}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Kỹ năng */}
-          {job.skills && job.skills.length > 0 && (
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Kỹ năng yêu cầu</h3>
+          {job.jobSkills && job.jobSkills.length > 0 && (
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-primary mb-4 border-b pb-2">Kỹ năng yêu cầu</h3>
               <div className="flex flex-wrap gap-2">
-                {job.skills.map((s: any) => (
-                  <Badge key={s.id} variant="secondary" className="font-normal">{s.name}</Badge>
+                {job.jobSkills.map((js: any) => (
+                  <Badge key={js.skill.id} variant="secondary" className="px-3 py-1 text-sm bg-secondary border shadow-sm font-semibold">
+                    {js.skill.name}
+                  </Badge>
                 ))}
               </div>
             </div>
           )}
 
           {/* Mô tả chi tiết */}
-          <div className="space-y-2">
-            <h3 className="font-semibold text-foreground">Mô tả công việc</h3>
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-primary mb-4 border-b pb-2">Mô tả công việc</h3>
             <div 
-              className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed prose dark:prose-invert max-w-none"
+              className="text-[15px] text-foreground/90 whitespace-pre-wrap leading-relaxed prose prose-sm dark:prose-invert max-w-none bg-white dark:bg-card p-6 rounded-2xl border border-border/50 shadow-sm"
               dangerouslySetInnerHTML={{ __html: job.description }} 
             />
           </div>
 
           {job.requirements && (
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Yêu cầu ứng viên</h3>
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-primary mb-4 border-b pb-2">Yêu cầu ứng viên</h3>
               <div 
-                className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed prose dark:prose-invert max-w-none"
+                className="text-[15px] text-foreground/90 whitespace-pre-wrap leading-relaxed prose prose-sm dark:prose-invert max-w-none bg-white dark:bg-card p-6 rounded-2xl border border-border/50 shadow-sm"
                 dangerouslySetInnerHTML={{ __html: job.requirements }} 
               />
             </div>
           )}
 
           {job.benefits && (
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Quyền lợi</h3>
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-primary mb-4 border-b pb-2">Quyền lợi</h3>
               <div 
-                className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed prose dark:prose-invert max-w-none"
+                className="text-[15px] text-foreground/90 whitespace-pre-wrap leading-relaxed prose prose-sm dark:prose-invert max-w-none bg-white dark:bg-card p-6 rounded-2xl border border-border/50 shadow-sm"
                 dangerouslySetInnerHTML={{ __html: job.benefits }} 
               />
             </div>
@@ -148,22 +177,22 @@ const AdminJobDetailsModal: React.FC<AdminJobDetailsModalProps> = ({
 
         {/* Nút thao tác nhanh (Chỉ hiển thị khi pending) */}
         {job.status === "pending" && (
-          <SheetFooter className="p-4 border-t bg-background mt-auto sticky bottom-0">
-            <div className="flex items-center gap-3 w-full sm:justify-end">
+          <SheetFooter className="p-4 sm:p-6 border-t bg-white dark:bg-card mt-auto sticky bottom-0 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+            <div className="flex items-center gap-3 w-full justify-end">
               <Button 
                 variant="outline" 
-                className="flex-1 sm:flex-none border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-500/30 dark:hover:bg-red-500/10"
+                className="h-12 px-6 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-500/30 dark:hover:bg-red-500/10 font-bold"
                 onClick={() => onReject(job.id)}
                 disabled={isPending}
               >
-                <XCircle className="size-4 mr-2" /> Từ chối
+                <XCircle className="size-5 mr-2" /> TỪ CHỐI DUYỆT
               </Button>
               <Button 
-                className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20"
+                className="h-12 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 font-bold"
                 onClick={() => onApprove(job.id)}
                 disabled={isPending}
               >
-                <CheckCircle className="size-4 mr-2" /> Duyệt tin này
+                <CheckCircle className="size-5 mr-2" /> XUẤT BẢN TIN NÀY
               </Button>
             </div>
           </SheetFooter>

@@ -102,7 +102,24 @@ export class AdminRepository {
     return dates.map((d) => ({ date: this.formatDate(d), value: countMap[this.formatDate(d)] || 0 }));
   }
 
-  async getDashboardStats(): Promise<DashboardStats> {
+  private async buildRevenueGrowth(days: number): Promise<ChartDataPoint[]> {
+    const { start, dates } = this.buildDateRange(days);
+    // Tính tổng doanh thu theo từng ngày
+    const rows = await prisma.$queryRaw<{ day: Date; total: bigint }[]>`
+      SELECT DATE_TRUNC('day', created_at) as day, SUM(amount) as total
+      FROM payments
+      WHERE status = 'completed' AND created_at >= ${start}
+      GROUP BY day ORDER BY day ASC
+    `;
+    const amountMap: Record<string, number> = {};
+    for (const row of rows) {
+      const key = this.formatDate(new Date(row.day));
+      amountMap[key] = Number(row.total);
+    }
+    return dates.map((d) => ({ date: this.formatDate(d), value: amountMap[this.formatDate(d)] || 0 }));
+  }
+
+  async getDashboardStats(days: number = 7): Promise<DashboardStats> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -120,6 +137,10 @@ export class AdminRepository {
       userGrowth,
       jobGrowth,
       applicationGrowth,
+      revenueGrowth,
+      jobStatuses,
+      topComps,
+      totalRevenueResult
     ] = await Promise.all([
       prisma.user.count({ where: { deletedAt: null } }),
       prisma.user.count({ where: { role: "candidate", deletedAt: null } }),
@@ -131,10 +152,46 @@ export class AdminRepository {
       prisma.report.count(),
       prisma.report.count({ where: { status: "pending" } }),
       prisma.user.count({ where: { createdAt: { gte: today }, deletedAt: null } }),
-      this.buildUserGrowth(7),
-      this.buildJobGrowth(7),
-      this.buildApplicationGrowth(7),
+      this.buildUserGrowth(days),
+      this.buildJobGrowth(days),
+      this.buildApplicationGrowth(days),
+      this.buildRevenueGrowth(days),
+      
+      // Lấy phân bố trạng thái job
+      prisma.jobs.groupBy({
+        by: ['status'],
+        _count: { id: true },
+        where: { deletedAt: null }
+      }),
+
+      // Lấy Top 5 công ty tuyển dụng nhiều nhất
+      prisma.company.findMany({
+        where: { deletedAt: null },
+        orderBy: { totalJobs: "desc" },
+        take: 5,
+        select: { id: true, name: true, totalJobs: true, logoUrl: true }
+      }),
+
+      // Tổng doanh thu
+      prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: { status: "completed" }
+      })
     ]);
+
+    const totalRevenue = Number(totalRevenueResult._sum.amount || 0);
+
+    // Xử lý Role Distribution
+    const roleDistribution = [
+      { name: "Candidate", value: totalCandidates },
+      { name: "Employer", value: totalEmployers },
+    ];
+
+    // Xử lý Job Status Distribution
+    const jobStatusDistribution = jobStatuses.map(js => ({
+      name: js.status.charAt(0).toUpperCase() + js.status.slice(1),
+      value: js._count.id
+    }));
 
     return {
       totalUsers,
@@ -144,12 +201,17 @@ export class AdminRepository {
       totalJobs,
       totalApplications,
       totalReports,
+      totalRevenue,
       newUsersToday,
       pendingReports,
       pendingCompanyVerifications,
       userGrowth,
       jobGrowth,
       applicationGrowth,
+      revenueGrowth,
+      roleDistribution,
+      jobStatusDistribution,
+      topCompanies: topComps,
     };
   }
 }
