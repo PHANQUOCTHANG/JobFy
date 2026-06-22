@@ -58,3 +58,15 @@ export const useGenerateCoverLetter = () => {
     }
   });
 };
+
+export const useGenerateFullCv = () => {
+  return useMutation({
+    mutationFn: aiApi.generateFullCv,
+    onSuccess: () => {
+      toast.success('AI đã phân tích và tạo CV thành công!');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi gọi AI');
+    }
+  });
+};

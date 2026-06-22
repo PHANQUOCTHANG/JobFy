@@ -12,5 +12,6 @@ router.post("/cv/review", aiController.reviewCv);
 router.post("/cv/match-job", aiController.matchJob);
 router.post("/cv/suggest-skills", aiController.suggestSkills);
 router.post("/cover-letter/generate", aiController.generateCoverLetter);
+router.post("/cv/generate-full", aiController.generateFullCv);
 
 export default router;

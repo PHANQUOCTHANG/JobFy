@@ -36,6 +36,8 @@ import {
   CvEditorPage,
   MyCvsPage,
   CoverLetterPage,
+  AiCvBuilderPage,
+  EmployerLandingPage,
   EmployerLoginPage,
   EmployerRegisterPage,
   // Admin pages
@@ -86,6 +88,10 @@ export const router = createBrowserRouter([
       },
       // 2. NHÓM CLIENT (USER APP)
       {
+        path: CLIENT_PATHS.EMPLOYERS,
+        element: <EmployerLandingPage />,
+      },
+      {
         path: CLIENT_PATHS.CLIENT,
         element: <ClientLayout />,
         children: [
@@ -115,6 +121,7 @@ export const router = createBrowserRouter([
           {
             element: <ProtectedRoute requiredRole="candidate" />,
             children: [
+              { path: "/cv/ai-builder", element: <AiCvBuilderPage /> },
               { path: "/cv/my-cvs", element: <MyCvsPage /> },
               { path: "/my-cover-letters", element: <MyCoverLettersPage /> },
               {
@@ -128,6 +135,10 @@ export const router = createBrowserRouter([
               {
                 path: CLIENT_PATHS.SECURITY_SETTINGS,
                 element: <SecuritySettingsPage />,
+              },
+              {
+                path: "/saved-jobs",
+                element: <SavedJobsPage />,
               },
             ]
           },
@@ -145,10 +156,6 @@ export const router = createBrowserRouter([
               {
                 index: true,
                 element: <CandidateDashboardPage />,
-              },
-              {
-                path: CANDIDATE_PATHS.SAVED_JOBS,
-                element: <SavedJobsPage />,
               },
               {
                 path: CANDIDATE_PATHS.JOB_ALERTS,

@@ -36,6 +36,11 @@ export interface GenerateCoverLetterPayload {
   jobData: any;
 }
 
+export interface GenerateFullCvPayload {
+  prompt: string;
+  language?: AiLanguage;
+}
+
 export interface CvSectionReview {
   score: number;
   feedback: string;

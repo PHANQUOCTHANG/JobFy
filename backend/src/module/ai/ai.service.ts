@@ -7,7 +7,8 @@ import {
   ReviewCvRequest, 
   MatchJobRequest, 
   SuggestSkillsRequest, 
-  GenerateCoverLetterRequest 
+  GenerateCoverLetterRequest,
+  GenerateFullCvRequest
 } from './ai.type';
 
 export class AiService {
@@ -122,5 +123,19 @@ Job Requirements: ${JSON.stringify(jobData)}
 
     const content = await this.callGroq(prompts.coverLetter, userPrompt);
     return content.trim();
+  }
+
+  async generateFullCv(data: GenerateFullCvRequest): Promise<any> {
+    const language = data.language || 'vi';
+    const prompts = getSystemPrompt(language);
+    const userPrompt = `Input Data:\n${data.prompt}`;
+    
+    const content = await this.callGroq(prompts.cvGenerator, userPrompt, true);
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      console.error(e);
+      throw new AppError("Lỗi định dạng dữ liệu từ AI", 500);
+    }
   }
 }

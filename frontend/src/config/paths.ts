@@ -33,6 +33,7 @@ export const CLIENT_PATHS = {
   CV_UPLOAD: "cv/upload",
   COVER_LETTER: "cv/cover-letter",
   MY_APPLICATIONS: "applications",
+  EMPLOYERS: "employers",
 } as const;
 
 export const CANDIDATE_PATHS = {

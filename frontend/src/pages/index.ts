@@ -19,3 +19,5 @@ export * from "./client/cv/CvEditorPage";
 export * from "./client/cv/MyCvsPage";
 export * from "./client/cv/CoverLetterPage";
 export * from "./client/cv/MyCoverLettersPage";
+export * from "./client/cv/AiCvBuilderPage";
+export * from "./client/employer/EmployerLandingPage";

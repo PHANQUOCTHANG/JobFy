@@ -257,6 +257,29 @@ export const CvTemplatesPage: React.FC = () => {
 
       <div className="max-w-[1140px] mx-auto px-4 mt-8">
         
+        {/* Banner tạo CV bằng AI */}
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-5 md:p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Sparkles size={100} />
+          </div>
+          <div className="flex-1 relative z-10">
+            <h2 className="text-xl font-bold text-indigo-900 mb-2 flex items-center gap-2">
+              <Sparkles size={20} className="text-indigo-600" /> Bạn lười điền form từng mục?
+            </h2>
+            <p className="text-indigo-700/80 text-[14.5px]">
+              Thử nghiệm công nghệ AI mới! Chỉ cần dán nội dung giới thiệu bản thân hoặc CV cũ, hệ thống sẽ tự động phân tích và điền vào mẫu CV siêu tốc chỉ trong 5 giây.
+            </p>
+          </div>
+          <div className="relative z-10 flex-shrink-0">
+            <button 
+              onClick={() => navigate('/cv/ai-builder')}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-md shadow-indigo-200"
+            >
+              Tạo CV bằng AI ngay
+            </button>
+          </div>
+        </div>
+
         <div className="flex justify-center mb-8">
           <div className="bg-white rounded-full p-1 shadow-sm border border-gray-200 inline-flex flex-wrap justify-center">
             <button

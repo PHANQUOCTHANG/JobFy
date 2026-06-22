@@ -43,3 +43,9 @@ export const generateCoverLetter = asyncHandler(async (req: Request, res: Respon
   const content = await aiService.generateCoverLetter(cvData, jobData, language);
   return res.status(200).json(ApiResponse.success({ content }, "Tạo Cover Letter thành công"));
 });
+
+export const generateFullCv = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.body.prompt) throw new AppError("Thiếu thông tin đầu vào (prompt)", 400);
+  const data = await aiService.generateFullCv(req.body);
+  return res.status(200).json(ApiResponse.success(data, "Tạo CV bằng AI thành công"));
+});

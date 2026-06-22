@@ -5,6 +5,7 @@ import {
   MatchJobPayload, 
   SuggestSkillsPayload, 
   GenerateCoverLetterPayload,
+  GenerateFullCvPayload,
   CvReviewResult,
   JobMatchResult
 } from '../types';
@@ -25,4 +26,7 @@ export const aiApi = {
     
   generateCoverLetter: (data: GenerateCoverLetterPayload) => 
     axiosClient.post<ApiResponse<{ content: string }>>('/ai/cover-letter/generate', data),
+    
+  generateFullCv: (data: GenerateFullCvPayload) => 
+    axiosClient.post<ApiResponse<any>>('/ai/cv/generate-full', data),
 };

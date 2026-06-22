@@ -52,6 +52,7 @@ export function Header() {
                   <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-56 z-50">
                     <div className="bg-white border border-gray-100 shadow-xl rounded-xl p-2 flex flex-col">
                       <Link to="/cv" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Tạo CV</Link>
+                      <Link to="/cv/ai-builder" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Tạo CV bằng AI</Link>
                       <Link to="/cv/my-cvs" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Quản lý CV</Link>
                       <Link to="/cv/cover-letter" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu Cover Letter</Link>
                     </div>
@@ -104,7 +105,7 @@ export function Header() {
           <div className="w-[1px] h-6 bg-slate-200 mx-1"></div>
           
           <Link
-            to="/employer"
+            to="/employers"
             className="text-[13.5px] font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400 px-4 py-2 rounded-xl transition-all"
           >
             Tuyển dụng

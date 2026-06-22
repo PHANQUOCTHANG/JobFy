@@ -32,3 +32,8 @@ export interface GenerateCoverLetterRequest {
   companyName?: string;
   language?: AiLanguage;
 }
+
+export interface GenerateFullCvRequest {
+  prompt: string;
+  language?: AiLanguage;
+}
