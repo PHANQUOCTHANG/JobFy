@@ -204,14 +204,16 @@ export default function LoginForm() {
             <div className="h-px bg-[#E2E8F0] flex-1" />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div className="flex items-center justify-center [&>div]:justify-center [&>div]:mt-0 w-full overflow-hidden rounded-xl border-2 border-[#E2E8F0] hover:border-[#0F172A] transition-all">
               <GoogleLoginButton role="candidate" />
             </div>
+            {/* Facebook login hidden temporarily
             <a href={`${env.API_URL}/auth/facebook`} className="flex items-center justify-center gap-2.5 h-[40px] mt-0 rounded-xl border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[14px] font-bold text-[#0F172A] transition-all">
               <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook" className="w-5 h-5" />
               Facebook
             </a>
+            */}
           </div>
 
           <p className="text-center text-[14px] text-[#64748B] mt-10">
