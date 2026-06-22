@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
+import AiFloatingAssistant from "./components/AiFloatingAssistant";
 
 const EmployerLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,6 +30,8 @@ const EmployerLayout = () => {
         
         <Outlet />
         
+        {/* AI Floating Assistant */}
+        <AiFloatingAssistant />
       </main>
     </div>
   );

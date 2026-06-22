@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios'; // Đảm bảo import axios hoặc instance axios của dự án
-import { toast } from 'sonner';
+import Swal from 'sweetalert2';
 
 // Cấu hình mặc định cho API (Bạn có thể điều chỉnh base URL tùy theo môi trường)
 const API_BASE_URL = 'http://localhost:5000/api/v1';
@@ -57,7 +57,12 @@ export const useUpdateMyCompany = () => {
       return data;
     },
     onSuccess: () => {
-      toast.success('Cập nhật hồ sơ công ty thành công!');
+      Swal.fire({
+        title: "Thành công!",
+        text: "Cập nhật hồ sơ công ty thành công!",
+        icon: "success",
+        confirmButtonColor: "#00307c"
+      });
       // Làm mới dữ liệu công ty
       queryClient.invalidateQueries({ queryKey: ['myCompany'] });
       // Quan trọng: Làm mới tiến trình xác thực để cập nhật trạng thái Bước 2
@@ -66,7 +71,12 @@ export const useUpdateMyCompany = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật công ty.';
-      toast.error(message);
+      Swal.fire({
+        title: "Lỗi!",
+        text: message,
+        icon: "error",
+        confirmButtonColor: "#00307c"
+      });
     },
   });
 };

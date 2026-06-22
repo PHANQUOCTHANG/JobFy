@@ -377,7 +377,7 @@ const EmployerSettingsPage = () => {
               <div className="flex items-center gap-2">
                 <h3 className="text-[16px] font-black text-[#0F172A]">Bước 4: Xác thực giấy đăng ký doanh nghiệp</h3>
                 <span className={`px-2 py-0.5 text-[10px] font-black rounded-md border uppercase ${progress?.step3.isVerified ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                    isStep3Pending ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-100 text-slate-500'
+                  isStep3Pending ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-100 text-slate-500'
                   }`}>
                   {progress?.step3.isVerified ? 'ĐÃ XÁC THỰC' : isStep3Pending ? 'ĐANG CHỜ DUYỆT' : 'CHƯA TẢI LÊN'}
                 </span>

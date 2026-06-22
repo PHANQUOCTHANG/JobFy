@@ -81,7 +81,7 @@ const ManageCompanyPage = () => {
                 </div>
               </div>
             )}
-            <ManageCompanyForm initialData={company} />
+            <ManageCompanyForm initialData={company} isVerified={company?.isVerified} />
           </div>
 
           <div className="lg:col-span-4 space-y-8">

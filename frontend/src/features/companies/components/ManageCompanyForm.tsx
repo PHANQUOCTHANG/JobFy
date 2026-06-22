@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import api from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Lock, ShieldCheck } from "lucide-react";
 import { companyProfileSchema, CompanyProfileInput } from "../schemas/company.schema";
 import {
   useUpdateMyCompany,
@@ -34,6 +34,7 @@ import { Company } from "../types";
 
 interface ManageCompanyFormProps {
   initialData?: Company;
+  isVerified?: boolean;
 }
 
 // Helper function to format Prisma CompanySize enum for frontend Select component
@@ -42,7 +43,7 @@ const formatCompanySizeForSelect = (prismaSize: string | undefined | null): stri
   return prismaSize.replace('value_', ''); // Converts "value_1_10" to "1_10"
 };
 
-export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialData }) => {
+export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialData, isVerified }) => {
   const { mutate: updateCompany, isPending } = useUpdateMyCompany();
 
   // Fetch data for select fields
@@ -283,10 +284,33 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Tên công ty <span className="text-rose-500">*</span></FormLabel>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">
+                    Tên công ty <span className="text-rose-500">*</span>
+                  </FormLabel>
                   <FormControl>
-                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Ví dụ: JobFy Solutions Global" {...field} />
+                    {isVerified ? (
+                      <div className="relative group">
+                        <div className="h-12 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50/60 px-4 pr-[100px] flex items-center gap-3 cursor-not-allowed overflow-hidden">
+                          <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
+                          <span className="text-[14px] font-bold text-[#0F172A] truncate">{field.value || <span className="text-slate-400 font-normal italic">Chưa có dữ liệu</span>}</span>
+                        </div>
+                        <div className="absolute right-0 top-0 h-full flex items-center pr-3">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-wide shadow-sm">
+                            <Lock size={9} />
+                            Đã khóa
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Ví dụ: JobFy Solutions Global" {...field} />
+                    )}
                   </FormControl>
+                  {isVerified && (
+                    <p className="text-[11px] font-medium text-emerald-600/80 flex items-center gap-1.5 mt-1">
+                      <ShieldCheck size={11} />
+                      Xác thực bởi quản trị viên — không thể chỉnh sửa.
+                    </p>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -322,10 +346,33 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               name="taxCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Mã số thuế (Tùy chọn)</FormLabel>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">
+                    Mã số thuế (Tùy chọn)
+                  </FormLabel>
                   <FormControl>
-                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Nhập mã số thuế" {...field} />
+                    {isVerified ? (
+                      <div className="relative group">
+                        <div className="h-12 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50/60 px-4 pr-[100px] flex items-center gap-3 cursor-not-allowed overflow-hidden">
+                          <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
+                          <span className="text-[14px] font-bold text-[#0F172A] font-mono tracking-wider">{field.value || <span className="text-slate-400 font-normal italic font-sans tracking-normal">Chưa có dữ liệu</span>}</span>
+                        </div>
+                        <div className="absolute right-0 top-0 h-full flex items-center pr-3">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-wide shadow-sm">
+                            <Lock size={9} />
+                            Đã khóa
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Nhập mã số thuế" {...field} />
+                    )}
                   </FormControl>
+                  {isVerified && (
+                    <p className="text-[11px] font-medium text-emerald-600/80 flex items-center gap-1.5 mt-1">
+                      <ShieldCheck size={11} />
+                      Xác thực bởi quản trị viên — không thể chỉnh sửa.
+                    </p>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -490,10 +537,13 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
 
         <section className="bg-white border border-[#F1F5F9] rounded-3xl p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
           <div className="flex items-center justify-between mb-8 border-l-4 border-emerald-500 pl-4">
-            <h3 className="text-[20px] font-black text-[#0F172A]">Văn hóa & Môi trường</h3>
-            <button type="button" className="text-[#00307c] font-bold text-[14px] flex items-center gap-1.5 hover:underline transition-all">
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
-              Thêm ảnh mới
+            <div>
+              <h3 className="text-[20px] font-black text-[#0F172A]">Văn hóa & Môi trường</h3>
+              <p className="text-[#64748B] text-[14px] mt-1">Giới thiệu không gian làm việc và hoạt động của công ty</p>
+            </div>
+            <button type="button" className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-emerald-100 transition-all border border-emerald-100 shadow-sm">
+              <span className="material-symbols-outlined text-[18px]">add_photo_alternate</span>
+              <span className="hidden sm:inline">Thêm ảnh</span>
             </button>
           </div>
 
@@ -528,7 +578,26 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
             </div>
           </div>
         </section>
-
+        {/* NÚT SUBMIT */}
+        <div className="flex justify-end pt-6 mt-8">
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="h-14 px-10 bg-gradient-to-r from-[#00307c] to-[#0047b3] hover:from-[#00225c] hover:to-[#00307c] text-white rounded-xl font-bold shadow-[0_8px_20px_-6px_rgba(0,48,124,0.4)] hover:-translate-y-0.5 hover:shadow-lg transition-all flex items-center gap-2 text-[16px]"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Đang lưu thay đổi...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-5 w-5" />
+                Lưu thông tin công ty
+              </>
+            )}
+          </Button>
+        </div>
       </form>
     </Form>
   );

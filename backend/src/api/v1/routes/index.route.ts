@@ -24,6 +24,7 @@ import coverLetterRoute from "@/module/cover-letter/cover-letter.route";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
 import employerRoute from "@/module/employer/employer.routes";
 import adminEmployerRoute from "@/module/admin-employer/admin-employer.routes";
+import aiRoute from "@/module/ai/ai.route";
 
 
 
