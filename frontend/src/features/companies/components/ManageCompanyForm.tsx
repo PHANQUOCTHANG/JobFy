@@ -126,7 +126,7 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
       industryId: data.industryId === "" ? undefined : data.industryId,
       provinceId: data.provinceId === "" ? undefined : data.provinceId,
       districtId: data.districtId === "" ? undefined : data.districtId,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any;
 
     updateCompany(cleanedData);
@@ -224,51 +224,6 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
                   <p className="text-[13px] text-[#94A3B8]">Khuyên dùng logo <span className="font-semibold text-[#64748B]">400x400px</span> (PNG, SVG)</p>
                 </div>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <FormField
-                control={control}
-                name="logoUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Logo URL</FormLabel>
-                    <FormControl>
-                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="coverUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Cover Image URL</FormLabel>
-                    <FormControl>
-                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="businessLicenseUrl"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Giấy phép kinh doanh (Ảnh URL)</FormLabel>
-                    <FormControl>
-                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
-                    </FormControl>
-                    <FormDescription className="text-[12px] font-medium text-[#94A3B8]">Cung cấp ảnh chụp giấy phép KD để admin phê duyệt (Verify) công ty bạn.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
           </div>
         </section>
@@ -547,34 +502,42 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
             </button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#F1F5F9]">
-              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLiVxdhIY8umUiBLsAvWQPVI5DnnN1cERctweXp8rNVRUKykH3fYdrQEWMPZYSFzELPDR9MV8a5gq5BfbjGwvGODTZ6w9Lddgfd0u8WhrGyN5a5zZW_HZ3PMgoNjsqD_UU1PAB2OhwXkHXPh_CddVPn74UsZL0xoj4sAM4zOhKt6k0fXGrKWGwwatEif7XssbkLASQ33uKQCvXgE-jR_NiSjNgbaOqpNfsfxQfBk5bYWgojhtzIY2EhjXFG1zpHWd7iaDUdChv-hk" />
-              <div className="absolute inset-0 bg-[#0F172A]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
-                <button type="button" className="p-2 bg-white rounded-full text-[#64748B] hover:text-rose-600 shadow-sm"><span className="material-symbols-outlined text-[20px]">delete</span></button>
-                <button type="button" className="p-2 bg-white rounded-full text-[#64748B] hover:text-[#00307c] shadow-sm"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {/* Hardcoded sample images */}
+            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm">
+              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-[#0F172A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-rose-600 flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">delete</span></button>
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-[#00307c] flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
               </div>
             </div>
 
-            <div className="flex justify-end pt-4 border-t border-slate-100">
-              <Button type="submit" disabled={isPending} className="px-8 bg-[#4F46E5] hover:bg-[#4338CA]">
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang lưu...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Lưu thông tin công ty
-                  </>
-                )}
-              </Button>
+            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm">
+              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-[#0F172A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-rose-600 flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">delete</span></button>
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-[#00307c] flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
+              </div>
             </div>
 
-            <div className="aspect-square border-2 border-dashed border-[#CBD5E1] rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[#00307c] hover:bg-blue-50 transition-all cursor-pointer group bg-[#F8FAFC]">
-              <span className="material-symbols-outlined text-[#94A3B8] text-[32px] group-hover:text-[#00307c]">upload_file</span>
-              <span className="text-[13px] font-bold text-[#64748B] group-hover:text-[#00307c]">Tải lên ảnh</span>
+            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm">
+              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-[#0F172A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-rose-600 flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">delete</span></button>
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-[#00307c] flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
+              </div>
+            </div>
+            <div className="aspect-square border-2 border-dashed border-[#CBD5E1] rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-[#00307c] hover:bg-blue-50/50 transition-all cursor-pointer group bg-[#F8FAFC]">
+              <div className="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-[#94A3B8] text-[28px] group-hover:text-[#00307c] transition-colors">upload_file</span>
+              </div>
+              <div className="text-center px-2">
+                <p className="text-[14px] font-bold text-[#64748B] group-hover:text-[#00307c] transition-colors">Tải lên ảnh mới</p>
+                <p className="text-[12px] text-[#94A3B8] mt-1 hidden sm:block">PNG, JPG tối đa 5MB</p>
+              </div>
             </div>
           </div>
         </section>
