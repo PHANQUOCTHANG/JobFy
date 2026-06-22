@@ -53,7 +53,7 @@ import {
 } from "@/pages";
 
 import { GuestRoute } from "@/app/routes/GuestRoute";
-import { guestAuthRoutes } from "@/features/auth/routes";
+import { guestAuthRoutes, protectedAuthRoutes } from "@/features/auth/routes";
 import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS, ADMIN_PATHS } from "@/config/paths";
 import EmployerForgotPasswordPage from "@/pages/employer/EmployerForgotPasswordPage";
 import EmployerVerifyOtpPage from "@/pages/employer/EmployerVerifyOtpPage";
@@ -75,6 +75,13 @@ export const router = createBrowserRouter([
           { path: "/employer/forgot-password", element: <EmployerForgotPasswordPage /> },
           { path: "/employer/verify-otp", element: <EmployerVerifyOtpPage /> },
           { path: "/employer/reset-password", element: <EmployerResetPasswordPage /> },
+        ],
+      },
+      // 1.5. NHÓM AUTH (Protected - Đã login)
+      {
+        element: <ProtectedRoute />,
+        children: [
+          ...protectedAuthRoutes, // Logout, ForceChangePassword
         ],
       },
       // 2. NHÓM CLIENT (USER APP)

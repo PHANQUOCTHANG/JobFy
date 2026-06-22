@@ -3,7 +3,7 @@ import AppResult from "@/components/ui/Result";
 import { useAppSelector } from "@/store/hooks";
 import { AlertCircle, LogInIcon } from "lucide-react";
 import React from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 /**
  * ✅ ProtectedRoute
@@ -14,6 +14,7 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
   requiredRole,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { token, user, isAuthChecking } = useAppSelector((state) => state.auth);
 
   // 1️⃣ Đang xác thực hoặc đang trong quá trình khôi phục dữ liệu từ LocalStorage (Hydration)
@@ -43,7 +44,7 @@ const ProtectedRoute: React.FC<{ requiredRole?: string }> = ({
       </div>
     );
   }
-  if (user?.mustChangePassword) {
+  if (user?.mustChangePassword && location.pathname !== "/force-change-password") {
     return (
       <div className="section-container min-h-screen flex items-center justify-center">
         <AppResult
