@@ -1,5 +1,6 @@
 import { Footer } from "@/layouts/client/components/Footer";
 import { Header } from "@/layouts/client/components/Header";
+import { FloatingActionBar } from "@/layouts/client/components/FloatingActionBar";
 import { cn } from "@/lib/utils";
 import { Outlet } from "react-router-dom";
 
@@ -14,14 +15,14 @@ const ClientLayout = () => {
     >
       <Header />
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full relative z-0">
+      <main className="flex-1 w-full">
         <Outlet />
       </main>
 
       <Footer />
 
-      {/* Player thường được render ở root hoặc portal, nhưng layout cần chừa chỗ */}
+      <FloatingActionBar />
+
     </div>
   );
 };

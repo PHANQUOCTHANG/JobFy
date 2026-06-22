@@ -12,10 +12,11 @@ export * from "./hooks/useLogin";
 export * from "./hooks/useRegister";
 export * from "./hooks/useForgotPassword";
 export * from "./hooks/useForceChangePassword";
+export * from "./hooks/useChangePassword";
 
 // 🪄 Xuất services / slice nếu cần dùng global
 export * from "./api/authApi";
-export * from "./types/authSlice";
+export * from "./slice/authSlice";
 export * from "./routes/index";
 //Xuất schema
 export * from "./schemas/auth.schema";

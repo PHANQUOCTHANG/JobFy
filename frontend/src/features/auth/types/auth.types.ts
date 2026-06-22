@@ -1,17 +1,10 @@
-import { RegisterRequest, LoginRequest } from "@/../../backend/src/module/auth/auth.request";
+import { EmployerRegisterInput as RegisterRequest, LoginInput as LoginRequest } from "@/features/auth/schemas/auth.schema";
+import type { IUser as UserProfile } from "@/features/user/types";
 
 export type EmployerRegisterInput = RegisterRequest;
 export type EmployerLoginInput = LoginRequest;
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  fullName: string;
-  role: 'admin' | 'employer' | 'candidate';
-  avatarUrl?: string;
-  status: 'active' | 'pending_verification' | 'banned';
-}
-
+export type { UserProfile };
 export interface AuthResponse {
   success: boolean;
   message: string;

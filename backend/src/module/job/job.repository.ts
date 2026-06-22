@@ -23,8 +23,8 @@ export class JobRepository implements IJobRepository {
         company: { select: { id: true, name: true, logoUrl: true } },
         category: { select: { id: true, name: true } },
         jobSkills: { include: { skill: true } },
-        jobTags: { include: { tag: true } }
-      }
+        jobTags: { include: { tag: true } },
+      },
     });
   }
 
@@ -32,9 +32,20 @@ export class JobRepository implements IJobRepository {
     const page = Math.max(query.page ?? 1, 1);
     const limit = Math.min(query.limit ?? 10, 100);
 
+    // Resolve categorySlug to categoryId if needed
+    let categoryId = query.categoryId;
+    if (query.categorySlug && !categoryId) {
+      const category = await this.prisma.jobCategory.findUnique({
+        where: { slug: query.categorySlug },
+        select: { id: true },
+      });
+      categoryId = category?.id;
+    }
+
     const where: Prisma.JobsWhereInput = {
       ...(query.companyId && { companyId: query.companyId }),
-      ...(query.categoryId && { categoryId: query.categoryId }),
+      ...(categoryId && { categoryId }),
+      ...(query.industryId && { company: { industryId: query.industryId } }),
       ...(query.provinceId && { provinceId: query.provinceId }),
       ...(query.districtId && { districtId: query.districtId }),
       ...(query.jobType && { jobType: query.jobType }),
@@ -44,10 +55,22 @@ export class JobRepository implements IJobRepository {
       ...(query.isRemote !== undefined && { isRemote: query.isRemote }),
       ...(query.search && {
         OR: [
-          { title: { contains: getSearchPattern(query.search), mode: "insensitive" } },
-          { company: { name: { contains: getSearchPattern(query.search), mode: "insensitive" } } }
-        ]
-      })
+          {
+            title: {
+              contains: getSearchPattern(query.search),
+              mode: "insensitive",
+            },
+          },
+          {
+            company: {
+              name: {
+                contains: getSearchPattern(query.search),
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      }),
     };
 
     if (query.salaryMin || query.salaryMax) {
@@ -64,11 +87,13 @@ export class JobRepository implements IJobRepository {
         take: limit,
         orderBy: { publishedAt: "desc" },
         include: {
-          company: { select: { id: true, name: true, logoUrl: true, provinceId: true } },
+          company: {
+            select: { id: true, name: true, logoUrl: true, provinceId: true },
+          },
           province: true,
           jobSkills: { include: { skill: true } },
-          jobTags: { include: { tag: true } }
-        }
+          jobTags: { include: { tag: true } },
+        },
       }),
       this.prisma.jobs.count({ where }),
     ]);
@@ -80,31 +105,42 @@ export class JobRepository implements IJobRepository {
     return this.prisma.jobs.findUnique({
       where: { id },
       include: {
-        company: { select: { id: true, name: true, logoUrl: true, size: true, website: true } },
+        company: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+            size: true,
+            website: true,
+          },
+        },
         category: true,
         province: true,
         district: true,
         jobSkills: { include: { skill: true } },
-        jobTags: { include: { tag: true } }
-      }
+        jobTags: { include: { tag: true } },
+      },
     });
   }
 
   async findBySlug(companyId: string, slug: string): Promise<Jobs | null> {
     return this.prisma.jobs.findUnique({
-      where: { companyId_slug: { companyId, slug } }
+      where: { companyId_slug: { companyId, slug } },
     });
   }
 
-  async updateById(id: string, data: Prisma.JobsUpdateInput): Promise<Jobs | null> {
+  async updateById(
+    id: string,
+    data: Prisma.JobsUpdateInput,
+  ): Promise<Jobs | null> {
     try {
       return await this.prisma.jobs.update({
         where: { id },
         data,
         include: {
           jobSkills: { include: { skill: true } },
-          jobTags: { include: { tag: true } }
-        }
+          jobTags: { include: { tag: true } },
+        },
       });
     } catch (error: any) {
       if (error.code === "P2025") return null;

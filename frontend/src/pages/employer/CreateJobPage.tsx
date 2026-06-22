@@ -243,7 +243,6 @@ const CreateJobPage = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
-      {/* Header */}
       <header className="flex justify-between items-center w-full px-6 md:px-8 h-16 sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#E2E8F0]">
         <div className="flex items-center gap-4">
           <button
@@ -256,7 +255,6 @@ const CreateJobPage = () => {
         </div>
       </header>
 
-      {/* Form Content */}
       <div className="p-6 md:p-10 flex-grow overflow-y-auto custom-scrollbar animate-fade-in relative">
         <div className="max-w-4xl mx-auto space-y-8">
 
@@ -312,7 +310,6 @@ const CreateJobPage = () => {
               </div>
             </div>
 
-            {/* Row 2: Rich Text Editor Mockup */}
             <div className="space-y-2">
               <label className="text-[11px] font-black text-[#64748B] uppercase tracking-widest flex items-center gap-2 ml-1">
                 <span className="material-symbols-outlined text-[18px]">subject</span> Mô tả công việc*
@@ -337,7 +334,6 @@ const CreateJobPage = () => {
               </div>
             </div>
 
-            {/* Row 3: Requirements */}
             <div className="space-y-2">
               <label className="text-[11px] font-black text-[#64748B] uppercase tracking-widest flex items-center gap-2 ml-1">
                 <span className="material-symbols-outlined text-[18px]">checklist</span> Yêu cầu ứng viên*
@@ -391,7 +387,6 @@ const CreateJobPage = () => {
               ></textarea>
             </div>
 
-            {/* Row 4: Salary, Experience & Headcount */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
               <div className="md:col-span-5 space-y-3">
                 <label className="text-[11px] font-black text-[#64748B] uppercase tracking-widest flex items-center gap-2 ml-1">

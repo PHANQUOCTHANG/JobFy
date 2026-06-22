@@ -1,93 +1,58 @@
-# 🎨 TVP Music - Frontend & User Experience
+# 💼 JobFy - Giao diện nền tảng tuyển dụng
 
-Đây là giao diện người dùng của nền tảng TVP Music, được xây dựng với mục tiêu mang lại trải nghiệm nghe nhạc mượt mà, tốc độ phản hồi cực nhanh và giao diện chuẩn Premium với hiệu ứng Glassmorphism.
-
-[Image of a modern music player interface with a sleek dark theme, glassmorphism sidebar, and dynamic album art colors]
+Đây là giao diện người dùng của nền tảng tuyển dụng JobFy, được xây dựng với mục tiêu mang lại trải nghiệm tìm kiếm việc làm mượt mà, tối ưu hóa cho cả Ứng viên (Candidate) và Nhà tuyển dụng (Employer).
 
 ---
 
 ## ⚡ Tech Stack & Core Libraries
 
 - **Framework:** React 18 + Vite (TypeScript)
-- **State Management:** - **Redux Toolkit:** Quản lý hàng chờ phát nhạc (Queue), trạng thái Player và xác thực.
-  - **TanStack Query (React Query):** Quản lý server-state, caching dữ liệu API và xử lý Infinite Scrolling.
-- **Styling:** - **Tailwind CSS:** Thiết kế giao diện responsive linh hoạt.
-  - **Shadcn/UI:** Hệ thống component chuẩn mực (Table, Modal, Dropdown, Tabs).
-- **Animations:** **Framer Motion** cho các hiệu ứng chuyển trang, staggered list và micro-interactions.
-- **Streaming Logic:** **Hls.js** tích hợp để giải mã các phân đoạn âm thanh (.ts) từ máy chủ.
+- **State Management:** 
+  - **Redux Toolkit:** Quản lý trạng thái xác thực và thông tin user toàn cục.
+  - **TanStack Query (React Query):** Quản lý server-state, caching dữ liệu API.
+- **Styling:** 
+  - **Tailwind CSS:** Thiết kế giao diện responsive linh hoạt.
+  - **Shadcn/UI:** Hệ thống component chuẩn mực.
+- **Routing:** React Router v6
 
 ---
 
-## ✨ Tính năng nổi bật trên giao diện
+## ✨ Tính năng nổi bật
 
-### 🎵 Smart Music Player
+### 👤 Candidate Portal
+- Quản lý hồ sơ ứng viên (Profile, CV, Cover Letter).
+- Tìm kiếm việc làm và lưu công việc yêu thích.
+- Theo dõi lịch sử ứng tuyển và trạng thái phản hồi từ nhà tuyển dụng.
 
-- **HLS Streaming:** Phát nhạc thông qua luồng Adaptive Bitrate, tự động điều chỉnh chất lượng theo tốc độ mạng.
-- **Queue Management:** Hỗ trợ kéo thả, thêm bài hát vào hàng chờ, chế độ phát ngẫu nhiên (Shuffle) và lặp lại (Repeat).
-- **Visualizer:** Hiệu ứng sóng nhạc động (Music Bars) phản hồi theo trạng thái bài hát đang phát.
-
-### 📊 Realtime Charts & Discovery
-
-- **Live Leaderboard:** Hiển thị Top 100 bài hát thịnh hành với dữ liệu cập nhật liên tục từ Redis.
-- **Interactive Graphs:** Sử dụng biểu đồ đường (Line Chart) để minh họa biến động thứ hạng bài hát theo từng giờ.
-
-### 🛡️ Professional Admin Dashboard
-
-- **Hierarchy Tree:** Quản lý thể loại nhạc theo cấu trúc cha-con trực quan.
-- **Batch Actions:** Chọn nhiều bài hát/người dùng để xử lý hàng loạt (Delete, Block, Change Status).
-- **Monitoring:** Giao diện theo dõi tiến độ xử lý nhạc (Transcoding) của hệ thống Worker.
-
-### 👤 Premium User Profile
-
-- **Personalization:** Trang cá nhân với ảnh bìa rộng, hiển thị lịch sử hoạt động (Activity Feed) và playlist đã tạo.
-- **Optimistic UI:** Phản hồi tức thì khi người dùng nhấn Like bài hát hoặc Follow nghệ sĩ trước khi server phản hồi.
+### 🏢 Employer Portal
+- Quản lý thông tin công ty.
+- Đăng tuyển việc làm mới và quản lý tin tuyển dụng.
+- Quản lý hồ sơ ứng viên ứng tuyển, thay đổi trạng thái (Tiếp nhận, Đã xem, Phù hợp...).
 
 ---
 
-## 🏗️ Cấu trúc thư mục (Architecture)
+## 🏗️ Cấu trúc thư mục
 
-Dự án tuân thủ cấu trúc **Feature-based**, giúp dễ dàng mở rộng và bảo trì:
+Dự án tuân thủ cấu trúc **Feature-based**:
 
 ```text
 src/
-├── features/           # Các tính năng lớn (track, artist, genre, player, user)
-│   ├── hooks/          # Query & Mutation hooks riêng cho từng feature
-│   ├── components/     # UI components đặc thù cho feature
-│   └── types/          # Định nghĩa TypeScript cho feature đó
+├── features/           # Các tính năng lớn (auth, jobs, applications, user, companies)
 ├── store/              # Cấu hình Redux Toolkit & Slices
 ├── components/         # Shared UI components (Button, Table, Input...)
-├── lib/                # Cấu hình Axios, Utils (cn, formatters)
-└── layouts/            # Main Layout, Admin Layout, Auth Layout
+├── lib/                # Cấu hình Axios, Utils
+├── layouts/            # Layouts cho Client, Candidate, Employer
+└── pages/              # Các trang giao diện chính
 ```
 
-Cài đặt & Khởi chạy
-Yêu cầu
-Node.js 18+
+## Khởi chạy
 
-Backend API (đang chạy)
-
-Các bước thiết lập
-Clone dự án & Cài đặt:
-
-Bash
-git clone [https://github.com/username/tvp-music-frontend.git](https://github.com/username/tvp-music-frontend.git)
-cd tvp-music-frontend
+Cài đặt các gói phụ thuộc:
+```bash
 npm install
-Cấu hình môi trường (.env):
-Tạo file .env.local:
+```
 
-Đoạn mã
-VITE_API_URL=http://localhost:5000/api/v1
-VITE_CDN_URL=[https://music-cdn.yourdomain.com](https://music-cdn.yourdomain.com)
-Khởi chạy:
-
-Bash
+Khởi động môi trường phát triển:
+```bash
 npm run dev
-📱 Khả năng thích ứng (Responsiveness)
-Giao diện được tối ưu hóa cho 3 cấp độ màn hình:
-
-Mobile: Ẩn các cột phụ trong bảng nhạc, chuyển menu sang Bottom Navigation.
-
-Tablet: Thu gọn Sidebar, hiển thị Grid 2-3 cột cho Album/Artist.
-
-Desktop: Trải nghiệm đầy đủ với Sidebar mở rộng, bảng nhạc chi tiết và Player thanh mảnh phía dưới.
+```

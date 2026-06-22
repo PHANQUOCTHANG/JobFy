@@ -398,7 +398,52 @@ const documentUpload = multer({
 
 export const uploadLegalDocument = documentUpload.single("document");
 
-// ─── CV Upload cho AI Analysis (memory storage — không upload Cloudinary) ─────────────────────────────────────
+// ─── Custom storage engine cho CV Upload ─────────────────────────────────────
+class CloudinaryCvStorage implements StorageEngine {
+  _handleFile(
+    _req: Request,
+    file: Express.Multer.File,
+    cb: (error?: any, info?: Partial<Express.Multer.File>) => void,
+  ): void {
+    const ext = file.originalname.split('.').pop() || 'pdf';
+    const safeName = file.originalname.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9]/g, '_');
+    const publicId = `${safeName}_${Date.now()}.${ext}`;
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "resumes",
+        resource_type: "raw", // BẮT BUỘC cho file PDF, DOC, DOCX
+        public_id: publicId,
+      },
+      (error, result) => {
+        if (error || !result) {
+          return cb(error ?? new Error("Upload CV thất bại"));
+        }
+        cb(undefined, {
+          path: result.secure_url,
+          filename: result.public_id,
+        });
+      },
+    );
+
+    file.stream.pipe(uploadStream);
+  }
+
+  _removeFile(
+    _req: Request,
+    file: Express.Multer.File & { filename: string },
+    cb: (error: Error | null) => void,
+  ): void {
+    cloudinary.uploader.destroy(
+      file.filename,
+      { resource_type: "raw" },
+      (error) => {
+        cb(error ?? null);
+      },
+    );
+  }
+}
+
 const cvFileFilter = (
   _req: Express.Request,
   file: Express.Multer.File,
@@ -408,27 +453,22 @@ const cvFileFilter = (
     "application/pdf",
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "image/jpeg",
-    "image/jpg",
-    "image/pjpeg",
   ];
-  const ALLOWED_EXTENSIONS = [".pdf", ".doc", ".docx", ".jpg", ".jpeg"];
-  const ext = path.extname(file.originalname).toLowerCase();
 
-  if (ALLOWED_TYPES.includes(file.mimetype) || ALLOWED_EXTENSIONS.includes(ext)) {
+  if (ALLOWED_TYPES.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new AppError("Chỉ chấp nhận PDF, DOCX hoặc JPG cho CV", 400));
+    cb(new AppError("Chỉ chấp nhận file PDF, DOC, DOCX", 400));
   }
 };
 
 const cvUpload = multer({
-  storage: multer.memoryStorage(), // Lưu trong RAM để AI đọc text
+  storage: new CloudinaryCvStorage(),
   fileFilter: cvFileFilter,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB
+    files: 1,
   },
 });
 
-export const uploadCvForAnalysis = cvUpload.single("cv");
-
+export const uploadCvFile = cvUpload.single("cvFile");

@@ -7,7 +7,6 @@ export function AppDownload() {
       <div className="max-w-7xl mx-auto">
         <div className="bg-[#0F172A] rounded-[2.5rem] relative overflow-hidden flex flex-col lg:flex-row items-center justify-between p-10 lg:p-20 shadow-2xl">
           
-          {/* Left Content */}
           <div className="lg:w-1/2 relative z-10">
             <Reveal>
               <div className="inline-flex items-center gap-2 border border-[#F59E0B]/30 text-[#F59E0B] text-[12px] font-bold px-3.5 py-1.5 rounded-lg mb-8">
@@ -53,14 +52,11 @@ export function AppDownload() {
             </Reveal>
           </div>
           
-          {/* Right Phone Mockup */}
           <div className="lg:w-1/2 mt-16 lg:mt-0 flex justify-center lg:justify-end relative z-10">
             <Reveal delay={150}>
               <div className="relative w-[320px] h-[640px] bg-[#1C1926] rounded-[3rem] border-[8px] border-[#221A2C] shadow-2xl p-6 flex flex-col">
-                {/* Notch */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#221A2C] rounded-b-3xl" />
                 
-                {/* Phone Header */}
                 <div className="flex justify-between items-center text-white/40 text-[10px] font-semibold mb-6 mt-2">
                   <span>9:41</span>
                   <div className="flex gap-1">
@@ -68,7 +64,6 @@ export function AppDownload() {
                   </div>
                 </div>
 
-                {/* App UI */}
                 <div className="flex items-center gap-2 mb-6">
                   <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">
                     <Briefcase size={14} className="text-white" strokeWidth={3} />
@@ -78,13 +73,11 @@ export function AppDownload() {
                   </span>
                 </div>
 
-                {/* Search */}
                 <div className="bg-transparent border border-white/20 rounded-2xl p-3.5 mb-6 flex items-center gap-2">
                   <span className="text-[#64748B]">🔍</span>
                   <span className="text-[#64748B] text-[13px]">Tìm công việc...</span>
                 </div>
 
-                {/* Job Cards */}
                 <div className="space-y-4">
                   <div className="border border-white/20 rounded-2xl p-4 flex items-center gap-3">
                     <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#0F172A] font-bold text-xs">FPT</div>
@@ -112,7 +105,6 @@ export function AppDownload() {
                   </div>
                 </div>
 
-                {/* AI Match Card */}
                 <div className="mt-auto bg-gradient-to-r from-[#3A2218] to-[#0F172A] border border-[#4F46E5]/30 rounded-2xl p-5">
                   <p className="text-[#F59E0B] font-bold text-[13px] flex items-center gap-1.5 mb-4">
                     ✨ AI Match mới!
@@ -123,7 +115,6 @@ export function AppDownload() {
                   <p className="text-[#94A3B8] text-[11px]">80% phù hợp • 12 việc mới</p>
                 </div>
 
-                {/* Floating Notification Tooltip */}
                 <div className="absolute top-[35%] -left-16 bg-white rounded-2xl p-3 shadow-2xl flex items-center gap-3">
                   <div className="w-8 h-8 bg-[#10B981]/10 rounded-full flex items-center justify-center">
                     <CheckCircle size={14} className="text-[#10B981]" />

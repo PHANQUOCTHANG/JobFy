@@ -275,7 +275,6 @@ const ConfirmationModal = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* ── OVERLAY ─────────────────────────────────────────────────── */}
           <motion.div
             key="overlay"
             variants={overlayVariants}
@@ -289,7 +288,6 @@ const ConfirmationModal = ({
             aria-hidden="true"
           />
 
-          {/* ── PANEL ───────────────────────────────────────────────────── */}
           <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 pointer-events-none">
             <motion.div
               key="panel"
@@ -311,7 +309,6 @@ const ConfirmationModal = ({
                 "overflow-hidden",
               )}
             >
-              {/* Top accent line */}
               <div
                 className={cn(
                   "absolute inset-x-0 top-0 h-[3px]",
@@ -326,7 +323,6 @@ const ConfirmationModal = ({
                 )}
               />
 
-              {/* Close button */}
               {showCloseButton && (
                 <button
                   onClick={onCancel}
@@ -338,11 +334,8 @@ const ConfirmationModal = ({
               )}
 
               <div className="p-6 pt-7 flex flex-col gap-5">
-                {/* ── ICON + TITLE ────────────────────────────────────── */}
                 <div className="flex items-start gap-4">
-                  {/* Icon with animated ring */}
                   <div className="shrink-0 relative mt-0.5">
-                    {/* Outer ring pulse */}
                     <motion.div
                       variants={iconRingVariants}
                       initial="hidden"
@@ -368,7 +361,6 @@ const ConfirmationModal = ({
                     </motion.div>
                   </div>
 
-                  {/* Title */}
                   <div className="flex-1 min-w-0">
                     <h2
                       id={titleId}
@@ -379,7 +371,6 @@ const ConfirmationModal = ({
                   </div>
                 </div>
 
-                {/* ── DESCRIPTION ─────────────────────────────────────── */}
                 <div
                   id={descriptionId}
                   className={cn(
@@ -393,7 +384,6 @@ const ConfirmationModal = ({
                   {description}
                 </div>
 
-                {/* ── COUNTDOWN BAR (optional) ─────────────────────────── */}
                 {countdownSeconds && countdownSeconds > 0 && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
@@ -425,7 +415,6 @@ const ConfirmationModal = ({
                   </motion.div>
                 )}
 
-                {/* ── ACTIONS ─────────────────────────────────────────── */}
                 <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 pt-1">
                   <Button
                     variant="outline"

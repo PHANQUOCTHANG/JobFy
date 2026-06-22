@@ -19,6 +19,8 @@ import subscriptionRoute, { paymentRouter } from "@/module/subscription/subscrip
 import reportRoute from "@/module/report/report.route";
 import adminRoute from "@/module/admin/admin.route";
 import locationRoute from "@/module/location/location.route";
+import aiRoute from "@/module/ai/ai.route";
+import coverLetterRoute from "@/module/cover-letter/cover-letter.route";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
 import employerRoute from "@/module/employer/employer.routes";
 import adminEmployerRoute from "@/module/admin-employer/admin-employer.routes";
@@ -37,7 +39,7 @@ const clientRoute = (app: Application) => {
   app.use(path + "/skill-categories", skillCategoryRoute);
   app.use(path + "/skills", skillRoute);
   app.use(path + "/companies", companyRoute);
-  // app.use(path + "/candidate-profiles", candidateProfileRoute);
+  app.use(path + "/candidate-profiles", candidateProfileRoute);
   app.use(path + "/resumes", resumeRoute);
   app.use(path + "/jobs", jobRoute);
   app.use(path + "/applications", applicationRoute);
@@ -55,15 +57,14 @@ const clientRoute = (app: Application) => {
 
   // Employer Module
   app.use(path + "/employer", employerRoute);
+  app.use(path + "/ai", requireAuth, aiRoute);
+  app.use(path + "/cover-letters", coverLetterRoute);
+
+  // Admin Employer Module (pending/verify) - Must be mounted before generic /admin route
+  app.use(path + "/admin/employer", requireAuth, requireRole("admin"), adminEmployerRoute);
 
   // Admin Module
   app.use(path + "/admin", requireAuth, requireRole("admin"), adminRoute);
-
-  // Admin Employer Module (pending/verify)
-  app.use(path + "/admin/employer", adminEmployerRoute);
-
-  // AI Module
-  app.use(path + "/ai", aiRoute);
 };
 
 

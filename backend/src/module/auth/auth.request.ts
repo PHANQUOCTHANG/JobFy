@@ -96,9 +96,16 @@ export const changePasswordSchema = z
     path: ["confirmPassword"],
   });
 
+// Request Đăng nhập bằng Google
+export const googleLoginSchema = z.object({
+  idToken: z.string().min(1, "Token không được để trống"),
+  role: UserRoleEnum.default("candidate").optional(),
+});
+
 // Xuất các Type để sử dụng ở tầng Controller/Service
 export type RegisterRequest = z.infer<typeof registerSchema>;
 export type LoginRequest = z.infer<typeof loginSchema>;
 export type RefreshTokenRequest = z.infer<typeof refreshTokenSchema>;
 export type ResetPasswordRequest = z.infer<typeof resetPasswordSchema>;
 export type ChangePasswordRequest = z.infer<typeof changePasswordSchema>;
+export type GoogleLoginRequest = z.infer<typeof googleLoginSchema>;

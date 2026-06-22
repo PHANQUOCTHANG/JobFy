@@ -9,6 +9,9 @@ export interface IEmailService {
   sendWelcome(to: string, name: string): Promise<void>;
   sendPasswordResetConfirmation(to: string, name: string): Promise<void>;
   sendAccountVerificationOtp(to: string, otp: string): Promise<void>;
+  sendInterviewInviteEmail(to: string, candidateName: string, jobTitle: string, companyName: string): Promise<void>;
+  sendRejectionEmail(to: string, candidateName: string, jobTitle: string, companyName: string): Promise<void>;
+  sendJobOfferEmail(to: string, candidateName: string, jobTitle: string, companyName: string): Promise<void>;
 }
 
 export class EmailService implements IEmailService {
@@ -150,6 +153,97 @@ export class EmailService implements IEmailService {
       </div>
     `;
     await this.send(to, "JobFy - Cảnh báo Bảo mật: Mật khẩu đã được thay đổi", html);
+  }
+
+  // Gửi thư mời phỏng vấn
+  async sendInterviewInviteEmail(to: string, candidateName: string, jobTitle: string, companyName: string): Promise<void> {
+    const html = `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f9fafb; border-radius: 8px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #4F46E5; margin: 0; font-size: 28px;">Thư mời phỏng vấn</h1>
+        </div>
+        <div style="background-color: white; padding: 30px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Xin chào <strong>${candidateName}</strong>,
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Chúc mừng bạn! Hồ sơ của bạn đã vượt qua vòng lọc hồ sơ cho vị trí <strong>${jobTitle}</strong> tại công ty <strong>${companyName}</strong>.
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Nhà tuyển dụng rất ấn tượng với những kinh nghiệm của bạn và mong muốn được trao đổi thêm trong vòng phỏng vấn. Bộ phận nhân sự sẽ liên hệ với bạn trong thời gian sớm nhất để chốt lịch.
+          </p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.FRONTEND_URL || "http://localhost:3000"}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Đăng nhập để xem chi tiết</a>
+          </div>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Chúc bạn có sự chuẩn bị tốt nhất nhé!
+          </p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <p style="color: #9ca3af; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} JobFy. All rights reserved.</p>
+        </div>
+      </div>
+    `;
+    await this.send(to, `Thư mời phỏng vấn vị trí ${jobTitle} - ${companyName}`, html);
+  }
+
+  // Gửi thư từ chối
+  async sendRejectionEmail(to: string, candidateName: string, jobTitle: string, companyName: string): Promise<void> {
+    const html = `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f9fafb; border-radius: 8px;">
+        <div style="background-color: white; padding: 30px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+          <h2 style="color: #111827; margin-top: 0;">Thông báo kết quả ứng tuyển</h2>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Thân gửi <strong>${candidateName}</strong>,
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Cảm ơn bạn đã quan tâm và dành thời gian ứng tuyển cho vị trí <strong>${jobTitle}</strong> tại công ty <strong>${companyName}</strong>.
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Chúng tôi đánh giá rất cao năng lực và hồ sơ của bạn. Tuy nhiên, sau khi xem xét kỹ lưỡng, chúng tôi rất tiếc phải thông báo rằng kinh nghiệm hiện tại của bạn chưa hoàn toàn phù hợp với định hướng của vị trí này trong giai đoạn hiện tại.
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Hồ sơ của bạn sẽ được lưu vào cơ sở dữ liệu nhân tài của công ty. Chúng tôi sẽ ưu tiên liên hệ nếu có vị trí phù hợp trong tương lai.
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Chúc bạn nhiều sức khỏe và thành công trên con đường sự nghiệp!
+          </p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <p style="color: #9ca3af; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} JobFy. All rights reserved.</p>
+        </div>
+      </div>
+    `;
+    await this.send(to, `Kết quả ứng tuyển vị trí ${jobTitle} - ${companyName}`, html);
+  }
+
+  // Gửi thư nhận việc
+  async sendJobOfferEmail(to: string, candidateName: string, jobTitle: string, companyName: string): Promise<void> {
+    const html = `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f9fafb; border-radius: 8px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #10B981; margin: 0; font-size: 28px;">Chúc mừng bạn!</h1>
+        </div>
+        <div style="background-color: white; padding: 30px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Xin chào <strong>${candidateName}</strong>,
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Công ty <strong>${companyName}</strong> rất vui mừng thông báo bạn đã trúng tuyển vị trí <strong>${jobTitle}</strong>.
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Năng lực và kinh nghiệm của bạn hoàn toàn thuyết phục được hội đồng phỏng vấn. Bộ phận nhân sự sẽ sớm liên hệ gửi Thư mời nhận việc chính thức (Offer Letter) kèm theo các thỏa thuận chi tiết cho bạn.
+          </p>
+          <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Chào mừng bạn đến với đội ngũ của chúng tôi!
+          </p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <p style="color: #9ca3af; font-size: 12px; margin: 0;">© ${new Date().getFullYear()} JobFy. All rights reserved.</p>
+        </div>
+      </div>
+    `;
+    await this.send(to, `Chúc mừng bạn đã trúng tuyển vị trí ${jobTitle} tại ${companyName}`, html);
   }
 
   // Phương thức gửi lõi (Core send method)

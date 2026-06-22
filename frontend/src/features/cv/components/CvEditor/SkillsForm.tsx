@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CvData, Skill } from '../../types';
+import { CvData } from '../../types';
 import { Plus, X } from 'lucide-react';
 
 interface SkillsFormProps {

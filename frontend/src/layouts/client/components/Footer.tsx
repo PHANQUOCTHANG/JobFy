@@ -5,7 +5,6 @@ export function Footer() {
     <footer className="bg-white text-slate-600 pt-20 pb-16 px-5 lg:px-10 border-t border-slate-200">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
         
-        {/* Brand Col */}
         <div className="lg:col-span-2">
           <a href="/" className="flex items-center gap-2 mb-6">
             <div className="w-[36px] h-[36px] bg-[#4F46E5] rounded-xl flex items-center justify-center shadow-md shadow-[#4F46E5]/20">
@@ -31,7 +30,6 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Links Cols */}
         <div>
           <h4 className="font-bold text-[15px] mb-6 text-slate-900">Ứng viên</h4>
           <ul className="space-y-4">

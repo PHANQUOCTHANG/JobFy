@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/store/hooks";
-import { login } from "@/features/auth/slice/authSlice";
 import authApi from "@/features/auth/api/authApi";
 import { registerSchema, type RegisterInput } from "../schemas/auth.schema";
 import { extractError, parseValidationDetails } from "@/utils/extractError";
@@ -19,6 +18,7 @@ const PASSWORD_REQUIREMENTS = [
 
 export const useRegister = () => {
   const navigate = useNavigate();
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const dispatch = useAppDispatch();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +26,7 @@ export const useRegister = () => {
   const [isFocused, setIsFocused] = useState(false);
 
   const form = useForm<RegisterInput>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(registerSchema) as any,
     mode: "onBlur",
     defaultValues: {
@@ -87,6 +88,7 @@ export const useRegister = () => {
         const fieldErrors = parseValidationDetails(parsed.details);
         for (const [fieldName, message] of Object.entries(fieldErrors)) {
           if (fieldName in form.getValues()) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             setError(fieldName as any, { type: "server", message });
           }
         }
@@ -107,6 +109,7 @@ export const useRegister = () => {
 
       // Lỗi tên field cụ thể từ server
       if (parsed.field && parsed.field in form.getValues()) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setError(parsed.field as any, { type: "server", message: parsed.message });
         return;
       }

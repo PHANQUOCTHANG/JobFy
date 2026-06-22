@@ -16,7 +16,7 @@ router
   .get(categoryCtrl.getSkillCategories)
   .post(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(CreateSkillCategorySchema),
     categoryCtrl.createSkillCategory,
   );
@@ -30,14 +30,14 @@ router
   )
   .patch(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateSkillCategorySchema),
     categoryCtrl.updateSkillCategory,
   )
   .delete(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     categoryCtrl.deleteSkillCategory,
   );

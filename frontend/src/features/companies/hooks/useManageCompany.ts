@@ -68,6 +68,7 @@ export const useUpdateMyCompany = () => {
       // Quan trọng: Làm mới tiến trình xác thực để cập nhật trạng thái Bước 2
       queryClient.invalidateQueries({ queryKey: ['employer-verification-progress'] });
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật công ty.';
       Swal.fire({
@@ -89,7 +90,7 @@ export const useIndustries = () => {
       return data.data; // Giả sử backend trả về { status: "success", data: [...] }
     },
     staleTime: Infinity, // Dữ liệu ngành nghề ít thay đổi, có thể cache vô hạn
-    cacheTime: Infinity,
+    gcTime: Infinity,
   });
 };
 
@@ -102,7 +103,7 @@ export const useProvinces = () => {
       return data.data;
     },
     staleTime: Infinity, // Dữ liệu tỉnh/thành phố ít thay đổi
-    cacheTime: Infinity,
+    gcTime: Infinity,
   });
 };
 
@@ -128,6 +129,6 @@ export const useSkills = () => {
       return data.data || [];
     },
     staleTime: Infinity,
-    cacheTime: Infinity,
+    gcTime: Infinity,
   });
 };

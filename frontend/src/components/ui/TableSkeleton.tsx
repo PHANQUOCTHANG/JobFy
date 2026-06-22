@@ -24,7 +24,6 @@ const TableSkeleton: React.FC<TableSkeletonProps> = ({
         >
           {Array.from({ length: cols }).map((_, colIndex) => (
             <TableCell key={colIndex} className="py-4">
-              {/* CỘT 1: Thường là Thông tin chính (Có hình ảnh, Tên, Subtext) */}
               {colIndex === 0 ? (
                 <div className="flex items-center gap-3">
                   {hasAvatar && (
@@ -43,7 +42,6 @@ const TableSkeleton: React.FC<TableSkeletonProps> = ({
               ) : (
                 /* CÁC CỘT GIỮA: Badge, Trạng thái, Ngày tháng */
                 <div className="flex flex-col gap-1">
-                  {/* Random chiều rộng để nhìn tự nhiên hơn, không bị đều tăm tắp */}
                   <div
                     className={cn(
                       "h-5 bg-muted rounded-full",

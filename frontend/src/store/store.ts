@@ -12,7 +12,7 @@ import {
 import storage from "redux-persist/lib/storage";
 
 // Reducers
-import authReducer from "@/features/auth/types/authSlice";
+import authReducer from "@/features/auth/slice/authSlice";
 
 import { injectStore, setGlobalAccessToken } from "@/lib/axios";
 

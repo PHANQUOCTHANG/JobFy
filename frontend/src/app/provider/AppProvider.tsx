@@ -15,19 +15,17 @@ import { PersistGate } from "redux-persist/integration/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
-// --- Internal Modules ---
+// Internal Modules ---
 import { store, persistor } from "@/store/store";
 import { queryClient } from "@/lib/queryClient";
 
-// --- Components ---
+// Components ---
 import { ThemedLoader } from "@/components/ui/ThemedLoader";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SocketProvider } from "@/app/provider/SocketProvider";
 // Note: router-aware sheet callbacks moved into RootLayout
 
-// ============================================================================
 // 1. APP PROVIDERS (Global Context Wrappers)
-// ============================================================================
 // ── Tách ra component riêng để dùng được hooks (cần nằm trong ReduxProvider) ──
 const InnerProviders: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -58,9 +56,6 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({
           <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
             <InnerProviders>{children}</InnerProviders>
 
-            {/* ========================================================= */}
-            {/* PREMIUM TOASTER (Thông báo chuẩn Apple Music / Spotify) */}
-            {/* ========================================================= */}
             <Toaster
               position="top-center" // Hiển thị ở trên cùng giữa màn hình (rất mượt cho Mobile)
               expand={true} // Xếp chồng các thông báo lên nhau dạng thẻ

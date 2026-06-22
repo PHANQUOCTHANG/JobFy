@@ -4,9 +4,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { resetPassword } from '@/features/auth/types/authSlice';
-import { resetPasswordSchema } from '@/../../backend/src/module/auth/auth.request';
+import { resetPassword } from '@/features/auth/slice/authSlice';
+import { z } from 'zod';
 import { Lock, Eye, EyeOff, Loader2, CheckCircle2, ShieldCheck, ArrowLeft } from 'lucide-react';
+
+const resetPasswordSchema = z.object({
+  email: z.string().email().optional(),
+  otp: z.string().optional(),
+  newPassword: z.string().min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
+});
+
 import { BackgroundPattern, FeatureBadge, InputField } from '../../components/ui/AuthComponents';
 
 const EmployerResetPasswordPage: React.FC = () => {
@@ -21,7 +28,7 @@ const EmployerResetPasswordPage: React.FC = () => {
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { email, otp, newPassword: '' }
+    defaultValues: { email, otp, newPassword: '' } as any
   });
 
   const passwordValue = watch('newPassword', '');
@@ -88,7 +95,7 @@ const EmployerResetPasswordPage: React.FC = () => {
                 id="reset-password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                error={errors.newPassword?.message}
+                error={errors.newPassword?.message as string | undefined}
                 {...register('newPassword')}
                 rightElement={
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-slate-400">

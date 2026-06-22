@@ -1,7 +1,6 @@
 import React from 'react';
 import { CandidateProfile } from '../types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { MapPin, Briefcase, Mail, Linkedin, Github, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

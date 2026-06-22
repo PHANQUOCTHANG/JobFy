@@ -1,22 +1,23 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import {
-  AdminLayout,
   ClientLayout,
   RootLayout,
   EmployerLayout,
   CandidateLayout,
+  AdminLayout,
 } from "@/layouts";
 
 import ProtectedRoute from "@/app/routes/ProtectedRoute";
+import AdminRoute from "@/app/routes/AdminRoute";
 import {
   HomePage,
   NotFoundPage,
   SettingsPage,
-  UsersManagementPage,
   CompanyListPage,
   CompanyDetailPage,
-  CandidateProfilePage,
+  ProfileSettingsPage,
+  SecuritySettingsPage,
   CandidatePublicPage,
   JobSearchPage,
   JobDetailPage,
@@ -25,7 +26,7 @@ import {
   ManageCompanyPage,
   ManageJobsPage,
   CreateJobPage,
-  ManageApplicationsPage,
+  EmployerCandidatePage,
   CandidateDetailPage,
   EmployerSettingsPage,
   CandidateDashboardPage,
@@ -35,34 +36,55 @@ import {
   CvEditorPage,
   MyCvsPage,
   CoverLetterPage,
-  EmployerRegisterPage,
   EmployerLoginPage,
+  EmployerRegisterPage,
+  // Admin pages
+  AdminCandidatesPage,
+  AdminReviewsPage,
+  MyCoverLettersPage,
+  AdminDashboardPage,
+  AdminCompaniesPage,
+  AdminJobsPage,
+  AdminReportsPage,
+  AdminLoginPage,
+  AdminIndustriesPage,
+  AdminCategoriesPage,
+  AdminSkillsPage,
 } from "@/pages";
+
 import { GuestRoute } from "@/app/routes/GuestRoute";
-import { guestAuthRoutes } from "@/features/auth/routes";
-import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS } from "@/config/paths";
+import { guestAuthRoutes, protectedAuthRoutes } from "@/features/auth/routes";
+import { EMPLOYER_PATHS, CLIENT_PATHS, CANDIDATE_PATHS, ADMIN_PATHS } from "@/config/paths";
 import EmployerForgotPasswordPage from "@/pages/employer/EmployerForgotPasswordPage";
 import EmployerVerifyOtpPage from "@/pages/employer/EmployerVerifyOtpPage";
 import EmployerResetPasswordPage from "@/pages/employer/EmployerResetPasswordPage";
 
 export const router = createBrowserRouter([
   {
-    // 🔥 QUAN TRỌNG: RootLayout bao trùm toàn bộ ứng dụng
+    // QUAN TRỌNG: RootLayout bao trùm toàn bộ ứng dụng
     // Nó không có path (pathless route), nhiệm vụ chỉ là chạy logic Init Auth
     element: <RootLayout />,
     children: [
-      // ===================================================
       // 1. NHÓM AUTH (Login/Register)
-      // ===================================================
       {
         element: <GuestRoute />, // <--- Bọc ở đây
         children: [
           ...guestAuthRoutes, // Login, Register
+          { path: "/employer/register", element: <EmployerRegisterPage /> },
+          { path: "/employer/login", element: <EmployerLoginPage /> },
+          { path: "/employer/forgot-password", element: <EmployerForgotPasswordPage /> },
+          { path: "/employer/verify-otp", element: <EmployerVerifyOtpPage /> },
+          { path: "/employer/reset-password", element: <EmployerResetPasswordPage /> },
         ],
       },
-      // ===================================================
+      // 1.5. NHÓM AUTH (Protected - Đã login)
+      {
+        element: <ProtectedRoute />,
+        children: [
+          ...protectedAuthRoutes, // Logout, ForceChangePassword
+        ],
+      },
       // 2. NHÓM CLIENT (USER APP)
-      // ===================================================
       {
         path: CLIENT_PATHS.CLIENT,
         element: <ClientLayout />,
@@ -89,17 +111,33 @@ export const router = createBrowserRouter([
           },
           { path: CLIENT_PATHS.CV, element: <CvTemplatesPage /> },
           { path: "/cv/editor/:templateId", element: <CvEditorPage /> },
-          { path: "/cv/my-cvs", element: <MyCvsPage /> },
           { path: "/cv/cover-letter", element: <CoverLetterPage /> },
+          {
+            element: <ProtectedRoute requiredRole="candidate" />,
+            children: [
+              { path: "/cv/my-cvs", element: <MyCvsPage /> },
+              { path: "/my-cover-letters", element: <MyCoverLettersPage /> },
+              {
+                path: CLIENT_PATHS.MY_APPLICATIONS,
+                element: <MyApplicationsPage />,
+              },
+              {
+                path: CLIENT_PATHS.PROFILE,
+                element: <ProfileSettingsPage />,
+              },
+              {
+                path: CLIENT_PATHS.SECURITY_SETTINGS,
+                element: <SecuritySettingsPage />,
+              },
+            ]
+          },
         ],
       },
 
-      // ===================================================
       // 3. NHÓM CANDIDATE PORTAL
-      // ===================================================
       {
         path: CANDIDATE_PATHS.DASHBOARD,
-        // element: <ProtectedRoute />,
+        element: <ProtectedRoute requiredRole="candidate" />,
         children: [
           {
             element: <CandidateLayout />,
@@ -107,14 +145,6 @@ export const router = createBrowserRouter([
               {
                 index: true,
                 element: <CandidateDashboardPage />,
-              },
-              {
-                path: CANDIDATE_PATHS.PROFILE,
-                element: <CandidateProfilePage />,
-              },
-              {
-                path: CANDIDATE_PATHS.MY_APPLICATIONS,
-                element: <MyApplicationsPage />,
               },
               {
                 path: CANDIDATE_PATHS.SAVED_JOBS,
@@ -129,32 +159,11 @@ export const router = createBrowserRouter([
         ],
       },
 
-      // ===================================================
       // 4. NHÓM EMPLOYER PORTAL
-      // ===================================================
       {
         path: EMPLOYER_PATHS.DASHBOARD,
+        element: <ProtectedRoute requiredRole="employer" />,
         children: [
-          {
-            path: EMPLOYER_PATHS.REGISTER,
-            element: <EmployerRegisterPage />
-          },
-          {
-            path: EMPLOYER_PATHS.LOGIN,
-            element: <EmployerLoginPage />
-          },
-          {
-            path: "forgot-password",
-            element: <EmployerForgotPasswordPage />
-          },
-          {
-            path: "verify-otp",
-            element: <EmployerVerifyOtpPage />
-          },
-          {
-            path: "reset-password",
-            element: <EmployerResetPasswordPage />
-          },
           {
             // element: <ProtectedRoute />,
             element: <EmployerLayout />,
@@ -177,7 +186,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: EMPLOYER_PATHS.APPLICATIONS,
-                element: <ManageApplicationsPage />,
+                element: <EmployerCandidatePage />,
               },
               {
                 path: EMPLOYER_PATHS.CANDIDATE_DETAIL(":id"),
@@ -192,9 +201,40 @@ export const router = createBrowserRouter([
         ],
       },
 
+      // 5. NHÓM ADMIN PORTAL
       // ===================================================
-      // 5. 404 NOT FOUND
+
+      // 5a. Trang Login Admin — công khai, không cần auth
+      {
+        path: "/admin/login",
+        element: <AdminLoginPage />,
+      },
+
+      // 5b. Admin Dashboard — bảo vệ bởi AdminRoute
+      {
+        path: ADMIN_PATHS.ADMIN,
+        element: <AdminRoute />,   // ← guard: chưa đăng nhập → /admin/login, không phải admin → 403
+        children: [
+          {
+            element: <AdminLayout />,
+            children: [
+              { index: true, element: <AdminDashboardPage /> },
+              // { path: ADMIN_PATHS.USERS, element: <UsersManagementPage /> },
+              { path: ADMIN_PATHS.COMPANIES, element: <AdminCompaniesPage /> },
+              { path: ADMIN_PATHS.CANDIDATES, element: <AdminCandidatesPage /> },
+              { path: ADMIN_PATHS.JOBS, element: <AdminJobsPage /> },
+              { path: ADMIN_PATHS.REPORTS, element: <AdminReportsPage /> },
+              { path: ADMIN_PATHS.REVIEWS, element: <AdminReviewsPage /> },
+              { path: "industries", element: <AdminIndustriesPage /> },
+              { path: "categories", element: <AdminCategoriesPage /> },
+              { path: "skills", element: <AdminSkillsPage /> },
+            ],
+          },
+        ],
+      },
+
       // ===================================================
+      // 6. 404 NOT FOUND
       {
         path: "*",
         element: <NotFoundPage />,

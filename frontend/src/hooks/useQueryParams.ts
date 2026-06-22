@@ -29,7 +29,7 @@ export const useQueryParams = <T extends Record<string, unknown>>(
     return result as T;
   }, [searchParams]);
 
-  // 🔥 Fix ở đây: Thêm tham số options cho navigate
+  // Cập nhật tham số URL và cho phép truyền NavigateOptions (vd: replace, state)
   const setParams = useCallback(
     (newParams: Partial<T>, options?: NavigateOptions) => {
       setSearchParams(
@@ -46,7 +46,7 @@ export const useQueryParams = <T extends Record<string, unknown>>(
 
           return merged;
         },
-        options, // ✅ Truyền options (như { replace: true }) vào đây mới đúng!
+        options,
       );
     },
     [setSearchParams],

@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, Search, Briefcase } from "lucide-react";
+import { Home, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 

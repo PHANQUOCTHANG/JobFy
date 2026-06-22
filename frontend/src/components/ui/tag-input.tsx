@@ -23,7 +23,7 @@ export const TagInput: React.FC<TagInputProps> = ({
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // --- HANDLERS ---
+  // HANDLERS ---
 
   // Focus vào input khi click vào container
   const handleContainerClick = () => {
@@ -83,7 +83,6 @@ export const TagInput: React.FC<TagInputProps> = ({
         className,
       )}
     >
-      {/* Render Tags */}
       {value.map((tag, index) => (
         <Badge
           key={index}
@@ -106,7 +105,6 @@ export const TagInput: React.FC<TagInputProps> = ({
         </Badge>
       ))}
 
-      {/* Input Field */}
       <input
         ref={inputRef}
         type="text"

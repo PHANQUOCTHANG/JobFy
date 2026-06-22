@@ -231,7 +231,6 @@ const SectionNavItem = memo(
       )}
       style={{ animationDelay: `${index * 60}ms` }}
     >
-      {/* Icon container */}
       <div
         className={cn(
           "size-9 sm:size-10 rounded-xl flex items-center justify-center shrink-0",
@@ -244,7 +243,6 @@ const SectionNavItem = memo(
         <section.icon size={18} aria-hidden="true" />
       </div>
 
-      {/* Labels — hidden on very small mobile, shown sm+ */}
       <div className="hidden sm:block text-left flex-1 min-w-0">
         <p className="font-semibold text-[14px] leading-tight truncate">
           {section.label}
@@ -340,7 +338,6 @@ const AppearanceSection = memo(
     setSkin: (s: Skin) => void;
   }) => (
     <div className="space-y-6">
-      {/* Interface Mode */}
       <SectionCard>
         <SectionCardHeader
           icon={Sparkles}
@@ -396,7 +393,6 @@ const AppearanceSection = memo(
         </div>
       </SectionCard>
 
-      {/* Skin Grid */}
       <SectionCard>
         <SectionCardHeader
           icon={Palette}
@@ -424,7 +420,6 @@ const AppearanceSection = memo(
                 )}
                 style={{ animationDelay: `${i * 35}ms` }}
               >
-                {/* Color swatch */}
                 <div
                   className="size-9 rounded-xl shrink-0 flex items-center justify-center shadow-md transition-transform duration-200 group-hover:scale-110"
                   style={{ backgroundColor: s.color }}
@@ -462,17 +457,14 @@ AppearanceSection.displayName = "AppearanceSection";
 // ─────────────────────────────────────────────────────────────────────────────
 const AccountSection = memo(() => (
   <SectionCard>
-    {/* Hero banner — gradient-brand token */}
     <div
       className="h-28 sm:h-36 gradient-brand opacity-30"
       aria-hidden="true"
     />
 
     <div className="px-6 sm:px-8 pb-8">
-      {/* Avatar + name row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5 -mt-10 sm:-mt-14 mb-8">
         <div className="relative group size-24 sm:size-28 rounded-[28px] sm:rounded-[32px] shrink-0">
-          {/* Avatar frame — card-base tokens */}
           <div className="size-full rounded-[inherit] bg-card border-2 border-border/60 shadow-card-md flex items-center justify-center overflow-hidden">
             <User
               size={44}
@@ -480,7 +472,6 @@ const AccountSection = memo(() => (
               aria-hidden="true"
             />
           </div>
-          {/* Hover overlay */}
           <button
             className={cn(
               "absolute inset-0 rounded-[inherit]",
@@ -513,7 +504,6 @@ const AccountSection = memo(() => (
         </div>
       </div>
 
-      {/* Form fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
         <div className="space-y-2">
           <label className="text-overline text-muted-foreground/60 ml-0.5">
@@ -550,7 +540,6 @@ const AccountSection = memo(() => (
         </div>
       </div>
 
-      {/* Save CTA — .btn-primary from design system */}
       <button className="btn-primary btn-lg mt-8 gap-2.5">
         <Save size={16} aria-hidden="true" />
         Save Profile
@@ -582,7 +571,6 @@ const PlaybackSection = memo(
         description="Configure streaming quality and Neural Audio Engine settings."
       />
       <div className="px-6 sm:px-8 pb-8 space-y-8">
-        {/* Quality slider */}
         <div className="space-y-5">
           <div className="flex items-end justify-between">
             <div className="space-y-1">
@@ -616,7 +604,6 @@ const PlaybackSection = memo(
             aria-label="Streaming quality in kbps"
           />
 
-          {/* Quality markers */}
           <div className="flex justify-between px-1">
             {[96, 128, 160, 192, 256, 320].map((v) => (
               <span
@@ -636,7 +623,6 @@ const PlaybackSection = memo(
 
         <Separator style={{ background: "hsl(var(--border) / 0.4)" }} />
 
-        {/* Toggle options */}
         <div className="space-y-5">
           {[
             {
@@ -751,7 +737,6 @@ export default function SettingsPage() {
 
   return (
     <div className="relative min-h-screen bg-background pb-24">
-      {/* ── Ambient orbs — token-driven, skin-aware ── */}
       <div
         className="fixed inset-0 pointer-events-none overflow-hidden -z-10"
         aria-hidden="true"
@@ -762,13 +747,11 @@ export default function SettingsPage() {
       </div>
 
       <div className="section-container py-10 lg:py-16">
-        {/* ── Page Header ── */}
         <header className="mb-10 animate-fade-up">
           <h1 className="text-display-xl text-brand mb-3">Settings</h1>
         </header>
 
         <div className="flex flex-col lg:flex-row gap-8 xl:gap-12">
-          {/* ── Sidebar Navigation ── */}
           <aside
             className="lg:w-72 xl:w-80 shrink-0"
             aria-label="Settings navigation"
@@ -805,7 +788,6 @@ export default function SettingsPage() {
               ))}
             </div>
 
-            {/* Infrastructure panel — .glass from design system */}
             <div
               className={cn(
                 "hidden lg:block mt-6 p-5 rounded-2xl glass",
@@ -845,7 +827,6 @@ export default function SettingsPage() {
             </div>
           </aside>
 
-          {/* ── Main Content ── */}
           <main className="flex-1 min-w-0" aria-live="polite">
             <AnimatePresence mode="wait">
               <motion.div

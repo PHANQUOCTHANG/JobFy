@@ -6,6 +6,7 @@ const companyBase = z.object({
   name: z.string().trim().min(2, "Tên công ty tối thiểu 2 ký tự").max(255),
   logoUrl: z.string().url("URL không hợp lệ").max(500).nullable().optional(),
   coverUrl: z.string().url("URL không hợp lệ").max(500).nullable().optional(),
+  businessLicenseUrl: z.string().url("URL không hợp lệ").max(500).nullable().optional(),
   website: z.string().url("URL không hợp lệ").max(500).nullable().optional(),
   taxCode: z.string().max(50).nullable().optional(),
   foundedYear: z.number().int().min(1800).max(new Date().getFullYear()).nullable().optional(),
@@ -22,7 +23,7 @@ const companyBase = z.object({
 });
 
 export const CreateCompanySchema = companyBase.partial({
-  logoUrl: true, coverUrl: true, website: true, taxCode: true,
+  logoUrl: true, coverUrl: true, businessLicenseUrl: true, website: true, taxCode: true,
   foundedYear: true, size: true, industryId: true, description: true,
   shortDescription: true, provinceId: true, districtId: true,
   address: true, facebookUrl: true, linkedinUrl: true, isActive: true,

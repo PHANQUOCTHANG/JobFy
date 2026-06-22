@@ -4,8 +4,8 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginEmployer, googleLoginEmployer } from '@/features/auth/types/authSlice';
-import { loginSchema, LoginRequest } from '@/../../backend/src/module/auth/auth.request';
+import { loginEmployer, googleLoginEmployer } from '@/features/auth/slice/authSlice';
+import { loginSchema, LoginInput as LoginRequest } from '@/features/auth/schemas/auth.schema';
 import { useGoogleLogin } from '@react-oauth/google';
 import {
   Mail,
@@ -16,11 +16,101 @@ import {
   Users,
   Zap,
   Shield,
-  Briefcase,
   ArrowLeft,
   Loader2,
+  Briefcase,
+  type LucideIcon,
 } from 'lucide-react';
-import { BackgroundPattern, InputField, FeatureBadge } from '../../components/ui/AuthComponents';
+import GoogleLoginButton from '@/features/auth/components/GoogleLoginButton';
+
+/* ─── Background Pattern (same as Register) ─── */
+const BackgroundPattern = () => (
+  <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+    <div
+      className="absolute inset-0"
+      style={{
+        backgroundImage:
+          'linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px)',
+        backgroundSize: '56px 56px',
+      }}
+    />
+    <div className="absolute -top-32 -right-32 w-[480px] h-[480px] bg-white/10 rounded-full blur-[100px]" />
+    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-400/10 rounded-full blur-[80px]" />
+  </div>
+);
+
+/* ─── Reusable InputField (same as Register) ─── */
+interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  icon: LucideIcon;
+  label: string;
+  labelRight?: React.ReactNode;
+  error?: string;
+  rightElement?: React.ReactNode;
+}
+
+const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
+  ({ icon: Icon, label, labelRight, error, rightElement, id, ...props }, ref) => (
+    <div className="flex flex-col gap-1.5 w-full">
+      <div className="flex justify-between items-center">
+        <label htmlFor={id} className="text-[13px] font-bold text-[#0F172A]">
+          {label}
+        </label>
+        {labelRight}
+      </div>
+      <div className="relative group">
+        <div
+          className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-200 ${error
+            ? 'text-red-500'
+            : 'text-[#94A3B8] group-focus-within:text-[#00307c]'
+            }`}
+        >
+          <Icon size={17} strokeWidth={2} />
+        </div>
+        <input
+          ref={ref}
+          id={id}
+          className={`w-full bg-white hover:bg-slate-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-200 ${rightElement ? 'pr-11' : 'pr-4'
+            } ${error
+              ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
+              : 'border-[#E2E8F0] focus:border-[#00307c] focus:shadow-[0_0_0_3px_rgba(0,48,124,0.10)]'
+            }`}
+          style={{ height: '50px' }}
+          {...props}
+        />
+        {rightElement && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
+            {rightElement}
+          </div>
+        )}
+      </div>
+      {error && (
+        <p className="text-red-500 text-[12px] font-medium mt-0.5">{error}</p>
+      )}
+    </div>
+  )
+);
+InputField.displayName = 'InputField';
+
+/* ─── Feature Badge (same as Register) ─── */
+const FeatureBadge = ({
+  icon: Icon,
+  title,
+  desc,
+}: {
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+}) => (
+  <div className="flex items-center gap-4">
+    <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0 border border-white/20">
+      <Icon size={18} className="text-white" strokeWidth={2} />
+    </div>
+    <div>
+      <p className="text-white font-bold text-[14px]">{title}</p>
+      <p className="text-white/60 text-[12px]">{desc}</p>
+    </div>
+  </div>
+);
 
 /* ─── Main Page ─── */
 const EmployerLoginPage: React.FC = () => {
@@ -29,20 +119,20 @@ const EmployerLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { isLoading } = useAppSelector((state) => state.auth);
 
+  // @ts-ignore
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginRequest>({
+    // @ts-ignore
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      role: 'employer',
-      rememberMe: false,
-    },
+    defaultValues: { email: '', password: '', rememberMe: false },
   });
 
-  const onSubmit = async (data: LoginRequest) => {
-    const resultAction = await dispatch(loginEmployer({ ...data, role: 'employer' }));
+  const onSubmit = async (data: any) => {
+    const payload = data as LoginRequest;
+    const resultAction = await dispatch(loginEmployer({ ...payload, role: 'employer' }));
 
     if (loginEmployer.fulfilled.match(resultAction)) {
       toast.success('Đăng nhập thành công!');
@@ -80,7 +170,6 @@ const EmployerLoginPage: React.FC = () => {
       <aside className="hidden lg:flex flex-col w-[45%] relative bg-[#00307c] overflow-hidden p-12">
         <BackgroundPattern />
 
-        {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
           <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
             <Briefcase size={20} className="text-[#00307c]" strokeWidth={2.5} />
@@ -90,7 +179,6 @@ const EmployerLoginPage: React.FC = () => {
           </span>
         </div>
 
-        {/* Hero Text */}
         <div className="relative z-10 mt-16 mb-auto">
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6">
             <span className="w-2 h-2 rounded-full bg-[#83fc8e] animate-pulse" />
@@ -111,7 +199,6 @@ const EmployerLoginPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Feature list */}
         <div className="relative z-10 flex flex-col gap-5 mb-12">
           <FeatureBadge
             icon={Zap}
@@ -130,7 +217,6 @@ const EmployerLoginPage: React.FC = () => {
           />
         </div>
 
-        {/* Testimonial */}
         <div className="relative z-10 bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20">
           <div className="flex gap-0.5 mb-3">
             {[...Array(5)].map((_, i) => (
@@ -157,7 +243,6 @@ const EmployerLoginPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Footer */}
         <div className="relative z-10 flex justify-between mt-8 text-white/35 text-[11px] uppercase tracking-wider font-semibold">
           <span>© 2024 JobFy Enterprise</span>
           <span>Trusted by 500+ Companies</span>
@@ -170,9 +255,7 @@ const EmployerLoginPage: React.FC = () => {
       <main className="w-full lg:w-[55%] flex items-start justify-center p-6 sm:p-10 overflow-y-auto">
         <div className="w-full max-w-[480px] animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-          {/* Top Nav */}
           <div className="flex items-center justify-between mb-10 mt-2">
-            {/* Mobile logo */}
             <Link to="/" className="lg:hidden flex items-center gap-2">
               <div className="w-9 h-9 bg-[#00307c] rounded-xl flex items-center justify-center">
                 <Briefcase size={17} className="text-white" strokeWidth={2.5} />
@@ -196,7 +279,6 @@ const EmployerLoginPage: React.FC = () => {
             </Link>
           </div>
 
-          {/* Header */}
           <div className="mb-8">
             <h2
               className="font-black text-[#0F172A] mb-2"
@@ -222,7 +304,6 @@ const EmployerLoginPage: React.FC = () => {
               {...register('email')}
             />
 
-            {/* Password */}
             <InputField
               icon={Lock}
               label="Mật khẩu"
@@ -250,7 +331,6 @@ const EmployerLoginPage: React.FC = () => {
               }
             />
 
-            {/* Remember me */}
             <div className="flex items-center gap-3 py-1">
               <input
                 id="remember"
@@ -266,7 +346,6 @@ const EmployerLoginPage: React.FC = () => {
               </label>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
@@ -283,7 +362,6 @@ const EmployerLoginPage: React.FC = () => {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-[#E2E8F0]" />
             <span className="text-[12px] font-bold text-[#94A3B8] uppercase tracking-wider">
@@ -293,21 +371,10 @@ const EmployerLoginPage: React.FC = () => {
           </div>
 
           {/* Google Sign In */}
-          <button
-            type="button"
-            onClick={() => loginWithGoogle()}
-            className="w-full h-12 border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[#0F172A] text-[14.5px] font-bold rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3"
-          >
-            <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-            </svg>
-            <span>Đăng nhập với Google</span>
-          </button>
+          <div className="w-full relative mt-[-10px] [&>div]:justify-center">
+            <GoogleLoginButton role="employer" />
+          </div>
 
-          {/* Trust badges */}
           <div className="flex items-center justify-center gap-6 mt-8 pt-6 border-t border-[#F1F5F9]">
             {[
               { icon: Shield, label: 'Bảo mật SSL' },
@@ -321,7 +388,6 @@ const EmployerLoginPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Footer */}
           <p className="text-center text-[14px] text-[#64748B] mt-6">
             Chưa có tài khoản doanh nghiệp?{' '}
             <Link

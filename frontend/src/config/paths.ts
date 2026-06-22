@@ -18,6 +18,7 @@ export const CLIENT_PATHS = {
   SETTINGS: "settings",
   // User
   PROFILE: "/profile",
+  SECURITY_SETTINGS: "/security-settings",
   CANDIDATE_DETAIL: (id: string) => `/candidates/${id}`,
   // Companies
   COMPANIES: "companies",
@@ -31,12 +32,12 @@ export const CLIENT_PATHS = {
   MY_CVS: "cv/my-cvs",
   CV_UPLOAD: "cv/upload",
   COVER_LETTER: "cv/cover-letter",
+  MY_APPLICATIONS: "applications",
 } as const;
 
 export const CANDIDATE_PATHS = {
   DASHBOARD: "/candidate",
   PROFILE: "profile",
-  MY_APPLICATIONS: "applications",
   SAVED_JOBS: "saved-jobs",
   JOB_ALERTS: "job-alerts",
 } as const;
@@ -48,6 +49,7 @@ export const ADMIN_PATHS = {
   CANDIDATES: "candidates",
   COMPANIES: "companies",
   JOBS: "jobs",
+  REPORTS: "reports",
   REVIEWS: "reviews",
   ANALYTICS: "analytics",
   SETTINGS: "settings",

@@ -13,7 +13,6 @@ const CandidateDetailPage = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden">
-      {/* Header */}
       <header className="flex justify-between items-center w-full px-6 h-16 sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#E2E8F0]">
         <div className="flex items-center gap-4">
           <button
@@ -30,7 +29,6 @@ const CandidateDetailPage = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {/* Status selector */}
           <div className="flex items-center gap-2 bg-[#F1F5F9] px-4 py-2 rounded-full border border-[#E2E8F0]">
             <span className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Trạng thái:</span>
             <select
@@ -52,11 +50,8 @@ const CandidateDetailPage = () => {
         </div>
       </header>
 
-      {/* Main Content Canvas */}
       <div className="flex-1 flex overflow-hidden p-6 gap-6">
-        {/* LEFT COLUMN: CV Preview */}
         <section className="flex-[1.2] flex flex-col bg-white rounded-2xl border border-[#F1F5F9] overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
-          {/* CV Toolbar */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-[#F1F5F9] bg-[#F8FAFC]">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[#00307c] text-[20px]">picture_as_pdf</span>
@@ -75,10 +70,8 @@ const CandidateDetailPage = () => {
             </div>
           </div>
 
-          {/* CV Mock Preview */}
           <div className="flex-1 bg-[#E8EDF5]/50 overflow-y-auto p-4 sm:p-8 flex justify-center items-start custom-scrollbar">
             <div className="w-full max-w-[560px] bg-white shadow-[0_4px_30px_rgba(0,0,0,0.12)] p-6 sm:p-8 rounded-xl border border-[#F1F5F9] h-fit">
-              {/* CV Header */}
               <div className="flex gap-5 items-start border-b border-[#F1F5F9] pb-5 mb-5">
                 <div className="w-20 h-20 bg-[#E5EEFF] rounded-xl flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-[#00307c] text-[40px]">person</span>
@@ -96,9 +89,7 @@ const CandidateDetailPage = () => {
                 </div>
               </div>
 
-              {/* CV Body */}
               <div className="space-y-5">
-                {/* Experience */}
                 <section>
                   <h4 className="text-[12px] font-black text-[#00307c] uppercase tracking-widest mb-3 flex items-center gap-2">
                     <div className="h-px flex-1 bg-[#E5EEFF]"></div>
@@ -121,7 +112,6 @@ const CandidateDetailPage = () => {
                   </div>
                 </section>
 
-                {/* Skills */}
                 <section>
                   <h4 className="text-[12px] font-black text-[#00307c] uppercase tracking-widest mb-3 flex items-center gap-2">
                     <div className="h-px flex-1 bg-[#E5EEFF]"></div>
@@ -151,7 +141,6 @@ const CandidateDetailPage = () => {
                   </div>
                 </section>
 
-                {/* Education */}
                 <section>
                   <h4 className="text-[12px] font-black text-[#00307c] uppercase tracking-widest mb-3 flex items-center gap-2">
                     <div className="h-px flex-1 bg-[#E5EEFF]"></div>
@@ -169,9 +158,7 @@ const CandidateDetailPage = () => {
           </div>
         </section>
 
-        {/* RIGHT COLUMN: Evaluation & Forms */}
         <section className="flex-1 flex flex-col gap-5 overflow-y-auto custom-scrollbar pr-1 min-w-[340px]">
-          {/* Evaluation Form */}
           <div className="bg-white rounded-2xl border border-[#F1F5F9] p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
             <div className="flex items-center gap-2 mb-5 text-[#00307c]">
               <span className="material-symbols-outlined text-[22px]">assignment</span>
@@ -179,7 +166,6 @@ const CandidateDetailPage = () => {
             </div>
 
             <div className="space-y-4">
-              {/* Rating */}
               <div>
                 <label className="text-[11px] font-black text-[#64748B] uppercase tracking-wider mb-2 block">Kiến thức chuyên môn</label>
                 <div className="flex gap-2">
@@ -199,7 +185,6 @@ const CandidateDetailPage = () => {
                 </div>
               </div>
 
-              {/* Soft skill + Attitude */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] font-black text-[#64748B] uppercase tracking-wider mb-2 block">Kỹ năng mềm</label>
@@ -228,7 +213,6 @@ const CandidateDetailPage = () => {
                 </div>
               </div>
 
-              {/* Notes */}
               <div>
                 <label className="text-[11px] font-black text-[#64748B] uppercase tracking-wider mb-2 block">Ghi chú phỏng vấn</label>
                 <textarea
@@ -241,7 +225,6 @@ const CandidateDetailPage = () => {
             </div>
           </div>
 
-          {/* Interview Scheduling */}
           <div className="bg-white rounded-2xl border border-[#F1F5F9] border-l-4 border-l-emerald-500 p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
             <div className="flex items-center gap-2 mb-5">
               <span className="material-symbols-outlined text-emerald-600 text-[22px]">calendar_today</span>
@@ -277,7 +260,6 @@ const CandidateDetailPage = () => {
                 </div>
               </div>
 
-              {/* Interviewers */}
               <div className="col-span-2">
                 <label className="text-[11px] font-black text-[#64748B] uppercase tracking-wider mb-2 block">Người phỏng vấn</label>
                 <div className="flex items-center gap-2">
@@ -300,7 +282,6 @@ const CandidateDetailPage = () => {
                 </div>
               </div>
 
-              {/* Location */}
               <div className="col-span-2">
                 <label className="text-[11px] font-black text-[#64748B] uppercase tracking-wider mb-2 block">
                   {interviewType === "offline" ? "Địa điểm" : "Link họp"}
@@ -319,7 +300,6 @@ const CandidateDetailPage = () => {
             </div>
           </div>
 
-          {/* Offer Section */}
           <div className="bg-blue-50/30 rounded-2xl border border-blue-100 p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.06)]">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2 text-[#00307c]">
@@ -374,7 +354,6 @@ const CandidateDetailPage = () => {
             </div>
           </div>
 
-          {/* Action Footer */}
           <div className="flex gap-3">
             <button className="flex-1 py-3 bg-gradient-to-r from-[#00307c] to-[#0047b3] text-white rounded-2xl text-[14px] font-black shadow-[0_6px_16px_-4px_rgba(0,48,124,0.4)] hover:shadow-[0_8px_20px_-4px_rgba(0,48,124,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[20px]">send</span>

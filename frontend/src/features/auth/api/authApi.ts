@@ -13,15 +13,22 @@ import api from "@/lib/axios";
 import type { ApiErrorResponse, ApiResponse } from "@/types";
 
 const authApi = {
-  // =================================================================
   // 🟢 PUBLIC ROUTES (Không cần Token)
-  // =================================================================
 
   // 1. Đăng nhập
   login: async (payload: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
     const res = await api.post<ApiResponse<LoginResponse>>(
       "/auth/login",
       payload
+    );
+    return res.data;
+  },
+
+  // 1b. Đăng nhập bằng Google
+  googleLogin: async (idToken: string, role: string): Promise<ApiResponse<LoginResponse>> => {
+    const res = await api.post<ApiResponse<LoginResponse>>(
+      "/auth/google-login",
+      { idToken, role }
     );
     return res.data;
   },
@@ -101,9 +108,7 @@ const authApi = {
     return res.data;
   },
 
-  // =================================================================
   // 🔒 PROTECTED ROUTES (Cần Token)
-  // =================================================================
 
   // 9. Lấy thông tin bản thân (Me)
   getMe: async (token?: string) => {

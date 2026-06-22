@@ -238,6 +238,7 @@ model User {
   reports           Report[]           @relation("Reporter")
   reviewedReports   Report[]           @relation("ReportReviewer")
   adminLogs         AdminLog[]
+  coverLetters      CoverLetter[]
 
   @@index([email], map: "idx_users_email")
   @@index([createdAt(sort: Desc)], map: "idx_users_created_at")
@@ -494,6 +495,8 @@ model Resume {
   id                String             @id @default(uuid()) @db.Uuid
   candidateId       String             @map("candidate_id") @db.Uuid
   title             String             @db.VarChar(255)
+  templateId        String?            @map("template_id") @db.VarChar(100)
+  personalData      Json?              @map("personal_data")
   fileUrl           String?            @map("file_url") @db.VarChar(500)
   isPrimary         Boolean            @default(false) @map("is_primary")
   isPublic          Boolean            @default(true) @map("is_public")
@@ -653,6 +656,7 @@ model Jobs {
   savedJobs         SavedJob[]
   conversations     Conversation[]
   jobViews          JobView[]
+  coverLetters      CoverLetter[]
 
   @@unique([companyId, slug])
   @@index([companyId], map: "idx_jobs_company")
@@ -1056,4 +1060,26 @@ model AdminLog {
   @@index([action, createdAt(sort: Desc)], map: "idx_adminlogs_action")
   @@index([createdAt(sort: Desc)], map: "idx_adminlogs_created")
   @@map("admin_logs")
+}
+
+// ============================================================
+// 18. AI COVER LETTER (Tự động tạo Cover Letter bằng AI)
+// ============================================================
+
+model CoverLetter {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  jobId           String?  @map("job_id") @db.Uuid
+  title           String   @db.VarChar(255)
+  content         String   @db.Text
+  isAiGenerated   Boolean  @default(false) @map("is_ai_generated")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job             Jobs?    @relation(fields: [jobId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([jobId])
+  @@map("cover_letters")
 }

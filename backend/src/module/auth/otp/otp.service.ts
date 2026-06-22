@@ -21,7 +21,7 @@ export class OtpService implements IOtpService {
   constructor(
     private readonly otpRepo: IOtpRepository,
     private readonly userRepo: IUserRepository,
-  ) {}
+  ) { }
 
   // Tạo, lưu trữ OTP và gửi qua email cho người dùng
   async send(email: string, purpose: OtpPurpose = "RESET_PASSWORD"): Promise<OtpSentResponseDto> {
@@ -102,11 +102,6 @@ export class OtpService implements IOtpService {
 
     // 2. Kiểm tra tính chính xác của mã OTP người dùng nhập vào
     const isValid = await bcrypt.compare(trimmedOtp, record.otpHash);
-    if (!isValid) {
-      console.log('[OtpService.verify] INVALID email=', normalizedEmail, 'purpose=', purpose, 'inputOtp=', trimmedOtp, 'hasRecord=', !!record, 'isValid=', isValid);
-    } else {
-      console.log('[OtpService.verify] VALID email=', normalizedEmail, 'purpose=', purpose, 'inputOtp=', trimmedOtp);
-    }
     if (!isValid) throw new AppError("Mã OTP không chính xác.", 400);
 
 

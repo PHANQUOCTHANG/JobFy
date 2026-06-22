@@ -3,10 +3,12 @@ export interface BaseQuery {
   limit?: number;
   search?: string;
   sort?: string;
+  [key: string]: any;
 }
 
 // Chuẩn hóa query, tránh undefined & giới hạn dữ liệu xấu
 export const normalizeQuery = (query: any): BaseQuery => ({
+  ...query,
   page: Math.max(Number(query.page) || 1, 1),
   limit: Math.min(Number(query.limit) || 10, 100),
   search: query.search?.trim() || "",

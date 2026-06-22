@@ -26,10 +26,9 @@ export class JobService {
     if (!company) throw new AppError("Công ty không tồn tại", 404);
 
     // Authorization: User must be owner or member
-    // In real app, check company_members table. Assuming we check owner here for simplicity:
     if (company.ownerId !== userId) {
       // Need proper role check via CompanyMemberRepo, simplified here:
-      // throw new AppError("Bạn không có quyền đăng tin cho công ty này", 403);
+      throw new AppError("Bạn không có quyền đăng tin cho công ty này", 403);
     }
 
     let slug = this.generateSlug(dto.title);
@@ -131,7 +130,10 @@ export class JobService {
     const job = await this.jobRepo.findById(id);
     if (!job) throw new AppError("Không tìm thấy tin tuyển dụng", 404);
 
-    // TODO: Verify ownership
+    const company = await this.companyRepo.findById(job.companyId);
+    if (!company || company.ownerId !== userId) {
+      throw new AppError("Bạn không có quyền thao tác trên tin tuyển dụng này", 403);
+    }
 
     const updateData: any = { ...dto };
     delete updateData.skills;
@@ -188,7 +190,10 @@ export class JobService {
     const job = await this.jobRepo.findById(id);
     if (!job) throw new AppError("Không tìm thấy tin tuyển dụng", 404);
 
-    // TODO: Verify ownership
+    const company = await this.companyRepo.findById(job.companyId);
+    if (!company || company.ownerId !== userId) {
+      throw new AppError("Bạn không có quyền thao tác trên tin tuyển dụng này", 403);
+    }
 
     await this.jobRepo.deleteById(id);
 
@@ -201,5 +206,42 @@ export class JobService {
   async incrementViewCount(id: string): Promise<void> {
     await this.jobRepo.incrementViewCount(id);
     await deleteCache(`${this.CACHE_KEY}:id:${id}`);
+  }
+
+  async adminUpdateStatus(id: string, status: string, rejectedReason?: string): Promise<JobResponseDto> {
+    const job = await this.jobRepo.findById(id);
+    if (!job) throw new AppError("Không tìm thấy tin tuyển dụng", 404);
+
+    const updateData: any = { status };
+    
+    // Nếu duyệt tin
+    if (status === "published" && job.status !== "published" && !job.publishedAt) {
+      updateData.publishedAt = new Date();
+      updateData.rejectedReason = null; // Clear lý do từ chối nếu có
+    }
+
+    // Nếu từ chối tin
+    if (status === "rejected") {
+      updateData.rejectedReason = rejectedReason || "Không có lý do cụ thể.";
+    }
+
+    const updated = await this.jobRepo.updateById(id, updateData);
+    if (!updated) throw new AppError("Cập nhật thất bại", 500);
+
+    await Promise.all([
+      deleteCache(`${this.CACHE_KEY}:id:${id}`),
+      deleteCacheByPattern(`${this.CACHE_KEY}:list:*`),
+    ]);
+    return JobResponseDto.from(updated);
+  }
+
+  async adminDelete(id: string): Promise<void> {
+    const job = await this.jobRepo.findById(id);
+    if (!job) throw new AppError("Không tìm thấy tin tuyển dụng", 404);
+    await this.jobRepo.deleteById(id);
+    await Promise.all([
+      deleteCache(`${this.CACHE_KEY}:id:${id}`),
+      deleteCacheByPattern(`${this.CACHE_KEY}:list:*`),
+    ]);
   }
 }

@@ -5,10 +5,11 @@ import asyncHandler from "@/utils/asyncHandler";
 import { toSavedJobListResponse, toSavedJobResponse } from "./saved-job.response";
 import { sendResponse } from "@/utils/sendResponse";
 
+
 const savedJobService = new SavedJobService();
 
 export const getSavedJobs = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { page, limit } = req.query;
@@ -17,14 +18,28 @@ export const getSavedJobs = asyncHandler(async (req: Request, res: Response) => 
     limit: limit ? Number(limit) : undefined
   });
 
-  return res.status(200).json(ApiResponse.paginate({
-    ...result,
-    data: toSavedJobListResponse(result.data)
-  }));
+  sendResponse(res, 200, "Success", {
+    data: toSavedJobListResponse(result.data),
+    meta: {
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages
+    }
+  });
+});
+
+export const getSavedJobIds = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+  const result = await savedJobService.getSavedJobIds(userId);
+
+  sendResponse(res, 200, "Success", result.data);
 });
 
 export const saveJob = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;
@@ -33,7 +48,7 @@ export const saveJob = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const unsaveJob = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;
@@ -42,7 +57,7 @@ export const unsaveJob = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const checkIsSaved = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { jobId } = req.params;

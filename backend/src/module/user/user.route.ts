@@ -1,10 +1,11 @@
 import { Router } from "express";
 import * as userCtrl from "./user.controller";
 import validationMiddleware from "@/middleware/validate.middleware";
-import { requireRole } from "@/middleware/auth.middleware";
+import { requireAuth, requireRole } from "@/middleware/auth.middleware";
 import {
   CreateUserSchema,
   UpdateUserSchema,
+  UpdateMeSchema,
   IdParamSchema,
 } from "./user.request";
 
@@ -13,25 +14,34 @@ const router = Router();
 // [GET] danh sách & [POST] tạo user (chỉ ADMIN)
 router
   .route("/")
-  .get(requireRole("ADMIN"), userCtrl.getUsers)
+  .get(requireRole("admin"), userCtrl.getUsers)
   .post(
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(CreateUserSchema),
     userCtrl.createUser,
+  );
+
+// [PATCH] cập nhật cá nhân
+router
+  .route("/me")
+  .patch(
+    requireAuth,
+    validationMiddleware(UpdateMeSchema),
+    userCtrl.updateMe
   );
 
 // [GET] chi tiết & [PATCH] cập nhật & [DELETE] xóa (chỉ ADMIN)
 router
   .route("/:id")
-  .get(requireRole("ADMIN"), validationMiddleware(IdParamSchema, "params"), userCtrl.getUser)
+  .get(requireRole("admin"), validationMiddleware(IdParamSchema, "params"), userCtrl.getUser)
   .patch(
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateUserSchema),
     userCtrl.updateUser,
   )
   .delete(
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     userCtrl.deleteUser,
   );

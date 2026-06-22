@@ -223,7 +223,6 @@ const EmployerSettingsPage = () => {
         </div>
       )}
 
-      {/* Verification Sections */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-[20px] font-black text-[#0F172A]">Tiến trình xác thực doanh nghiệp</h2>

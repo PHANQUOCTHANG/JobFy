@@ -59,4 +59,12 @@ export class SavedJobRepository {
 
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
+
+  async getSavedJobIds(candidateId: string): Promise<string[]> {
+    const savedJobs = await prisma.savedJob.findMany({
+      where: { candidateId },
+      select: { jobId: true },
+    });
+    return savedJobs.map(sj => sj.jobId);
+  }
 }

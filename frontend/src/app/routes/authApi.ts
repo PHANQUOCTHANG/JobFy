@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { RegisterRequest, LoginRequest, ResetPasswordRequest } from '@/types/auth';
+import { RegisterRequest, LoginRequest, ResetPasswordRequest } from '@/../../backend/src/module/auth/auth.request';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

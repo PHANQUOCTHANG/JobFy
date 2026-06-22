@@ -27,7 +27,7 @@ const sendAuthResponse = (
   result: any,
   statusCode: number = 200,
 ) => {
-  console.log("Remember Me (Server):", result.rememberMe);
+
   const expiresAt = result.rememberMe
     ? result.refreshTokenExpiresAt
     : undefined;
@@ -76,6 +76,13 @@ export const resendVerifyAccountOtp = asyncHandler(async (req: Request, res: Res
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const result = await authService.login(req.body);
 
+  sendAuthResponse(res, result, 200);
+});
+
+// [POST] /auth/google-login
+export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
+  const { idToken, role } = req.body;
+  const result = await authService.googleLogin(idToken, role);
   sendAuthResponse(res, result, 200);
 });
 
@@ -156,10 +163,3 @@ export const changePassword = asyncHandler(
   },
 );
 
-// POST | /api/auth/google-login | Đăng nhập/Đăng ký bằng Google
-export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
-  const { accessToken, role } = req.body;
-  if (!accessToken) throw new AppError("accessToken là bắt buộc", 400);
-  const result = await authService.googleLogin(accessToken, role || "candidate");
-  sendAuthResponse(res, result, 200);
-});

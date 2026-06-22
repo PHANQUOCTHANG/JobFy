@@ -4,8 +4,8 @@ import { useForm, type FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { registerEmployer, googleLoginEmployer } from '@/features/auth/types/authSlice';
-import { registerSchema, RegisterRequest } from '@/../../backend/src/module/auth/auth.request';
+import { registerEmployer, googleLoginEmployer } from '@/features/auth/slice/authSlice';
+import { employerRegisterSchema as registerSchema, EmployerRegisterInput as RegisterRequest } from '@/features/auth/schemas/auth.schema';
 import { useGoogleLogin } from '@react-oauth/google';
 import {
   Building2,
@@ -35,6 +35,7 @@ const EmployerRegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { isLoading } = useAppSelector((state) => state.auth);
 
+  // @ts-ignore
   const {
     register,
     handleSubmit,
@@ -42,6 +43,7 @@ const EmployerRegisterPage: React.FC = () => {
     setValue,
     formState: { errors },
   } = useForm<RegisterRequest>({
+    // @ts-ignore
     resolver: zodResolver(registerSchema),
     defaultValues: {
       role: 'employer',
@@ -106,8 +108,9 @@ const EmployerRegisterPage: React.FC = () => {
       .catch((err) => console.error('Lỗi khi lấy danh sách quận huyện:', err));
   }, [selectedProvinceId, setValue]);
 
-  const onSubmit = async (data: RegisterRequest) => {
-    const resultAction = await dispatch(registerEmployer(data));
+  const onSubmit = async (data: any) => {
+    const payload = data as RegisterRequest;
+    const resultAction = await dispatch(registerEmployer(payload));
     if (registerEmployer.fulfilled.match(resultAction)) {
       toast.success('Đăng ký tài khoản doanh nghiệp thành công! Vui lòng đăng nhập.');
       navigate('/employer/login');
@@ -144,7 +147,6 @@ const EmployerRegisterPage: React.FC = () => {
       <aside className="hidden lg:flex flex-col w-[45%] relative bg-[#00307c] overflow-hidden p-12">
         <BackgroundPattern />
 
-        {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
           <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
             <Briefcase size={20} className="text-[#00307c]" strokeWidth={2.5} />
@@ -154,7 +156,6 @@ const EmployerRegisterPage: React.FC = () => {
           </span>
         </div>
 
-        {/* Hero Text */}
         <div className="relative z-10 mt-16 mb-auto">
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6">
             <span className="w-2 h-2 rounded-full bg-[#83fc8e] animate-pulse" />
@@ -175,7 +176,6 @@ const EmployerRegisterPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Feature list */}
         <div className="relative z-10 flex flex-col gap-5 mb-12">
           <FeatureBadge
             icon={Zap}
@@ -194,7 +194,6 @@ const EmployerRegisterPage: React.FC = () => {
           />
         </div>
 
-        {/* Testimonial */}
         <div className="relative z-10 bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20">
           <div className="flex gap-0.5 mb-3">
             {[...Array(5)].map((_, i) => (
@@ -221,7 +220,6 @@ const EmployerRegisterPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Footer */}
         <div className="relative z-10 flex justify-between mt-8 text-white/35 text-[11px] uppercase tracking-wider font-semibold">
           <span>© 2024 JobFy Enterprise</span>
           <span>Trusted by 500+ Companies</span>
@@ -234,9 +232,7 @@ const EmployerRegisterPage: React.FC = () => {
       <main className="w-full lg:w-[55%] flex items-start justify-center p-6 sm:p-10 overflow-y-auto">
         <div className="w-full max-w-[480px] animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-          {/* Top Nav */}
           <div className="flex items-center justify-between mb-10 mt-2">
-            {/* Mobile logo */}
             <Link to="/" className="lg:hidden flex items-center gap-2">
               <div className="w-9 h-9 bg-[#00307c] rounded-xl flex items-center justify-center">
                 <Briefcase size={17} className="text-white" strokeWidth={2.5} />
@@ -260,7 +256,6 @@ const EmployerRegisterPage: React.FC = () => {
             </Link>
           </div>
 
-          {/* Header */}
           <div className="mb-8">
             <h2
               className="font-black text-[#0F172A] mb-2"
@@ -287,7 +282,6 @@ const EmployerRegisterPage: React.FC = () => {
               {...register('fullName')}
             />
 
-            {/* Company Name */}
             <InputField
               icon={Building2}
               label="Tên công ty"
@@ -329,7 +323,6 @@ const EmployerRegisterPage: React.FC = () => {
               {...register('email')}
             />
 
-            {/* Phone */}
             <InputField
               icon={Phone}
               label="Số điện thoại"
@@ -340,7 +333,6 @@ const EmployerRegisterPage: React.FC = () => {
               {...register('phone')}
             />
 
-            {/* Password row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <InputField
@@ -396,7 +388,6 @@ const EmployerRegisterPage: React.FC = () => {
               />
             </div>
 
-            {/* Terms */}
             <div className="flex items-start gap-3 py-1">
               <input
                 id="terms"
@@ -425,7 +416,6 @@ const EmployerRegisterPage: React.FC = () => {
               </label>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
@@ -445,7 +435,6 @@ const EmployerRegisterPage: React.FC = () => {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-[#E2E8F0]" />
             <span className="text-[12px] font-bold text-[#94A3B8] uppercase tracking-wider">
@@ -454,7 +443,6 @@ const EmployerRegisterPage: React.FC = () => {
             <div className="flex-1 h-px bg-[#E2E8F0]" />
           </div>
 
-          {/* Google Sign In */}
           <button
             type="button"
             onClick={() => loginWithGoogle()}
@@ -469,7 +457,6 @@ const EmployerRegisterPage: React.FC = () => {
             <span>Đăng ký với Google</span>
           </button>
 
-          {/* Trust badges */}
           <div className="flex items-center justify-center gap-6 mt-8 pt-6 border-t border-[#F1F5F9]">
             {[
               { icon: Shield, label: 'Bảo mật SSL' },
@@ -483,7 +470,6 @@ const EmployerRegisterPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Footer */}
           <p className="text-center text-[14px] text-[#64748B] mt-6">
             Đã có tài khoản?{' '}
             <Link

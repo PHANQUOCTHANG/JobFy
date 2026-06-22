@@ -1,6 +1,5 @@
 import React from 'react';
 import { Company } from '../types';
-import { Badge } from '@/components/ui/badge';
 import { Building2, Globe, MapPin, Users, CheckCircle2, Star } from 'lucide-react';
 
 interface CompanyHeaderProps {
@@ -10,7 +9,6 @@ interface CompanyHeaderProps {
 export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ company }) => {
   return (
     <div className="bg-card rounded-2xl border border-border/40 shadow-sm overflow-hidden mb-8 relative">
-      {/* Cover Image */}
       <div className="h-48 md:h-[320px] w-full bg-muted relative overflow-hidden">
         {company.coverUrl ? (
           <img src={company.coverUrl} alt="Cover" className="w-full h-full object-cover" />
@@ -24,7 +22,6 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ company }) => {
 
       <div className="px-6 md:px-10 pb-10">
         <div className="flex flex-col md:flex-row gap-8 relative -mt-16 md:-mt-24">
-          {/* Logo */}
           <div className="w-32 h-32 md:w-[180px] md:h-[180px] rounded-[2rem] bg-card p-2.5 border-[6px] border-card shadow-brand-lg flex-shrink-0 relative z-10 overflow-hidden group">
             {company.logoUrl ? (
               <img src={company.logoUrl} alt={`${company.name} logo`} className="w-full h-full object-contain bg-white rounded-[1.25rem] transition-transform duration-500 group-hover:scale-105" />
@@ -35,7 +32,6 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ company }) => {
             )}
           </div>
 
-          {/* Info */}
           <div className="flex-grow pt-2 md:pt-28">
             <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6">
               <div>

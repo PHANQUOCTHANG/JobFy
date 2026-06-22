@@ -8,3 +8,4 @@ export * from "./candidates";
 export * from "./jobs";
 export * from "./applications";
 export * from "./cv";
+export * from "./profile";

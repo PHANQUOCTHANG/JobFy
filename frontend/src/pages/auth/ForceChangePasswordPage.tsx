@@ -6,19 +6,19 @@ import { useForceChangePassword } from "@/features/auth/hooks/useForceChangePass
 
 const BackgroundPattern = () => (
   <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-    {/* Grid */}
     <div className="absolute inset-0" style={{
       backgroundImage: "linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)",
       backgroundSize: "64px 64px",
     }} />
-    {/* Glows */}
     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#4F46E5]/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3" />
     <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#F59E0B]/10 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4" />
   </div>
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Button = ({ children, className, isLoading, variant = "primary", ...props }: any) => {
   const base = "relative group w-full h-12 rounded-xl font-bold text-[14.5px] transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const variants: any = {
     primary: "bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-lg shadow-[#4F46E5]/20",
     outline: "bg-white border border-[#E2E8F0] hover:border-[#0F172A] text-[#0F172A]",
@@ -31,6 +31,7 @@ const Button = ({ children, className, isLoading, variant = "primary", ...props 
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const InputField = React.forwardRef<HTMLInputElement, any>(
   ({ icon: Icon, className, error, ...props }, ref) => (
     <div className="relative group w-full">
@@ -61,7 +62,6 @@ export const ForceChangePasswordPage = () => {
 
   return (
     <div className="min-h-screen w-full flex bg-white text-slate-900" style={{ fontFamily: "'Manrope', sans-serif" }}>
-      {/* LEFT COLUMN: Visuals */}
       <div className="hidden lg:flex w-[45%] relative flex-col justify-between p-12 bg-slate-50 border-r border-slate-200 text-slate-900 overflow-hidden">
         <BackgroundPattern />
         
@@ -104,7 +104,6 @@ export const ForceChangePasswordPage = () => {
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Form */}
       <div className="w-full lg:w-[55%] flex flex-col items-center justify-center p-6 sm:p-12 relative">
         <Link to="/" className="absolute top-8 left-8 lg:hidden flex items-center gap-2 text-slate-900">
           <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">

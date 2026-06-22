@@ -20,12 +20,10 @@ let failedQueue: RetryQueueItem[] = [];
 let currentAccessToken: string | null = null;
 let store: Store | null = null; // Lưu biến Store ở đây
 
-// ============================================================================
 // 1. INJECT STORE (Cách phá vòng lặp dependency chuẩn nhất)
-// ============================================================================
 export const injectStore = (_store: Store) => {
   store = _store;
-};
+};  
 
 // Hàm update token từ bên ngoài (được gọi bởi store.subscribe)
 export const setGlobalAccessToken = (token: string | null) => {
@@ -58,9 +56,7 @@ const refreshApi = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// ============================================================================
 // REQUEST INTERCEPTOR
-// ============================================================================
 api.interceptors.request.use(
   (config) => {
     // Luôn ưu tiên token từ biến cục bộ (nhanh nhất)
@@ -72,9 +68,8 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// ============================================================================
 // RESPONSE INTERCEPTOR
-// =========================================  ===================================
+//  ===================================
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -97,10 +92,14 @@ api.interceptors.response.use(
 
     if (!originalRequest) return Promise.reject(error);
 
-    const { status, data } = error.response as any;
+    if (!error.response) {
+      return Promise.reject(error);
+    }
+
+    const status = error.response?.status;
+    const data = error.response?.data as any;
     // ----------------------------------------------------------------
     // 🛑 CASE 1: TÀI KHOẢN BỊ KHÓA (BLOCK) - Ưu tiên xử lý trước
-    // ----------------------------------------------------------------
     // 🛑 XỬ LÝ KHÓA TÀI KHOẢN
     if (
       status === 403 &&

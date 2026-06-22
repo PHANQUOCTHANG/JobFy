@@ -1,34 +1,16 @@
 import { Router } from "express";
-import * as aiCtrl from "./ai.controller";
-import validationMiddleware from "@/middleware/validate.middleware";
-import { requireAuth, requireRole } from "@/middleware/auth.middleware";
-import { GenerateJDSchema, GenerateQuestionsSchema } from "./ai.request";
-import { uploadCvForAnalysis } from "@/middleware/upload.middleware";
+import * as aiController from "./ai.controller";
+import { aiRateLimiter } from "./ai.middleware";
 
 const router = Router();
 
-router.post(
-  "/generate-jd",
-  requireAuth,
-  requireRole("EMPLOYER"),
-  validationMiddleware(GenerateJDSchema),
-  aiCtrl.generateJD
-);
+// Áp dụng rate limiter cho tất cả AI routes
+router.use(aiRateLimiter);
 
-router.post(
-  "/generate-questions",
-  requireAuth,
-  requireRole("EMPLOYER"),
-  validationMiddleware(GenerateQuestionsSchema),
-  aiCtrl.generateInterviewQuestions
-);
-
-router.post(
-  "/analyze-cv",
-  requireAuth,
-  requireRole("EMPLOYER"),
-  uploadCvForAnalysis,
-  aiCtrl.analyzeCv
-);
+router.post("/cv/generate-summary", aiController.generateCvSummary);
+router.post("/cv/review", aiController.reviewCv);
+router.post("/cv/match-job", aiController.matchJob);
+router.post("/cv/suggest-skills", aiController.suggestSkills);
+router.post("/cover-letter/generate", aiController.generateCoverLetter);
 
 export default router;

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { CompanyReviewService } from "./company-review.service";
 import { sendResponse } from "@/utils/sendResponse";
-import { catchAsync } from "@/utils/catchAsync";
+import asyncHandler from "@/utils/asyncHandler";
 import { toCompanyReviewListResponse, toCompanyReviewResponse } from "./company-review.response";
 
 const reviewService = new CompanyReviewService();
 
-export const getReviews = catchAsync(async (req: Request, res: Response) => {
+export const getReviews = asyncHandler(async (req: Request, res: Response) => {
   const { page, limit, companyId } = req.query;
   const result = await reviewService.getReviews({
     page: page ? Number(page) : undefined,
@@ -26,8 +26,8 @@ export const getReviews = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const createReview = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+export const createReview = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const review = await reviewService.createReview({
@@ -37,8 +37,8 @@ export const createReview = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 201, "Review created and pending approval", toCompanyReviewResponse(review));
 });
 
-export const updateReview = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+export const updateReview = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -47,8 +47,8 @@ export const updateReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-export const deleteReview = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+export const deleteReview = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
   const role = req.user?.role;
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
 
@@ -58,7 +58,7 @@ export const deleteReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-export const approveReview = catchAsync(async (req: Request, res: Response) => {
+export const approveReview = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
   const review = await reviewService.approveReview(id as string);
   sendResponse(res, 200, "Review approved", toCompanyReviewResponse(review));
