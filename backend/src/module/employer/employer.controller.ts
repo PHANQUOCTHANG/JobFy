@@ -74,7 +74,7 @@ export class EmployerController {
       // Chuẩn hóa input để tránh lỗi copy-paste
       const trimmedOtp = otp.toString().trim();
       const email = (req.user?.email || await this.verificationService.getUserEmail(req.user!.userId)).toLowerCase().trim();
-      console.log('[EmployerController.verifyEmail] userId=', req.user!.userId, 'email=', email, 'otp=', trimmedOtp);
+
 
 
       // 1. Kiểm tra OTP qua OtpService
@@ -116,7 +116,6 @@ export class EmployerController {
   updateInfo = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Log để kiểm tra dữ liệu thực tế nhận từ Frontend
-      console.log('[EmployerController.updateInfo] Payload:', req.body);
       const validated = updateCompanyInfoSchema.parse(req.body);
       await this.verificationService.updateCompanyProfile( // requireAuth đảm bảo req.user tồn tại
         req.user!.userId,

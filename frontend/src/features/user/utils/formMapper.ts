@@ -17,10 +17,9 @@ export const mapUserToForm = (user?: IUser | null): AdminUserFormValues => {
     fullName: user.fullName || "",
     email: user.email,
     role: user.role,
-    status: user.status,
     status: user.status || "active",
     password: "", // Không bao giờ map password từ DB ngược về form
     avatarUrl: user.avatarUrl || "",
-    avatar: user.avatar || null,
+    avatar: user.avatarUrl || null,
   };
 };

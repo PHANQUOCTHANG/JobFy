@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { MessagingService } from "./messaging.service";
 import { sendResponse } from "@/utils/sendResponse";
-import { catchAsync } from "@/utils/catchAsync";
+import asyncHandler from "@/utils/asyncHandler";
 import { toConversationListResponse, toConversationResponse, toMessageListResponse, toMessageResponse } from "./messaging.response";
 
 const messagingService = new MessagingService();
 
-export const getConversations = catchAsync(async (req: Request, res: Response) => {
+export const getConversations = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   const role = req.user?.role;
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
@@ -28,7 +28,7 @@ export const getConversations = catchAsync(async (req: Request, res: Response) =
   });
 });
 
-export const createConversation = catchAsync(async (req: Request, res: Response) => {
+export const createConversation = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   const role = req.user?.role;
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
@@ -37,7 +37,7 @@ export const createConversation = catchAsync(async (req: Request, res: Response)
   sendResponse(res, 201, "Conversation ready", toConversationResponse(conversation));
 });
 
-export const getMessages = catchAsync(async (req: Request, res: Response) => {
+export const getMessages = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   const role = req.user?.role;
   if (!userId || !role) return res.status(401).json({ message: "Unauthorized" });
@@ -62,7 +62,7 @@ export const getMessages = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const sendMessage = catchAsync(async (req: Request, res: Response) => {
+export const sendMessage = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -78,7 +78,7 @@ export const sendMessage = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 201, "Message sent", toMessageResponse(message));
 });
 
-export const markAsRead = catchAsync(async (req: Request, res: Response) => {
+export const markAsRead = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -87,7 +87,7 @@ export const markAsRead = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 200, "Messages marked as read");
 });
 
-export const archiveConversation = catchAsync(async (req: Request, res: Response) => {
+export const archiveConversation = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 

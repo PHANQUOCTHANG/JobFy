@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Company } from "../types";
-import { Button } from "@/components/ui/button"; // Đảm bảo import đúng Button
 
 interface ManageCompanyFormProps {
   initialData?: Company;

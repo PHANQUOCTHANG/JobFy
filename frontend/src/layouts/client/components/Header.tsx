@@ -103,12 +103,12 @@ export function Header() {
           
           <div className="w-[1px] h-6 bg-slate-200 mx-1"></div>
           
-          <a
-            href="#"
+          <Link
+            to="/employer"
             className="text-[13.5px] font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400 px-4 py-2 rounded-xl transition-all"
           >
             Tuyển dụng
-          </a>
+          </Link>
         </div>
 
         <button

@@ -46,14 +46,14 @@ router
   .route("/:id/admin")
   .patch(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateCandidateProfileSchema),
     profileCtrl.adminUpdateProfile
   )
   .delete(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     profileCtrl.adminDeleteProfile
   );

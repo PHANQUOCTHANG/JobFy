@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { ReportService } from "./report.service";
 import { sendResponse } from "@/utils/sendResponse";
-import { catchAsync } from "@/utils/catchAsync";
+import asyncHandler from "@/utils/asyncHandler";
 import { toReportListResponse, toReportResponse } from "./report.response";
 
 const reportService = new ReportService();
 
-export const createReport = catchAsync(async (req: Request, res: Response) => {
+export const createReport = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -17,7 +17,7 @@ export const createReport = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 201, "Report submitted successfully", toReportResponse(report as any));
 });
 
-export const getReports = catchAsync(async (req: Request, res: Response) => {
+export const getReports = asyncHandler(async (req: Request, res: Response) => {
   const { page, limit, status, refType } = req.query;
   const result = await reportService.getReports({
     page: page ? Number(page) : undefined,
@@ -37,7 +37,7 @@ export const getReports = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const updateReportStatus = catchAsync(async (req: Request, res: Response) => {
+export const updateReportStatus = asyncHandler(async (req: Request, res: Response) => {
   const adminId = req.user?.userId;
   if (!adminId) return res.status(401).json({ message: "Unauthorized" });
 

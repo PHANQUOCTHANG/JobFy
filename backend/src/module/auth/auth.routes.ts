@@ -11,7 +11,6 @@ import {
 import { sendOtpSchema, verifyOtpSchema } from "@/module/auth/otp/otp.request";
 import { requireAuth } from "@/middleware/auth.middleware";
 import { authRateLimiter, otpRateLimiter } from "@/middleware/rateLimiter.middleware";
-import { RateLimitRequestHandler } from "express-rate-limit";
 
 const router = Router();
 
@@ -91,8 +90,4 @@ router.post(
 
 // GET | /api/auth/me | Lấy thông tin user hiện tại
 router.get("/me", requireAuth, authCtrl.getMe);
-
-// POST | /api/auth/google-login | Đăng nhập/Đăng ký bằng Google
-router.post("/google-login", authRateLimiter, authCtrl.googleLogin);
-
 export default router;

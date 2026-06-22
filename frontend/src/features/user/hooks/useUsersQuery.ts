@@ -17,16 +17,19 @@ export const useUsersQuery = (params: UserFilterParams) => {
     staleTime: 1000 * 60,
 
     // Selector: Chỉ trích xuất những dữ liệu thực sự cần thiết cho Component (Table, Pagination)
-    select: (response) => ({
-      users: response.data || [],
-      meta: {
-        totalItems: response.meta?.total || 0,
-        totalPages: response.meta?.totalPages || 1,
-        page: response.meta?.page || 1,
-        pageSize: response.meta?.limit || 10,
-      },
-      isEmpty: !response.data || response.data.length === 0,
-    }),
+    select: (response) => {
+      const pagedData = response.data as any;
+      return {
+        users: pagedData?.data || pagedData || [],
+        meta: {
+          totalItems: pagedData?.total || 0,
+          totalPages: pagedData?.totalPages || 1,
+          page: pagedData?.page || 1,
+          pageSize: pagedData?.limit || 10,
+        },
+        isEmpty: !pagedData?.data || pagedData.data.length === 0,
+      };
+    },
   });
 };
 

@@ -22,6 +22,7 @@ const baseAdminUserSchema = z.object({
   role: z.enum(["candidate", "employer", "admin"]),
   status: z.enum(["active", "inactive", "banned", "pending_verification"]),
   avatarUrl: z.string().url("Phải là URL hợp lệ").optional().or(z.literal("")),
+  avatar: z.any().optional(),
 });
 
 // Schema khi tạo mới: Bắt buộc password

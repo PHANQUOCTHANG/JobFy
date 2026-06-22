@@ -59,11 +59,11 @@ const clientRoute = (app: Application) => {
   app.use(path + "/ai", requireAuth, aiRoute);
   app.use(path + "/cover-letters", coverLetterRoute);
 
+  // Admin Employer Module (pending/verify) - Must be mounted before generic /admin route
+  app.use(path + "/admin/employer", requireAuth, requireRole("admin"), adminEmployerRoute);
+
   // Admin Module
   app.use(path + "/admin", requireAuth, requireRole("admin"), adminRoute);
-
-  // Admin Employer Module (pending/verify)
-  app.use(path + "/admin/employer", adminEmployerRoute);
 };
 
 

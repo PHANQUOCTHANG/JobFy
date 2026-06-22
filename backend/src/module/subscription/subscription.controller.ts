@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
 import { SubscriptionService } from "./subscription.service";
 import { sendResponse } from "@/utils/sendResponse";
-import { catchAsync } from "@/utils/catchAsync";
+import asyncHandler from "@/utils/asyncHandler";
 import { toPlanListResponse, toSubscriptionResponse, toPaymentListResponse, toPaymentResponse } from "./subscription.response";
 
 const subscriptionService = new SubscriptionService();
 
-export const getPlans = catchAsync(async (req: Request, res: Response) => {
+export const getPlans = asyncHandler(async (req: Request, res: Response) => {
   const plans = await subscriptionService.getPlans();
   sendResponse(res, 200, "Success", toPlanListResponse(plans));
 });
 
-export const getActiveSubscription = catchAsync(async (req: Request, res: Response) => {
+export const getActiveSubscription = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -24,7 +24,7 @@ export const getActiveSubscription = catchAsync(async (req: Request, res: Respon
   sendResponse(res, 200, "Success", sub ? toSubscriptionResponse(sub) : null);
 });
 
-export const createSubscription = catchAsync(async (req: Request, res: Response) => {
+export const createSubscription = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -32,7 +32,7 @@ export const createSubscription = catchAsync(async (req: Request, res: Response)
   sendResponse(res, 201, "Subscription created", toSubscriptionResponse(sub));
 });
 
-export const cancelSubscription = catchAsync(async (req: Request, res: Response) => {
+export const cancelSubscription = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -42,7 +42,7 @@ export const cancelSubscription = catchAsync(async (req: Request, res: Response)
 });
 
 
-export const getPayments = catchAsync(async (req: Request, res: Response) => {
+export const getPayments = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -67,7 +67,7 @@ export const getPayments = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const createPayment = catchAsync(async (req: Request, res: Response) => {
+export const createPayment = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 

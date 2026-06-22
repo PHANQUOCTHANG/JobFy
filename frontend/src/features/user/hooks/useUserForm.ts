@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -41,7 +41,7 @@ export const useUserForm = ({
     mode: "onSubmit", // Chỉ hiện lỗi khi bấm submit
   });
 
-  const { reset, formState } = form;
+  const { reset, formState, watch, setValue } = form;
   const { dirtyFields, isSubmitting } = formState;
 
   // 3. Reset Form khi Modal mở hoặc khi đổi User đang edit

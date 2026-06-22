@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { NotificationService } from "./notification.service";
 import { sendResponse } from "@/utils/sendResponse";
 import { toNotificationListResponse, toNotificationResponse } from "./notification.response";
-import { catchAsync } from "@/utils/catchAsync";
+import asyncHandler from "@/utils/asyncHandler";
 
 const notificationService = new NotificationService();
 
-export const getUserNotifications = catchAsync(async (req: Request, res: Response) => {
+export const getUserNotifications = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -28,7 +28,7 @@ export const getUserNotifications = catchAsync(async (req: Request, res: Respons
   });
 });
 
-export const getUnreadCount = catchAsync(async (req: Request, res: Response) => {
+export const getUnreadCount = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -36,7 +36,7 @@ export const getUnreadCount = catchAsync(async (req: Request, res: Response) => 
   sendResponse(res, 200, "Success", { count });
 });
 
-export const markAsRead = catchAsync(async (req: Request, res: Response) => {
+export const markAsRead = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -46,7 +46,7 @@ export const markAsRead = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-export const markAllAsRead = catchAsync(async (req: Request, res: Response) => {
+export const markAllAsRead = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
@@ -54,7 +54,7 @@ export const markAllAsRead = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 200, `Marked ${result.count} notifications as read`);
 });
 
-export const deleteNotification = catchAsync(async (req: Request, res: Response) => {
+export const deleteNotification = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 

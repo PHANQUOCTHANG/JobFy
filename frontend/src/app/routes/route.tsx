@@ -5,6 +5,7 @@ import {
   RootLayout,
   EmployerLayout,
   CandidateLayout,
+  AdminLayout,
 } from "@/layouts";
 
 import ProtectedRoute from "@/app/routes/ProtectedRoute";
@@ -38,7 +39,9 @@ import {
   EmployerLoginPage,
   EmployerRegisterPage,
   // Admin pages
-  UsersManagementPage,
+  AdminCandidatesPage,
+  AdminReviewsPage,
+  MyCoverLettersPage,
   AdminDashboardPage,
   AdminCompaniesPage,
   AdminJobsPage,
@@ -47,13 +50,7 @@ import {
   AdminIndustriesPage,
   AdminCategoriesPage,
   AdminSkillsPage,
-  AdminCandidatesPage,
-  AdminReviewsPage,
-  MyCoverLettersPage,
 } from "@/pages";
-
-import EmployerRegisterPage from "@/pages/employer/EmployerRegisterPage";
-import EmployerLoginPage from "@/pages/employer/EmployerLoginPage";
 
 import { GuestRoute } from "@/app/routes/GuestRoute";
 import { guestAuthRoutes } from "@/features/auth/routes";
@@ -73,6 +70,11 @@ export const router = createBrowserRouter([
         element: <GuestRoute />, // <--- Bọc ở đây
         children: [
           ...guestAuthRoutes, // Login, Register
+          { path: "/employer/register", element: <EmployerRegisterPage /> },
+          { path: "/employer/login", element: <EmployerLoginPage /> },
+          { path: "/employer/forgot-password", element: <EmployerForgotPasswordPage /> },
+          { path: "/employer/verify-otp", element: <EmployerVerifyOtpPage /> },
+          { path: "/employer/reset-password", element: <EmployerResetPasswordPage /> },
         ],
       },
       // 2. NHÓM CLIENT (USER APP)
@@ -102,11 +104,11 @@ export const router = createBrowserRouter([
           },
           { path: CLIENT_PATHS.CV, element: <CvTemplatesPage /> },
           { path: "/cv/editor/:templateId", element: <CvEditorPage /> },
-          { path: "/cv/my-cvs", element: <MyCvsPage /> },
           { path: "/cv/cover-letter", element: <CoverLetterPage /> },
           {
             element: <ProtectedRoute requiredRole="candidate" />,
             children: [
+              { path: "/cv/my-cvs", element: <MyCvsPage /> },
               { path: "/my-cover-letters", element: <MyCoverLettersPage /> },
               {
                 path: CLIENT_PATHS.MY_APPLICATIONS,
@@ -155,26 +157,6 @@ export const router = createBrowserRouter([
         path: EMPLOYER_PATHS.DASHBOARD,
         element: <ProtectedRoute requiredRole="employer" />,
         children: [
-          {
-            path: EMPLOYER_PATHS.REGISTER,
-            element: <EmployerRegisterPage />
-          },
-          {
-            path: EMPLOYER_PATHS.LOGIN,
-            element: <EmployerLoginPage />
-          },
-          {
-            path: "forgot-password",
-            element: <EmployerForgotPasswordPage />
-          },
-          {
-            path: "verify-otp",
-            element: <EmployerVerifyOtpPage />
-          },
-          {
-            path: "reset-password",
-            element: <EmployerResetPasswordPage />
-          },
           {
             // element: <ProtectedRoute />,
             element: <EmployerLayout />,
@@ -230,7 +212,7 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, element: <AdminDashboardPage /> },
-              { path: ADMIN_PATHS.USERS, element: <UsersManagementPage /> },
+              // { path: ADMIN_PATHS.USERS, element: <UsersManagementPage /> },
               { path: ADMIN_PATHS.COMPANIES, element: <AdminCompaniesPage /> },
               { path: ADMIN_PATHS.CANDIDATES, element: <AdminCandidatesPage /> },
               { path: ADMIN_PATHS.JOBS, element: <AdminJobsPage /> },

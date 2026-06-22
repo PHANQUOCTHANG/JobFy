@@ -50,14 +50,14 @@ export const getProfileById = asyncHandler(async (req: Request, res: Response) =
 
 // [PATCH] /api/v1/candidate-profiles/:id/admin - Admin cập nhật profile
 export const adminUpdateProfile = asyncHandler(async (req: Request, res: Response) => {
-  const data = await candidateProfileService.updateById(req.params.id, req.body);
+  const data = await candidateProfileService.updateById(req.params.id as string, req.body);
 
   return res.status(200).json(ApiResponse.success(data, "Admin cập nhật hồ sơ thành công"));
 });
 
 // [DELETE] /api/v1/candidate-profiles/:id/admin - Admin xóa profile
 export const adminDeleteProfile = asyncHandler(async (req: Request, res: Response) => {
-  await candidateProfileService.deleteById(req.params.id);
+  await candidateProfileService.deleteById(req.params.id as string);
 
   return res.status(200).json(ApiResponse.success(null, "Admin đã xóa hồ sơ ứng viên"));
 });

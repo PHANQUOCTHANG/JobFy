@@ -26,10 +26,9 @@ export class JobService {
     if (!company) throw new AppError("Công ty không tồn tại", 404);
 
     // Authorization: User must be owner or member
-    // In real app, check company_members table. Assuming we check owner here for simplicity:
     if (company.ownerId !== userId) {
       // Need proper role check via CompanyMemberRepo, simplified here:
-      // throw new AppError("Bạn không có quyền đăng tin cho công ty này", 403);
+      throw new AppError("Bạn không có quyền đăng tin cho công ty này", 403);
     }
 
     let slug = this.generateSlug(dto.title);
@@ -131,7 +130,10 @@ export class JobService {
     const job = await this.jobRepo.findById(id);
     if (!job) throw new AppError("Không tìm thấy tin tuyển dụng", 404);
 
-    // TODO: Verify ownership
+    const company = await this.companyRepo.findById(job.companyId);
+    if (!company || company.ownerId !== userId) {
+      throw new AppError("Bạn không có quyền thao tác trên tin tuyển dụng này", 403);
+    }
 
     const updateData: any = { ...dto };
     delete updateData.skills;
@@ -188,7 +190,10 @@ export class JobService {
     const job = await this.jobRepo.findById(id);
     if (!job) throw new AppError("Không tìm thấy tin tuyển dụng", 404);
 
-    // TODO: Verify ownership
+    const company = await this.companyRepo.findById(job.companyId);
+    if (!company || company.ownerId !== userId) {
+      throw new AppError("Bạn không có quyền thao tác trên tin tuyển dụng này", 403);
+    }
 
     await this.jobRepo.deleteById(id);
 

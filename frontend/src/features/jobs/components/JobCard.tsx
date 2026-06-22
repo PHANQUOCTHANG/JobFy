@@ -77,7 +77,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
   const { mutate: saveJob } = useSaveJob();
   const { mutate: unsaveJob } = useUnsaveJob();
 
-  const isSaved = savedIds.includes(job.id);
+  const isActuallySaved = savedIds.includes(job.id) || isSaved;
 
   const handleToggleSave = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -86,7 +86,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
       toast.info('Vui lòng đăng nhập với tư cách ứng viên để lưu công việc');
       return;
     }
-    if (isSaved) {
+    if (isActuallySaved) {
       unsaveJob(job.id, {
         onSuccess: () => toast.success('Đã bỏ lưu công việc'),
       });
@@ -160,10 +160,10 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
               }}
               className={cn(
                 "w-7 h-7 rounded-full flex items-center justify-center transition-colors flex-shrink-0",
-                isSaved ? "bg-indigo-600 text-white" : "border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+                isActuallySaved ? "bg-indigo-600 text-white" : "border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
               )}
             >
-              <Heart size={14} className={isSaved ? "fill-white" : ""} />
+              <Heart size={14} className={isActuallySaved ? "fill-white" : ""} />
             </button>
           </div>
         </Link>

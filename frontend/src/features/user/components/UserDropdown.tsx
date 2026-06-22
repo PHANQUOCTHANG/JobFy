@@ -3,10 +3,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitialsTextAvartar } from "@/utils/genTextAvartar";
-import { Briefcase, FileText, Settings, User as UserIcon, Award, LogOut, ChevronDown } from "lucide-react";
+import { Briefcase, FileText, Settings, User as UserIcon, Award, LogOut, ChevronDown, ChartColumn } from "lucide-react";
 import React, { useState, useRef } from "react";
 import {
   Accordion,
@@ -241,8 +244,20 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
                   <div className="relative text-slate-600">
                     <Award className="size-[20px]" strokeWidth={2} />
                   </div>
-                  <span className="font-bold text-[14.5px]">Nâng cấp tài khoản</span>
-        </DropdownMenuLabel>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-1 pt-1">
+                <div className="flex flex-col pl-11 pr-2 space-y-0.5">
+                  <DropdownMenuItem onClick={() => navigate("/upgrade")} className="text-[13.5px] text-slate-600 hover:text-indigo-600 focus:text-indigo-600 hover:bg-transparent focus:bg-transparent cursor-pointer py-2 px-2 rounded-lg">
+                    Gói tài khoản
+                  </DropdownMenuItem>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
+        <DropdownMenuSeparator className="my-1 border-border/40" />
 
         <DropdownMenuGroup>
           <DropdownMenuItem 
@@ -253,7 +268,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
                 navigate("/profile?tab=overview");
               }
             }} 
-            className="p-2.5 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group"
+            className="p-2.5 mx-2 my-1 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group"
           >
             <div className="w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center mr-3 group-hover:bg-background group-hover:shadow-sm transition-all duration-200">
               <UserIcon className="size-4 text-foreground/70 group-hover:text-primary transition-colors" />
@@ -269,22 +284,15 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
           <>
             <DropdownMenuSeparator className="my-1 border-border/40" />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate("/admin")} className="p-2.5 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group">
+              <DropdownMenuItem onClick={() => navigate("/admin")} className="p-2.5 mx-2 my-1 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-all duration-200 group">
                 <div className="w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center mr-3 group-hover:bg-background group-hover:shadow-sm transition-all duration-200">
                   <ChartColumn className="size-4 text-foreground/70 group-hover:text-primary transition-colors" />
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-1 pt-1">
-                <div className="flex flex-col pl-11 pr-2 space-y-0.5">
-                  <DropdownMenuItem onClick={() => navigate("/upgrade")} className="text-[13.5px] text-slate-600 hover:text-indigo-600 focus:text-indigo-600 hover:bg-transparent focus:bg-transparent cursor-pointer py-2 px-2 rounded-lg">
-                    Gói tài khoản
-                  </DropdownMenuItem>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-          </Accordion>
-        </div>
+                <span className="font-semibold text-[13.5px]">Quản trị hệ thống</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        )}
 
         {/* Footer Logout */}
         <div className="p-4 pt-2">

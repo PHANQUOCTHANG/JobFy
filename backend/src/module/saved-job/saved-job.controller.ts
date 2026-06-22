@@ -4,7 +4,7 @@ import { ApiResponse } from "@/utils/apiResponse";
 import asyncHandler from "@/utils/asyncHandler";
 import { toSavedJobListResponse, toSavedJobResponse } from "./saved-job.response";
 import { sendResponse } from "@/utils/sendResponse";
-import { catchAsync } from "@/utils/catchAsync";
+
 
 const savedJobService = new SavedJobService();
 
@@ -29,7 +29,7 @@ export const getSavedJobs = asyncHandler(async (req: Request, res: Response) => 
   });
 });
 
-export const getSavedJobIds = catchAsync(async (req: Request, res: Response) => {
+export const getSavedJobIds = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 

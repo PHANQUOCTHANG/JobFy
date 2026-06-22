@@ -18,9 +18,8 @@ export interface IUser {
   facebookId: string | null;
   linkedinId: string | null;
   lastLoginAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  createdAt?: string | Date;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 // 2. UserProfile — dữ liệu đầy đủ từ /auth/me

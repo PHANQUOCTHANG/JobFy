@@ -18,6 +18,7 @@ const logRedisError = (context: string, error: any) => {
 };
 
 export const getCache = async <T>(key: string): Promise<T | null> => {
+  if (!redisClient.isReady) return null; // Fallback ngay lập tức nếu Redis không chạy
   try {
     const data = await redisClient.get(key);
     return data ? JSON.parse(data) : null;
@@ -32,6 +33,7 @@ export const setCache = async (
   value: any,
   ttl = 300
 ) => {
+  if (!redisClient.isReady) return; // Không cố lưu nếu Redis sập
   try {
     await redisClient.set(key, JSON.stringify(value), {
       EX: ttl,
@@ -42,6 +44,7 @@ export const setCache = async (
 };
 
 export const deleteCache = async (key: string) => {
+  if (!redisClient.isReady) return;
   try {
     await redisClient.del(key);
   } catch (error) {
@@ -50,6 +53,7 @@ export const deleteCache = async (key: string) => {
 };
 
 export const deleteCacheByPattern = async (pattern: string) => {
+  if (!redisClient.isReady) return;
   try {
     // Dùng SCAN thay vì KEYS để tránh blocking Redis server khi có nhiều key
     // KEYS là blocking operation — nguy hiểm khi Redis có hàng triệu key (production)

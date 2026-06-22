@@ -5,6 +5,7 @@ import {
   getJobBySlug, 
   getJobCategories,
   saveJob,
+  unsaveJob,
   getSavedJobs,
   getSavedJobIds,
   getProvinces,

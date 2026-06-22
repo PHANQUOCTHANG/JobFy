@@ -272,7 +272,7 @@ export class AuthService implements IAuthService {
 
     const isRememberMe = !!decoded.rememberMe;
 
-    console.log("Decoded Refresh Token Payload:", decoded);
+
 
     const cacheKey = `${this.CACHE_KEY_REFRESH}${refreshToken}`;
     let userId = await getCache<string>(cacheKey);

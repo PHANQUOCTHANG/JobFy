@@ -198,7 +198,10 @@ export const MyCvsPage: React.FC = () => {
                 <div className="p-4 border-b flex items-start gap-4">
                   <div className="w-16 h-20 bg-gray-100 rounded border flex-shrink-0 overflow-hidden relative">
                     {isUploaded(cv.templateId) ? (
-                      <img src="/images/pdf-icon.png" alt="" className="w-full h-full object-cover" />
+                      <div className="w-full h-full bg-red-50 flex flex-col items-center justify-center text-red-500">
+                        <FileText size={24} />
+                        <span className="text-[10px] font-bold mt-1">PDF</span>
+                      </div>
                     ) : (
                       <MiniCvPreview 
                         templateStyle={mockCvTemplates.find(t => t.id === cv.templateId)?.style || 'Hiện đại'} 
