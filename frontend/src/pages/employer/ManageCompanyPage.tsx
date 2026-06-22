@@ -49,8 +49,8 @@ const ManageCompanyPage = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link 
-            to={company?.slug ? `/companies/${company.slug}` : "#"} 
+          <Link
+            to={company?.slug ? `/companies/${company.slug}` : "#"}
             target="_blank"
             className="px-5 py-2.5 border-2 border-[#E2E8F0] rounded-xl text-[#475569] font-bold hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all shadow-sm"
           >
@@ -139,8 +139,8 @@ const ManageCompanyPage = () => {
                   <span className="text-3xl font-black tracking-tight">{completionRate}%</span>
                 </div>
                 <div className="w-full h-2.5 bg-white/20 rounded-full mb-6 overflow-hidden">
-                  <div 
-                    className="h-full bg-emerald-400 rounded-full shadow-[0_0_12px_rgba(52,211,153,0.8)] transition-all duration-1000" 
+                  <div
+                    className="h-full bg-emerald-400 rounded-full shadow-[0_0_12px_rgba(52,211,153,0.8)] transition-all duration-1000"
                     style={{ width: `${completionRate}%` }}
                   ></div>
                 </div>
