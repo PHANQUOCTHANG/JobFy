@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import api from "@/lib/axios";
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useSkills } from "@/features/companies/hooks/useManageCompany";
+import Swal from "sweetalert2";
+
 
 interface EditJobModalProps {
   isOpen: boolean;
@@ -120,12 +121,38 @@ export const EditJobModal: React.FC<EditJobModalProps> = ({ isOpen, onClose, job
         skills: selectedSkills.map(id => ({ skillId: Number(id), isRequired: true }))
       };
 
+      // IMPORTANT: show SweetAlert2 before unmounting the modal.
       await api.patch(`/jobs/${job.id}`, payload);
-      toast.success("Cập nhật tin tuyển dụng thành công");
       onSuccess();
+
+      // Bọc vào setTimeout để đảm bảo Swal mount xong trước khi modal overlay đóng
+      setTimeout(() => {
+        void Swal.fire({
+          title: "Thành công!",
+          text: "Cập nhật tin tuyển dụng thành công",
+          icon: "success",
+          confirmButtonColor: "#00307c",
+          timer: 1500,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          backdrop: true,
+          customClass: {
+            container: "z-[100000]",
+            popup: "z-[100001]",
+          },
+          position: "center",
+        });
+      }, 0);
+
       onClose();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Có lỗi xảy ra khi cập nhật");
+      // Ensure SweetAlert2 renders even if modal state changes
+      await Swal.fire({
+        title: "Lỗi!",
+        text: error?.response?.data?.message || "Có lỗi xảy ra khi cập nhật",
+        icon: "error",
+        confirmButtonColor: "#00307c",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -133,6 +160,8 @@ export const EditJobModal: React.FC<EditJobModalProps> = ({ isOpen, onClose, job
 
   if (!isOpen || !job) return null;
 
+  // SweetAlert2 mặc định dùng portal riêng, nhưng nếu modal overlay của EditJobModal có z-index cao
+  // thì popup có thể bị che. Đẩy z-index của SweetAlert2 lên cao hơn bằng customClass.
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0F172A]/60 backdrop-blur-md p-4 sm:p-6 animate-fade-in">
       <div className="bg-white rounded-[24px] w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]">
