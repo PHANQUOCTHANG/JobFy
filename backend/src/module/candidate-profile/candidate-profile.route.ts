@@ -34,6 +34,15 @@ router
 // APIs công khai (lấy danh sách và chi tiết hồ sơ)
 router.route("/").get(profileCtrl.getProfiles);
 
+// APIs dành riêng cho ADMIN
+router
+  .route("/admin")
+  .get(
+    requireAuth,
+    requireRole("admin"),
+    profileCtrl.adminGetProfiles
+  );
+
 router
   .route("/:id")
   .get(
@@ -41,7 +50,7 @@ router
     profileCtrl.getProfileById
   );
 
-// APIs dành riêng cho ADMIN
+
 router
   .route("/:id/admin")
   .patch(

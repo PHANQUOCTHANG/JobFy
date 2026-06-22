@@ -27,6 +27,7 @@ export class CompanyRepository implements ICompanyRepository {
     const where: Prisma.CompanyWhereInput = {
       deletedAt: null, // Chỉ lấy công ty chưa bị xóa mềm
       ...(query.isActive !== undefined && { isActive: String(query.isActive) === "true" }),
+      ...(query.isVerified !== undefined && { isVerified: query.isVerified }),
       ...(query.industryId !== undefined && { industryId: Number(query.industryId) }),
       ...(query.provinceId !== undefined && { provinceId: Number(query.provinceId) }),
       ...(query.size && { size: query.size }),

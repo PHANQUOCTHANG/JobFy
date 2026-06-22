@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   Star,
   MessageSquare,
@@ -27,12 +27,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // ─── API ─────────────────────────────────────────────────────────
 const fetchReviews = async (params: Record<string, any>) => {
-  const { data } = await axios.get("/api/v1/company-reviews", { params, withCredentials: true });
+  const { data } = await api.get("/company-reviews/admin", { params });
   return data;
 };
 
 const deleteReviewApi = (id: string) =>
-  axios.delete(`/api/v1/company-reviews/${id}`, { withCredentials: true });
+  api.delete(`/company-reviews/${id}`);
 
 // ─── Main ─────────────────────────────────────────────────────────
 export default function AdminReviewsPage() {
@@ -142,17 +142,17 @@ export default function AdminReviewsPage() {
                       <TableCell className="pl-6">
                         <div className="flex items-center gap-3">
                           <Avatar className="size-9 border shadow-sm rounded-full">
-                            <AvatarImage src={review.user?.avatarUrl || ""} className="object-cover" />
+                            <AvatarImage src={review.reviewer?.avatarUrl || ""} className="object-cover" />
                             <AvatarFallback className="font-bold bg-primary/10 text-primary">
-                              {review.user?.email ? review.user.email.charAt(0).toUpperCase() : <User className="size-4" />}
+                              {review.reviewer?.email ? review.reviewer.email.charAt(0).toUpperCase() : <User className="size-4" />}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col">
                             <span className="font-bold text-sm text-foreground">
-                              {review.user?.fullName || "Ẩn danh"}
+                              {review.reviewer?.fullName || "Ẩn danh"}
                             </span>
                             <span className="text-xs text-muted-foreground truncate max-w-[150px]">
-                              {review.user?.email || "Không rõ"}
+                              {review.reviewer?.email || "Không rõ"}
                             </span>
                           </div>
                         </div>
@@ -185,9 +185,10 @@ export default function AdminReviewsPage() {
                           <p className="text-sm font-semibold text-foreground max-w-[350px] line-clamp-1">
                             {review.title}
                           </p>
-                          <p className="text-xs text-muted-foreground mt-1 max-w-[350px] line-clamp-2">
-                            {review.content}
-                          </p>
+                          <div className="text-xs text-muted-foreground mt-1 max-w-[350px] line-clamp-2">
+                            {review.pros && <p><span className="font-semibold text-emerald-600">Ưu:</span> {review.pros}</p>}
+                            {review.cons && <p className="mt-0.5"><span className="font-semibold text-rose-600">Nhược:</span> {review.cons}</p>}
+                          </div>
                         </div>
                       </TableCell>
 

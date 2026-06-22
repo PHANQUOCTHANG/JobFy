@@ -29,7 +29,11 @@ export class CompanyReviewService {
     if (!review) throw new NotFoundError("Review not found");
     if (review.reviewerId !== reviewerId) throw new ForbiddenError("Not allowed to update this review");
 
-    return await this.repository.updateReview(id, data);
+    const updatedReview = await this.repository.updateReview(id, { ...data, isApproved: false });
+    if (review.isApproved) {
+      await this.repository.updateCompanyAvgRating(review.companyId);
+    }
+    return updatedReview;
   }
 
   async deleteReview(id: string, reviewerId: string, role: string) {

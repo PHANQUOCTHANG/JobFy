@@ -31,7 +31,15 @@ export const updateMyProfile = asyncHandler(async (req: Request, res: Response) 
 // [GET] /api/v1/candidate-profiles - Lấy danh sách profile (Công khai)
 export const getProfiles = asyncHandler(async (req: Request, res: Response) => {
   const query = normalizeCandidateProfileQuery(req.query);
-  const result = await candidateProfileService.findAll(query);
+  const result = await candidateProfileService.findAll(query, false);
+
+  return res.status(200).json(ApiResponse.paginate(result));
+});
+
+// [GET] /api/v1/candidate-profiles/admin - Lấy danh sách profile (Cho Admin)
+export const adminGetProfiles = asyncHandler(async (req: Request, res: Response) => {
+  const query = normalizeCandidateProfileQuery(req.query);
+  const result = await candidateProfileService.findAll(query, true);
 
   return res.status(200).json(ApiResponse.paginate(result));
 });

@@ -1,6 +1,7 @@
 import { ReportRepository } from "./report.repository";
 import { CreateReportPayload, UpdateReportPayload, ReportPaginationParams } from "./report.type";
-import { NotFoundError } from "@/error";
+import { NotFoundError, BadRequestError } from "@/error";
+import prisma from "@/lib/prisma";
 
 export class ReportService {
   private repository: ReportRepository;
@@ -10,7 +11,11 @@ export class ReportService {
   }
 
   async createReport(data: CreateReportPayload) {
-    // Basic validation on refId could be added here depending on refType
+    const existing = await prisma.report.findFirst({
+      where: { reporterId: data.reporterId, refType: data.refType, refId: data.refId }
+    });
+    if (existing) throw new BadRequestError("You have already reported this item");
+
     return await this.repository.createReport(data);
   }
 

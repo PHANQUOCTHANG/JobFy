@@ -9,33 +9,13 @@ const router = Router();
 
 router
   .route("/")
-  .get(jobCtrl.getJobs)
-  .post(
-    requireAuth,
-    requireRole("employer"),       // chỉ employer được đăng tin
-    requireFullyVerified,           // phải hoàn tất 4 bước xác thực
-    validationMiddleware(CreateJobSchema),
-    jobCtrl.createJob
-  );
+  .get(jobCtrl.getJobs);
 
 router
   .route("/:id")
   .get(
     validationMiddleware(z.object({ id: z.string().min(1) }), "params"),
     jobCtrl.getJob
-  )
-  .patch(
-    requireAuth,
-    requireRole("employer"),
-    validationMiddleware(IdParamSchema, "params"),
-    validationMiddleware(UpdateJobSchema),
-    jobCtrl.updateJob
-  )
-  .delete(
-    requireAuth,
-    requireRole("employer"),
-    validationMiddleware(IdParamSchema, "params"),
-    jobCtrl.deleteJob
   );
 
 // Admin-only: update any job status (moderate)

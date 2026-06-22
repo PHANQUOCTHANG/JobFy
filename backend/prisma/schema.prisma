@@ -34,7 +34,9 @@ enum GenderType {
 
 enum JobStatus {
   draft                 // Tin tuyển dụng nháp
+  pending               // Tin đang chờ duyệt
   published             // Tin đã xuất bản, đang hiển thị
+  rejected              // Tin bị từ chối
   closed                // Tin đã đóng chủ động
   expired               // Tin đã hết hạn hiển thị
   paused                // Tin tạm dừng tuyển dụng
@@ -379,6 +381,7 @@ model Company {
   totalReviews      Int                @default(0) @map("total_reviews")
   avgRating         Decimal?           @map("avg_rating") @db.Decimal(3, 2)
   isVerified        Boolean            @default(false) @map("is_verified")
+  rejectedReason    String?            @map("rejected_reason") @db.Text
   isActive          Boolean            @default(true) @map("is_active")
   createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
   updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
@@ -633,6 +636,7 @@ model Jobs {
   address           String?            @db.VarChar(500)
   isRemote          Boolean            @default(false) @map("is_remote")
   status            JobStatus          @default(draft)
+  rejectedReason    String?            @map("rejected_reason") @db.Text
   publishedAt       DateTime?          @map("published_at") @db.Timestamptz
   expiresAt         DateTime?          @map("expires_at") @db.Timestamptz
   viewCount         Int                @default(0) @map("view_count")

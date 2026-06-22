@@ -14,6 +14,7 @@ export const toReportResponse = (report: IReport) => {
     reporter: report.reporter ? {
       id: report.reporter.id,
       email: report.reporter.email,
+      fullName: (report.reporter as any).candidateProfile?.fullName,
     } : undefined,
     reviewer: report.reviewer ? {
       id: report.reviewer.id,

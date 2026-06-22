@@ -277,7 +277,7 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Lĩnh vực hoạt động <span className="text-rose-500">*</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value?.toString()} disabled={isLoadingIndustries}>
+                  <Select onValueChange={field.onChange} value={field.value ? field.value.toString() : undefined} disabled={isLoadingIndustries}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
                         <SelectValue placeholder={isLoadingIndustries ? "Đang tải..." : "Chọn lĩnh vực"} />
@@ -382,8 +382,8 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
                   <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Tỉnh / Thành phố <span className="text-rose-500">*</span></FormLabel>
                   <Select onValueChange={(value) => {
                     field.onChange(value);
-                    form.setValue("districtId", ""); // Reset district when province changes
-                  }} value={field.value?.toString()} disabled={isLoadingProvinces}>
+                    form.setValue("districtId", "" as any); // Reset district when province changes
+                  }} value={field.value ? field.value.toString() : undefined} disabled={isLoadingProvinces}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
                         <SelectValue placeholder={isLoadingProvinces ? "Đang tải..." : "Chọn Tỉnh/Thành phố"} />
@@ -407,8 +407,8 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               name="districtId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Quận / Huyện <span className="text-rose-500">*</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value?.toString()} disabled={!selectedProvinceId || isLoadingDistricts}>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Quận / Huyện (Tùy chọn)</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ? field.value.toString() : undefined} disabled={!selectedProvinceId || isLoadingDistricts}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
                         <SelectValue placeholder={!selectedProvinceId ? "Chọn Tỉnh/Thành phố trước" : isLoadingDistricts ? "Đang tải..." : "Chọn Quận/Huyện"} />

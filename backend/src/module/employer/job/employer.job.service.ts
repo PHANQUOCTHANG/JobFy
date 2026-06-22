@@ -42,8 +42,13 @@ export class EmployerJobService {
 
     const maxJobs = currentPlan ? currentPlan.plan.maxJobs : 1; // Free tier allows 1 job
     
-    if (activeJobs >= maxJobs) {
+    if ((data.status === JobStatus.published || data.status === JobStatus.pending) && activeJobs >= maxJobs) {
       throw new AppError(`Bạn đã đạt giới hạn đăng tin (${maxJobs} tin) của gói hiện tại. Vui lòng nâng cấp.`, 403);
+    }
+
+    // Option A: Strict Moderation
+    if (data.status === JobStatus.published) {
+      data.status = JobStatus.pending;
     }
 
     return this.repository.createWithRelations(company.id, userId, data);
@@ -105,6 +110,11 @@ export class EmployerJobService {
       if (activeJobs >= maxJobs) {
         throw new AppError(`Bạn đã đạt giới hạn đăng tin (${maxJobs} tin) của gói hiện tại. Không thể đăng thêm tin này.`, 403);
       }
+    }
+
+    // Option A: Strict Moderation
+    if (status === JobStatus.published) {
+      status = JobStatus.pending;
     }
 
     return this.repository.updateStatus(jobId, status);

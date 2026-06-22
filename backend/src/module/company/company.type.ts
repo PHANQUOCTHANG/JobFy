@@ -6,6 +6,7 @@ export interface CompanyQuery extends BaseQuery {
   provinceId?: number;
   size?: CompanySize;
   isActive?: boolean;
+  isVerified?: boolean;
 }
 
 export const normalizeCompanyQuery = (query: any): CompanyQuery => ({
@@ -14,4 +15,5 @@ export const normalizeCompanyQuery = (query: any): CompanyQuery => ({
   ...(query.provinceId !== undefined && { provinceId: Number(query.provinceId) }),
   ...(query.size && { size: query.size as CompanySize }),
   ...(query.isActive !== undefined && { isActive: String(query.isActive) === "true" }),
+  ...(query.isVerified !== undefined && { isVerified: String(query.isVerified) === "true" }),
 });
