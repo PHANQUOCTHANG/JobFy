@@ -25,6 +25,11 @@ export interface Company {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  industry?: {
+    id: number;
+    name: string;
+  };
+  locations?: CompanyLocation[];
 }
 
 export interface CompanyLocation {

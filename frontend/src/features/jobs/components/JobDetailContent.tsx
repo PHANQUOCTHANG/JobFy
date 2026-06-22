@@ -79,7 +79,7 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
       <Section title="Địa điểm làm việc">
         <div className="flex items-start gap-2 text-sm text-gray-700">
           <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-          <span>{job.address || 'Đang cập nhật địa điểm'}</span>
+          <span>{job.address || [job.district?.name, job.province?.name].filter(Boolean).join(", ") || 'Đang cập nhật địa điểm'}</span>
         </div>
         <div className="mt-3 w-full h-40 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden relative">
           <div
@@ -87,7 +87,7 @@ export const JobDetailContent: React.FC<JobDetailContentProps> = ({ job }) => {
             style={{ backgroundImage: 'radial-gradient(#9ca3af 1px, transparent 1px)', backgroundSize: '16px 16px' }}
           />
           <span className="text-gray-400 text-xs z-10 flex items-center gap-2">
-            <MapPin className="w-4 h-4" /> Bản đồ đang cập nhật
+            <MapPin className="w-4 h-4" /> Vị trí trên bản đồ chưa được cập nhật
           </span>
         </div>
       </Section>

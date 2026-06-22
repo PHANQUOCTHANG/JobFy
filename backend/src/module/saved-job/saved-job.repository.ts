@@ -47,7 +47,16 @@ export class SavedJobRepository {
         where,
         include: {
           job: {
-            include: { company: true }
+            include: {
+              company: {
+                select: { id: true, name: true, slug: true, logoUrl: true, provinceId: true, isVerified: true },
+              },
+              province: true,
+              district: true,
+              category: true,
+              jobSkills: { include: { skill: true } },
+              jobTags: { include: { tag: true } },
+            }
           }
         },
         orderBy: { savedAt: "desc" },

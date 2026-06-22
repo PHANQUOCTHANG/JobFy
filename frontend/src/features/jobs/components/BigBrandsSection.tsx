@@ -5,7 +5,19 @@ import { useCompanies } from '@/features/companies/hooks/useCompanies';
 
 export const BigBrandsSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState('it');
-  const { data: apiCompanies, isLoading } = useCompanies({ limit: 8, isActive: true });
+  
+  const industryIdMap: Record<string, number> = {
+    it: 1,
+    finance: 3,
+    fmcg: 2, // Map to Marketing as fallback for dummy data
+    manufacturing: 5 // Map to Sales as fallback
+  };
+
+  const { data: apiCompanies, isLoading } = useCompanies({ 
+    limit: 8, 
+    isActive: true,
+    industryId: industryIdMap[activeTab]
+  });
 
   return (
     <div className="max-w-[1140px] mx-auto px-4 mt-8">

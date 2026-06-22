@@ -318,7 +318,7 @@ export const JobDetailPage: React.FC = () => {
                   <div>
                     <div className="text-xs text-gray-500">Địa điểm</div>
                     <div className="font-bold text-gray-900 text-sm line-clamp-1 max-w-[160px]">
-                      {job.address || "Đang cập nhật"}
+                      {job.address || [job.district?.name, job.province?.name].filter(Boolean).join(", ") || "Đang cập nhật"}
                     </div>
                   </div>
                 </div>

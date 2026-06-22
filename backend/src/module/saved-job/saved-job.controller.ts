@@ -32,7 +32,7 @@ export const getSavedJobs = asyncHandler(async (req: Request, res: Response) => 
 });
 
 export const getSavedJobIds = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const result = await savedJobService.getSavedJobIds(userId);

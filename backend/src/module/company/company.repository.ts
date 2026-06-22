@@ -58,10 +58,13 @@ export class CompanyRepository implements ICompanyRepository {
     return this.prisma.company.findUnique({
       where,
       include: {
-        locations: true,
+        locations: {
+          include: { province: true, district: true }
+        },
         members: {
           include: { user: { select: { id: true, email: true, avatarUrl: true } } }
-        }
+        },
+        industry: true
       }
     });
   }

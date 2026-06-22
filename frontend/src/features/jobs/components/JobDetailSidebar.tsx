@@ -40,12 +40,20 @@ const JOB_TYPE_LABEL: Record<string, string> = {
 };
 
 const COMPANY_SIZE_LABEL: Record<string, string> = {
+  'value_1_10': '1 - 10 nhân viên',
+  'value_11_50': '11 - 50 nhân viên',
+  'value_51_200': '51 - 200 nhân viên',
+  'value_201_500': '201 - 500 nhân viên',
+  'value_501_1000': '501 - 1000 nhân viên',
+  'value_1001_5000': '1001 - 5000 nhân viên',
+  'value_5000_plus': 'Trên 5000 nhân viên',
   '1_10': '1 - 10 nhân viên',
   '11_50': '11 - 50 nhân viên',
   '51_200': '51 - 200 nhân viên',
   '201_500': '201 - 500 nhân viên',
-  '500_1000': '500 - 1000 nhân viên',
-  '1000_plus': '5000+ nhân viên',
+  '501_1000': '501 - 1000 nhân viên',
+  '1001_5000': '1001 - 5000 nhân viên',
+  '5000_plus': 'Trên 5000 nhân viên',
 };
 
 interface InfoRowProps {
@@ -120,6 +128,13 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
                 </span>
               </div>
             )}
+            {job.company.industry?.name && (
+              <div className="flex items-center gap-3 py-2.5 text-sm border-b border-gray-100">
+                <Building2 className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <span className="text-gray-500 w-20 flex-shrink-0 text-xs">Ngành nghề:</span>
+                <span className="font-medium text-gray-800 text-xs line-clamp-1">{job.company.industry.name}</span>
+              </div>
+            )}
             {job.category?.name && (
               <div className="flex items-center gap-3 py-2.5 text-sm border-b border-gray-100">
                 <Briefcase className="w-4 h-4 text-gray-400 flex-shrink-0" />
@@ -127,13 +142,15 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
                 <span className="font-medium text-gray-800 text-xs">{job.category.name}</span>
               </div>
             )}
-            {job.address && (
+            {job.address || [job.district?.name, job.province?.name].filter(Boolean).length > 0 ? (
               <div className="flex items-start gap-3 py-2.5 text-sm">
                 <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-500 w-20 flex-shrink-0 text-xs">Địa điểm:</span>
-                <span className="font-medium text-gray-800 text-xs leading-relaxed line-clamp-2">{job.address}</span>
+                <span className="font-medium text-gray-800 text-xs leading-relaxed line-clamp-2">
+                  {job.address || [job.district?.name, job.province?.name].filter(Boolean).join(', ')}
+                </span>
               </div>
-            )}
+            ) : null}
           </div>
 
           <Link
@@ -152,13 +169,8 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
         <div className="divide-y divide-gray-100">
           <InfoRow
             icon={<Briefcase className="w-4 h-4" />}
-            label="Cấp bậc"
-            value={job.experienceLevel ? (job.experienceLevel.charAt(0).toUpperCase() + job.experienceLevel.slice(1)) : 'Nhân viên'}
-          />
-          <InfoRow
-            icon={<GraduationCap className="w-4 h-4" />}
-            label="Học vấn"
-            value="Không yêu cầu"
+            label="Kinh nghiệm"
+            value={EXPERIENCE_LABEL[job.experienceLevel || ''] || 'Không yêu cầu'}
           />
           <InfoRow
             icon={<Users className="w-4 h-4" />}

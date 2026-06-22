@@ -3,10 +3,15 @@ import { Heart, UserPlus, MessageCircle, Headset } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/store/hooks';
 import { toast } from 'sonner';
+import { useSavedJobIds } from '@/features/jobs/hooks/useJobs';
 
 export const FloatingActionBar = () => {
   const navigate = useNavigate();
-  const isAuthenticated = useAppSelector(state => !!state.auth.token);
+  const { user, token } = useAppSelector(state => state.auth);
+  const isAuthenticated = !!token;
+  const isCandidate = user?.role === 'candidate';
+  
+  const { data: savedIds = [] } = useSavedJobIds(isCandidate);
 
   const handleSavedJobsClick = () => {
     if (!isAuthenticated) {
@@ -34,7 +39,7 @@ export const FloatingActionBar = () => {
       >
         <Heart className="w-5 h-5 fill-current" />
         <span className="absolute -top-1 -left-1 bg-indigo-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white shadow-sm">
-          0
+          {savedIds.length}
         </span>
         <span className="absolute right-14 opacity-0 translate-x-[10px] group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 bg-slate-800 text-white text-xs font-medium px-2.5 py-1.5 rounded-md whitespace-nowrap pointer-events-none z-10">
           Việc làm đã lưu

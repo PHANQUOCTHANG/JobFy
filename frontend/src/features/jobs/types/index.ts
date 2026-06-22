@@ -71,6 +71,8 @@ export interface Job {
   company?: Company;
   category?: JobCategory;
   jobSkills?: JobSkill[];
+  province?: { id: number; name: string };
+  district?: { id: number; name: string; provinceId: number };
 }
 export interface JobFilterParams {
   keyword?: string;
