@@ -105,9 +105,11 @@ export class JobRepository implements IJobRepository {
         orderBy,
         include: {
           company: {
-            select: { id: true, name: true, logoUrl: true, provinceId: true },
+            select: { id: true, name: true, slug: true, logoUrl: true, provinceId: true, isVerified: true },
           },
           province: true,
+          district: true,
+          category: true,
           jobSkills: { include: { skill: true } },
           jobTags: { include: { tag: true } },
         },
@@ -129,9 +131,20 @@ export class JobRepository implements IJobRepository {
           select: {
             id: true,
             name: true,
+            slug: true,
             logoUrl: true,
             size: true,
             website: true,
+            isVerified: true,
+            avgRating: true,
+            totalReviews: true,
+            industry: true,
+            locations: {
+              include: {
+                province: true,
+                district: true,
+              },
+            },
           },
         },
         category: true,

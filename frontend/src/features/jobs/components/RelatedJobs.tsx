@@ -18,7 +18,6 @@ import {
 import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Job } from "../types";
-import { mockJobs } from "../api/mockData";
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 const PRIMARY_COLOR = "#4F46E5";
@@ -101,8 +100,8 @@ const RelatedJobItem: React.FC<{ job: Job }> = ({ job }) => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium bg-slate-100 text-slate-600 px-2 py-1 rounded-md">
-                {job.address ? job.address.split(",")[0] : "Đang cập nhật"}
+              <span className="text-xs font-medium bg-slate-100 text-slate-600 px-2 py-1 rounded-md max-w-[200px] truncate">
+                {job.address || [job.district?.name, job.province?.name].filter(Boolean).join(", ") || "Đang cập nhật"}
               </span>
             </div>
           </div>
@@ -172,9 +171,9 @@ const RelatedJobItem: React.FC<{ job: Job }> = ({ job }) => {
 
         <div className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-600 mb-5 bg-slate-50 p-3 rounded-lg">
           <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-slate-400" />
+            <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0" />
             <span className="truncate max-w-[150px]">
-              {job.address || "Đang cập nhật"}
+              {job.address || [job.district?.name, job.province?.name].filter(Boolean).join(", ") || "Đang cập nhật"}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -255,11 +254,6 @@ export const RelatedJobs: React.FC<RelatedJobsProps> = ({
   // Lấy danh sách lọc bỏ công việc hiện tại
   let relatedJobs =
     jobsData?.data?.filter((job) => job.id !== currentJobId) || [];
-
-  // Nếu BE trả về rỗng (có thể do chưa có data cùng danh mục), dùng mock data để demo UI
-  if (relatedJobs.length === 0) {
-    relatedJobs = mockJobs.filter((job) => job.id !== currentJobId);
-  }
 
   relatedJobs = relatedJobs.slice(0, 5);
 

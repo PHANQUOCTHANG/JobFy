@@ -7,7 +7,13 @@ const validationMiddleware =
   async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     try {
       // Validate dữ liệu và sanitize (loại bỏ trường không cần thiết, format lại dữ liệu)
-      req[part] = await schema.parseAsync(req[part]);
+      const parsedData = await schema.parseAsync(req[part]);
+      if (part === "query") {
+        for (const key in req.query) delete req.query[key];
+        Object.assign(req.query, parsedData);
+      } else {
+        req[part] = parsedData;
+      }
       next();
     } catch (error) {
       if (error instanceof ZodError) {

@@ -144,7 +144,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
                 {salaryDisplay}
               </span>
               <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#f5f5f5] text-[#212f3f] text-[12px]">
-                {job.address ? job.address.split(',')[0] : 'Hồ Chí Minh'}
+                {job.address || [job.district?.name, job.province?.name].filter(Boolean).join(", ") || 'Toàn quốc'}
               </span>
             </div>
             
@@ -225,7 +225,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
 
                <div className="flex flex-wrap items-center gap-2">
                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#f4f5f5] text-[#212f3f] text-[13px]">
-                   {job.address ? job.address.split(',')[0] : 'Hồ Chí Minh'}
+                  <span className="truncate">{job.address || [job.district?.name, job.province?.name].filter(Boolean).join(", ") || 'Toàn quốc'}</span>
                  </span>
                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#f4f5f5] text-[#212f3f] text-[13px]">
                    {EXPERIENCE_LABEL[job.experienceLevel || ''] || 'Không yêu cầu'}
@@ -300,7 +300,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
 
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#f5f5f5] text-[#212f3f] text-[12px]">
-              {job.address ? job.address.split(',')[0] : 'Hồ Chí Minh'}
+              {job.address ? job.address.split(',')[0] : (job.province?.name || 'Toàn quốc')}
             </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#f5f5f5] text-[#212f3f] text-[12px]">
               {EXPERIENCE_LABEL[job.experienceLevel || ''] || 'Không yêu cầu'}
