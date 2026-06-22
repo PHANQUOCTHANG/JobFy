@@ -22,12 +22,14 @@ on:
 
 concurrency:
   group: deploy-frontend-${{ github.ref }}
-  cancel-in-progress: false  # Không cancel deploy đang chạy
+  cancel-in-progress: true  # Hủy deploy cũ nếu có push mới để tiết kiệm tài nguyên và tránh conflict
 
 jobs:
   deploy-vercel:
     name: 🚀 Deploy to Vercel
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Cấp quyền ghi để comment URL vào commit
 
     steps:
       - name: 📥 Checkout code
@@ -95,8 +97,13 @@ jobs:
           script: |
             const deploymentUrl = '${{ steps.deploy.outputs.deployment_url }}';
             const sha = context.sha.substring(0, 7);
-            console.log(`✅ Frontend deployed to: ${deploymentUrl}`);
-            console.log(`📝 Commit: ${sha}`);
+            
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: `## 🚀 Frontend Production Deployed!\n\n| | |\n|---|---|\n| 🌐 **URL** | [${deploymentUrl}](${deploymentUrl}) |\n| 📦 **Commit** | \`${sha}\` |\n| 🕐 **Time** | ${new Date().toUTCString()} |`
+            });
 
       - name: ✅ Deployment summary
         run: |
