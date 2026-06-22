@@ -83,17 +83,13 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
     e.preventDefault();
     e.stopPropagation();
     if (!isCandidate) {
-      toast.info('Vui lòng đăng nhập với tư cách ứng viên để lưu công việc');
+      toast.error('Vui lòng đăng nhập với tư cách ứng viên để lưu công việc');
       return;
     }
     if (isActuallySaved) {
-      unsaveJob(job.id, {
-        onSuccess: () => toast.success('Đã bỏ lưu công việc'),
-      });
+      unsaveJob(job.id);
     } else {
-      saveJob(job.id, {
-        onSuccess: () => toast.success('Đã lưu công việc'),
-      });
+      saveJob(job.id);
     }
     onSave?.(job.id);
   };
@@ -153,15 +149,12 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
             </div>
             
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onSave?.(job.id);
-              }}
+              onClick={handleToggleSave}
               className={cn(
-                "w-7 h-7 rounded-full flex items-center justify-center transition-colors flex-shrink-0",
+                "w-7 h-7 rounded-full flex items-center justify-center transition-transform active:scale-90 flex-shrink-0",
                 isActuallySaved ? "bg-indigo-600 text-white" : "border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
               )}
+              title={isActuallySaved ? "Bỏ lưu việc làm" : "Lưu việc làm"}
             >
               <Heart size={14} className={isActuallySaved ? "fill-white" : ""} />
             </button>
@@ -209,9 +202,21 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                  <span className="flex-shrink-0 text-[#4F46E5] font-bold text-[15px] whitespace-nowrap">
-                    {salaryDisplay}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="flex-shrink-0 text-[#4F46E5] font-bold text-[15px] whitespace-nowrap">
+                      {salaryDisplay}
+                    </span>
+                    <button
+                      onClick={handleToggleSave}
+                      className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center transition-transform active:scale-90 flex-shrink-0",
+                        isActuallySaved ? "bg-indigo-600 text-white shadow-sm" : "border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+                      )}
+                      title={isActuallySaved ? "Bỏ lưu việc làm" : "Lưu việc làm"}
+                    >
+                      <Heart size={15} className={isActuallySaved ? "fill-white" : ""} />
+                    </button>
+                  </div>
                </div>
                
                <p className="text-[#6f7882] text-[13px] uppercase truncate mb-3 flex items-center gap-1.5">
@@ -272,9 +277,21 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onSave, isSaved = false, 
             <h3 className="font-bold text-[16px] text-[#212f3f] leading-snug truncate group-hover:text-indigo-600 transition-colors">
               {job.title}
             </h3>
-            <span className="flex-shrink-0 text-indigo-600 font-bold text-[15px] whitespace-nowrap">
-              {salaryDisplay}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="flex-shrink-0 text-indigo-600 font-bold text-[15px] whitespace-nowrap">
+                {salaryDisplay}
+              </span>
+              <button
+                onClick={handleToggleSave}
+                className={cn(
+                  "w-7 h-7 rounded-full flex items-center justify-center transition-transform active:scale-90 flex-shrink-0",
+                  isActuallySaved ? "bg-indigo-600 text-white shadow-sm" : "border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+                )}
+                title={isActuallySaved ? "Bỏ lưu việc làm" : "Lưu việc làm"}
+              >
+                <Heart size={14} className={isActuallySaved ? "fill-white" : ""} />
+              </button>
+            </div>
           </div>
 
           <p className="text-[#6f7882] text-[13px] uppercase truncate mb-2">

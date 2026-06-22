@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { JobFilters } from './JobFilters';
 import { JobFilterParams } from '../types';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-import { mockJobs } from '../api/mockData';
 import { JobCard } from './JobCard';
 import { JobSkeletonCard } from './JobSkeletonCard';
 import { HeroBanner } from './HeroBanner';
@@ -68,7 +67,7 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
     categorySlug,
   });
 
-  const jobs = response?.data && response.data.length > 0 ? response.data : mockJobs.slice(0, 9);
+  const jobs = response?.data || [];
   const totalPages = response?.meta?.totalPages ? Math.max(response.meta.totalPages, 1) : 1;
 
   // Build quick options depending on active filter type

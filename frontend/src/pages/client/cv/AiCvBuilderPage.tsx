@@ -5,6 +5,7 @@ import { cvApi } from '@/features/cv/api/cv.api';
 import { Sparkles, ArrowRight, Loader2, Bot, FileText, CheckCircle2 } from 'lucide-react';
 import { AiLanguage } from '@/features/ai/types';
 import { toast } from 'sonner';
+import { useAppSelector } from '@/store/hooks';
 
 export const AiCvBuilderPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ export const AiCvBuilderPage: React.FC = () => {
   const [isCreatingResume, setIsCreatingResume] = useState(false);
   const [creationStep, setCreationStep] = useState<0 | 1 | 2>(0); 
   // 0: idle, 1: generating AI, 2: saving to DB
+  
+  const isAuthenticated = useAppSelector(state => !!state.auth.token);
 
   const handleGenerate = () => {
     if (!prompt.trim()) {
@@ -33,21 +36,34 @@ export const AiCvBuilderPage: React.FC = () => {
           // Gắn mặc định template là cv-1
           cvDataFromAi.templateId = 'cv-1';
           
-          const createRes = await cvApi.createResume(cvDataFromAi);
-          const newCvId = createRes.data?.data?.id;
-          
-          if (newCvId) {
-            toast.success('CV đã được tạo thành công!');
-            navigate(`/cv/editor/cv-1?id=${newCvId}`);
+          if (isAuthenticated) {
+            setCreationStep(2);
+            setIsCreatingResume(true);
+            try {
+              const createRes = await cvApi.createResume(cvDataFromAi);
+              const newCvId = createRes.data?.data?.id;
+              
+              if (newCvId) {
+                toast.success('CV đã được tạo thành công!');
+                navigate(`/cv/editor/cv-1?id=${newCvId}`);
+              } else {
+                throw new Error('Không nhận được ID từ server');
+              }
+            } catch (error) {
+              console.error('Error saving CV:', error);
+              toast.error('Đã xảy ra lỗi khi lưu CV vào hệ thống.');
+              setCreationStep(0);
+            } finally {
+              setIsCreatingResume(false);
+            }
           } else {
-            throw new Error('Không nhận được ID từ server');
+            toast.success('AI đã tạo CV thành công! Bạn có thể lưu lại sau.');
+            navigate(`/cv/editor/cv-1`, { state: { aiGeneratedCv: cvDataFromAi } });
           }
         } catch (error) {
-          console.error('Error saving CV:', error);
-          toast.error('Đã xảy ra lỗi khi lưu CV vào hệ thống.');
+          console.error('Error processing AI response:', error);
+          toast.error('Đã xảy ra lỗi khi xử lý dữ liệu.');
           setCreationStep(0);
-        } finally {
-          setIsCreatingResume(false);
         }
       },
       onError: () => {

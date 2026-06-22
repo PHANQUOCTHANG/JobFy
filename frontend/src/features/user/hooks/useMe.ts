@@ -13,6 +13,7 @@ export const useUpdateMe = () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
       // Invalidate candidate profile as well if it affects it
       queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+      toast.success("Cập nhật thông tin thành công");
     },
     onError: (err) => handleError(err, "Cập nhật thông tin thất bại"),
   });

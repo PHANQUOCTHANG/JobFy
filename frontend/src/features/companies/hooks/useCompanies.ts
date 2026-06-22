@@ -11,7 +11,7 @@ export const useCompanies = (params?: Record<string, any>) => {
 
 export const useIndustries = () => {
   return useQuery({
-    queryKey: ['industries'],
+    queryKey: ['industries-paginated'],
     queryFn: () => getIndustries(),
   });
 };

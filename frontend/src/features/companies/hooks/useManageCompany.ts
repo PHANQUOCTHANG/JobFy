@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios'; // Đảm bảo import axios hoặc instance axios của dự án
-import Swal from 'sweetalert2';
+import { toast } from 'sonner';
 
 // Cấu hình mặc định cho API (Bạn có thể điều chỉnh base URL tùy theo môi trường)
 const API_BASE_URL = 'http://localhost:5000/api/v1';
@@ -57,12 +57,7 @@ export const useUpdateMyCompany = () => {
       return data;
     },
     onSuccess: () => {
-      Swal.fire({
-        title: "Thành công!",
-        text: "Cập nhật hồ sơ công ty thành công!",
-        icon: "success",
-        confirmButtonColor: "#00307c"
-      });
+      toast.success("Cập nhật hồ sơ công ty thành công!");
       // Làm mới dữ liệu công ty
       queryClient.invalidateQueries({ queryKey: ['myCompany'] });
       // Quan trọng: Làm mới tiến trình xác thực để cập nhật trạng thái Bước 2
@@ -71,12 +66,7 @@ export const useUpdateMyCompany = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật công ty.';
-      Swal.fire({
-        title: "Lỗi!",
-        text: message,
-        icon: "error",
-        confirmButtonColor: "#00307c"
-      });
+      toast.error(message);
     },
   });
 };
@@ -84,7 +74,7 @@ export const useUpdateMyCompany = () => {
 // Hook để lấy danh sách các ngành nghề
 export const useIndustries = () => {
   return useQuery({
-    queryKey: ['industries'],
+    queryKey: ['manage-industries'],
     queryFn: async () => {
       const { data } = await axios.get(`${API_BASE_URL}/industries`);
       return data.data; // Giả sử backend trả về { status: "success", data: [...] }

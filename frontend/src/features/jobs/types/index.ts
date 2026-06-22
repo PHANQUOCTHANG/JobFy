@@ -87,4 +87,5 @@ export interface JobFilterParams {
   isRemote?: boolean;
   page?: number;
   limit?: number;
+  searchMode?: 'title' | 'company' | 'both';
 }

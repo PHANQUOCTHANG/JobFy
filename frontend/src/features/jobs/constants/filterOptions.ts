@@ -19,7 +19,7 @@ export const SALARY_QUICK_OPTIONS: QuickFilterOption[] = [
 
 export const SALARY_PARAM_MAP: Record<string, { min?: number; max?: number }> = {
   all:   { min: undefined, max: undefined },
-  lt10:  { min: undefined, max: 10_000_000 },
+  lt10:  { min: undefined, max: 9_999_999 },
   '10-15': { min: 10_000_000, max: 15_000_000 },
   '15-20': { min: 15_000_000, max: 20_000_000 },
   '20-25': { min: 20_000_000, max: 25_000_000 },

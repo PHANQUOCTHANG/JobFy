@@ -29,7 +29,7 @@ router
 router
   .route("/:id")
   .get(
-    validationMiddleware(UuidParamSchema, "params"),
+    validationMiddleware(z.object({ id: z.string().min(1) }), "params"),
     companyCtrl.getCompany
   )
   .patch(

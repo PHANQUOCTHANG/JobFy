@@ -40,6 +40,7 @@ import {
   EmployerLandingPage,
   EmployerLoginPage,
   EmployerRegisterPage,
+  GuidePage,
   // Admin pages
   AdminCandidatesPage,
   AdminReviewsPage,
@@ -118,10 +119,11 @@ export const router = createBrowserRouter([
           { path: CLIENT_PATHS.CV, element: <CvTemplatesPage /> },
           { path: "/cv/editor/:templateId", element: <CvEditorPage /> },
           { path: "/cv/cover-letter", element: <CoverLetterPage /> },
+          { path: "/cv/ai-builder", element: <AiCvBuilderPage /> },
+          { path: "/guide", element: <GuidePage /> },
           {
             element: <ProtectedRoute requiredRole="candidate" />,
             children: [
-              { path: "/cv/ai-builder", element: <AiCvBuilderPage /> },
               { path: "/cv/my-cvs", element: <MyCvsPage /> },
               { path: "/my-cover-letters", element: <MyCoverLettersPage /> },
               {

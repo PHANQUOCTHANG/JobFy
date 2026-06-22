@@ -245,14 +245,16 @@ export const CvTemplatesPage: React.FC = () => {
 
   return (
     <div className="bg-[#f4f5f5] min-h-screen pb-12" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <div className="bg-gradient-to-r from-[#4F46E5] to-[#4338CA] py-12 px-4 text-center">
-        <h1 className="text-3xl md:text-[32px] font-bold text-white mb-4">
-          Tạo CV Xin Việc Online Chuyên Nghiệp
-        </h1>
-        <p className="text-white/90 text-base mb-8 max-w-2xl mx-auto">
-          Danh sách mẫu CV xin việc chuẩn, thiết kế chuẩn phom, dễ dàng chỉnh sửa. 
-          Giúp bạn ghi điểm tuyệt đối trong mắt nhà tuyển dụng.
-        </p>
+      <div className="bg-gradient-to-r from-[#e3f2fd] via-[#e3f2fd]/80 to-[#f6f7fa] py-12 px-4 text-center">
+        <div className="max-w-[1140px] mx-auto relative z-40">
+          <h1 className="text-[28px] md:text-[32px] font-bold text-[#1e40af] mb-4 tracking-tight">
+            Tạo CV Xin Việc Online Chuyên Nghiệp
+          </h1>
+          <p className="text-slate-700 text-[16px] font-medium mb-8 max-w-2xl mx-auto">
+            Danh sách mẫu CV xin việc chuẩn, thiết kế chuẩn phom, dễ dàng chỉnh sửa. 
+            Giúp bạn ghi điểm tuyệt đối trong mắt nhà tuyển dụng.
+          </p>
+        </div>
       </div>
 
       <div className="max-w-[1140px] mx-auto px-4 mt-8">

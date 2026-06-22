@@ -718,6 +718,9 @@ model Application {
   jobId             String             @map("job_id") @db.Uuid
   candidateId       String             @map("candidate_id") @db.Uuid
   resumeId          String?            @map("resume_id") @db.Uuid
+  fullName          String?            @map("full_name") @db.VarChar(255)
+  email             String?            @db.VarChar(255)
+  phone             String?            @db.VarChar(20)
   coverLetter       String?            @map("cover_letter") @db.Text
   status            ApplicationStatus  @default(pending)
   source            String?            @db.VarChar(50)

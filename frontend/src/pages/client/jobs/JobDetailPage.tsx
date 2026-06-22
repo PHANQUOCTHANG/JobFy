@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
-import { useJob, JobDetailContent } from "@/features/jobs";
+import { useJob, JobDetailContent, useSavedJobIds, useSaveJob, useUnsaveJob } from "@/features/jobs";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   MapPin,
@@ -88,6 +88,13 @@ export const JobDetailPage: React.FC = () => {
   const { data: applicationStatus, isLoading: isLoadingStatus } =
     useCheckApplied(job?.id || "", user?.id);
 
+  const isCandidate = user?.role === 'candidate';
+  const { data: savedIds = [] } = useSavedJobIds(isCandidate);
+  const { mutate: saveJob } = useSaveJob();
+  const { mutate: unsaveJob } = useUnsaveJob();
+
+  const isActuallySaved = job ? savedIds.includes(job.id) : false;
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setIsStickyVisible(!entry.isIntersecting),
@@ -99,7 +106,7 @@ export const JobDetailPage: React.FC = () => {
 
   const handleApplyClick = () => {
     if (!user) {
-      setIsLoginAlertOpen(true);
+      toast.error('Vui lòng đăng nhập với tư cách ứng viên để ứng tuyển công việc này');
       return;
     }
     if (user.role !== 'candidate') {
@@ -107,6 +114,22 @@ export const JobDetailPage: React.FC = () => {
       return;
     }
     setIsApplyModalOpen(true);
+  };
+
+  const handleToggleSave = () => {
+    if (!user) {
+      toast.error('Vui lòng đăng nhập với tư cách ứng viên để lưu công việc');
+      return;
+    }
+    if (user.role !== 'candidate') {
+      toast.error('Chỉ ứng viên mới có thể lưu công việc.');
+      return;
+    }
+    if (isActuallySaved) {
+      unsaveJob(job!.id);
+    } else {
+      saveJob(job!.id);
+    }
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -215,7 +238,7 @@ export const JobDetailPage: React.FC = () => {
             </Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <Link to="/jobs" className="hover:text-[#4F46E5] transition-colors">
-              Tìm việc làm
+              Việc làm
             </Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-gray-800 line-clamp-1">{job.title}</span>
@@ -360,11 +383,12 @@ export const JobDetailPage: React.FC = () => {
                 </button>
 
                 <button
+                  onClick={handleToggleSave}
                   style={{ color: PRIMARY_COLOR, borderColor: PRIMARY_COLOR }}
                   className="flex items-center gap-2 font-bold px-6 py-3 rounded-md border-2 bg-white hover:bg-indigo-50 transition-colors text-sm"
                 >
-                  <Heart className="w-4 h-4" />
-                  Lưu tin
+                  <Heart className="w-4 h-4" fill={isActuallySaved ? PRIMARY_COLOR : "none"} stroke={isActuallySaved ? PRIMARY_COLOR : "currentColor"} />
+                  {isActuallySaved ? "Đã lưu" : "Lưu tin"}
                 </button>
 
                 <div className="flex items-center gap-2 ml-auto">
@@ -410,11 +434,12 @@ export const JobDetailPage: React.FC = () => {
                   {isApplied ? "Đã ứng tuyển" : "Ứng tuyển ngay"}
                 </button>
                 <button
+                  onClick={handleToggleSave}
                   style={{ color: PRIMARY_COLOR, borderColor: PRIMARY_COLOR }}
                   className="flex items-center gap-2 font-bold px-6 py-3 rounded-md border-2 bg-white hover:bg-indigo-50 transition-colors text-sm"
                 >
-                  <Heart className="w-4 h-4" />
-                  Lưu tin
+                  <Heart className="w-4 h-4" fill={isActuallySaved ? PRIMARY_COLOR : "none"} stroke={isActuallySaved ? PRIMARY_COLOR : "currentColor"} />
+                  {isActuallySaved ? "Đã lưu" : "Lưu tin"}
                 </button>
               </div>
 

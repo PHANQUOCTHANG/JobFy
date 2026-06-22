@@ -195,7 +195,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
             </AccordionItem>
 
             {/* Cài đặt email & thông báo */}
-            <AccordionItem value="email-settings" className="border-none">
+            {/* <AccordionItem value="email-settings" className="border-none">
               <AccordionTrigger className="hover:no-underline py-2.5 px-3 rounded-xl hover:bg-slate-50 transition-colors [&[data-state=open]]:bg-slate-50/50">
                 <div className="flex items-center gap-3 text-[#212f3f]">
                   <div className="relative text-slate-600">
@@ -212,7 +212,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
                   </DropdownMenuItem>
                 </div>
               </AccordionContent>
-            </AccordionItem>
+            </AccordionItem> */}
 
             {/* Cá nhân & Bảo mật */}
             <AccordionItem value="security" className="border-none">
@@ -238,12 +238,13 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
             </AccordionItem>
 
             {/* Nâng cấp tài khoản */}
-            <AccordionItem value="upgrade" className="border-none">
+            {/* <AccordionItem value="upgrade" className="border-none">
               <AccordionTrigger className="hover:no-underline py-2.5 px-3 rounded-xl hover:bg-slate-50 transition-colors [&[data-state=open]]:bg-slate-50/50">
                 <div className="flex items-center gap-3 text-[#212f3f]">
                   <div className="relative text-slate-600">
                     <Award className="size-[20px]" strokeWidth={2} />
                   </div>
+                  <span className="font-bold text-[14.5px]">Nâng cấp tài khoản</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-1 pt-1">
@@ -253,7 +254,7 @@ export const UserDropdown = ({ user }: UserDropdownProps) => {
                   </DropdownMenuItem>
                 </div>
               </AccordionContent>
-            </AccordionItem>
+            </AccordionItem> */}
           </Accordion>
         </div>
 

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useCvEditor } from '@/features/cv/hooks/useCvEditor';
+import { useAppSelector } from '@/store/hooks';
 import { mockCvTemplates } from '@/features/cv/api/mockData';
 import { CvPreview } from '@/features/cv/components/CvEditor/CvPreview';
 import { InlineCvEditor } from '@/features/cv/components/CvEditor/InlineCvEditor';
@@ -27,6 +28,8 @@ export const CvEditorPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const cvId = searchParams.get('id');
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAuthenticated = useAppSelector(state => !!state.auth.token);
   const template = mockCvTemplates.find(t => t.id === templateId) || mockCvTemplates[0];
 
   const {
@@ -123,6 +126,21 @@ export const CvEditorPage: React.FC = () => {
     }
   }, [cvData.personalInfo?.settings]);
 
+  // Nhận dữ liệu CV được AI tạo nếu không có ID (Guest user)
+  useEffect(() => {
+    const aiGeneratedCv = (location.state as any)?.aiGeneratedCv;
+    if (aiGeneratedCv && isInitializing && !cvId) {
+      setCvData(prev => ({
+        ...prev,
+        ...aiGeneratedCv,
+        id: `cv_${Date.now()}`,
+        templateId: template.id
+      }));
+      // Xóa state để không lặp lại khi refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, isInitializing, cvId, template.id, setCvData]);
+
   const printRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -179,6 +197,23 @@ export const CvEditorPage: React.FC = () => {
 
   // ── Lưu CV (gọi API thật) ──
   const handleSaveCv = async () => {
+    if (!isAuthenticated) {
+      toast.error('Vui lòng đăng nhập để lưu CV.', { id: 'save-cv' });
+      // Lưu tạm vào localStorage fallback để không mất dữ liệu
+      try {
+        const STORAGE_KEY = 'jobfy_my_cvs_fallback';
+        const stored = localStorage.getItem(STORAGE_KEY);
+        let cvs = stored ? JSON.parse(stored) : [];
+        cvs = cvs.filter((c: any) => c.id !== cvData.id);
+        cvs.push(cvData);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvs));
+      } catch(e) {}
+      
+      // Chuyển hướng đến trang đăng nhập
+      navigate('/login?redirect=/cv/editor/' + template.id);
+      return;
+    }
+
     setIsSaving(true);
     try {
       toast.loading('Đang lưu CV...', { id: 'save-cv' });

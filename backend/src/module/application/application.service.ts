@@ -4,6 +4,8 @@ import { IApplicationRepository } from "./application.repository";
 import { IJobRepository } from "@/module/job/job.repository";
 import { ICandidateProfileRepository } from "@/module/candidate-profile/candidate-profile.repository";
 import { IResumeRepository } from "@/module/resume/resume.repository";
+import { ICompanyRepository } from "@/module/company/company.repository";
+import { NotificationService } from "@/module/notification/notification.service";
 import { CreateApplicationRequestDto, UpdateApplicationStatusRequestDto } from "./application.request";
 import { ApplicationResponseDto } from "./application.response";
 
@@ -12,7 +14,9 @@ export class ApplicationService {
     private readonly appRepo: IApplicationRepository,
     private readonly jobRepo: IJobRepository,
     private readonly candidateProfileRepo: ICandidateProfileRepository,
-    private readonly resumeRepo: IResumeRepository
+    private readonly resumeRepo: IResumeRepository,
+    private readonly companyRepo: ICompanyRepository,
+    private readonly notificationService: NotificationService
   ) { }
 
   async apply(userId: string, dto: CreateApplicationRequestDto): Promise<ApplicationResponseDto> {
@@ -30,7 +34,18 @@ export class ApplicationService {
         ...(dto.resumeId && { resume: { connect: { id: dto.resumeId } } }),
         coverLetter: dto.coverLetter,
         source: dto.source,
+        fullName: candidate.fullName,
+        email: (candidate as any).user?.email || null,
+        phone: (candidate as any).user?.phone || null,
       });
+
+      this.notificationService.createNotification({
+        userId: job.postedBy,
+        type: "system",
+        title: "Có ứng viên mới",
+        body: `Ứng viên ${candidate.fullName} vừa ứng tuyển vị trí ${job.title}`,
+        data: { link: `/employer/applications` },
+      }).catch(console.error);
 
       return ApplicationResponseDto.from(application);
     } catch (error: any) {
@@ -63,7 +78,18 @@ export class ApplicationService {
         resume: { connect: { id: resume.id } },
         coverLetter: dto.coverLetter,
         source: "upload",
+        fullName: dto.fullName || candidate.fullName,
+        email: dto.email || (candidate as any).user?.email || null,
+        phone: dto.phone || (candidate as any).user?.phone || null,
       });
+
+      this.notificationService.createNotification({
+        userId: job.postedBy,
+        type: "system",
+        title: "Có ứng viên mới",
+        body: `Ứng viên ${candidate.fullName} vừa ứng tuyển vị trí ${job.title}`,
+        data: { link: `/employer/applications` },
+      }).catch(console.error);
 
       return ApplicationResponseDto.from(application);
     } catch (error: any) {
@@ -84,17 +110,35 @@ export class ApplicationService {
   }
 
   async updateStatus(id: string, userId: string, dto: UpdateApplicationStatusRequestDto): Promise<ApplicationResponseDto> {
-    const app = await this.appRepo.findById(id);
+    const app: any = await this.appRepo.findById(id);
     if (!app) throw new AppError("Không tìm thấy đơn ứng tuyển", 404);
-    // In real app: check if userId belongs to company that posted the job
+    
+    const company = await this.companyRepo.findById(app.job.companyId);
+    if (!company || company.ownerId !== userId) {
+      throw new AppError("Bạn không có quyền thao tác trên đơn ứng tuyển này", 403);
+    }
     
     const updated = await this.appRepo.updateStatus(id, dto.status, userId, dto.note ?? undefined);
+
+    this.notificationService.createNotification({
+      userId: app.candidate.userId,
+      type: "system",
+      title: "Cập nhật trạng thái ứng tuyển",
+      body: `Đơn ứng tuyển của bạn cho vị trí ${app.job.title} đã chuyển sang trạng thái: ${dto.status}`,
+      data: { link: `/my-applications` },
+    }).catch(console.error);
+
     return ApplicationResponseDto.from(updated);
   }
 
   async addNote(id: string, userId: string, dto: any): Promise<any> {
-    const app = await this.appRepo.findById(id);
+    const app: any = await this.appRepo.findById(id);
     if (!app) throw new AppError("Không tìm thấy đơn ứng tuyển", 404);
+
+    const company = await this.companyRepo.findById(app.job.companyId);
+    if (!company || company.ownerId !== userId) {
+      throw new AppError("Bạn không có quyền thao tác trên đơn ứng tuyển này", 403);
+    }
 
     const note = await this.appRepo.addNote({
       application: { connect: { id } },

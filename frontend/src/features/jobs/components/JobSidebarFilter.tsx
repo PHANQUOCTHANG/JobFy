@@ -19,7 +19,7 @@ const EXP_OPTIONS = [
 
 const SALARY_OPTIONS = [
   { value: "all", label: "Tất cả", min: undefined, max: undefined },
-  { value: "lt10", label: "Dưới 10 triệu", min: undefined, max: 10_000_000 },
+  { value: "lt10", label: "Dưới 10 triệu", min: undefined, max: 9_999_999 },
   { value: "10-15", label: "10 - 15 triệu", min: 10_000_000, max: 15_000_000 },
   { value: "15-20", label: "15 - 20 triệu", min: 15_000_000, max: 20_000_000 },
   { value: "20-25", label: "20 - 25 triệu", min: 20_000_000, max: 25_000_000 },
@@ -68,18 +68,18 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
   const { data: categories } = useJobCategories();
 
   const [minSalary, setMinSalary] = useState(
-    filters.salaryMin && filters.salaryMin > 0 ? String(filters.salaryMin / 1000000) : ""
+    filters.salaryMin && filters.salaryMin > 0 ? String(Math.round(filters.salaryMin / 1000000)) : ""
   );
   const [maxSalary, setMaxSalary] = useState(
-    filters.salaryMax && filters.salaryMax > 0 ? String(filters.salaryMax / 1000000) : ""
+    filters.salaryMax && filters.salaryMax > 0 ? String(Math.round(filters.salaryMax / 1000000)) : ""
   );
 
   React.useEffect(() => {
     if (!filters.salaryMin) setMinSalary("");
-    else if (filters.salaryMin > 0) setMinSalary(String(filters.salaryMin / 1000000));
+    else if (filters.salaryMin > 0) setMinSalary(String(Math.round(filters.salaryMin / 1000000)));
     
     if (!filters.salaryMax) setMaxSalary("");
-    else if (filters.salaryMax > 0) setMaxSalary(String(filters.salaryMax / 1000000));
+    else if (filters.salaryMax > 0) setMaxSalary(String(Math.round(filters.salaryMax / 1000000)));
   }, [filters.salaryMin, filters.salaryMax]);
 
   const handleApplySalary = () => {

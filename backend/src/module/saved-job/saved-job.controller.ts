@@ -18,6 +18,8 @@ export const getSavedJobs = asyncHandler(async (req: Request, res: Response) => 
     limit: limit ? Number(limit) : undefined
   });
 
+  console.log("getSavedJobs called by user", userId, "result:", result.data.length, "total:", result.total);
+
   sendResponse(res, 200, "Success", {
     data: toSavedJobListResponse(result.data),
     meta: {

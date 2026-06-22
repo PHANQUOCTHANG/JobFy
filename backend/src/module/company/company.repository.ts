@@ -52,9 +52,11 @@ export class CompanyRepository implements ICompanyRepository {
     return this.prisma.company.findUnique({ where: { id, deletedAt: null } });
   }
 
-  async findByIdWithRelations(id: string): Promise<any | null> {
+  async findByIdWithRelations(idOrSlug: string): Promise<any | null> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    const where = isUuid ? { id: idOrSlug, deletedAt: null } : { slug: idOrSlug, deletedAt: null };
     return this.prisma.company.findUnique({
-      where: { id, deletedAt: null },
+      where,
       include: {
         locations: true,
         members: {

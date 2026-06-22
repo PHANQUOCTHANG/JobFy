@@ -57,22 +57,18 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({
             <InnerProviders>{children}</InnerProviders>
 
             <Toaster
+              closeButton
               position="top-center" // Hiển thị ở trên cùng giữa màn hình (rất mượt cho Mobile)
               expand={true} // Xếp chồng các thông báo lên nhau dạng thẻ
               offset={24} // Khoảng cách an toàn với cạnh màn hình
               toastOptions={{
-                // Sử dụng Tailwind classNames để can thiệp sâu vào UI của Sonner
                 classNames: {
                   toast:
-                    "group flex items-center gap-3 bg-background/85 backdrop-blur-2xl border border-border/50 text-foreground shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] rounded-[20px] p-4 font-sans w-full max-w-[400px]",
-                  title: "text-[14px] font-bold tracking-tight text-foreground",
-                  description: "text-[13px] font-medium text-muted-foreground",
-                  actionButton:
-                    "bg-primary text-primary-foreground font-bold rounded-full px-5 py-2 transition-transform hover:scale-105 active:scale-95",
-                  cancelButton:
-                    "bg-muted text-foreground font-bold rounded-full px-5 py-2 hover:bg-muted/80 transition-colors",
-                  // Tự động đổi màu Icon theo trạng thái
+                    "group flex items-center gap-3 bg-background/95 backdrop-blur-2xl border border-border/50 text-foreground shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] rounded-[20px] p-4 font-sans w-full max-w-[400px]",
+                  title: "text-[14px] font-bold tracking-tight text-slate-800 dark:text-slate-200",
+                  description: "text-[13px] font-medium text-slate-600 dark:text-slate-400",
                   icon: "group-data-[type=error]:text-destructive group-data-[type=success]:text-emerald-500 group-data-[type=warning]:text-amber-500 group-data-[type=info]:text-blue-500 size-5",
+                  closeButton: "!left-auto !right-2 !top-2 !transform-none text-slate-400 hover:text-slate-800 bg-transparent hover:bg-slate-100 border-none",
                 },
               }}
             />

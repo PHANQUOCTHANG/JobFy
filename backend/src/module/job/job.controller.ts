@@ -18,9 +18,12 @@ export const getJobs = asyncHandler(async (req: Request, res: Response) => {
 
 export const getJob = asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id;
-  jobService.incrementViewCount(id as string).catch(console.error);
-  
   const data = await jobService.findById(id as string);
+  
+  if (data) {
+    jobService.incrementViewCount(data.id as string).catch(console.error);
+  }
+  
   return res.status(200).json(ApiResponse.success(data));
 });
 

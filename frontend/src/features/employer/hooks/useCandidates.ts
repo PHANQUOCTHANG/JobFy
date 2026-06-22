@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
+import { toast } from "sonner";
 
 export interface CandidateQuery {
   page?: number;
@@ -67,7 +68,12 @@ export const useUpdateCandidateStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["employer", "candidates"] });
       // Invalidate dashboard as well
       queryClient.invalidateQueries({ queryKey: ["employer", "dashboard"] });
+      toast.success("Cập nhật trạng thái ứng viên thành công");
     },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái";
+      toast.error(message);
+    }
   });
 };
 
@@ -110,7 +116,12 @@ export const useUpdateBulkCandidateStatus = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employer", "candidates"] });
       queryClient.invalidateQueries({ queryKey: ["employer", "dashboard"] });
+      toast.success("Cập nhật trạng thái hàng loạt thành công");
     },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái";
+      toast.error(message);
+    }
   });
 };
 

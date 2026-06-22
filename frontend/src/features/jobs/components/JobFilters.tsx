@@ -11,6 +11,8 @@ interface JobFiltersProps {
   initialProvinceId?: number;
   initialDistrictIds?: string;
   initialCategorySlug?: string;
+  searchMode: 'title' | 'company' | 'both';
+  onSearchModeChange: (mode: 'title' | 'company' | 'both') => void;
 }
 
 export const JobFilters: React.FC<JobFiltersProps> = ({
@@ -19,6 +21,8 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   initialProvinceId,
   initialDistrictIds,
   initialCategorySlug,
+  searchMode,
+  onSearchModeChange,
 }) => {
   const [keyword, setKeyword] = React.useState(initialKeyword ?? "");
   const [provinceId, setProvinceId] = React.useState<string>(
@@ -40,7 +44,6 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchMode, setSearchMode] = useState<'title' | 'company' | 'both'>('title');
 
   // Sync internal state when external props change (e.g. sidebar filter updates URL)
   useEffect(() => {
@@ -365,7 +368,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
         <JobSearchSuggestion
           keyword={keyword}
           searchMode={searchMode}
-          onSearchModeChange={setSearchMode}
+          onSearchModeChange={onSearchModeChange}
           onSelectSuggestion={(sug) => {
             setKeyword(sug);
             setShowSuggestions(false);

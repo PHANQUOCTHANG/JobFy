@@ -150,160 +150,191 @@ export const MyCvsPage: React.FC = () => {
   const isUploaded = (templateId: string | null) =>
     !templateId || templateId === 'uploaded';
 
+  const createdCvs = cvs.filter(cv => !isUploaded(cv.templateId));
+  const uploadedCvs = cvs.filter(cv => isUploaded(cv.templateId));
+
+  const renderCvCard = (cv: ResumeItem) => (
+    <div key={cv.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow hover:border-emerald-300">
+      <div 
+        className="p-4 border-b flex items-start gap-4 cursor-pointer hover:bg-slate-50 transition-colors"
+        onClick={() => {
+          if (isUploaded(cv.templateId)) {
+            if (cv.fileUrl) window.open(processPdfUrl(cv.fileUrl), '_blank');
+          } else {
+            navigate(`/cv/editor/${cv.templateId}?id=${cv.id}`);
+          }
+        }}
+      >
+        <div className="w-16 h-20 bg-gray-100 rounded border flex-shrink-0 overflow-hidden relative shadow-sm">
+          {isUploaded(cv.templateId) ? (
+            <div className="w-full h-full bg-red-50 flex flex-col items-center justify-center text-red-500">
+              <FileText size={24} />
+              <span className="text-[10px] font-bold mt-1">PDF</span>
+            </div>
+          ) : (
+            <MiniCvPreview 
+              templateStyle={mockCvTemplates.find(t => t.id === cv.templateId)?.style || 'Hiện đại'} 
+              color={cv.personalData?.settings?.color || mockCvTemplates.find(t => t.id === cv.templateId)?.color || '#4F46E5'}
+              scale={0.0806} 
+            />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-[#212f3f] line-clamp-1" title={cv.title || 'CV chưa đặt tên'}>
+            {cv.title || 'CV chưa đặt tên'}
+          </h3>
+          <p className="text-xs text-slate-500 mt-1">Mẫu: {getTemplateName(cv.templateId)}</p>
+          <p className="text-[11px] text-slate-400 mt-1.5">
+            Cập nhật lần cuối: {new Date(cv.updatedAt).toLocaleDateString('vi-VN', {
+              year: 'numeric', month: 'short', day: 'numeric',
+            })}
+          </p>
+        </div>
+      </div>
+
+      <div className="p-3 bg-slate-50 flex items-center justify-between mt-auto border-t border-slate-100">
+        {/* Nút Sửa */}
+        {!isUploaded(cv.templateId) ? (
+          <button
+            onClick={() => navigate(`/cv/editor/${cv.templateId}?id=${cv.id}`)}
+            className="flex items-center justify-center gap-1.5 text-slate-600 hover:text-[#4F46E5] transition-colors flex-1"
+          >
+            <Edit3 size={15} />
+            <span className="text-[13px] font-medium">Sửa</span>
+          </button>
+        ) : (
+          <div className="flex items-center justify-center gap-1.5 text-slate-300 flex-1 cursor-not-allowed" title="CV tải lên không thể chỉnh sửa">
+            <Edit3 size={15} />
+            <span className="text-[13px] font-medium">Sửa</span>
+          </div>
+        )}
+
+        <div className="w-px h-5 bg-slate-200" />
+
+        {/* Nút Tải xuống */}
+        {!isUploaded(cv.templateId) ? (
+          <button
+            onClick={() => navigate(`/cv/editor/${cv.templateId}?id=${cv.id}&download=true`)}
+            className="flex items-center justify-center gap-1.5 text-slate-600 hover:text-[#4F46E5] transition-colors flex-1"
+            title="Tải xuống PDF"
+          >
+            <Download size={15} />
+            <span className="text-[13px] font-medium">Tải xuống</span>
+          </button>
+        ) : cv.fileUrl ? (
+          <a
+            href={processPdfUrl(cv.fileUrl)}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center justify-center gap-1.5 text-slate-600 hover:text-[#4F46E5] transition-colors flex-1"
+            title="Xem/Tải file PDF gốc"
+          >
+            <Download size={15} />
+            <span className="text-[13px] font-medium">T Tải xuống</span>
+          </a>
+        ) : (
+          <div className="flex items-center justify-center gap-1.5 text-slate-300 flex-1 cursor-not-allowed">
+            <Download size={15} />
+            <span className="text-[13px] font-medium">Tải xuống</span>
+          </div>
+        )}
+
+        <div className="w-px h-5 bg-slate-200" />
+
+        {/* Nút Xóa */}
+        <button
+          onClick={() => handleDelete(cv.id)}
+          className="flex items-center justify-center gap-1.5 text-slate-600 hover:text-red-500 transition-colors flex-1"
+        >
+          <Trash2 size={15} />
+          <span className="text-[13px] font-medium">Xóa</span>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="bg-[#f4f5f5] min-h-screen py-10" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="bg-[#f4f5f5] min-h-[calc(100vh-64px)] py-10 font-sans">
       <div className="max-w-[1140px] mx-auto px-4">
 
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-[#212f3f] mb-2">CV đã tạo của tôi</h1>
-            <p className="text-gray-500">Quản lý và chỉnh sửa các CV bạn đã tạo trên hệ thống.</p>
+            <h1 className="text-[22px] font-bold text-[#212f3f] mb-1.5">Quản lý CV</h1>
+            <p className="text-[14px] text-slate-500">Quản lý và chỉnh sửa các CV bạn đã tạo hoặc tải lên trên hệ thống.</p>
           </div>
 
           <div className="flex gap-3">
             <button
               onClick={fetchCvs}
               disabled={isLoading}
-              className="p-2.5 border border-gray-200 rounded-md text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+              className="p-2.5 border border-slate-200 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors bg-white shadow-sm"
               title="Làm mới danh sách"
             >
               <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
             </button>
-
-            <label className={`cursor-pointer bg-white border border-[#4F46E5] text-[#4F46E5] hover:bg-indigo-50 px-5 py-2.5 rounded-md font-semibold flex items-center gap-2 transition-colors ${isUploading ? 'opacity-70 pointer-events-none' : ''}`}>
-              {isUploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
-              Tải CV lên
-              <input type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
-            </label>
-
-            <Link
-              to="/cv"
-              className="bg-[#4F46E5] hover:bg-[#4338CA] text-white px-5 py-2.5 rounded-md font-semibold flex items-center gap-2 transition-colors"
-            >
-              <Plus size={18} /> Tạo CV mới
-            </Link>
           </div>
         </div>
 
         {/* Loading state */}
         {isLoading ? (
-          <div className="bg-white p-16 text-center rounded-lg border border-gray-200 shadow-sm">
+          <div className="bg-white p-16 text-center rounded-xl border border-slate-200 shadow-sm">
             <Loader2 className="mx-auto text-[#4F46E5] w-10 h-10 mb-4 animate-spin" />
-            <p className="text-gray-500">Đang tải danh sách CV...</p>
-          </div>
-        ) : cvs.length === 0 ? (
-          <div className="bg-white p-16 text-center rounded-lg border border-gray-200 shadow-sm">
-            <FileText className="mx-auto text-gray-300 w-16 h-16 mb-4" />
-            <h3 className="text-xl font-bold text-[#212f3f] mb-2">Bạn chưa có CV nào</h3>
-            <p className="text-gray-500 mb-6">Hãy tạo ngay một CV ấn tượng để thu hút nhà tuyển dụng.</p>
-            <Link
-              to="/cv"
-              className="inline-block bg-[#4F46E5] hover:bg-[#4338CA] text-white px-6 py-3 rounded-full font-semibold transition-colors"
-            >
-              Tạo CV đầu tiên
-            </Link>
+            <p className="text-slate-500">Đang tải danh sách CV...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cvs.map(cv => (
-              <div key={cv.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
-                <div 
-                  className="p-4 border-b flex items-start gap-4 cursor-pointer hover:bg-slate-50 transition-colors"
-                  onClick={() => {
-                    if (isUploaded(cv.templateId)) {
-                      if (cv.fileUrl) window.open(processPdfUrl(cv.fileUrl), '_blank');
-                    } else {
-                      navigate(`/cv/editor/${cv.templateId}?id=${cv.id}`);
-                    }
-                  }}
+          <div className="space-y-6">
+            
+            {/* Created CVs Box */}
+            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-[18px] font-bold text-slate-800">CV đã tạo trên JobFy</h2>
+                <Link
+                  to="/cv"
+                  className="bg-[#4F46E5] hover:bg-[#4338CA] text-white px-5 py-2 rounded-full font-bold flex items-center gap-1.5 transition-colors text-[14px] shadow-sm shadow-[#4F46E5]/20"
                 >
-                  <div className="w-16 h-20 bg-gray-100 rounded border flex-shrink-0 overflow-hidden relative">
-                    {isUploaded(cv.templateId) ? (
-                      <div className="w-full h-full bg-red-50 flex flex-col items-center justify-center text-red-500">
-                        <FileText size={24} />
-                        <span className="text-[10px] font-bold mt-1">PDF</span>
-                      </div>
-                    ) : (
-                      <MiniCvPreview 
-                        templateStyle={mockCvTemplates.find(t => t.id === cv.templateId)?.style || 'Hiện đại'} 
-                        color={cv.personalData?.settings?.color || mockCvTemplates.find(t => t.id === cv.templateId)?.color || '#4F46E5'}
-                        scale={0.0806} 
-                      />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-[#212f3f] line-clamp-1" title={cv.title || 'CV chưa đặt tên'}>
-                      {cv.title || 'CV chưa đặt tên'}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-1">Mẫu: {getTemplateName(cv.templateId)}</p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Cập nhật: {new Date(cv.updatedAt).toLocaleDateString('vi-VN', {
-                        year: 'numeric', month: 'short', day: 'numeric',
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-gray-50 flex items-center justify-between mt-auto">
-                  {/* Nút Sửa */}
-                  {!isUploaded(cv.templateId) ? (
-                    <button
-                      onClick={() => navigate(`/cv/editor/${cv.templateId}?id=${cv.id}`)}
-                      className="flex flex-col items-center gap-1 text-gray-600 hover:text-[#4F46E5] transition-colors flex-1"
-                    >
-                      <Edit3 size={18} />
-                      <span className="text-xs font-medium">Sửa</span>
-                    </button>
-                  ) : (
-                    <div className="flex flex-col items-center gap-1 text-gray-300 flex-1 cursor-not-allowed" title="CV tải lên không thể chỉnh sửa">
-                      <Edit3 size={18} />
-                      <span className="text-xs font-medium">Sửa</span>
-                    </div>
-                  )}
-
-                  <div className="w-px h-8 bg-gray-200" />
-
-                  {/* Nút Tải xuống */}
-                  {!isUploaded(cv.templateId) ? (
-                    <button
-                      onClick={() => navigate(`/cv/editor/${cv.templateId}?id=${cv.id}&download=true`)}
-                      className="flex flex-col items-center gap-1 text-gray-600 hover:text-[#4F46E5] transition-colors flex-1"
-                      title="Tải xuống PDF"
-                    >
-                      <Download size={18} />
-                      <span className="text-xs font-medium">Tải xuống</span>
-                    </button>
-                  ) : cv.fileUrl ? (
-                    <a
-                      href={processPdfUrl(cv.fileUrl)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex flex-col items-center gap-1 text-gray-600 hover:text-[#4F46E5] transition-colors flex-1"
-                      title="Xem/Tải file PDF gốc"
-                    >
-                      <Download size={18} />
-                      <span className="text-xs font-medium">Tải xuống</span>
-                    </a>
-                  ) : (
-                    <div className="flex flex-col items-center gap-1 text-gray-300 flex-1 cursor-not-allowed">
-                      <Download size={18} />
-                      <span className="text-xs font-medium">Tải xuống</span>
-                    </div>
-                  )}
-
-                  <div className="w-px h-8 bg-gray-200" />
-
-                  {/* Nút Xóa */}
-                  <button
-                    onClick={() => handleDelete(cv.id)}
-                    className="flex flex-col items-center gap-1 text-gray-600 hover:text-red-500 transition-colors flex-1"
-                  >
-                    <Trash2 size={18} />
-                    <span className="text-xs font-medium">Xóa</span>
-                  </button>
-                </div>
+                  <Plus size={18} strokeWidth={2.5} /> Tạo CV
+                </Link>
               </div>
-            ))}
+              
+              {createdCvs.length === 0 ? (
+                <div className="py-10 text-center flex flex-col items-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                  <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-300">
+                     <FileText size={40} />
+                  </div>
+                  <p className="text-slate-400 font-medium text-[14px]">Chưa có CV nào được tạo.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {createdCvs.map(renderCvCard)}
+                </div>
+              )}
+            </div>
+
+            {/* Uploaded CVs Box */}
+            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-[18px] font-bold text-slate-800">CV đã tải lên JobFy</h2>
+                <label className={`cursor-pointer bg-[#4F46E5] hover:bg-[#4338CA] text-white px-5 py-2 rounded-full font-bold flex items-center gap-1.5 transition-colors text-[14px] shadow-sm shadow-[#4F46E5]/20 ${isUploading ? 'opacity-70 pointer-events-none' : ''}`}>
+                  {isUploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} strokeWidth={2.5} />}
+                  Tải CV lên
+                  <input type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
+                </label>
+              </div>
+              
+              {uploadedCvs.length === 0 ? (
+                <div className="py-10 text-center flex flex-col items-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                  <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-300">
+                     <Upload size={40} />
+                  </div>
+                  <p className="text-slate-400 font-medium text-[14px]">Chưa có CV nào được tải lên.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {uploadedCvs.map(renderCvCard)}
+                </div>
+              )}
+            </div>
+
           </div>
         )}
       </div>

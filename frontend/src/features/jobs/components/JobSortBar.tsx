@@ -73,7 +73,7 @@ export const JobSortBar: React.FC<JobSortBarProps> = ({
               </SelectTrigger>
               <SelectContent className="bg-white border-[#e8e8e8] text-[#212f3f] rounded-xl shadow-lg min-w-[160px] p-1">
                 <SelectItem value="latest" className="py-2.5 focus:bg-[#f4f5f5] focus:text-[#212f3f] data-[state=checked]:text-[#4F46E5] data-[state=checked]:bg-indigo-50 cursor-pointer rounded-lg">
-                  Search by AI
+                  Mới cập nhật
                 </SelectItem>
                 <SelectItem value="relevant" className="py-2.5 focus:bg-[#f4f5f5] focus:text-[#212f3f] data-[state=checked]:text-[#4F46E5] data-[state=checked]:bg-indigo-50 cursor-pointer rounded-lg">
                   Phù hợp nhất

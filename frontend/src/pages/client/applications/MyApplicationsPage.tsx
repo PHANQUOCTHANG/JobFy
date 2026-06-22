@@ -21,74 +21,12 @@ const TABS = [
   { id: 'rejected', label: 'Chưa phù hợp' },
 ];
 
-const MOCK_APPLICATIONS: JobApplication[] = [
-  {
-    id: 'mock-1',
-    jobId: 'job-1',
-    candidateId: 'cand-1',
-    resumeId: 'res-1',
-    status: 'pending',
-    appliedAt: '2026-05-27T18:15:00Z',
-    updatedAt: '2026-06-03T10:00:00Z',
-    job: {
-      id: 'job-1',
-      title: '[HCM] Thực Tập Sinh Lập Trình (Mobile, Java, .NET, ABAP,...)',
-      companyId: 'comp-1',
-      company: {
-        id: 'comp-1',
-        name: 'FPT IS',
-        logoUrl: 'https://ui-avatars.com/api/?name=FPT+IS&background=f1f5f9&color=4F46E5',
-      } as any,
-    } as any,
-  },
-  {
-    id: 'mock-2',
-    jobId: 'job-2',
-    candidateId: 'cand-1',
-    resumeId: 'res-2',
-    status: 'reviewing',
-    appliedAt: '2026-05-27T17:59:00Z',
-    updatedAt: '2026-06-03T11:00:00Z',
-    job: {
-      id: 'job-2',
-      title: '[HCM] Thực Tập Sinh Lập Trình (Mobile, Java, .NET, ABAP,...)',
-      companyId: 'comp-1',
-      company: {
-        id: 'comp-1',
-        name: 'FPT IS',
-        logoUrl: 'https://ui-avatars.com/api/?name=FPT+IS&background=f1f5f9&color=4F46E5',
-      } as any,
-    } as any,
-  },
-  {
-    id: 'mock-3',
-    jobId: 'job-3',
-    candidateId: 'cand-1',
-    resumeId: 'res-3',
-    status: 'accepted',
-    appliedAt: '2026-04-14T17:59:00Z',
-    updatedAt: '2026-04-20T10:00:00Z',
-    job: {
-      id: 'job-3',
-      title: 'Intern Full Stack',
-      companyId: 'comp-2',
-      company: {
-        id: 'comp-2',
-        name: 'XPERC LTD',
-        logoUrl: 'https://ui-avatars.com/api/?name=XPERC+LTD&background=f1f5f9&color=10B981',
-      } as any,
-    } as any,
-  }
-];
+
 
 export const MyApplicationsPage: React.FC = () => {
-  const { data: realApplications, isLoading } = useMyApplications();
+  const { data: applications = [], isLoading } = useMyApplications();
   const { user } = useAppSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState('all');
-
-  const applications = realApplications && realApplications.length > 0 
-    ? realApplications 
-    : MOCK_APPLICATIONS;
 
   const filteredApps = activeTab === 'all' 
     ? applications 
@@ -109,7 +47,7 @@ export const MyApplicationsPage: React.FC = () => {
             <h1 className="text-[20px] font-bold text-[#212f3f] mb-5">Việc làm đã ứng tuyển</h1>
             
             {/* Alert Banner */}
-            <div className="border border-emerald-400 bg-[#f0fdf4] rounded-xl p-4 flex gap-4 items-center mb-6 relative overflow-hidden">
+            {/* <div className="border border-emerald-400 bg-[#f0fdf4] rounded-xl p-4 flex gap-4 items-center mb-6 relative overflow-hidden">
               <div className="flex-1 z-10">
                 <p className="text-[#212f3f] text-[13.5px] leading-relaxed">
                   Bạn có thể nhấn nút <strong className="font-bold">"Nhắc NTD"</strong> nếu đã quá 7 ngày từ lúc ứng tuyển mà vẫn chưa được NTD phản hồi. JobFy sẽ thay bạn gửi một lời nhắn chuyên nghiệp tới NTD.
@@ -120,7 +58,7 @@ export const MyApplicationsPage: React.FC = () => {
               <div className="w-[100px] h-full absolute right-0 top-0 hidden sm:flex items-center justify-center pointer-events-none">
                  <div className="absolute right-[-20px] top-[-20px] bg-emerald-100 w-[120px] h-[120px] rounded-full blur-2xl opacity-60"></div>
               </div>
-            </div>
+            </div> */}
 
             {/* Filter Tabs */}
             <div className="flex flex-wrap gap-2 mb-6">
@@ -143,7 +81,18 @@ export const MyApplicationsPage: React.FC = () => {
             {isLoading ? (
               <div className="py-10 text-center text-slate-500">Đang tải dữ liệu...</div>
             ) : filteredApps.length === 0 ? (
-              <div className="py-10 text-center text-slate-500">Không có dữ liệu phù hợp.</div>
+              <div className="flex flex-col items-center justify-center pt-12 pb-10">
+                <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                  <FileTextIcon className="w-10 h-10 text-slate-300" strokeWidth={1.5} />
+                </div>
+                <h3 className="text-slate-600 text-lg font-medium mb-2">Bạn chưa có đơn ứng tuyển nào ở trạng thái này</h3>
+                <p className="text-slate-500 text-[14px] mb-6 text-center max-w-[400px]">Hãy tiếp tục tìm kiếm những cơ hội nghề nghiệp phù hợp với bạn và ứng tuyển nhé!</p>
+                <Link to="/jobs">
+                  <Button className="bg-[#4F46E5] hover:bg-[#4338CA] text-white px-6 h-10 rounded-full font-medium shadow-sm hover:-translate-y-0.5 transition-all">
+                    Tìm việc ngay
+                  </Button>
+                </Link>
+              </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {filteredApps.map((app) => (

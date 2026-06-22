@@ -13,6 +13,7 @@ export interface JobQuery extends BaseQuery {
   industryId?: number;
   provinceId?: number;
   districtId?: number;
+  districtIds?: string;
   jobType?: JobType;
   experienceLevel?: ExperienceLevel;
   salaryMin?: number;
@@ -20,6 +21,7 @@ export interface JobQuery extends BaseQuery {
   salaryType?: SalaryType;
   status?: JobStatus;
   isRemote?: boolean;
+  searchMode?: 'title' | 'company' | 'both';
 }
 
 export const normalizeJobQuery = (query: any): JobQuery => ({
@@ -38,6 +40,9 @@ export const normalizeJobQuery = (query: any): JobQuery => ({
   ...(query.districtId !== undefined && {
     districtId: Number(query.districtId),
   }),
+  ...(query.districtIds && {
+    districtIds: String(query.districtIds),
+  }),
   ...(query.jobType && { jobType: query.jobType as JobType }),
   ...(query.experienceLevel && {
     experienceLevel: query.experienceLevel as ExperienceLevel,
@@ -49,4 +54,5 @@ export const normalizeJobQuery = (query: any): JobQuery => ({
   ...(query.isRemote !== undefined && {
     isRemote: String(query.isRemote) === "true",
   }),
+  ...(query.searchMode && { searchMode: query.searchMode }),
 });

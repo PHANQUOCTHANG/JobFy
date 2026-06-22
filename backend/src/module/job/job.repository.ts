@@ -48,28 +48,35 @@ export class JobRepository implements IJobRepository {
       ...(query.industryId && { company: { industryId: query.industryId } }),
       ...(query.provinceId && { provinceId: query.provinceId }),
       ...(query.districtId && { districtId: query.districtId }),
+      ...(query.districtIds && {
+        districtId: { in: query.districtIds.split(',').map(Number).filter(n => !isNaN(n)) }
+      }),
       ...(query.jobType && { jobType: query.jobType }),
       ...(query.experienceLevel && { experienceLevel: query.experienceLevel }),
       ...(query.salaryType && { salaryType: query.salaryType }),
       ...(query.status && { status: query.status }),
       ...(query.isRemote !== undefined && { isRemote: query.isRemote }),
       ...(query.search && {
-        OR: [
-          {
+        OR: (() => {
+          const titleCondition = {
             title: {
               contains: getSearchPattern(query.search),
-              mode: "insensitive",
+              mode: "insensitive" as Prisma.QueryMode,
             },
-          },
-          {
+          };
+          const companyCondition = {
             company: {
               name: {
                 contains: getSearchPattern(query.search),
-                mode: "insensitive",
+                mode: "insensitive" as Prisma.QueryMode,
               },
             },
-          },
-        ],
+          };
+
+          if (query.searchMode === 'title') return [titleCondition];
+          if (query.searchMode === 'company') return [companyCondition];
+          return [titleCondition, companyCondition]; // Default 'both'
+        })(),
       }),
     };
 
@@ -80,12 +87,22 @@ export class JobRepository implements IJobRepository {
       ];
     }
 
+    let orderBy: Prisma.JobsOrderByWithRelationInput = { publishedAt: "desc" };
+    if (query.sort === "salary_desc") {
+      orderBy = { salaryMax: "desc" };
+    } else if (query.sort === "latest") {
+      orderBy = { publishedAt: "desc" };
+    } else if (query.sort === "relevant") {
+      // Basic relevance sorting could be left as newest for now, or if Prisma full-text search was used.
+      orderBy = { publishedAt: "desc" };
+    }
+
     const [data, total] = await Promise.all([
       this.prisma.jobs.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { publishedAt: "desc" },
+        orderBy,
         include: {
           company: {
             select: { id: true, name: true, logoUrl: true, provinceId: true },
@@ -101,9 +118,12 @@ export class JobRepository implements IJobRepository {
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
-  async findById(id: string): Promise<Jobs | null> {
-    return this.prisma.jobs.findUnique({
-      where: { id },
+  async findById(idOrSlug: string): Promise<Jobs | null> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    const where = isUuid ? { id: idOrSlug } : { slug: idOrSlug };
+
+    return this.prisma.jobs.findFirst({
+      where,
       include: {
         company: {
           select: {

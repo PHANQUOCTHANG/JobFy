@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { 
   getJobs, 
   getFeaturedJobs,
@@ -96,10 +97,14 @@ export const useSaveJob = () => {
       if (context?.previousIds) {
         queryClient.setQueryData(['saved-job-ids'], context.previousIds);
       }
+      toast.error('Có lỗi xảy ra khi lưu việc làm');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['saved-job-ids'] });
       queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
+    },
+    onSuccess: () => {
+      toast.success('Đã lưu việc làm thành công');
     },
   });
 };
@@ -121,17 +126,21 @@ export const useUnsaveJob = () => {
       if (context?.previousIds) {
         queryClient.setQueryData(['saved-job-ids'], context.previousIds);
       }
+      toast.error('Có lỗi xảy ra khi bỏ lưu việc làm');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['saved-job-ids'] });
       queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
+    },
+    onSuccess: () => {
+      toast.success('Đã bỏ lưu việc làm');
     },
   });
 };
 
 export const useIndustries = () => {
   return useQuery({
-    queryKey: ['industries'],
+    queryKey: ['job-industries'],
     queryFn: getIndustries,
     staleTime: 1000 * 60 * 60, // 1 hour
   });

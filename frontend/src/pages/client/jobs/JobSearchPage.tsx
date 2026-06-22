@@ -7,7 +7,6 @@ import { JobSortBar } from "@/features/jobs/components/JobSortBar";
 import { JobFilterParams } from "@/features/jobs/types";
 import { Bell, ChevronRight } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { mockJobs } from "@/features/jobs/api/mockData";
 import { JobLandingSection } from "@/features/jobs/components/JobLandingSection";
 import { TopCompaniesSection } from "@/features/jobs/components/TopCompaniesSection";
 import { TopCategoriesSection } from "@/features/jobs/components/TopCategoriesSection";
@@ -41,6 +40,8 @@ export const JobSearchPage: React.FC = () => {
   const initialPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
+  const initialSearchMode = (searchParams.get("searchMode") as "title" | "company" | "both") || "title";
+  const initialSortBy = searchParams.get("sort") || "latest";
 
   const [filters, setFilters] = useState<JobFilterParams>({
     page: initialPage,
@@ -56,9 +57,9 @@ export const JobSearchPage: React.FC = () => {
     salaryMax: initialSalaryMax,
     isRemote: initialIsRemote,
   });
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState(initialSortBy);
   const [searchMode, setSearchMode] = useState<"title" | "company" | "both">(
-    "title",
+    initialSearchMode,
   );
   const [hasSearched, setHasSearched] = useState(
       !!initialKeyword ||
@@ -86,8 +87,8 @@ export const JobSearchPage: React.FC = () => {
 
   const { data: response, isLoading } = useJobs({
     ...filters,
+    searchMode,
     sort: sortBy,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
   // eslint-disable-next-line unused-imports/no-unused-vars
   const { data: categories } = useJobCategories();
@@ -115,10 +116,12 @@ export const JobSearchPage: React.FC = () => {
       params.set("isRemote", String(filters.isRemote));
     if (filters.page && filters.page > 1)
       params.set("page", String(filters.page));
+    if (searchMode !== "title") params.set("searchMode", searchMode);
+    if (sortBy !== "latest") params.set("sort", sortBy);
 
     const queryString = params.toString();
     navigate(queryString ? `/jobs?${queryString}` : "/jobs", { replace: true });
-  }, [filters, navigate]);
+  }, [filters, searchMode, sortBy, navigate]);
 
   const handleSearch = (newFilters: Partial<JobFilterParams>) => {
     setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
@@ -140,9 +143,8 @@ export const JobSearchPage: React.FC = () => {
   }
 
   // Pagination and data from Backend
-  const displayJobs =
-    response?.data && response.data.length > 0 ? response.data : mockJobs;
-  const totalResults = response?.meta?.total || mockJobs.length;
+  const displayJobs = response?.data || [];
+  const totalResults = response?.meta?.total || 0;
   // Lấy tổng số trang từ backend, nếu không có data (hoặc = 0) thì set mặc định là 1
   const totalPages = response?.meta?.totalPages
     ? Math.max(response.meta.totalPages, 1)
@@ -163,6 +165,8 @@ export const JobSearchPage: React.FC = () => {
             initialProvinceId={filters.provinceId}
             initialDistrictIds={filters.districtIds}
             initialCategorySlug={filters.categorySlug}
+            searchMode={searchMode}
+            onSearchModeChange={setSearchMode}
           />
         </div>
       </div>

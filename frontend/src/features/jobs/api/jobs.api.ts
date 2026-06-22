@@ -1,6 +1,5 @@
 import api from "@/lib/axios";
 import { Job, JobCategory, JobFilterParams } from "../types";
-import { mockJobs } from "./mockData";
 
 export const getJobs = async (
   params?: JobFilterParams,
@@ -16,111 +15,27 @@ export const getJobs = async (
     delete apiParams.categoryId;
   }
 
-  try {
     const response = await api.get("/jobs", { params: apiParams });
     return {
-      data: response.data?.data || response.data,
-      meta: response.data?.meta || {},
+      data: response.data?.data || response.data || [],
+      meta: response.data?.meta || { total: 0, page: 1, limit: 10, totalPages: 1 },
     };
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  } catch (error) {
-    let filteredJobs = [...mockJobs];
-
-    if (apiParams.provinceId) {
-      filteredJobs = filteredJobs.filter(job => job.provinceId === apiParams.provinceId);
-    }
-    if (apiParams.districtIds) {
-      const selectedDistrictIds = apiParams.districtIds.split(',').map(Number);
-      filteredJobs = filteredJobs.filter(job => job.districtId && selectedDistrictIds.includes(job.districtId));
-    }
-    if (apiParams.salaryMin !== undefined) {
-      filteredJobs = filteredJobs.filter(job => job.salaryMin != null && job.salaryMin >= apiParams.salaryMin!);
-    }
-    if (apiParams.salaryMax !== undefined) {
-      filteredJobs = filteredJobs.filter(job => job.salaryMax != null && job.salaryMax <= apiParams.salaryMax!);
-    }
-    if (apiParams.experienceLevel) {
-      if (apiParams.experienceLevel === 'fresher') {
-        filteredJobs = filteredJobs.filter(job => job.experienceLevel === 'fresher');
-      } else if (apiParams.experienceLevel === 'senior') {
-        filteredJobs = filteredJobs.filter(job => job.experienceLevel === 'senior');
-      } else if (apiParams.experienceLevel === 'mid') {
-        filteredJobs = filteredJobs.filter(job => job.experienceLevel === 'mid');
-      }
-    }
-    if (apiParams.categorySlug) {
-      const slugToId: Record<string, number> = {
-        it: 1, marketing: 2, design: 3, education: 4,
-        healthcare: 5, 'customer-service': 6, sales: 7, finance: 8,
-      };
-      const targetId = slugToId[apiParams.categorySlug];
-      if (targetId) {
-        filteredJobs = filteredJobs.filter(job => job.categoryId === targetId);
-      }
-    }
-
-    return {
-      data: filteredJobs.slice(0, params?.limit || 9),
-      meta: {
-        total: filteredJobs.length,
-        page: params?.page || 1,
-        limit: params?.limit || 10,
-        totalPages: Math.ceil(filteredJobs.length / (params?.limit || 10)) || 1,
-      },
-    };
-  }
 };
-
 export const getFeaturedJobs = async (): Promise<{ data: Job[] }> => {
-  try {
-    const response = await api.get("/jobs", {
-      params: { limit: 9, status: "published" },
-    });
-    return { data: response.data?.data || response.data };
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  } catch (error) {
-    return { data: mockJobs.slice(0, 9) };
-  }
+  const response = await api.get("/jobs", {
+    params: { limit: 9, status: "published" },
+  });
+  return { data: response.data?.data || response.data || [] };
 };
 
 export const getJobBySlug = async (slug: string): Promise<Job> => {
-  try {
-    const response = await api.get(`/jobs/${slug}`);
-    return response.data?.data || response.data;
-  } catch (error) {
-    const mock = mockJobs.find((j) => j.slug === slug || j.id === slug);
-    if (mock) return mock;
-    throw error;
-  }
+  const response = await api.get(`/jobs/${slug}`);
+  return response.data?.data || response.data;
 };
 
 export const getJobCategories = async (): Promise<JobCategory[]> => {
-  try {
-    const response = await api.get("/job-categories");
-    return response.data?.data || response.data;
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  } catch (error) {
-    return [
-      { id: 1, name: "Công nghệ thông tin", slug: "it", isActive: true },
-      {
-        id: 2,
-        name: "Marketing & Truyền thông",
-        slug: "marketing",
-        isActive: true,
-      },
-      { id: 3, name: "Thiết kế & Sáng tạo", slug: "design", isActive: true },
-      { id: 4, name: "Giáo dục & Đào tạo", slug: "education", isActive: true },
-      { id: 5, name: "Chăm sóc sức khỏe", slug: "healthcare", isActive: true },
-      {
-        id: 6,
-        name: "Dịch vụ khách hàng",
-        slug: "customer-service",
-        isActive: true,
-      },
-      { id: 7, name: "Kinh doanh & Bán hàng", slug: "sales", isActive: true },
-      { id: 8, name: "Tài chính & Kế toán", slug: "finance", isActive: true },
-    ] as JobCategory[];
-  }
+  const response = await api.get("/job-categories");
+  return response.data?.data || response.data || [];
 };
 
 export const saveJob = async (jobId: string): Promise<void> => {
@@ -132,11 +47,33 @@ export const unsaveJob = async (jobId: string): Promise<void> => {
 };
 
 export const getSavedJobs = async (params?: { page?: number, limit?: number }): Promise<{ data: any[], meta: any }> => {
-  const response = await api.get('/saved-jobs', { params });
-  return {
-    data: response.data?.data || response.data,
-    meta: response.data?.meta || {},
-  };
+  try {
+    const response = await api.get('/saved-jobs', { params });
+    
+    // Fallbacks to handle various response structures safely
+    const rawData = response.data?.data || response.data || [];
+    
+    // If backend wrapped it inside { data, meta }
+    if (rawData && typeof rawData === 'object' && !Array.isArray(rawData) && rawData.data) {
+      return {
+        data: Array.isArray(rawData.data) ? rawData.data : [],
+        meta: rawData.meta || {},
+      };
+    }
+
+    // If it's directly an array
+    if (Array.isArray(rawData)) {
+      return {
+        data: rawData,
+        meta: response.data?.meta || {},
+      };
+    }
+
+    return { data: [], meta: {} };
+  } catch (error) {
+    console.error("Error fetching saved jobs:", error);
+    return { data: [], meta: {} };
+  }
 };
 
 export const getSavedJobIds = async (): Promise<string[]> => {

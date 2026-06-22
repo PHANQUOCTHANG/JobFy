@@ -120,6 +120,10 @@ export const jobService: JobService = new JobService(
   companyRepository
 );
 
+// Notification
+import { NotificationService } from "@/module/notification/notification.service";
+export const notificationService = new NotificationService();
+
 // Application
 import { IApplicationRepository, ApplicationRepository } from "@/module/application/application.repository";
 import { ApplicationService } from "@/module/application/application.service";
@@ -129,7 +133,9 @@ export const applicationService: ApplicationService = new ApplicationService(
   applicationRepository,
   jobRepository,
   candidateProfileRepository,
-  resumeRepository
+  resumeRepository,
+  companyRepository,
+  notificationService
 );
 
 // AI

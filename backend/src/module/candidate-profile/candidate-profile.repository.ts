@@ -58,6 +58,7 @@ export class CandidateProfileRepository implements ICandidateProfileRepository {
   async findByUserId(userId: string): Promise<CandidateProfile | null> {
     return this.prisma.candidateProfile.findUnique({
       where: { userId },
+      include: { user: true }
     });
   }
 

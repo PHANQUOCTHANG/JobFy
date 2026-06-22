@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { z } from "zod";
 import * as jobCtrl from "./job.controller";
 import validationMiddleware from "@/middleware/validate.middleware";
 import { requireAuth, requireRole, requireFullyVerified } from "@/middleware/auth.middleware";
@@ -20,7 +21,7 @@ router
 router
   .route("/:id")
   .get(
-    validationMiddleware(IdParamSchema, "params"),
+    validationMiddleware(z.object({ id: z.string().min(1) }), "params"),
     jobCtrl.getJob
   )
   .patch(

@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -45,14 +41,23 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
   const [selectedCvType, setSelectedCvType] = useState<'online' | 'upload'>('online');
   const [coverLetter, setCoverLetter] = useState<string>('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isAgreeTerms, setIsAgreeTerms] = useState(true);
+  const [isAgreeAI, setIsAgreeAI] = useState(true);
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
 
   const { user } = useAppSelector((state) => state.auth);
   // eslint-disable-next-line unused-imports/no-unused-vars
   const { data: resumes, isLoading: isLoadingResumes } = useMyResumes();
   const { mutate: apply, isPending } = useApplyJob();
   const { mutate: applyWithCv, isPending: isUploadingCv } = useApplyWithCv();
+
+  useEffect(() => {
+    if (resumes && resumes.length > 0 && !selectedResumeId) {
+      setSelectedResumeId(resumes[0].id);
+    }
+  }, [resumes, selectedResumeId]);
 
   // eslint-disable-next-line unused-imports/no-unused-vars
   const { register, handleSubmit, formState: { errors }, reset, trigger, getValues } = useForm({
@@ -64,50 +69,56 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
     }
   });
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isOpen && !isSuccess && (coverLetter || selectedFile)) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isOpen, isSuccess, coverLetter, selectedFile]);
+
   // Reset state when modal closes
   const handleClose = () => {
+    if (!isSuccess && (coverLetter || selectedFile)) {
+      if (!window.confirm('Bạn có chắc chắn muốn đóng? Các thông tin vừa nhập sẽ không được lưu lại.')) {
+        return;
+      }
+    }
+    
     onClose();
     setTimeout(() => {
       setSelectedCvType('online');
       setCoverLetter('');
       setSelectedFile(null);
       setIsSuccess(false);
+      setIsAgreeTerms(true);
+      setIsAgreeAI(true);
       reset({
         fullName: user?.fullName || '',
         email: user?.email || '',
         phone: '',
       });
+      setSelectedResumeId(resumes?.[0]?.id || null);
     }, 300);
   };
 
-  const primaryResume = resumes?.[0];
+  const selectedResume = resumes?.find(r => r.id === selectedResumeId) || resumes?.[0];
 
   const submitApplication = (resumeId: string | null) => {
     apply({ jobId, resumeId, coverLetter }, {
       onSuccess: () => {
         setIsSuccess(true);
         onSuccess?.();
-      },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onError: (error: any) => {
-        const status = error.response?.status;
-        const msg = error.response?.data?.message;
-        if (status === 409) {
-          toast.error('Bạn đã ứng tuyển công việc này rồi');
-        } else if (status === 403) {
-          toast.error(msg || 'Bạn chưa có hồ sơ ứng viên');
-        } else if (status === 400) {
-          toast.error(msg || 'Công việc này không nhận ứng tuyển lúc này');
-        } else {
-          toast.error('Có lỗi xảy ra khi nộp hồ sơ. Vui lòng thử lại sau.');
-        }
       }
     });
   };
 
   const handleApply = async () => {
     if (!user) {
-      toast.error('Vui lòng đăng nhập để ứng tuyển');
+      toast.warning('Vui lòng đăng nhập để ứng tuyển');
       navigate('/login');
       return;
     }
@@ -115,13 +126,18 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
       toast.error('Chỉ ứng viên mới có thể ứng tuyển');
       return;
     }
+    
+    if (!isAgreeTerms) {
+      toast.error('Vui lòng đồng ý với Thỏa thuận sử dụng dữ liệu cá nhân trước khi nộp hồ sơ.');
+      return;
+    }
 
     if (selectedCvType === 'online') {
-      if (!primaryResume) {
-        toast.error('Bạn chưa có CV nào trên hệ thống. Vui lòng tạo CV hoặc chọn tải lên.');
+      if (!selectedResume) {
+        toast.error('Bạn chưa có CV trên hệ thống. Vui lòng tải lên CV từ máy tính.');
         return;
       }
-      submitApplication(primaryResume.id);
+      submitApplication(selectedResume.id);
     } else {
       if (!selectedFile) {
         toast.error('Vui lòng chọn hoặc tải lên một tệp CV (PDF, DOCX) trước khi ứng tuyển.');
@@ -158,21 +174,7 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
           onSuccess: () => {
             setIsSuccess(true);
             onSuccess?.();
-          },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onError: (error: any) => {
-            const status = error.response?.status;
-            const msg = error.response?.data?.message;
-            if (status === 409) {
-              toast.error('Bạn đã ứng tuyển công việc này rồi');
-            } else if (status === 403) {
-              toast.error(msg || 'Bạn chưa có hồ sơ ứng viên');
-            } else if (status === 400) {
-              toast.error(msg || 'Công việc này không nhận ứng tuyển lúc này');
-            } else {
-              toast.error('Có lỗi xảy ra khi nộp hồ sơ. Vui lòng thử lại sau.');
-            }
-          },
+          }
         }
       );
     }
@@ -203,7 +205,7 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
                   variant="outline"
                   onClick={() => {
                     handleClose();
-                    navigate('/candidate/applications');
+                    navigate('/applications');
                   }}
                   className="w-full h-12 rounded-xl border-slate-200 text-slate-600 font-bold text-base hover:bg-slate-50"
                 >
@@ -235,14 +237,37 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
                       <div className="flex items-center gap-3">
                         <input type="radio" name="cv_type" value="online" checked={selectedCvType === 'online'} onChange={() => setSelectedCvType('online')} className="w-4 h-4 text-indigo-600 border-slate-300 focus:ring-indigo-600 accent-indigo-600" />
                         <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-slate-800">{primaryResume?.title || 'Chưa có CV trên hệ thống'}</span>
-                              {primaryResume && <span className="text-[10px] font-semibold text-indigo-600 border border-indigo-200 bg-white px-2 py-0.5 rounded-full">CV ứng tuyển gần nhất</span>}
+                            <div className="flex flex-col gap-2 w-full pr-4">
+                              {resumes && resumes.length > 1 ? (
+                                <div className="relative">
+                                  <select 
+                                    value={selectedResumeId || ''} 
+                                    onChange={(e) => {
+                                      setSelectedResumeId(e.target.value);
+                                      setSelectedCvType('online');
+                                    }}
+                                    className="w-full text-sm font-medium text-slate-800 border border-slate-200 rounded-md focus:ring-indigo-500 focus:border-indigo-500 p-2 pr-8 outline-none appearance-none bg-white cursor-pointer hover:border-indigo-400 transition-colors"
+                                  >
+                                    {resumes.map((r, index) => (
+                                      <option key={r.id} value={r.id}>
+                                        {r.title} {index === 0 ? '(CV gần nhất)' : ''}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                                    <ChevronDown className="w-4 h-4" />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-slate-800">{selectedResume?.title || 'Chưa có CV trên hệ thống'}</span>
+                                  {selectedResume && <span className="text-[10px] font-semibold text-indigo-600 border border-indigo-200 bg-white px-2 py-0.5 rounded-full">CV ứng tuyển gần nhất</span>}
+                                </div>
+                              )}
                             </div>
-                            {primaryResume && (
-                              <div className="flex gap-3 text-sm font-semibold text-indigo-600">
-                                  <span className="hover:underline">Xem</span>
-                                  <span className="hover:underline">Xem thêm.</span>
+                            {selectedResume && (
+                              <div className="flex gap-3 text-sm font-semibold text-indigo-600 whitespace-nowrap mt-2 sm:mt-0">
+                                  <a href={selectedResume.fileUrl} target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> Xem CV</a>
                               </div>
                             )}
                         </div>
@@ -376,12 +401,12 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
 
               <div className="space-y-3 pb-2">
                 <label className="flex items-start gap-3 cursor-pointer group">
-                    <input type="checkbox" defaultChecked className="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-600 accent-indigo-600 cursor-pointer" />
+                    <input type="checkbox" checked={isAgreeAI} onChange={(e) => setIsAgreeAI(e.target.checked)} className="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-600 accent-indigo-600 cursor-pointer" />
                     <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">Cho phép JobFy sử dụng <span className="underline font-medium text-slate-800 hover:text-indigo-600">công nghệ AI</span> để phân tích độ phù hợp CV của bạn</span>
                 </label>
                 <label className="flex items-start gap-3 cursor-pointer group">
-                    <input type="checkbox" defaultChecked className="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-600 accent-indigo-600 cursor-pointer" />
-                    <span className="text-sm text-slate-600 group-hover:text-slate-800 transition-colors">Tôi đã đọc và đồng ý với <span className="underline font-medium text-slate-800 hover:text-indigo-600">"Thỏa thuận sử dụng dữ liệu cá nhân"</span> của Nhà tuyển dụng</span>
+                    <input type="checkbox" checked={isAgreeTerms} onChange={(e) => setIsAgreeTerms(e.target.checked)} className={`mt-1 w-4 h-4 rounded border-slate-300 focus:ring-indigo-600 accent-indigo-600 cursor-pointer ${!isAgreeTerms ? 'ring-2 ring-red-500/50' : 'text-indigo-600'}`} />
+                    <span className={`text-sm transition-colors ${!isAgreeTerms ? 'text-red-500 font-medium' : 'text-slate-600 group-hover:text-slate-800'}`}>Tôi đã đọc và đồng ý với <span className="underline font-medium hover:text-indigo-600">"Thỏa thuận sử dụng dữ liệu cá nhân"</span> của Nhà tuyển dụng</span>
                 </label>
               </div>
             </div>
@@ -389,8 +414,12 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
             <div className="px-6 py-4 border-t border-slate-200 bg-white shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.05)] z-10">
               <Button 
                 onClick={handleApply} 
-                disabled={isPending || isUploadingCv}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-[48px] text-[15px] rounded-lg shadow-md shadow-indigo-600/20"
+                disabled={isPending || isUploadingCv || !isAgreeTerms}
+                className={`w-full font-bold h-[48px] text-[15px] rounded-lg shadow-md transition-all ${
+                  (isPending || isUploadingCv || !isAgreeTerms)
+                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20'
+                }`}
               >
                 {(isPending || isUploadingCv) ? 'Đang nộp hồ sơ...' : 'Nộp hồ sơ ứng tuyển'}
               </Button>

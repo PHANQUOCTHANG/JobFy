@@ -1,14 +1,35 @@
 import React from 'react';
 import { Heart, UserPlus, MessageCircle, Headset } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@/store/hooks';
+import { toast } from 'sonner';
 
 export const FloatingActionBar = () => {
   const navigate = useNavigate();
+  const isAuthenticated = useAppSelector(state => !!state.auth.token);
+
+  const handleSavedJobsClick = () => {
+    if (!isAuthenticated) {
+      toast.error('Vui lòng đăng nhập để xem việc làm đã lưu');
+      // navigate('/login?redirect=/saved-jobs');
+      return;
+    }
+    navigate('/saved-jobs');
+  };
+
+  const handleProfileClick = () => {
+    if (!isAuthenticated) {
+      toast.error('Vui lòng đăng nhập để tạo hồ sơ');
+      // navigate('/login?redirect=/profile');
+      return;
+    }
+    navigate('/profile');
+  };
 
   return (
     <div className="fixed bottom-10 right-6 z-[100] flex flex-col gap-3">
       <button 
-        onClick={() => navigate('/saved-jobs')}
+        onClick={handleSavedJobsClick}
         className="relative w-12 h-12 bg-white rounded-full shadow-[0_4px_12px_rgba(79,70,229,0.15)] flex items-center justify-center text-indigo-600 hover:-translate-y-1 hover:shadow-[0_6px_16px_rgba(79,70,229,0.2)] transition-all duration-300 border border-indigo-50 group"
       >
         <Heart className="w-5 h-5 fill-current" />
@@ -21,7 +42,7 @@ export const FloatingActionBar = () => {
       </button>
 
       <button 
-        onClick={() => navigate('/profile')}
+        onClick={handleProfileClick}
         className="w-12 h-12 bg-white rounded-full shadow-[0_4px_12px_rgba(79,70,229,0.15)] flex items-center justify-center text-indigo-600 hover:-translate-y-1 hover:shadow-[0_6px_16px_rgba(79,70,229,0.2)] transition-all duration-300 border border-indigo-50 group relative"
       >
         <UserPlus className="w-5 h-5" strokeWidth={2.5} />
