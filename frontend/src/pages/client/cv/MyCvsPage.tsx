@@ -64,6 +64,18 @@ export const MyCvsPage: React.FC = () => {
     }
   };
 
+  const processPdfUrl = (url: string) => {
+    if (!url) return '';
+    if (url.includes('cloudinary.com') && !url.split('?')[0].toLowerCase().endsWith('.pdf')) {
+      // Đối với các file CV cũ không có đuôi .pdf, không thể mở inline được vì bị lỗi 404 nếu thêm đuôi .pdf
+      // Cách duy nhất là thêm tham số fl_attachment để ép tải xuống với tên đúng định dạng
+      if (url.includes('/upload/')) {
+        return url.replace('/upload/', '/upload/fl_attachment:CV.pdf/');
+      }
+    }
+    return url;
+  };
+
   const getTemplateName = (templateId: string | null) => {
     if (!templateId) return 'CV tải lên';
     if (templateId === 'uploaded') return 'CV tải lên';
@@ -195,7 +207,16 @@ export const MyCvsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {cvs.map(cv => (
               <div key={cv.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
-                <div className="p-4 border-b flex items-start gap-4">
+                <div 
+                  className="p-4 border-b flex items-start gap-4 cursor-pointer hover:bg-slate-50 transition-colors"
+                  onClick={() => {
+                    if (isUploaded(cv.templateId)) {
+                      if (cv.fileUrl) window.open(processPdfUrl(cv.fileUrl), '_blank');
+                    } else {
+                      navigate(`/cv/editor/${cv.templateId}?id=${cv.id}`);
+                    }
+                  }}
+                >
                   <div className="w-16 h-20 bg-gray-100 rounded border flex-shrink-0 overflow-hidden relative">
                     {isUploaded(cv.templateId) ? (
                       <div className="w-full h-full bg-red-50 flex flex-col items-center justify-center text-red-500">
@@ -254,7 +275,7 @@ export const MyCvsPage: React.FC = () => {
                     </button>
                   ) : cv.fileUrl ? (
                     <a
-                      href={cv.fileUrl}
+                      href={processPdfUrl(cv.fileUrl)}
                       target="_blank"
                       rel="noreferrer"
                       className="flex flex-col items-center gap-1 text-gray-600 hover:text-[#4F46E5] transition-colors flex-1"

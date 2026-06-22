@@ -132,11 +132,11 @@ export const CvEditorPage: React.FC = () => {
     setIsExporting(true);
     try {
       const canvas = await html2canvas(printRef.current, { scale: 2, useCORS: true, logging: false });
-      const data = canvas.toDataURL('image/png');
+      const data = canvas.toDataURL('image/jpeg', 0.85); // Chuyển từ PNG sang JPEG để giảm 90% dung lượng
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(data, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       pdf.save(`${cvData.title || 'My_CV'}.pdf`);
     } catch (error) {
       console.error('Error generating PDF', error);

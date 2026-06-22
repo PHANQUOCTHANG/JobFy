@@ -404,10 +404,15 @@ class CloudinaryCvStorage implements StorageEngine {
     file: Express.Multer.File,
     cb: (error?: any, info?: Partial<Express.Multer.File>) => void,
   ): void {
+    const ext = file.originalname.split('.').pop() || 'pdf';
+    const safeName = file.originalname.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9]/g, '_');
+    const publicId = `${safeName}_${Date.now()}.${ext}`;
+
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "resumes",
         resource_type: "raw", // BẮT BUỘC cho file PDF, DOC, DOCX
+        public_id: publicId,
       },
       (error, result) => {
         if (error || !result) {
