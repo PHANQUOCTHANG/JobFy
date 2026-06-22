@@ -33,8 +33,8 @@ export const useUpdateMyCompany = () => {
       const payload = {
         name: updateData.name,
         industryId: updateData.industryId ? Number(updateData.industryId) : 0,
-        provinceId: updateData.provinceId ? Number(updateData.provinceId) : 0,
-        districtId: updateData.districtId ? Number(updateData.districtId) : 0,
+        provinceId: updateData.provinceId ? Number(updateData.provinceId) : undefined,
+        districtId: updateData.districtId ? Number(updateData.districtId) : undefined,
         address: updateData.address,
         size: updateData.size,
         website: updateData.website || null,

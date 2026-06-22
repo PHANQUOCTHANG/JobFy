@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   Plus,
   MoreHorizontal,
@@ -31,13 +31,13 @@ import { Label } from "@/components/ui/label";
 
 // ─── API ─────────────────────────────────────────────────────────
 const fetchCategories = async () => {
-  const { data } = await axios.get("/api/v1/job-categories", { withCredentials: true });
+  const { data } = await api.get("/job-categories?limit=1000");
   return data;
 };
 
-const createCategory = (payload: { name: string; icon?: string; parentId?: number }) => axios.post("/api/v1/job-categories", payload, { withCredentials: true });
-const updateCategory = (id: number, payload: { name?: string; icon?: string; parentId?: number }) => axios.patch(`/api/v1/job-categories/${id}`, payload, { withCredentials: true });
-const deleteCategory = (id: number) => axios.delete(`/api/v1/job-categories/${id}`, { withCredentials: true });
+const createCategory = (payload: { name: string; icon?: string; parentId?: number }) => api.post("/job-categories", payload);
+const updateCategory = (id: number, payload: { name?: string; icon?: string; parentId?: number }) => api.patch(`/job-categories/${id}`, payload);
+const deleteCategory = (id: number) => api.delete(`/job-categories/${id}`);
 
 export default function AdminCategoriesPage() {
   const qc = useQueryClient();

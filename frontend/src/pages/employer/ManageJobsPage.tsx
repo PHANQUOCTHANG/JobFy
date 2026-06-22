@@ -12,7 +12,7 @@ import { EditJobModal } from "@/features/jobs/components/EditJobModal";
 
 
 
-type JobStatusUi = "all" | "active" | "pending" | "draft" | "expired" | "closed" | "paused";
+type JobStatusUi = "all" | "active" | "pending" | "rejected" | "draft" | "expired" | "closed" | "paused";
 
 type JobRow = {
   id: string;
@@ -102,7 +102,7 @@ const ManageJobsPage = () => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState<"Tất cả" | "Đang hoạt động" | "Tạm dừng" | "Bản nháp" | "Hết hạn" | "Đã đóng">(
+  const [activeTab, setActiveTab] = useState<"Tất cả" | "Đang hoạt động" | "Chờ duyệt" | "Tạm dừng" | "Bản nháp" | "Từ chối" | "Hết hạn" | "Đã đóng">(
     "Tất cả",
   );
   const [page, setPage] = useState(1);
@@ -139,7 +139,7 @@ const ManageJobsPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const tabs = useMemo(
-    () => ["Tất cả", "Đang hoạt động", "Tạm dừng", "Bản nháp", "Hết hạn", "Đã đóng"] as const,
+    () => ["Tất cả", "Đang hoạt động", "Chờ duyệt", "Từ chối", "Tạm dừng", "Bản nháp", "Hết hạn", "Đã đóng"] as const,
     [],
   );
 
@@ -147,6 +147,8 @@ const ManageJobsPage = () => {
     const map: Record<(typeof tabs)[number], JobStatusUi> = {
       "Tất cả": "all",
       "Đang hoạt động": "active",
+      "Chờ duyệt": "pending",
+      "Từ chối": "rejected",
       "Tạm dừng": "paused",
       "Bản nháp": "draft",
       "Hết hạn": "expired",
@@ -167,6 +169,10 @@ const ManageJobsPage = () => {
     switch (ui) {
       case "active":
         return "published";
+      case "pending":
+        return "pending";
+      case "rejected":
+        return "rejected";
       case "paused":
         return "paused";
       case "draft":
@@ -200,7 +206,7 @@ const ManageJobsPage = () => {
         if (myCompany?.id) params.companyId = myCompany.id;
         if (filterCategory) params.categoryId = Number(filterCategory);
 
-        const resp = await api.get("/jobs", { params });
+        const resp = await api.get("/employer/jobs", { params });
         const payload = resp.data as any;
 
         /**
@@ -324,6 +330,8 @@ const ManageJobsPage = () => {
 
   const statusUi = (status?: string) => {
     if (status === "published") return { label: "Đang hoạt động", cls: "inline-flex px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-[12px] font-bold border border-emerald-200" };
+    if (status === "pending") return { label: "Chờ duyệt", cls: "inline-flex px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-[12px] font-bold border border-blue-200" };
+    if (status === "rejected") return { label: "Từ chối", cls: "inline-flex px-3 py-1.5 bg-rose-50 text-rose-700 rounded-lg text-[12px] font-bold border border-rose-200" };
     if (status === "draft") return { label: "Bản nháp", cls: "inline-flex px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg text-[12px] font-bold border border-amber-200" };
     if (status === "expired") return { label: "Hết hạn", cls: "inline-flex px-3 py-1.5 bg-rose-50 text-rose-700 rounded-lg text-[12px] font-bold border border-rose-200" };
     if (status === "closed") return { label: "Đã đóng", cls: "inline-flex px-3 py-1.5 bg-[#E2E8F0] text-[#475569] rounded-lg text-[12px] font-bold border border-[#CBD5E1]" };
@@ -338,7 +346,7 @@ const ManageJobsPage = () => {
     setIsJobDetailLoading(true);
 
     try {
-      const resp = await api.get(`/jobs/${id}`, { signal });
+      const resp = await api.get(`/employer/jobs/${id}`, { signal });
       const payload = resp.data as any;
 
       // Swagger: { status: 'success', data: Job }
@@ -502,8 +510,8 @@ const ManageJobsPage = () => {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-3 font-bold text-[14px] whitespace-nowrap transition-all duration-300 border-b-2 ${activeTab === tab
-                ? "border-[#00307c] text-[#00307c]"
-                : "border-transparent text-[#64748B] hover:text-[#0F172A] hover:border-[#CBD5E1]"
+              ? "border-[#00307c] text-[#00307c]"
+              : "border-transparent text-[#64748B] hover:text-[#0F172A] hover:border-[#CBD5E1]"
               }`}
           >
             {tab}
@@ -620,15 +628,19 @@ const ManageJobsPage = () => {
                       >
                         {job.status === "published"
                           ? "Đang hoạt động"
-                          : job.status === "draft"
-                            ? "Bản nháp"
-                            : job.status === "expired"
-                              ? "Hết hạn"
-                              : job.status === "closed"
-                                ? "Đã đóng"
-                                : job.status === "paused"
-                                  ? "Tạm dừng"
-                                  : "—"}
+                          : job.status === "pending"
+                            ? "Chờ duyệt"
+                            : job.status === "rejected"
+                              ? "Từ chối"
+                              : job.status === "draft"
+                                ? "Bản nháp"
+                                : job.status === "expired"
+                                  ? "Hết hạn"
+                                  : job.status === "closed"
+                                    ? "Đã đóng"
+                                    : job.status === "paused"
+                                      ? "Tạm dừng"
+                                      : "—"}
                       </span>
                     </td>
                   </tr>
@@ -674,8 +686,8 @@ const ManageJobsPage = () => {
                 <button
                   key={p}
                   className={`w-9 h-9 flex items-center justify-center rounded-lg text-[14px] font-bold transition-all ${p === page
-                      ? "bg-[#00307c] text-white shadow-sm"
-                      : "border-2 border-transparent hover:border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A]"
+                    ? "bg-[#00307c] text-white shadow-sm"
+                    : "border-2 border-transparent hover:border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A]"
                     }`}
                   onClick={() => setPage(p)}
                   type="button"
@@ -897,7 +909,7 @@ const ManageJobsPage = () => {
                     if (!confirmModal.jobId) return;
                     setIsProcessing(true);
                     try {
-                      await api.delete(`/jobs/${confirmModal.jobId}`);
+                      await api.delete(`/employer/jobs/${confirmModal.jobId}`);
                       toast.success("Xóa tin tuyển dụng thành công");
 
                       // Refetch current list
@@ -905,7 +917,7 @@ const ManageJobsPage = () => {
                       if (statusQuery) params.status = statusQuery;
                       if (myCompany?.id) params.companyId = myCompany.id;
 
-                      const resp = await api.get("/jobs", { params });
+                      const resp = await api.get("/employer/jobs", { params });
                       const payload = resp.data as any;
 
                       const listCandidate = payload?.data;

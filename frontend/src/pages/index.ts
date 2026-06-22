@@ -8,6 +8,7 @@ export { default as AdminCompaniesPage } from "./admin/AdminCompaniesPage";
 export { default as AdminJobsPage } from "./admin/AdminJobsPage";
 export { default as AdminReportsPage } from "./admin/AdminReportsPage";
 export { default as AdminLoginPage } from "./admin/AdminLoginPage";
+export { default as AdminUsersPage } from "./admin/AdminUsersPage";
 export { default as AdminIndustriesPage } from "./admin/AdminIndustriesPage";
 export { default as AdminCategoriesPage } from "./admin/AdminCategoriesPage";
 export { default as AdminSkillsPage } from "./admin/AdminSkillsPage";

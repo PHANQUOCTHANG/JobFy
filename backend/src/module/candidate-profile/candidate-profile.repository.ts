@@ -4,7 +4,7 @@ import { CandidateProfileQuery } from "./candidate-profile.type";
 
 export interface ICandidateProfileRepository {
   create(data: Prisma.CandidateProfileUncheckedCreateInput): Promise<CandidateProfile>;
-  findAll(query: CandidateProfileQuery): Promise<IPaginatedResult<CandidateProfile>>;
+  findAll(query: CandidateProfileQuery, isAdmin?: boolean): Promise<IPaginatedResult<CandidateProfile>>;
   findById(id: string): Promise<CandidateProfile | null>;
   findByUserId(userId: string): Promise<CandidateProfile | null>;
   updateById(id: string, data: Prisma.CandidateProfileUncheckedUpdateInput): Promise<CandidateProfile | null>;
@@ -19,7 +19,7 @@ export class CandidateProfileRepository implements ICandidateProfileRepository {
     return this.prisma.candidateProfile.create({ data });
   }
 
-  async findAll(query: CandidateProfileQuery): Promise<IPaginatedResult<CandidateProfile>> {
+  async findAll(query: CandidateProfileQuery, isAdmin: boolean = false): Promise<IPaginatedResult<CandidateProfile>> {
     const page = Math.max(query.page ?? 1, 1);
     const limit = Math.min(query.limit ?? 10, 100);
 
@@ -27,7 +27,14 @@ export class CandidateProfileRepository implements ICandidateProfileRepository {
       ...(query.provinceId !== undefined && { provinceId: query.provinceId }),
       ...(query.experienceLevel !== undefined && { experienceLevel: query.experienceLevel }),
       ...(query.isLooking !== undefined && { isLooking: query.isLooking }),
-      isProfilePublic: true, // Only public profiles in list
+      ...(!isAdmin && { isProfilePublic: true }),
+      ...(query.search && {
+        OR: [
+          { fullName: { contains: query.search, mode: "insensitive" } },
+          { headline: { contains: query.search, mode: "insensitive" } },
+          { desiredJobTitle: { contains: query.search, mode: "insensitive" } },
+        ],
+      }),
     };
 
     const [data, total] = await Promise.all([

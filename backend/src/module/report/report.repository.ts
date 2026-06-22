@@ -19,7 +19,7 @@ export class ReportRepository {
       prisma.report.findMany({
         where,
         include: {
-          reporter: { select: { id: true, email: true } },
+          reporter: { select: { id: true, email: true, candidateProfile: { select: { fullName: true } } } },
           reviewer: { select: { id: true, email: true } }
         },
         orderBy: { createdAt: "desc" },
@@ -36,7 +36,7 @@ export class ReportRepository {
     return await prisma.report.findUnique({
       where: { id },
       include: {
-        reporter: { select: { id: true, email: true } },
+        reporter: { select: { id: true, email: true, candidateProfile: { select: { fullName: true } } } },
         reviewer: { select: { id: true, email: true } }
       }
     });
@@ -52,7 +52,7 @@ export class ReportRepository {
         reviewedAt: new Date()
       },
       include: {
-        reporter: { select: { id: true, email: true } },
+        reporter: { select: { id: true, email: true, candidateProfile: { select: { fullName: true } } } },
         reviewer: { select: { id: true, email: true } }
       }
     });

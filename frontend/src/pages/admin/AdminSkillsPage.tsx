@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   Plus,
   MoreHorizontal,
@@ -31,13 +31,13 @@ import { Label } from "@/components/ui/label";
 
 // ─── API ─────────────────────────────────────────────────────────
 const fetchSkills = async () => {
-  const { data } = await axios.get("/api/v1/skills", { withCredentials: true });
+  const { data } = await api.get("/skills?limit=1000");
   return data;
 };
 
-const createSkill = (payload: { name: string; description?: string }) => axios.post("/api/v1/skills", payload, { withCredentials: true });
-const updateSkill = (id: number, payload: { name?: string; description?: string }) => axios.patch(`/api/v1/skills/${id}`, payload, { withCredentials: true });
-const deleteSkill = (id: number) => axios.delete(`/api/v1/skills/${id}`, { withCredentials: true });
+const createSkill = (payload: { name: string; description?: string }) => api.post("/skills", payload);
+const updateSkill = (id: number, payload: { name?: string; description?: string }) => api.patch(`/skills/${id}`, payload);
+const deleteSkill = (id: number) => api.delete(`/skills/${id}`);
 
 export default function AdminSkillsPage() {
   const qc = useQueryClient();

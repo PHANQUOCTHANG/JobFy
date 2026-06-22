@@ -116,6 +116,20 @@ const EmployerSettingsPage = () => {
         formattedPhone = '+' + formattedPhone;
       }
 
+      if (formattedPhone === '+84000000000' || formattedPhone === '+8400000000') {
+        // BYPASS CHO MÔI TRƯỜNG TEST/LOCAL
+        setConfirmationResult({
+          confirm: async (otp: string) => {
+            if (otp !== "123456") throw new Error("Sai mã OTP test");
+            return { user: { getIdToken: async () => "mock_id_token_123" } };
+          }
+        } as any);
+        setShowPhoneOtpInput(true);
+        toast.success("Môi trường Test: Nhập mã OTP 123456");
+        setIsSendingPhoneOtp(false);
+        return;
+      }
+
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, window.recaptchaVerifier);
       setConfirmationResult(confirmation);
       setShowPhoneOtpInput(true);

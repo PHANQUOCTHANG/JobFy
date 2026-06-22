@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   Plus,
   MoreHorizontal,
@@ -31,13 +31,13 @@ import { Label } from "@/components/ui/label";
 
 // ─── API ─────────────────────────────────────────────────────────
 const fetchIndustries = async () => {
-  const { data } = await axios.get("/api/v1/industries", { withCredentials: true });
+  const { data } = await api.get("/industries?limit=1000");
   return data;
 };
 
-const createIndustry = (name: string) => axios.post("/api/v1/industries", { name }, { withCredentials: true });
-const updateIndustry = (id: number, name: string) => axios.patch(`/api/v1/industries/${id}`, { name }, { withCredentials: true });
-const deleteIndustry = (id: number) => axios.delete(`/api/v1/industries/${id}`, { withCredentials: true });
+const createIndustry = (name: string) => api.post("/industries", { name });
+const updateIndustry = (id: number, name: string) => api.patch(`/industries/${id}`, { name });
+const deleteIndustry = (id: number) => api.delete(`/industries/${id}`);
 
 export default function AdminIndustriesPage() {
   const qc = useQueryClient();

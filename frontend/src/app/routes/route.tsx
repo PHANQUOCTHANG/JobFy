@@ -46,6 +46,7 @@ import {
   AdminReviewsPage,
   MyCoverLettersPage,
   AdminDashboardPage,
+  AdminUsersPage,
   AdminCompaniesPage,
   AdminJobsPage,
   AdminReportsPage,
@@ -228,7 +229,7 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, element: <AdminDashboardPage /> },
-              // { path: ADMIN_PATHS.USERS, element: <UsersManagementPage /> },
+              { path: ADMIN_PATHS.USERS, element: <AdminUsersPage /> },
               { path: ADMIN_PATHS.COMPANIES, element: <AdminCompaniesPage /> },
               { path: ADMIN_PATHS.CANDIDATES, element: <AdminCandidatesPage /> },
               { path: ADMIN_PATHS.JOBS, element: <AdminJobsPage /> },

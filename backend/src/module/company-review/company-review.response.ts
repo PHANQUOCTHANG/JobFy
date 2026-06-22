@@ -23,7 +23,13 @@ export const toCompanyReviewResponse = (review: ICompanyReview) => {
     reviewer: (review.reviewer && !review.isAnonymous) ? {
       id: review.reviewer.id,
       email: review.reviewer.email,
+      fullName: (review.reviewer as any).candidateProfile?.fullName,
       avatarUrl: review.reviewer.avatarUrl,
+    } : undefined,
+    company: (review as any).company ? {
+      id: (review as any).company.id,
+      name: (review as any).company.name,
+      logoUrl: (review as any).company.logoUrl,
     } : undefined
   };
 };

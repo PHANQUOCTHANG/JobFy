@@ -46,14 +46,14 @@ router
     companyCtrl.deleteCompany
   );
 
-// Admin-only: verify / unverify a company
-router.patch(
-  "/:id/verify",
-  requireAuth,
-  requireRole("admin"),
-  validationMiddleware(UuidParamSchema, "params"),
-  companyCtrl.verifyCompany
-);
+// Admin-only: verify / unverify a company (Moved to admin-employer.routes.ts)
+// router.patch(
+//   "/:id/verify",
+//   requireAuth,
+//   requireRole("admin"),
+//   validationMiddleware(UuidParamSchema, "params"),
+//   companyCtrl.verifyCompany
+// );
 
 // ================= LOCATION =================
 router

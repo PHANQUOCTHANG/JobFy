@@ -16,7 +16,7 @@ router
   .get(industryCtrl.getIndustries)
   .post(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(CreateIndustrySchema),
     industryCtrl.createIndustry,
   );
@@ -30,14 +30,14 @@ router
   )
   .patch(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateIndustrySchema),
     industryCtrl.updateIndustry,
   )
   .delete(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     industryCtrl.deleteIndustry,
   );

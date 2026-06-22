@@ -26,6 +26,25 @@ export const getReviews = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+export const getAdminReviews = asyncHandler(async (req: Request, res: Response) => {
+  const { page, limit, companyId } = req.query;
+  const result = await reviewService.getReviews({
+    page: page ? Number(page) : undefined,
+    limit: limit ? Number(limit) : undefined,
+    companyId: companyId as string,
+  });
+
+  sendResponse(res, 200, "Success", {
+    data: toCompanyReviewListResponse(result.data),
+    meta: {
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages
+    }
+  });
+});
+
 export const createReview = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });

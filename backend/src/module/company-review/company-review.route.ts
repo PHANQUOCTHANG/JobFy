@@ -12,6 +12,14 @@ import {
 const router = Router();
 
 router.get(
+  "/admin",
+  requireAuth,
+  requireRole("admin"),
+  validationMiddleware(CompanyReviewPaginationSchema, "query"),
+  reviewCtrl.getAdminReviews
+);
+
+router.get(
   "/",
   validationMiddleware(CompanyReviewPaginationSchema, "query"),
   reviewCtrl.getReviews

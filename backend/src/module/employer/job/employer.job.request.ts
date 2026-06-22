@@ -21,13 +21,14 @@ export const createJobSchema = z.object({
   isRemote: z.boolean().optional().default(false),
   metaTitle: z.string().max(255).optional(),
   metaDescription: z.string().max(500).optional(),
+  status: z.nativeEnum(JobStatus).optional().default(JobStatus.draft),
   
   // Relations that might be passed on creation
   skillIds: z.array(z.number().int().positive()).optional(),
   tagIds: z.array(z.number().int().positive()).optional(),
 });
 
-export const updateJobSchema = createJobSchema.partial();
+export const updateJobSchema = createJobSchema.partial().omit({ status: true });
 
 export const changeJobStatusSchema = z.object({
   status: z.nativeEnum(JobStatus),

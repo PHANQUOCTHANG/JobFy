@@ -149,7 +149,7 @@ const CreateJobPage = () => {
     if (targetStatus === "published" && !isFullyVerified) {
       Swal.fire({
         title: "Chưa xác thực!",
-        text: "Bạn cần hoàn tất xác thực doanh nghiệp tại trang Cài đặt để đăng tin tuyển dụng.",
+        text: "Bạn cần hoàn tất xác thực doanh nghiệp tại trang Cài đặt để nộp tin chờ duyệt. Tuy nhiên, bạn vẫn có thể Lưu bản nháp.",
         icon: "warning",
         confirmButtonColor: "#00307c"
       });
@@ -218,10 +218,10 @@ const CreateJobPage = () => {
         quantity: Number(quantity || 1),
         metaTitle: title.trim(),
         metaDescription: description.trim().slice(0, 160),
-        skills: selectedSkills.map(id => ({ skillId: Number(id), isRequired: true })),
+        skillIds: selectedSkills.map(id => Number(id)),
       };
 
-      const { data } = await api.post("/jobs", payload);
+      const { data } = await api.post("/employer/jobs", payload);
       const created = data?.data;
 
       setIsPublished(true);

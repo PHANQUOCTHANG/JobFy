@@ -39,15 +39,15 @@ export class EmployerVerificationService {
     const [industry, province, district] = await Promise.all([
       this.prisma.industry.findUnique({ where: { id: data.industryId } }),
       this.prisma.province.findUnique({ where: { id: data.provinceId } }),
-      this.prisma.district.findUnique({ where: { id: data.districtId } }),
+      data.districtId ? this.prisma.district.findUnique({ where: { id: data.districtId } }) : Promise.resolve(null),
     ]);
 
     if (!industry) throw new AppError(`Lĩnh vực kinh doanh (ID: ${data.industryId}) không tồn tại trong hệ thống`, 400);
     if (!province) throw new AppError(`Tỉnh/Thành phố (ID: ${data.provinceId}) không hợp lệ`, 400);
-    if (!district) throw new AppError(`Quận/Huyện (ID: ${data.districtId}) không hợp lệ`, 400);
+    if (data.districtId && !district) throw new AppError(`Quận/Huyện (ID: ${data.districtId}) không hợp lệ`, 400);
 
     // Kiểm tra thêm nếu district phải thuộc về province (tùy chọn nhưng nên có)
-    if (district.provinceId !== data.provinceId) throw new AppError("Quận/Huyện không thuộc Tỉnh/Thành phố đã chọn", 400);
+    if (district && district.provinceId !== data.provinceId) throw new AppError("Quận/Huyện không thuộc Tỉnh/Thành phố đã chọn", 400);
 
     const company = await this.prisma.company.findFirst({
       where: { ownerId: userId }
