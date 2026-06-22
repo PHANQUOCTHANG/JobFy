@@ -83,7 +83,7 @@ const ManageCompanyPage = () => {
                 </div>
               </div>
             )}
-            <ManageCompanyForm initialData={company} />
+            <ManageCompanyForm initialData={company} isVerified={company?.isVerified} />
           </div>
 
           {/* RIGHT COLUMN: Verification & Side Stats */}

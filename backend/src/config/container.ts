@@ -131,3 +131,6 @@ export const applicationService: ApplicationService = new ApplicationService(
   candidateProfileRepository
 );
 
+// AI
+import { AiService } from "@/module/ai/ai.service";
+export const aiService = new AiService();

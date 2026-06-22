@@ -1,4 +1,5 @@
 import multer from "multer";
+import path from "path";
 import { v2 as cloudinary } from "cloudinary";
 import { StorageEngine } from "multer";
 import { Request } from "express";
@@ -396,3 +397,38 @@ const documentUpload = multer({
 });
 
 export const uploadLegalDocument = documentUpload.single("document");
+
+// ─── CV Upload cho AI Analysis (memory storage — không upload Cloudinary) ─────────────────────────────────────
+const cvFileFilter = (
+  _req: Express.Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+): void => {
+  const ALLOWED_TYPES = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/jpeg",
+    "image/jpg",
+    "image/pjpeg",
+  ];
+  const ALLOWED_EXTENSIONS = [".pdf", ".doc", ".docx", ".jpg", ".jpeg"];
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  if (ALLOWED_TYPES.includes(file.mimetype) || ALLOWED_EXTENSIONS.includes(ext)) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Chỉ chấp nhận PDF, DOCX hoặc JPG cho CV", 400));
+  }
+};
+
+const cvUpload = multer({
+  storage: multer.memoryStorage(), // Lưu trong RAM để AI đọc text
+  fileFilter: cvFileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
+});
+
+export const uploadCvForAnalysis = cvUpload.single("cv");
+

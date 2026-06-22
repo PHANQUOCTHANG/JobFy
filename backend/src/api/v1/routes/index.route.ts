@@ -22,6 +22,7 @@ import locationRoute from "@/module/location/location.route";
 import { requireAuth, requireRole } from "@/middleware/auth.middleware";
 import employerRoute from "@/module/employer/employer.routes";
 import adminEmployerRoute from "@/module/admin-employer/admin-employer.routes";
+import aiRoute from "@/module/ai/ai.route";
 
 
 
@@ -60,6 +61,9 @@ const clientRoute = (app: Application) => {
 
   // Admin Employer Module (pending/verify)
   app.use(path + "/admin/employer", adminEmployerRoute);
+
+  // AI Module
+  app.use(path + "/ai", aiRoute);
 };
 
 
