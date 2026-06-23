@@ -40,7 +40,7 @@ export class EmployerJobService {
       include: { plan: true },
     });
 
-    const maxJobs = currentPlan ? currentPlan.plan.maxJobs : 1; // Free tier allows 1 job
+    const maxJobs = currentPlan ? currentPlan.plan.maxJobs : 10; // Free tier allows 1 job
     
     if ((data.status === JobStatus.published || data.status === JobStatus.pending) && activeJobs >= maxJobs) {
       throw new AppError(`Bạn đã đạt giới hạn đăng tin (${maxJobs} tin) của gói hiện tại. Vui lòng nâng cấp.`, 403);
