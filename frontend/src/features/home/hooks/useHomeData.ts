@@ -2,7 +2,6 @@ import { Code2, Palette, BookOpen, Heart, Headphones, DollarSign, LineChart, Tre
 import { Job, Testimonial, Article, Category, Company } from "../types";
 import { useFeaturedJobs, useJobCategories } from "@/features/jobs/hooks/useJobs";
 import { useCompanies } from "@/features/companies/hooks/useCompanies";
-import { mockJobs } from "@/features/jobs/api/mockData";
 
 interface HomeData {
   jobs: Job[];
@@ -230,9 +229,9 @@ export function useHomeData() {
   const error = jobsError || categoriesError || companiesError;
 
   const data = {
-    jobs: jobs && jobs.length > 0 ? jobs : mockJobs.slice(0, 9), // Use RealJob mock from jobs.api
-    categories: categories.length > 0 ? categories : MOCK_DATA.categories,
-    companies: mappedCompanies.length > 0 ? mappedCompanies : MOCK_DATA.companies,
+    jobs: jobs || [],
+    categories: categories || [],
+    companies: mappedCompanies || [],
     testimonials: MOCK_DATA.testimonials,
     articles: MOCK_DATA.articles,
   };

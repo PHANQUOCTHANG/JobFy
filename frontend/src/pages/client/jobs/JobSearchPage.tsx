@@ -20,6 +20,7 @@ export const JobSearchPage: React.FC = () => {
   const initialProvinceId = searchParams.get("provinceId")
     ? Number(searchParams.get("provinceId"))
     : undefined;
+  const initialRegion = searchParams.get("region") || undefined;
   const initialDistrictIds = searchParams.get("districtIds") || undefined;
   const initialIndustryId = searchParams.get("industryId")
     ? Number(searchParams.get("industryId"))
@@ -48,6 +49,7 @@ export const JobSearchPage: React.FC = () => {
     limit: 10,
     keyword: initialKeyword,
     provinceId: initialProvinceId,
+    region: initialRegion,
     districtIds: initialDistrictIds,
     industryId: initialIndustryId,
     categorySlug: initialCategorySlug,
@@ -64,6 +66,7 @@ export const JobSearchPage: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(
       !!initialKeyword ||
       !!initialProvinceId ||
+      !!initialRegion ||
       !!initialDistrictIds ||
       !!initialIndustryId ||
       !!initialCategorySlug ||
@@ -101,6 +104,8 @@ export const JobSearchPage: React.FC = () => {
     if (filters.categorySlug) params.set("categorySlug", filters.categorySlug);
     if (filters.provinceId)
       params.set("provinceId", String(filters.provinceId));
+    if (filters.region)
+      params.set("region", filters.region);
     if (filters.districtIds)
       params.set("districtIds", filters.districtIds);
     if (filters.industryId)
@@ -163,6 +168,7 @@ export const JobSearchPage: React.FC = () => {
             onSearch={handleSearch}
             initialKeyword={filters.keyword}
             initialProvinceId={filters.provinceId}
+            initialRegion={filters.region}
             initialDistrictIds={filters.districtIds}
             initialCategorySlug={filters.categorySlug}
             searchMode={searchMode}

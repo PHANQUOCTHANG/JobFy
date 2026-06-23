@@ -16,14 +16,26 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
   onSearchModeChange,
   searchMode,
 }) => {
-  const { data: response } = useJobs({ keyword: keyword || undefined, limit: 5 });
+  const { data: response } = useJobs({ keyword: keyword || undefined, searchMode, limit: 5 } as any);
   const jobs = response?.data || [];
 
-  // Generate unique titles and company names from fetched jobs
-  const jobTitles = Array.from(new Set(jobs.map(j => j.title))).filter(Boolean).slice(0, 5);
+  let suggestions: string[] = [];
+  if (searchMode === 'title') {
+    suggestions = Array.from(new Set(jobs.map(j => j.title))).filter(Boolean).slice(0, 5);
+  } else if (searchMode === 'company') {
+    suggestions = Array.from(new Set(jobs.map(j => j.company?.name))).filter(Boolean).slice(0, 5);
+  } else {
+    const rawSuggs = jobs.flatMap(j => [j.title, j.company?.name]).filter(Boolean);
+    suggestions = Array.from(new Set(rawSuggs)).slice(0, 5) as string[];
+  }
   
-  // Related keywords could be categories or something, we'll just extract from job tags/levels if any
-  const relatedKeywords = Array.from(new Set(jobs.map(j => j.experienceLevel))).filter(Boolean).slice(0, 3);
+  // Extract related keywords from job skills and tags
+  const relatedKeywords = Array.from(new Set(
+    jobs.flatMap(j => [
+      ...(j.jobSkills?.map(s => s.skill?.name) || []),
+      ...(j.jobTags?.map(t => t.tag?.name) || [])
+    ])
+  )).filter(Boolean).slice(0, 5);
 
   return (
     <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-[#e8e8e8] z-50 flex overflow-hidden max-h-[500px]">
@@ -64,11 +76,11 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
           </div>
         </div>
 
-        {jobTitles.length > 0 && (
+        {suggestions.length > 0 && (
           <div className="mb-4">
             <h4 className="text-[14px] font-bold text-[#212f3f] mb-2">Từ khóa gợi ý</h4>
             <div className="flex flex-col">
-              {jobTitles.map((sug, idx) => {
+              {suggestions.map((sug, idx) => {
                 const lowerKeyword = keyword.toLowerCase();
                 const lowerSug = sug.toLowerCase();
                 // eslint-disable-next-line unused-imports/no-unused-vars

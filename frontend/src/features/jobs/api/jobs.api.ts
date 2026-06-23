@@ -85,7 +85,7 @@ export const getProvinces = async (): Promise<
   { id: number; name: string }[]
 > => {
   try {
-    const response = await api.get("/locations/provinces");
+    const response = await api.get("/provinces");
     const data = response.data?.data || response.data;
     if (Array.isArray(data) && data.length > 0) return data;
     throw new Error("Empty response");
@@ -138,9 +138,9 @@ export const getProvinces = async (): Promise<
       { id: 45, name: "Phú Yên" },
       { id: 46, name: "Quảng Bình" },
       { id: 47, name: "Quảng Nam" },
-      { id: 48, name: "Quảng Ngãi" },
-      { id: 49, name: "Quảng Ninh" },
-      { id: 50, name: "Quảng Trị" },
+      { id: 49, name: "Quảng Ngãi" },
+      { id: 50, name: "Quảng Ninh" },
+      { id: 51, name: "Quảng Trị" },
       { id: 51, name: "Sóc Trăng" },
       { id: 52, name: "Sơn La" },
       { id: 53, name: "Tây Ninh" },
@@ -176,7 +176,7 @@ export const getIndustries = async (): Promise<{ id: number; name: string; slug:
 
 export const getDistricts = async (provinceId: number): Promise<{ id: number; provinceId: number; name: string }[]> => {
   try {
-    const response = await api.get(`/locations/provinces/${provinceId}/districts`);
+    const response = await api.get(`/districts?provinceId=${provinceId}`);
     const data = response.data?.data || response.data;
     if (Array.isArray(data) && data.length > 0) return data;
     throw new Error("Empty response");

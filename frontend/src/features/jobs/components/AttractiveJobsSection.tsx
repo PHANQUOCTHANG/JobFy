@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft, Zap } from 'lucide-react';
-import { mockJobs } from '../api/mockData';
 import { JobCard } from './JobCard';
 import { JobSkeletonCard } from './JobSkeletonCard';
 import { useJobs, useProvinces, useJobCategories } from '../hooks/useJobs';
@@ -27,18 +26,28 @@ export const AttractiveJobsSection: React.FC = () => {
   const { data: provinces } = useProvinces();
   const { data: categories } = useJobCategories();
 
-  const resolveProvinceId = (val: string): number | undefined => {
-    if (val === 'all') return undefined;
-    const nameMap: Record<string, string> = {
+  const resolveLocation = (val: string): { provinceId?: number; region?: string } => {
+    if (val === 'all') return {};
+    const provinceMap: Record<string, string> = {
       hanoi: 'Hà Nội',
       hcm: 'Hồ Chí Minh',
       danang: 'Đà Nẵng',
     };
-    if (nameMap[val]) return provinces?.find(p => p.name === nameMap[val])?.id;
-    return undefined;
+    if (provinceMap[val]) {
+      return { provinceId: provinces?.find(p => p.name === provinceMap[val])?.id };
+    }
+    const regionMap: Record<string, string> = {
+      north: 'Miền Bắc',
+      south: 'Miền Nam',
+      central: 'Miền Trung',
+    };
+    if (regionMap[val]) {
+      return { region: regionMap[val] };
+    }
+    return {};
   };
 
-  const provinceId = resolveProvinceId(locationValue);
+  const { provinceId, region } = resolveLocation(locationValue);
   const { min: salaryMin, max: salaryMax } = SALARY_PARAM_MAP[salaryValue] ?? {};
   const experienceLevel = EXPERIENCE_PARAM_MAP[expValue];
   const categorySlug = categoryValue === 'all' ? undefined : categoryValue;
@@ -47,13 +56,14 @@ export const AttractiveJobsSection: React.FC = () => {
     limit: 6,
     page,
     provinceId,
+    region,
     salaryMin,
     salaryMax,
     experienceLevel,
     categorySlug,
   });
 
-  const jobs = response?.data && response.data.length > 0 ? response.data : mockJobs.slice(0, 6);
+  const jobs = response?.data !== undefined ? response.data : [];
   const totalPages = response?.meta?.totalPages ? Math.max(response.meta.totalPages, 1) : 1;
 
   const categoryQuickOptions = [
@@ -114,7 +124,7 @@ export const AttractiveJobsSection: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-4">
             {isLoading ? (
               [1, 2, 3, 4, 5, 6].map(i => <JobSkeletonCard key={i} viewMode="compact" />)
-            ) : (
+            ) : jobs.length > 0 ? (
               jobs.map((job, idx) => (
                 <div key={`${job.id}-${idx}`} className="relative">
                   {idx === 0 && (
@@ -130,6 +140,10 @@ export const AttractiveJobsSection: React.FC = () => {
                   <JobCard job={job} viewMode="compact" />
                 </div>
               ))
+            ) : (
+              <div className="col-span-full py-12 text-center text-[#6f7882]">
+                Không có việc làm nào phù hợp với bộ lọc hiện tại.
+              </div>
             )}
           </div>
 

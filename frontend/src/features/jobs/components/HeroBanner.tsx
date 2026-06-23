@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronRight, ChevronLeft, MapPin, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useJobCategories } from "../hooks/useJobs";
 
 const ITEMS_PER_PAGE = 6;
@@ -50,7 +50,12 @@ const mockBanners = [
   }
 ];
 
-export const HeroBanner: React.FC = () => {
+interface HeroBannerProps {
+  onSearch?: (filters: any) => void;
+}
+
+export const HeroBanner: React.FC<HeroBannerProps> = ({ onSearch }) => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [catPage, setCatPage] = useState(0);
   const [currentBanner, setCurrentBanner] = useState(0);
@@ -98,10 +103,16 @@ export const HeroBanner: React.FC = () => {
         <div className="w-[300px] bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col pt-3 pb-4 flex-shrink-0 relative overflow-hidden">
           <div className="flex-1 flex flex-col">
             {currentCategories.map((cat) => (
-              <Link
+              <button
                 key={cat.id}
-                to={`/jobs?categorySlug=${cat.slug}`}
-                className={`flex items-center justify-between px-5 py-2.5 text-[14px] font-bold transition-colors group ${
+                onClick={() => {
+                  if (onSearch) {
+                    onSearch({ categorySlug: cat.slug });
+                  } else {
+                    navigate(`/jobs?categorySlug=${cat.slug}`);
+                  }
+                }}
+                className={`flex items-center justify-between px-5 py-2.5 text-[14px] font-bold transition-colors group w-full text-left ${
                   activeCategory === cat.id
                     ? "text-[#4F46E5] bg-indigo-50/50"
                     : "text-[#333333] hover:bg-gray-50"
@@ -111,7 +122,7 @@ export const HeroBanner: React.FC = () => {
               >
                 <span className="truncate pr-4">{cat.name}</span>
                 <ChevronRight size={18} className="text-gray-400 group-hover:text-[#4F46E5] transition-colors" strokeWidth={2.5} />
-              </Link>
+              </button>
             ))}
           </div>
 

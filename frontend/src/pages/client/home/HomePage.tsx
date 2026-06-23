@@ -13,6 +13,7 @@ export function HomePage() {
     if (filters.keyword) searchParams.set("keyword", filters.keyword);
     if (filters.provinceId)
       searchParams.set("provinceId", filters.provinceId.toString());
+    if (filters.region) searchParams.set("region", filters.region);
     if (filters.categorySlug)
       searchParams.set("categorySlug", filters.categorySlug);
 

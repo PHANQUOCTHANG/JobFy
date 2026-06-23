@@ -1,38 +1,13 @@
 import React, { useState } from 'react';
 import { Building2, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useCompanies } from '@/features/companies/hooks/useCompanies';
+import { useCompanies, useIndustries } from '@/features/companies/hooks/useCompanies';
 import { useProvinces } from '../hooks/useJobs';
 import { SectionFilterBar } from './SectionFilterBar';
 import { LOCATION_QUICK_OPTIONS } from '../constants/filterOptions';
 import { FilterType } from './SectionFilterBar';
 
-const FALLBACK_COMPANIES = [
-  {
-    id: '1', slug: 'fpt-software',
-    name: 'Công ty Cổ phần Viễn thông FPT',
-    logoUrl: 'https://cdn.haitrieu.com/wp-content/uploads/2022/01/Logo-FPT.png',
-    totalJobs: 25, shortDescription: 'Môi trường làm việc năng động, chuyên nghiệp.',
-  },
-  {
-    id: '2', slug: 'vng-corporation',
-    name: 'Công ty Cổ phần VNG',
-    logoUrl: 'https://vng.com.vn/assets/images/logo.png',
-    totalJobs: 18, shortDescription: 'Phát triển các sản phẩm hàng triệu người dùng.',
-  },
-  {
-    id: '3', slug: 'tiki',
-    name: 'Tiki Corporation',
-    logoUrl: 'https://salt.tikicdn.com/ts/upload/ae/f4/6d/4664fae2b7ba50aba552eb5ad54f0081.png',
-    totalJobs: 12, shortDescription: 'Nền tảng thương mại điện tử hàng đầu Việt Nam.',
-  },
-  {
-    id: '4', slug: 'masan-group',
-    name: 'Tập đoàn Masan',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/vi/thumb/9/9d/Masan_Group_logo.svg/1200px-Masan_Group_logo.svg.png',
-    totalJobs: 30, shortDescription: 'Tập đoàn kinh tế tư nhân đa ngành lớn nhất.',
-  },
-];
+
 
 const COMPANY_FILTER_TYPES: FilterType[] = [
   { id: 'location', label: 'Địa điểm' },
@@ -42,19 +17,13 @@ const COMPANY_FILTER_TYPES: FilterType[] = [
 
 const SIZE_OPTIONS = [
   { label: 'Tất cả', value: 'all' },
-  { label: 'Dưới 50 người', value: 'small' },
-  { label: '50 - 200 người', value: 'medium' },
-  { label: '200 - 1000 người', value: 'large' },
-  { label: 'Trên 1000 người', value: 'enterprise' },
-];
-
-const INDUSTRY_OPTIONS = [
-  { label: 'Tất cả', value: 'all' },
-  { label: 'Công nghệ', value: 'tech' },
-  { label: 'Thương mại điện tử', value: 'ecommerce' },
-  { label: 'Tài chính / Ngân hàng', value: 'finance' },
-  { label: 'Bán lẻ / Tiêu dùng', value: 'retail' },
-  { label: 'Giáo dục', value: 'education' },
+  { label: '1 - 10 người', value: 'value_1_10' },
+  { label: '11 - 50 người', value: 'value_11_50' },
+  { label: '51 - 200 người', value: 'value_51_200' },
+  { label: '201 - 500 người', value: 'value_201_500' },
+  { label: '501 - 1000 người', value: 'value_501_1000' },
+  { label: '1001 - 5000 người', value: 'value_1001_5000' },
+  { label: 'Trên 5000 người', value: 'value_5000_plus' },
 ];
 
 export const TopCompaniesSection: React.FC = () => {
@@ -65,29 +34,48 @@ export const TopCompaniesSection: React.FC = () => {
   const [industryValue, setIndustryValue] = useState<string | number>('all');
 
   const { data: provinces } = useProvinces();
+  const { data: industriesData } = useIndustries();
 
-  const resolveProvinceId = (val: string | number): number | undefined => {
-    if (val === 'all') return undefined;
+  const resolveLocation = (val: string | number) => {
+    if (val === 'all') return {};
+    if (val === 'north') return { region: 'Miền Bắc' };
+    if (val === 'south') return { region: 'Miền Nam' };
+    if (val === 'central') return { region: 'Miền Trung' };
+    
     const nameMap: Record<string, string> = {
       hanoi: 'Hà Nội', hcm: 'Hồ Chí Minh', danang: 'Đà Nẵng',
     };
     const n = nameMap[String(val)];
-    if (n) return provinces?.find(p => p.name === n)?.id;
-    return undefined;
+    if (n) {
+      const pId = provinces?.find(p => p.name === n)?.id;
+      return pId ? { provinceId: pId } : {};
+    }
+    return {};
   };
 
-  const provinceId = resolveProvinceId(locationValue);
+  const industryOptions = React.useMemo(() => {
+    const base = [{ label: 'Tất cả', value: 'all' }];
+    if (!industriesData?.data) return base;
+    return [
+      ...base,
+      ...industriesData.data.slice(0, 8).map(i => ({ label: i.name, value: i.id }))
+    ];
+  }, [industriesData]);
+
+  const locationParams = resolveLocation(locationValue);
+  const selectedIndustryId = industryValue !== 'all' ? Number(industryValue) : undefined;
+  const selectedSize = sizeValue !== 'all' ? sizeValue : undefined;
 
   const { data: apiCompanies, isLoading } = useCompanies({
     limit: 4,
     isActive: true,
-    ...(provinceId ? { provinceId } : {}),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...locationParams,
+    ...(selectedIndustryId ? { industryId: selectedIndustryId } : {}),
+    ...(selectedSize ? { size: selectedSize } : {}),
   } as any);
 
   const companies = React.useMemo(() => {
     const companiesList = apiCompanies?.data || [];
-    if (companiesList.length === 0) return FALLBACK_COMPANIES;
     return companiesList.slice(0, 4).map(c => ({
       id: c.id,
       slug: c.slug,
@@ -101,7 +89,7 @@ export const TopCompaniesSection: React.FC = () => {
   const quickOptions =
     activeFilterType === 'location' ? LOCATION_QUICK_OPTIONS :
     activeFilterType === 'size'     ? SIZE_OPTIONS :
-    INDUSTRY_OPTIONS;
+    industryOptions;
 
   const activeQuickValue =
     activeFilterType === 'location' ? locationValue :
@@ -154,7 +142,7 @@ export const TopCompaniesSection: React.FC = () => {
             </div>
           ))}
         </div>
-      ) : (
+      ) : companies.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {companies.map(company => (
             <Link
@@ -185,6 +173,10 @@ export const TopCompaniesSection: React.FC = () => {
               </div>
             </Link>
           ))}
+        </div>
+      ) : (
+        <div className="py-10 text-center text-[#6f7882] bg-white rounded-lg border border-gray-200">
+          Không có công ty nào phù hợp với bộ lọc hiện tại.
         </div>
       )}
     </div>

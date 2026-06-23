@@ -30,6 +30,7 @@ export class CompanyRepository implements ICompanyRepository {
       ...(query.isVerified !== undefined && { isVerified: query.isVerified }),
       ...(query.industryId !== undefined && { industryId: Number(query.industryId) }),
       ...(query.provinceId !== undefined && { provinceId: Number(query.provinceId) }),
+      ...(query.region && { province: { region: query.region } }),
       ...(query.size && { size: query.size }),
       ...(query.search && {
         name: { contains: getSearchPattern(query.search), mode: "insensitive" },

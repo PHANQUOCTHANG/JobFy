@@ -10,6 +10,7 @@ interface JobSidebarFilterProps {
 }
 
 const EXP_OPTIONS = [
+  { value: "all", label: "Tất cả" },
   { value: "fresher", label: "Mới tốt nghiệp" },
   { value: "junior", label: "Dưới 2 năm" },
   { value: "mid", label: "Từ 2-4 năm" },
@@ -196,8 +197,9 @@ export const JobSidebarFilter: React.FC<JobSidebarFilterProps> = ({
           {EXP_OPTIONS.map((opt) => (
             <CustomRadio
               key={opt.value}
-              checked={filters.experienceLevel ? filters.experienceLevel === opt.value : opt.value === "fresher"}
-              onChange={() => onFilterChange({ experienceLevel: opt.value === "fresher" ? undefined : opt.value })}
+              checked={filters.experienceLevel ? filters.experienceLevel === opt.value : opt.value === "all"}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onChange={() => onFilterChange({ experienceLevel: opt.value === "all" ? undefined : (opt.value as any) })}
               label={opt.label}
             />
           ))}

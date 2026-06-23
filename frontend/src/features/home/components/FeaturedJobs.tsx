@@ -3,7 +3,6 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Job as RealJob } from "@/features/jobs/types";
 import { JobCard } from "@/features/jobs/components/JobCard";
 import { useJobs, useProvinces, useJobCategories } from "@/features/jobs/hooks/useJobs";
-import { mockJobs } from "@/features/jobs/api/mockData";
 import { SectionFilterBar } from "@/features/jobs/components/SectionFilterBar";
 import { JobSkeletonCard } from "@/features/jobs/components/JobSkeletonCard";
 import {
@@ -37,20 +36,28 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
   const { data: provinces } = useProvinces();
   const { data: categories } = useJobCategories();
 
-  const resolveProvinceId = (val: string): number | undefined => {
-    if (val === 'all') return undefined;
-    const nameMap: Record<string, string> = {
+  const resolveLocation = (val: string): { provinceId?: number; region?: string } => {
+    if (val === 'all') return {};
+    const provinceMap: Record<string, string> = {
       hanoi: 'Hà Nội',
       hcm: 'Hồ Chí Minh',
       danang: 'Đà Nẵng',
     };
-    if (nameMap[val]) {
-      return provinces?.find(p => p.name === nameMap[val])?.id;
+    if (provinceMap[val]) {
+      return { provinceId: provinces?.find(p => p.name === provinceMap[val])?.id };
     }
-    return undefined; // north/south/central skip for now
+    const regionMap: Record<string, string> = {
+      north: 'Miền Bắc',
+      south: 'Miền Nam',
+      central: 'Miền Trung',
+    };
+    if (regionMap[val]) {
+      return { region: regionMap[val] };
+    }
+    return {};
   };
 
-  const provinceId = resolveProvinceId(locationValue);
+  const { provinceId, region } = resolveLocation(locationValue);
   const { min: salaryMin, max: salaryMax } = SALARY_PARAM_MAP[salaryValue] ?? {};
   const experienceLevel = EXPERIENCE_PARAM_MAP[expValue];
   const categorySlug = categoryValue === 'all' ? undefined : categoryValue;
@@ -59,6 +66,7 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
     limit: LIMIT,
     page,
     provinceId,
+    region,
     salaryMin,
     salaryMax,
     experienceLevel,
@@ -67,11 +75,7 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 
-  const jobs = response?.data && response.data.length > 0
-    ? response.data
-    : propJobs && propJobs.length > 0
-      ? propJobs
-      : mockJobs.slice(0, LIMIT);
+  const jobs = response?.data !== undefined ? response.data : (propJobs || []);
 
   const totalPages = response?.meta?.totalPages
     ? Math.max(response.meta.totalPages, 1)
@@ -140,7 +144,7 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
                 <JobSkeletonCard key={i} viewMode="compact" />
               ))
-            ) : (
+            ) : jobs.length > 0 ? (
               jobs.map((job, idx) => (
                 <JobCard
                   key={`${job.id}-${idx}`}
@@ -150,6 +154,10 @@ export function FeaturedJobs({ jobs: propJobs }: { jobs: RealJob[] }) {
                   onSave={toggleSave}
                 />
               ))
+            ) : (
+              <div className="col-span-full py-12 text-center text-[#6f7882]">
+                Không có việc làm nào phù hợp với bộ lọc hiện tại.
+              </div>
             )}
           </div>
 

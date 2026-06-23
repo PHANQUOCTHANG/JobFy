@@ -9,6 +9,7 @@ interface JobFiltersProps {
   onSearch: (filters: Partial<JobFilterParams>) => void;
   initialKeyword?: string;
   initialProvinceId?: number;
+  initialRegion?: string;
   initialDistrictIds?: string;
   initialCategorySlug?: string;
   searchMode: 'title' | 'company' | 'both';
@@ -19,6 +20,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   onSearch,
   initialKeyword = "",
   initialProvinceId,
+  initialRegion,
   initialDistrictIds,
   initialCategorySlug,
   searchMode,
@@ -26,7 +28,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
 }) => {
   const [keyword, setKeyword] = React.useState(initialKeyword ?? "");
   const [provinceId, setProvinceId] = React.useState<string>(
-    initialProvinceId ? String(initialProvinceId) : "all",
+    initialRegion ? `region_${initialRegion}` : (initialProvinceId ? String(initialProvinceId) : "all"),
   );
   const [categorySlug, setCategorySlug] = React.useState<string>(
     initialCategorySlug ? String(initialCategorySlug) : "all",
@@ -34,7 +36,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   
   // District & 2-column layout state
   const [activeProvinceTab, setActiveProvinceTab] = useState<string>(
-    initialProvinceId ? String(initialProvinceId) : "all",
+    initialRegion ? `region_${initialRegion}` : (initialProvinceId ? String(initialProvinceId) : "all"),
   );
   const [districtIds, setDistrictIds] = useState<number[]>(
     initialDistrictIds ? initialDistrictIds.split(",").map(Number) : []
@@ -51,9 +53,9 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   }, [initialKeyword]);
 
   useEffect(() => {
-    setProvinceId(initialProvinceId ? String(initialProvinceId) : "all");
-    setActiveProvinceTab(initialProvinceId ? String(initialProvinceId) : "all");
-  }, [initialProvinceId]);
+    setProvinceId(initialRegion ? `region_${initialRegion}` : (initialProvinceId ? String(initialProvinceId) : "all"));
+    setActiveProvinceTab(initialRegion ? `region_${initialRegion}` : (initialProvinceId ? String(initialProvinceId) : "all"));
+  }, [initialProvinceId, initialRegion]);
 
   useEffect(() => {
     if (initialDistrictIds) {
@@ -74,7 +76,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   const { data: categories, isLoading: isLoadingCategories } = useJobCategories();
   const { data: provinces, isLoading: isLoadingProvinces } = useProvinces();
   const { data: districts, isLoading: isLoadingDistricts } = useDistricts(
-    activeProvinceTab !== "all" ? Number(activeProvinceTab) : undefined
+    (activeProvinceTab !== "all" && !activeProvinceTab.startsWith("region_")) ? Number(activeProvinceTab) : undefined
   );
 
   // Close dropdowns on outside click
@@ -99,7 +101,8 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
     setShowSuggestions(false);
     onSearch({
       keyword: keyword || undefined,
-      provinceId: provinceId !== "all" ? Number(provinceId) : undefined,
+      provinceId: (provinceId !== "all" && !provinceId.startsWith('region_')) ? Number(provinceId) : undefined,
+      region: provinceId.startsWith('region_') ? provinceId.replace('region_', '') : undefined,
       districtIds: districtIds.length > 0 ? districtIds.join(",") : undefined,
       categorySlug: categorySlug !== "all" ? categorySlug : undefined,
     });
@@ -212,6 +215,8 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
             <div className="flex-1 text-left truncate max-w-[100px]">
               {isLoadingProvinces ? (
                 <Skeleton className="h-4 w-16 bg-[#f0f0f0]" />
+              ) : provinceId.startsWith('region_') ? (
+                provinceId.replace('region_', '')
               ) : selectedProvince ? (
                 selectedProvince.name
               ) : (
@@ -251,6 +256,36 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                       </span>
                     </label>
                   </div>
+
+                  <div className="px-4 py-2 mt-1">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Khu vực</span>
+                  </div>
+                  {['Miền Bắc', 'Miền Trung', 'Miền Nam'].map((reg) => (
+                    <div key={reg} className="px-4 py-2 hover:bg-[#f8f8f8] transition-colors">
+                      <label className="flex items-center gap-3 cursor-pointer group">
+                        <div className="relative flex items-center justify-center w-5 h-5">
+                          <input
+                            type="radio"
+                            name="province"
+                            className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            checked={activeProvinceTab === `region_${reg}`}
+                            onChange={() => {
+                              setActiveProvinceTab(`region_${reg}`);
+                              setDistrictIds([]);
+                            }}
+                          />
+                        </div>
+                        <span className={`text-[14px] ${activeProvinceTab === `region_${reg}` ? "text-blue-600 font-semibold" : "text-[#212f3f] group-hover:text-blue-600"}`}>
+                          {reg}
+                        </span>
+                      </label>
+                    </div>
+                  ))}
+
+                  <div className="px-4 py-2 mt-2">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tỉnh/Thành phố</span>
+                  </div>
+
                   {(provinces || [])
                     .filter((p) => p.name.toLowerCase().includes(provinceSearch.toLowerCase()))
                     .map((prov) => (
@@ -285,7 +320,8 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                       setShowProvinceDropdown(false);
                       onSearch({
                         keyword: keyword || undefined,
-                        provinceId: activeProvinceTab !== "all" ? Number(activeProvinceTab) : undefined,
+                        provinceId: (activeProvinceTab !== "all" && !activeProvinceTab.startsWith('region_')) ? Number(activeProvinceTab) : undefined,
+                        region: activeProvinceTab.startsWith('region_') ? activeProvinceTab.replace('region_', '') : undefined,
                         districtIds: districtIds.length > 0 ? districtIds.join(",") : undefined,
                         categorySlug: categorySlug !== "all" ? categorySlug : undefined,
                       });
@@ -296,7 +332,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto scrollbar-hide py-2">
-                  {activeProvinceTab === "all" ? (
+                  {activeProvinceTab === "all" || activeProvinceTab.startsWith('region_') ? (
                     <div className="px-4 py-8 text-center text-[13px] text-gray-500">
                       Vui lòng chọn Tỉnh/Thành phố để xem danh sách Quận/Huyện
                     </div>

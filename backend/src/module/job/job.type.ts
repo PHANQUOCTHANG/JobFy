@@ -22,6 +22,7 @@ export interface JobQuery extends BaseQuery {
   status?: JobStatus;
   isRemote?: boolean;
   searchMode?: 'title' | 'company' | 'both';
+  region?: string;
 }
 
 export const normalizeJobQuery = (query: any): JobQuery => ({
@@ -55,4 +56,5 @@ export const normalizeJobQuery = (query: any): JobQuery => ({
     isRemote: String(query.isRemote) === "true",
   }),
   ...(query.searchMode && { searchMode: query.searchMode }),
+  ...(query.region && { region: String(query.region) }),
 });

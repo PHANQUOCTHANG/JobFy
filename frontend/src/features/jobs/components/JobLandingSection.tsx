@@ -28,6 +28,7 @@ interface JobLandingSectionProps {
 export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }) => {
   const [page, setPage] = React.useState(1);
   const [activeFilterType, setActiveFilterType] = useState('location');
+  const [searchMode, setSearchMode] = useState<'title' | 'company' | 'both'>('title');
 
   // Filter values (one per type)
   const [locationValue, setLocationValue] = useState<string>('all');
@@ -39,20 +40,28 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
   const { data: provinces } = useProvinces();
   const { data: categories } = useJobCategories();
 
-  const resolveProvinceId = (val: string): number | undefined => {
-    if (val === 'all') return undefined;
-    const nameMap: Record<string, string> = {
+  const resolveLocation = (val: string): { provinceId?: number; region?: string } => {
+    if (val === 'all') return {};
+    const provinceMap: Record<string, string> = {
       hanoi: 'Hà Nội',
       hcm: 'Hồ Chí Minh',
       danang: 'Đà Nẵng',
     };
-    if (nameMap[val]) {
-      return provinces?.find(p => p.name === nameMap[val])?.id;
+    if (provinceMap[val]) {
+      return { provinceId: provinces?.find(p => p.name === provinceMap[val])?.id };
     }
-    return undefined; // north/south/central - skip for now
+    const regionMap: Record<string, string> = {
+      north: 'Miền Bắc',
+      south: 'Miền Nam',
+      central: 'Miền Trung',
+    };
+    if (regionMap[val]) {
+      return { region: regionMap[val] };
+    }
+    return {};
   };
 
-  const provinceId = resolveProvinceId(locationValue);
+  const { provinceId, region } = resolveLocation(locationValue);
   const { min: salaryMin, max: salaryMax } = SALARY_PARAM_MAP[salaryValue] ?? {};
   const experienceLevel = EXPERIENCE_PARAM_MAP[expValue];
   const categorySlug = categoryValue === 'all' ? undefined : categoryValue;
@@ -61,6 +70,7 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
     limit: 9,
     page,
     provinceId,
+    region,
     salaryMin,
     salaryMax,
     experienceLevel,
@@ -112,11 +122,17 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
 
       <div className="bg-gradient-to-r from-[#e3f2fd] via-[#e3f2fd]/80 to-[#f6f7fa] py-3 px-4 sticky top-0 z-[60] shadow-sm border-b border-blue-100 transition-all duration-300">
         <div className="max-w-[1140px] mx-auto">
-          <JobFilters onSearch={onSearch} initialProvinceId={provinceId} />
+          <JobFilters 
+            onSearch={onSearch} 
+            initialProvinceId={provinceId} 
+            initialRegion={region}
+            searchMode={searchMode}
+            onSearchModeChange={setSearchMode}
+          />
         </div>
       </div>
 
-      <HeroBanner />
+      <HeroBanner onSearch={onSearch} />
 
       <div className="max-w-[1140px] mx-auto px-4 mt-8">
         <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100">
@@ -140,10 +156,14 @@ export const JobLandingSection: React.FC<JobLandingSectionProps> = ({ onSearch }
               [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
                 <JobSkeletonCard key={i} viewMode="compact" />
               ))
-            ) : (
+            ) : jobs.length > 0 ? (
               jobs.map((job, idx) => (
                 <JobCard key={`${job.id}-${idx}`} job={job} viewMode="compact" />
               ))
+            ) : (
+              <div className="col-span-full py-12 text-center text-[#6f7882]">
+                Không có việc làm nào phù hợp với bộ lọc hiện tại.
+              </div>
             )}
           </div>
 

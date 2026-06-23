@@ -56,6 +56,7 @@ export class JobRepository implements IJobRepository {
       ...(query.salaryType && { salaryType: query.salaryType }),
       ...(query.status && { status: query.status }),
       ...(query.isRemote !== undefined && { isRemote: query.isRemote }),
+      ...(query.region && { province: { region: query.region } }),
       ...(query.search && {
         OR: (() => {
           const titleCondition = {

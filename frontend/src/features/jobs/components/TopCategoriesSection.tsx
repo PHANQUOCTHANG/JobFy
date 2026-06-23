@@ -4,7 +4,7 @@ import {
   Database, Megaphone, Stethoscope, ShoppingBag, Code2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useJobCategories } from '../hooks/useJobs';
+import { useJobCategories, useIndustries } from '../hooks/useJobs';
 import { SectionFilterBar } from './SectionFilterBar';
 import { QuickFilterOption, FilterType } from './SectionFilterBar';
 
@@ -23,34 +23,8 @@ const CATEGORY_ICON_MAP: Record<string, React.ReactNode> = {
   healthcare: <Stethoscope size={24} />,
 };
 
-const FALLBACK_CATEGORIES = [
-  { id: 1, name: 'IT Phần mềm', slug: 'it', icon: <Laptop size={24} /> },
-  { id: 2, name: 'Kinh doanh / Bán hàng', slug: 'sales', icon: <ShoppingBag size={24} /> },
-  { id: 3, name: 'Hành chính / Văn phòng', slug: 'admin', icon: <Briefcase size={24} /> },
-  { id: 4, name: 'Kế toán / Kiểm toán', slug: 'finance', icon: <Calculator size={24} /> },
-  { id: 5, name: 'Marketing / Truyền thông', slug: 'marketing', icon: <Megaphone size={24} /> },
-  { id: 6, name: 'Thiết kế / Mỹ thuật', slug: 'design', icon: <PenTool size={24} /> },
-  { id: 7, name: 'IT Phần cứng / Mạng', slug: 'it-hardware', icon: <Database size={24} /> },
-  { id: 8, name: 'Y tế / Chăm sóc sức khỏe', slug: 'healthcare', icon: <Stethoscope size={24} /> },
-];
 
-// Filter types for categories: just show categories by type/group
-const CAT_FILTER_TYPES: FilterType[] = [
-  { id: 'all', label: 'Tất cả ngành' },
-  { id: 'tech', label: 'Công nghệ' },
-  { id: 'business', label: 'Kinh doanh' },
-  { id: 'creative', label: 'Sáng tạo' },
-  { id: 'service', label: 'Dịch vụ' },
-];
 
-// Map filter → slugs to show
-const CAT_FILTER_SLUGS: Record<string, string[]> = {
-  all: [],
-  tech: ['it', 'it-software', 'it-hardware', 'network'],
-  business: ['sales', 'finance', 'accounting', 'admin', 'business'],
-  creative: ['design', 'marketing'],
-  service: ['healthcare', 'customer-service'],
-};
 
 const SORT_OPTIONS: QuickFilterOption[] = [
   { label: 'Phổ biến nhất', value: 'popular' },
@@ -60,26 +34,41 @@ const SORT_OPTIONS: QuickFilterOption[] = [
 ];
 
 export const TopCategoriesSection: React.FC = () => {
-  const { data: apiCategories, isLoading } = useJobCategories();
-  const [activeFilterType, setActiveFilterType] = useState('all');
+  const { data: apiCategories, isLoading: categoriesLoading } = useJobCategories();
+  const { data: industries, isLoading: industriesLoading } = useIndustries();
+  const [activeFilterType, setActiveFilterType] = useState<string | number>('all');
   const [activeSortValue, setActiveSortValue] = useState<string | number>('popular');
 
+  const filterTypes = React.useMemo<FilterType[]>(() => {
+    const base: FilterType[] = [{ id: 'all', label: 'Tất cả ngành' }];
+    if (!industries) return base;
+    return [
+      ...base,
+      ...industries.map(ind => ({
+        id: ind.id,
+        label: ind.name,
+      })),
+    ];
+  }, [industries]);
+
   const rawCategories = React.useMemo(() => {
-    if (!apiCategories || apiCategories.length === 0) return FALLBACK_CATEGORIES;
-    return apiCategories.slice(0, 12).map(cat => ({
+    if (!apiCategories) return [];
+    return apiCategories.map(cat => ({
       id: cat.id,
       name: cat.name,
       slug: cat.slug,
+      industryId: cat.industryId,
       icon: CATEGORY_ICON_MAP[cat.slug] || <Code2 size={24} />,
     }));
   }, [apiCategories]);
 
   const filteredCategories = React.useMemo(() => {
-    const slugs = CAT_FILTER_SLUGS[activeFilterType] || [];
-    if (slugs.length === 0) return rawCategories.slice(0, 8);
-    const filtered = rawCategories.filter(c => slugs.includes(c.slug));
-    return filtered.length > 0 ? filtered.slice(0, 8) : rawCategories.slice(0, 8);
+    if (activeFilterType === 'all') return rawCategories.slice(0, 8);
+    const filtered = rawCategories.filter(c => c.industryId === activeFilterType);
+    return filtered.slice(0, 8);
   }, [rawCategories, activeFilterType]);
+
+  const isLoading = categoriesLoading || industriesLoading;
 
   return (
     <div className="py-8">
@@ -88,7 +77,7 @@ export const TopCategoriesSection: React.FC = () => {
           Ngành nghề trọng điểm
         </h2>
         <SectionFilterBar
-          filterTypes={CAT_FILTER_TYPES}
+          filterTypes={filterTypes}
           activeFilterType={activeFilterType}
           onFilterTypeChange={setActiveFilterType}
           quickOptions={SORT_OPTIONS}
@@ -112,7 +101,7 @@ export const TopCategoriesSection: React.FC = () => {
             </div>
           ))}
         </div>
-      ) : (
+      ) : filteredCategories.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredCategories.map(cat => (
             <Link
@@ -130,6 +119,10 @@ export const TopCategoriesSection: React.FC = () => {
               </div>
             </Link>
           ))}
+        </div>
+      ) : (
+        <div className="py-10 text-center text-[#6f7882] bg-white rounded-lg border border-gray-200">
+          Không có ngành nghề nào phù hợp với bộ lọc hiện tại.
         </div>
       )}
     </div>
