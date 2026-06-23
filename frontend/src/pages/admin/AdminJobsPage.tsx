@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   Briefcase,
   MoreHorizontal,
@@ -38,25 +38,25 @@ import { Textarea } from "@/components/ui/textarea";
 
 // ─── API ─────────────────────────────────────────────────────────
 const fetchJobs = async (params: Record<string, any>) => {
-  const { data } = await axios.get("/api/v1/jobs", { params, withCredentials: true });
+  const { data } = await api.get("/jobs", { params });
   return data;
 };
 
 const updateJobStatusApi = (id: string, status: string, rejectedReason?: string) =>
-  axios.patch(`/api/v1/jobs/${id}/status`, { status, rejectedReason }, { withCredentials: true });
+  api.patch(`/jobs/${id}/status`, { status, rejectedReason });
 
 const deleteJobApi = (id: string) =>
-  axios.delete(`/api/v1/jobs/${id}/force`, { withCredentials: true });
+  api.delete(`/jobs/${id}/force`);
 
 // ─── Status Badge ──────────────────────────────────────────────
 const JOB_STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  pending:   { label: "Chờ duyệt", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
+  pending: { label: "Chờ duyệt", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
   published: { label: "Đã duyệt", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
-  rejected:  { label: "Từ chối",  className: "bg-red-500/15 text-red-600 border-red-500/30" },
-  draft:     { label: "Nháp",     className: "bg-muted text-muted-foreground border-border" },
-  closed:    { label: "Đã đóng",    className: "bg-slate-500/15 text-slate-500 border-slate-500/30" },
-  expired:   { label: "Hết hạn",   className: "bg-orange-500/15 text-orange-600 border-orange-500/30" },
-  paused:    { label: "Tạm dừng",    className: "bg-yellow-500/15 text-yellow-600 border-yellow-500/30" },
+  rejected: { label: "Từ chối", className: "bg-red-500/15 text-red-600 border-red-500/30" },
+  draft: { label: "Nháp", className: "bg-muted text-muted-foreground border-border" },
+  closed: { label: "Đã đóng", className: "bg-slate-500/15 text-slate-500 border-slate-500/30" },
+  expired: { label: "Hết hạn", className: "bg-orange-500/15 text-orange-600 border-orange-500/30" },
+  paused: { label: "Tạm dừng", className: "bg-yellow-500/15 text-yellow-600 border-yellow-500/30" },
 };
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
@@ -87,14 +87,15 @@ const AdminJobsPage: React.FC = () => {
     queryKey: ["admin", "jobs", "stats"],
     queryFn: async () => {
       const [allRes, pendingRes, publishedRes] = await Promise.all([
-        axios.get("/api/v1/jobs?limit=1", { withCredentials: true }),
-        axios.get("/api/v1/jobs?status=pending&limit=1", { withCredentials: true }),
-        axios.get("/api/v1/jobs?status=published&limit=1", { withCredentials: true }),
+        api.get("/jobs?limit=1"),
+        api.get("/jobs?status=pending&limit=1"),
+        api.get("/jobs?status=published&limit=1"),
       ]);
+      console.log(allRes, pendingRes, publishedRes)
       return {
-        all: allRes.data.meta?.totalItems || 0,
-        pending: pendingRes.data.meta?.totalItems || 0,
-        published: publishedRes.data.meta?.totalItems || 0,
+        all: allRes.data.meta?.total || allRes.data.meta?.totalItems || 0,
+        pending: pendingRes.data.meta?.total || pendingRes.data.meta?.totalItems || 0,
+        published: publishedRes.data.meta?.total || publishedRes.data.meta?.totalItems || 0,
       };
     },
     refetchInterval: 60000, // Làm mới mỗi phút
@@ -103,7 +104,7 @@ const AdminJobsPage: React.FC = () => {
   const params = {
     page,
     limit: 15,
-    ...(search && { keyword: search }),
+    ...(search && { search: search }),
     ...(statusFilter !== "all" && { status: statusFilter }),
   };
 
@@ -113,10 +114,10 @@ const AdminJobsPage: React.FC = () => {
   });
 
   const jobs: any[] = data?.data ?? [];
-  const meta = data?.meta ?? { totalItems: 0, totalPages: 1, page: 1 };
+  const meta = data?.meta ?? { total: 0, totalPages: 1, page: 1 };
 
   const statusMutation = useMutation({
-    mutationFn: ({ id, status, rejectedReason }: { id: string; status: string; rejectedReason?: string }) => 
+    mutationFn: ({ id, status, rejectedReason }: { id: string; status: string; rejectedReason?: string }) =>
       updateJobStatusApi(id, status, rejectedReason),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "jobs"] });
@@ -142,14 +143,14 @@ const AdminJobsPage: React.FC = () => {
 
   const statusActions = [
     { status: "published", label: "Duyệt xuất bản", icon: CheckCircle, color: "text-emerald-600 focus:text-emerald-600 focus:bg-emerald-500/10" },
-    { status: "paused",    label: "Tạm dừng",   icon: PauseCircle, color: "text-amber-600 focus:text-amber-600 focus:bg-amber-500/10" },
-    { status: "closed",    label: "Đóng tin",   icon: XCircle,     color: "text-slate-500 focus:bg-slate-500/10" },
+    { status: "paused", label: "Tạm dừng", icon: PauseCircle, color: "text-amber-600 focus:text-amber-600 focus:bg-amber-500/10" },
+    { status: "closed", label: "Đóng tin", icon: XCircle, color: "text-slate-500 focus:bg-slate-500/10" },
   ];
 
   const { data: jobDetailsData, isFetching: isFetchingDetails } = useQuery({
     queryKey: ["admin", "jobs", selectedJobId],
     queryFn: async () => {
-      const { data } = await axios.get(`/api/v1/jobs/${selectedJobId}`, { withCredentials: true });
+      const { data } = await api.get(`/jobs/${selectedJobId}`);
       return data;
     },
     enabled: !!selectedJobId,
@@ -191,7 +192,7 @@ const AdminJobsPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-card shadow-sm border-border/50 overflow-hidden group hover:border-amber-500/50 transition-colors">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
@@ -221,8 +222,8 @@ const AdminJobsPage: React.FC = () => {
         {/* Filters & Tabs */}
         <div className="p-4 sm:px-6 border-b border-border/50 space-y-4">
           <div className="flex flex-col sm:flex-row justify-between gap-4">
-            <Tabs 
-              value={statusFilter} 
+            <Tabs
+              value={statusFilter}
               onValueChange={(val) => { setStatusFilter(val); setPage(1); }}
               className="w-full sm:w-auto overflow-x-auto"
             >
@@ -334,7 +335,7 @@ const AdminJobsPage: React.FC = () => {
                               <Eye className="mr-2 size-4 text-primary" /> Xem chi tiết tin
                             </DropdownMenuItem>
                             <DropdownMenuSeparator className="bg-border/50" />
-                            
+
                             {job.status === "pending" && (
                               <>
                                 <DropdownMenuItem
@@ -352,7 +353,7 @@ const AdminJobsPage: React.FC = () => {
                                 <DropdownMenuSeparator className="bg-border/50" />
                               </>
                             )}
-                            
+
                             {statusActions
                               .filter((a) => a.status !== job.status)
                               .map((action) => (
@@ -438,10 +439,10 @@ const AdminJobsPage: React.FC = () => {
           </div>
           <div className="p-4 bg-muted/30 border-t border-border/50 flex justify-end gap-3">
             <Button variant="outline" className="rounded-xl font-medium" onClick={() => setIsRejectModalOpen(false)}>Hủy bỏ</Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               className="rounded-xl font-bold shadow-lg shadow-red-500/20"
-              onClick={submitReject} 
+              onClick={submitReject}
               disabled={!rejectReason.trim() || statusMutation.isPending}
             >
               Xác nhận từ chối

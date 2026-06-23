@@ -42,7 +42,6 @@ const ManageApplicationsPage = () => {
 
   return (
     <div className="flex flex-col lg:flex-row p-6 md:p-8 gap-6">
-      {/* Filters Sidebar (Left) */}
       <aside className="w-full lg:w-72 flex-shrink-0 flex flex-col gap-6 hidden lg:flex">
         <div className="bg-white border border-[#F1F5F9] rounded-2xl p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
           <div className="flex items-center justify-between mb-5">
@@ -100,7 +99,6 @@ const ManageApplicationsPage = () => {
         </div>
       </aside>
 
-      {/* Candidate List Canvas (Center) */}
       <div className="flex-1 flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-4">
           <div className="flex items-center gap-3">
@@ -128,7 +126,6 @@ const ManageApplicationsPage = () => {
           </div>
         </div>
 
-        {/* List Container */}
         <div className="flex flex-col gap-5 pb-8">
           {isCandidatesLoading ? (
             <div className="flex flex-col gap-4">
@@ -233,7 +230,6 @@ const ManageApplicationsPage = () => {
 
       {/* Right Utility Panel — AI Insights (DYNAMIC) */}
       <aside className="w-full lg:w-72 flex-shrink-0 flex-col gap-6 hidden xl:flex">
-        {/* AI Insight Widget */}
         <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-2xl border border-indigo-100 p-5 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.05)] flex flex-col group">
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full blur-[50px] opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
           <div className="relative z-10">
@@ -282,7 +278,6 @@ const ManageApplicationsPage = () => {
           </div>
         </div>
 
-        {/* Quick Actions Widget */}
         <div className="bg-white border border-[#F1F5F9] rounded-2xl p-5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
           <h3 className="text-[16px] font-black text-[#0F172A] mb-4">Hành động nhanh</h3>
           <div className="flex flex-col gap-2">

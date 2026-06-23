@@ -49,7 +49,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   onFilterChange,
   onReset,
 }) => {
-  // --- 1. UI STATE ---
+  // 1. UI STATE ---
   const [isExpanded, setIsExpanded] = useState(false);
   const [overflowVisible, setOverflowVisible] = useState(false);
 
@@ -71,7 +71,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
     setLocalSearch("");
   };
 
-  // --- 3. ANIMATION LOGIC (Overflow Fix) ---
+  // 3. ANIMATION LOGIC (Overflow Fix) ---
   useEffect(() => {
     if (isExpanded) {
       const timer = setTimeout(() => setOverflowVisible(true), 300);
@@ -94,11 +94,8 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
 
   return (
     <div className="w-full mb-8">
-      {/* CONTAINER CHÍNH */}
       <div className="bg-card border border-border rounded-xl shadow-sm transition-all">
-        {/* ================= HEADER SECTION ================= */}
         <div className="p-4 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-          {/* Search Bar */}
           <div className="relative w-full md:flex-1 md:max-w-xl group">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
               <Search className="size-4" />
@@ -122,7 +119,6 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             )}
           </div>
 
-          {/* Actions Group */}
           <div className="flex items-center gap-3 w-full md:w-auto md:justify-end">
             <Select
               value={params.sort || "newest"}
@@ -178,7 +174,6 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
           </div>
         </div>
 
-        {/* ================= EXPANDABLE PANEL ================= */}
         <div
           className={cn(
             "grid transition-[grid-template-rows] duration-300 ease-in-out border-t border-transparent",
@@ -199,7 +194,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                 </label>
                 <Select
                   value={params.role || "all"}
-                  onValueChange={(val) =>
+                  onValueChange={(val: string) =>
                     onFilterChange("role", val === "all" ? undefined : val)
                   }
                 >
@@ -215,7 +210,6 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                 </Select>
               </div>
 
-              {/* 2. Status Filter */}
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold uppercase text-muted-foreground/80 tracking-widest flex items-center gap-1.5 ml-1">
                   <LayoutGrid className="size-3" /> Trạng thái
@@ -252,7 +246,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
                     <SelectItem value="banned">
                       <div className="flex items-center gap-2">
                         <div className="size-2 rounded-full bg-destructive" />
-                        Bị khóa (Banned)
+                        Bị khóa
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -262,7 +256,6 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
           </div>
         </div>
 
-        {/* ================= ACTIVE TAGS FOOTER ================= */}
         {activeFiltersCount > 0 && (
           <div className="p-3 bg-muted/20 border-t border-border flex flex-wrap items-center gap-2 rounded-b-xl">
             <span className="text-xs font-semibold text-muted-foreground mr-1">

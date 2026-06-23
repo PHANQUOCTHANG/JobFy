@@ -3,9 +3,7 @@ import userApi from "../api/userApi";
 import { userKeys } from "../utils/userKeys";
 import type { UserFilterParams } from "../types";
 
-// ==========================================
 // 1. QUERY: LẤY DANH SÁCH USERS (ADMIN)
-// ==========================================
 export const useUsersQuery = (params: UserFilterParams) => {
   return useQuery({
     // Sử dụng userKeys đã định nghĩa để quản lý cache key đồng nhất
@@ -19,22 +17,23 @@ export const useUsersQuery = (params: UserFilterParams) => {
     staleTime: 1000 * 60,
 
     // Selector: Chỉ trích xuất những dữ liệu thực sự cần thiết cho Component (Table, Pagination)
-    select: (response) => ({
-      users: response.data || [],
-      meta: {
-        totalItems: response.meta?.total || 0,
-        totalPages: response.meta?.totalPages || 1,
-        page: response.meta?.page || 1,
-        pageSize: response.meta?.limit || 10,
-      },
-      isEmpty: !response.data || response.data.length === 0,
-    }),
+    select: (response) => {
+      const pagedData = response.data as any;
+      return {
+        users: pagedData?.data || pagedData || [],
+        meta: {
+          totalItems: pagedData?.total || 0,
+          totalPages: pagedData?.totalPages || 1,
+          page: pagedData?.page || 1,
+          pageSize: pagedData?.limit || 10,
+        },
+        isEmpty: !pagedData?.data || pagedData.data.length === 0,
+      };
+    },
   });
 };
 
-// ==========================================
 // 2. QUERY: LẤY CHI TIẾT 1 USER (ADMIN / PROFILE)
-// ==========================================
 export const useUserDetailQuery = (userId: string | undefined | null) => {
   return useQuery({
     // Nếu userId bị undefined/null (VD: form tạo mới), queryKey sẽ thay đổi nhưng enabled = false sẽ chặn fetch
@@ -50,3 +49,5 @@ export const useUserDetailQuery = (userId: string | undefined | null) => {
     select: (response) => response.data,
   });
 };
+
+

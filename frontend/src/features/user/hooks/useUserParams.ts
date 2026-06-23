@@ -31,6 +31,7 @@ export const useUserParams = (initialLimit = 10) => {
     [setParams],
   );
   const handleFilterChange = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (key: keyof UserFilterParams, value: any) => {
       setParams({ [key]: value, page: 1 });
     },

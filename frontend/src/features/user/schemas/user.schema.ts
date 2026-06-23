@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
+// SHARED RULES ---
 const passwordRule = z
   .string()
   .min(6, "Mật khẩu tối thiểu 6 ký tự")
@@ -13,6 +22,7 @@ const baseAdminUserSchema = z.object({
   role: z.enum(["candidate", "employer", "admin"]),
   status: z.enum(["active", "inactive", "banned", "pending_verification"]),
   avatarUrl: z.string().url("Phải là URL hợp lệ").optional().or(z.literal("")),
+  avatar: z.any().optional(),
 });
 
 // Schema khi tạo mới: Bắt buộc password
@@ -27,7 +37,7 @@ export const updateAdminUserSchema = baseAdminUserSchema.extend({
 
 export type AdminUserFormValues = z.infer<typeof updateAdminUserSchema>;
 
-// --- 2. USER PROFILE UPDATE (Self) ---
+// 2. USER PROFILE UPDATE (Self) ---
 export const profileSchema = z.object({
   fullName: z.string().trim().min(2).max(150),
   avatarUrl: z.string().url().optional().or(z.literal("")),

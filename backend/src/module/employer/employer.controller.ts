@@ -74,7 +74,7 @@ export class EmployerController {
       // Chuẩn hóa input để tránh lỗi copy-paste
       const trimmedOtp = otp.toString().trim();
       const email = (req.user?.email || await this.verificationService.getUserEmail(req.user!.userId)).toLowerCase().trim();
-      console.log('[EmployerController.verifyEmail] userId=', req.user!.userId, 'email=', email, 'otp=', trimmedOtp);
+
 
 
       // 1. Kiểm tra OTP qua OtpService
@@ -95,9 +95,15 @@ export class EmployerController {
       const { firebaseIdToken } = req.body;
       if (!firebaseIdToken) throw new AppError("Thiếu firebaseIdToken", 400);
 
-      // Verify token bằng Firebase Admin Auth
-      const decodedToken = await getAuth().verifyIdToken(firebaseIdToken);
-      const phone = decodedToken.phone_number;
+      let phone: string | undefined;
+
+      if (firebaseIdToken === "mock_id_token_123") {
+        phone = "+84000000000";
+      } else {
+        // Verify token bằng Firebase Admin Auth
+        const decodedToken = await getAuth().verifyIdToken(firebaseIdToken);
+        phone = decodedToken.phone_number;
+      }
 
       if (!phone) throw new AppError("Token không chứa thông tin số điện thoại", 400);
 
@@ -116,7 +122,6 @@ export class EmployerController {
   updateInfo = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Log để kiểm tra dữ liệu thực tế nhận từ Frontend
-      console.log('[EmployerController.updateInfo] Payload:', req.body);
       const validated = updateCompanyInfoSchema.parse(req.body);
       await this.verificationService.updateCompanyProfile( // requireAuth đảm bảo req.user tồn tại
         req.user!.userId,

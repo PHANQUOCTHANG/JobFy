@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Briefcase, Bell, Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "@/store/hooks";
+import { toast } from "sonner";
 import { UserDropdown } from "@/features/user/components/UserDropdown";
+import { NotificationDropdown } from "@/features/notifications/components/NotificationDropdown";
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,11 +20,12 @@ export function Header() {
     { label: "Cẩm nang", href: "/guide" },
   ];
 
+  const isJobPage = path.startsWith('/jobs');
+
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <header className={`bg-white border-b border-slate-200 z-[3000] shadow-sm ${isJobPage ? 'relative' : 'sticky top-0'}`}>
       <div className="max-w-7xl mx-auto px-5 lg:px-10 flex items-center justify-between h-[64px]">
         
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
           <div className="w-[34px] h-[34px] bg-[#4F46E5] rounded-[10px] flex items-center justify-center shadow-md shadow-[#4F46E5]/20">
             <Briefcase size={16} className="text-white" strokeWidth={2.5} />
@@ -32,7 +35,6 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Nav desktop */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map(({ label, href }) => {
             const isActive = path === href || (href !== "/" && path.startsWith(href));
@@ -40,22 +42,32 @@ export function Header() {
             if (href === '/cv') {
               return (
                 <div key={href} className="relative group">
-                  <Link
-                    to={href}
+                  <button
                     className={`px-4 py-2 text-[13.5px] font-medium rounded-lg transition-all flex items-center gap-1 ${
                       isActive
-                        ? "text-[#00B14F] bg-[#e5f7ed] font-semibold"
-                        : "text-slate-600 hover:text-[#00B14F] hover:bg-slate-100"
+                        ? "text-[#4F46E5] bg-[#EEF2FF] font-semibold"
+                        : "text-slate-600 hover:text-[#4F46E5] hover:bg-[#EEF2FF]"
                     }`}
                   >
                     Hồ sơ & CV <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
-                  </Link>
-                  {/* Dropdown */}
-                  <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-56 z-50">
+                  </button>
+                  <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all w-56 z-[3000]">
                     <div className="bg-white border border-gray-100 shadow-xl rounded-xl p-2 flex flex-col">
-                      <Link to="/cv" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu CV theo style</Link>
-                      <Link to="/cv/my-cvs" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Quản lý CV</Link>
-                      <Link to="/cv/cover-letter" className="px-4 py-2.5 hover:bg-[#f4f5f5] hover:text-[#00B14F] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu Cover Letter</Link>
+                      <Link to="/cv" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Tạo CV</Link>
+                      <Link to="/cv/ai-builder" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Tạo CV bằng AI</Link>
+                      <Link 
+                        to="/cv/my-cvs" 
+                        className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium"
+                        onClick={(e) => {
+                          if (!user) {
+                            e.preventDefault();
+                            toast.error("Vui lòng đăng nhập để quản lý CV");
+                          }
+                        }}
+                      >
+                        Quản lý CV
+                      </Link>
+                      <Link to="/cv/cover-letter" className="px-4 py-2.5 hover:bg-[#EEF2FF] hover:text-[#4F46E5] text-sm text-gray-700 rounded-lg transition-colors font-medium">Mẫu Cover Letter</Link>
                     </div>
                   </div>
                 </div>
@@ -78,12 +90,14 @@ export function Header() {
           })}
         </nav>
 
-        {/* Right actions */}
         <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-          <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all mr-2">
-            <Bell size={17} />
-            <span className="absolute top-1.5 right-1.5 w-[7px] h-[7px] bg-[#F59E0B] rounded-full border-2 border-white" />
-          </button>
+          {user ? (
+            <NotificationDropdown />
+          ) : (
+            <Link to="/login" className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-all mr-2">
+              <Bell size={17} />
+            </Link>
+          )}
           
           {user ? (
             <UserDropdown user={user} />
@@ -106,15 +120,14 @@ export function Header() {
           
           <div className="w-[1px] h-6 bg-slate-200 mx-1"></div>
           
-          <a
-            href="#"
+          <Link
+            to="/employers"
             className="text-[13.5px] font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400 px-4 py-2 rounded-xl transition-all"
           >
             Tuyển dụng
-          </a>
+          </Link>
         </div>
 
-        {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-slate-600 hover:text-slate-900 p-2 rounded-lg hover:bg-slate-100 transition-all"
@@ -123,7 +136,6 @@ export function Header() {
         </button>
       </div>
 
-      {/* Mobile drawer */}
       <div className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-96" : "max-h-0"}`}>
         <div className="bg-white border-t border-slate-200 px-5 py-4 flex flex-col gap-1">
           {navLinks.map(({ label, href }) => (

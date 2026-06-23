@@ -44,7 +44,7 @@ const AvatarFallback = React.forwardRef<
 ));
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 
-// --- PHẦN QUAN TRỌNG NHẤT ---
+// PHẦN QUAN TRỌNG NHẤT ---
 // Xuất cả kiểu Named và kiểu Default để tránh lỗi import
 export { Avatar, AvatarImage, AvatarFallback };
 export default Avatar;

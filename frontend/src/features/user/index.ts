@@ -9,6 +9,7 @@ export * from "./hooks/useUserForm";
 export * from "./hooks/useUserMutations";
 export * from "./hooks/useUserParams";
 export * from "./hooks/useUsersQuery";
+export * from "./hooks/useMe";
 
 export * from "./schemas/user.schema";
 export * from "./types/index";

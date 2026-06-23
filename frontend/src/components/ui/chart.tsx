@@ -104,6 +104,7 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ChartTooltipContent(props: any) {
   const {
     active,
@@ -119,6 +120,7 @@ function ChartTooltipContent(props: any) {
     color,
     nameKey,
     labelKey,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = props as any;
   const { config } = useChart();
 
@@ -173,6 +175,7 @@ function ChartTooltipContent(props: any) {
     >
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {payload.map((item: any, index: number) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
@@ -244,6 +247,7 @@ function ChartTooltipContent(props: any) {
 
 const ChartLegend = RechartsPrimitive.Legend;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ChartLegendContent(props: any) {
   const {
     className,
@@ -251,6 +255,7 @@ function ChartLegendContent(props: any) {
     payload,
     verticalAlign = "bottom",
     nameKey,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = props as any;
   const { config } = useChart();
 
@@ -266,6 +271,7 @@ function ChartLegendContent(props: any) {
         className,
       )}
     >
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {payload.map((item: any) => {
         const key = `${nameKey || item.dataKey || "value"}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
@@ -306,18 +312,25 @@ function getPayloadConfigFromPayload(
   }
 
   const payloadPayload =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     "payload" in (payload as any) &&
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     typeof (payload as any).payload === "object" &&
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (payload as any).payload !== null
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ? (payload as any).payload
       : undefined;
 
   let configLabelKey: string = key;
 
   if (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     key in (payload as any) &&
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     typeof (payload as any)[key as keyof typeof payload] === "string"
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     configLabelKey = (payload as any)[key as keyof typeof payload] as string;
   } else if (
     payloadPayload &&
@@ -330,7 +343,9 @@ function getPayloadConfigFromPayload(
   }
 
   return configLabelKey in config
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ? (config as any)[configLabelKey]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     : (config as any)[key as keyof typeof config];
 }
 

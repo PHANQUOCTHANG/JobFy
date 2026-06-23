@@ -1,6 +1,4 @@
-// ============================================================
 // User Types — Khớp với Backend JobFy (Prisma + AuthResponseDto)
-// ============================================================
 
 export type UserRole = "candidate" | "employer" | "admin";
 export type UserStatus = "active" | "inactive" | "banned" | "pending_verification";
@@ -20,8 +18,8 @@ export interface IUser {
   facebookId: string | null;
   linkedinId: string | null;
   lastLoginAt: string | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 // 2. UserProfile — dữ liệu đầy đủ từ /auth/me

@@ -13,9 +13,7 @@ export const useUserMutations = () => {
     queryClient.invalidateQueries({ queryKey: userKeys.lists() });
   };
 
-  // ==========================================
   // 1. CREATE USER (Admin)
-  // ==========================================
   const createMutation = useMutation({
     mutationFn: (data: CreateUserRequest) => userApi.create(data),
     onSuccess: () => {
@@ -25,9 +23,7 @@ export const useUserMutations = () => {
     onError: (err) => handleError(err, "Lỗi tạo người dùng"),
   });
 
-  // ==========================================
   // 2. UPDATE USER (Admin)
-  // ==========================================
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateUserRequest }) =>
       userApi.update(id, data),
@@ -52,9 +48,7 @@ export const useUserMutations = () => {
     onError: (err) => handleError(err, "Lỗi thay đổi trạng thái"),
   });
 
-  // ==========================================
   // 4. DELETE USER
-  // ==========================================
   const deleteMutation = useMutation({
     mutationFn: userApi.delete,
     onSuccess: () => {
@@ -65,7 +59,7 @@ export const useUserMutations = () => {
   });
 
   return {
-    // --- Async Methods (Dùng trong Form submit) ---
+    // Async Methods (Dùng trong Form submit) ---
     createUserAsync: createMutation.mutateAsync,
     updateUserAsync: updateMutation.mutateAsync,
 
@@ -73,7 +67,7 @@ export const useUserMutations = () => {
     updateUserStatus: updateStatusMutation.mutate,
     deleteUser: deleteMutation.mutate,
 
-    // --- Loading States ---
+    // Loading States ---
     isCreating: createMutation.isPending,
     isUpdating: updateMutation.isPending,
     isUpdatingStatus: updateStatusMutation.isPending,

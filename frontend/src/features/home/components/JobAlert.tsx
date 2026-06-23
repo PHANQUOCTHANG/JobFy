@@ -11,7 +11,6 @@ export function JobAlert() {
         <Reveal>
           <div className="bg-[#0F172A] rounded-[2rem] p-8 lg:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-xl">
             
-            {/* Left Content */}
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 bg-[#0F172A] rounded-2xl flex items-center justify-center flex-shrink-0">
                 <Bell size={28} className="text-[#4F46E5]" />
@@ -26,7 +25,6 @@ export function JobAlert() {
               </div>
             </div>
 
-            {/* Right Form */}
             <form onSubmit={e => e.preventDefault()} className="flex items-center gap-3 w-full lg:w-auto">
               <div className="relative flex-1 lg:w-[320px]">
                 <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]" />

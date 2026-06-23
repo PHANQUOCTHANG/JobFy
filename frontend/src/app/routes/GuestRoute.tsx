@@ -10,8 +10,10 @@ export const GuestRoute = () => {
     return <ThemedLoader />;
   }
 
-  // Nếu đã đăng nhập -> Đá về trang chủ ngay lập tức
+  // Nếu đã đăng nhập -> Đá về dashboard tương ứng của Role
   if (user) {
+    if (user.role === "employer") return <Navigate to="/employer" replace />;
+    if (user.role === "admin") return <Navigate to="/admin" replace />;
     return <Navigate to="/" replace />;
   }
 

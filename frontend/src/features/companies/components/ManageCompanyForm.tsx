@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import api from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Lock, ShieldCheck } from "lucide-react";
 import { companyProfileSchema, CompanyProfileInput } from "../schemas/company.schema";
 import {
   useUpdateMyCompany,
@@ -29,11 +29,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { Company } from "../types";
-import { Button } from "@/components/ui/button"; // Đảm bảo import đúng Button
 
 interface ManageCompanyFormProps {
   initialData?: Company;
+  isVerified?: boolean;
 }
 
 // Helper function to format Prisma CompanySize enum for frontend Select component
@@ -42,7 +43,7 @@ const formatCompanySizeForSelect = (prismaSize: string | undefined | null): stri
   return prismaSize.replace('value_', ''); // Converts "value_1_10" to "1_10"
 };
 
-export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialData }) => {
+export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialData, isVerified }) => {
   const { mutate: updateCompany, isPending } = useUpdateMyCompany();
 
   // Fetch data for select fields
@@ -56,12 +57,16 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
       name: initialData?.name || "",
       taxCode: initialData?.taxCode || "",
       website: initialData?.website || "",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       foundedYear: initialData?.foundedYear || "" as any, // Giữ nguyên
       size: (formatCompanySizeForSelect(initialData?.size) as any) || undefined, // Áp dụng hàm chuyển đổi
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       industryId: initialData?.industryId || "" as any,
       description: initialData?.description || "",
       shortDescription: initialData?.shortDescription || "",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       provinceId: initialData?.provinceId || "" as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       districtId: initialData?.districtId || "" as any,
       address: initialData?.address || "",
       facebookUrl: initialData?.facebookUrl || "",
@@ -121,6 +126,7 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
       industryId: data.industryId === "" ? undefined : data.industryId,
       provinceId: data.provinceId === "" ? undefined : data.provinceId,
       districtId: data.districtId === "" ? undefined : data.districtId,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any;
 
     updateCompany(cleanedData);
@@ -130,7 +136,6 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-8">
 
-        {/* ACTION HEADER FOR FORM - Since it's sticky, we can just put the submit button prominently here or at bottom */}
         <div className="flex justify-end mb-4">
           <button
             type="submit"
@@ -151,7 +156,6 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
           </button>
         </div>
 
-        {/* Brand Identity Section */}
         <section className="bg-white border border-[#E2E8F0] rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
           {/* Cover Image Area */}
           <div className="h-[240px] relative bg-gradient-to-r from-blue-50 to-indigo-50 group">
@@ -221,55 +225,9 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
                 </div>
               </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <FormField
-                control={control}
-                name="logoUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Logo URL</FormLabel>
-                    <FormControl>
-                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="coverUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Cover Image URL</FormLabel>
-                    <FormControl>
-                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="businessLicenseUrl"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Giấy phép kinh doanh (Ảnh URL)</FormLabel>
-                    <FormControl>
-                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="https://..." {...field} />
-                    </FormControl>
-                    <FormDescription className="text-[12px] font-medium text-[#94A3B8]">Cung cấp ảnh chụp giấy phép KD để admin phê duyệt (Verify) công ty bạn.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
           </div>
         </section>
 
-        {/* General Info Form */}
         <section className="bg-white border border-[#F1F5F9] rounded-3xl p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
           <div className="flex items-center gap-2 mb-8 border-l-4 border-[#00307c] pl-4">
             <h3 className="text-[20px] font-black text-[#0F172A]">Thông tin chung</h3>
@@ -281,10 +239,33 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Tên công ty <span className="text-rose-500">*</span></FormLabel>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">
+                    Tên công ty <span className="text-rose-500">*</span>
+                  </FormLabel>
                   <FormControl>
-                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Ví dụ: JobFy Solutions Global" {...field} />
+                    {isVerified ? (
+                      <div className="relative group">
+                        <div className="h-12 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50/60 px-4 pr-[100px] flex items-center gap-3 cursor-not-allowed overflow-hidden">
+                          <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
+                          <span className="text-[14px] font-bold text-[#0F172A] truncate">{field.value || <span className="text-slate-400 font-normal italic">Chưa có dữ liệu</span>}</span>
+                        </div>
+                        <div className="absolute right-0 top-0 h-full flex items-center pr-3">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-wide shadow-sm">
+                            <Lock size={9} />
+                            Đã khóa
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Ví dụ: JobFy Solutions Global" {...field} />
+                    )}
                   </FormControl>
+                  {isVerified && (
+                    <p className="text-[11px] font-medium text-emerald-600/80 flex items-center gap-1.5 mt-1">
+                      <ShieldCheck size={11} />
+                      Xác thực bởi quản trị viên — không thể chỉnh sửa.
+                    </p>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -296,7 +277,7 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Lĩnh vực hoạt động <span className="text-rose-500">*</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value?.toString()} disabled={isLoadingIndustries}>
+                  <Select onValueChange={field.onChange} value={field.value ? field.value.toString() : undefined} disabled={isLoadingIndustries}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
                         <SelectValue placeholder={isLoadingIndustries ? "Đang tải..." : "Chọn lĩnh vực"} />
@@ -320,10 +301,33 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               name="taxCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Mã số thuế (Tùy chọn)</FormLabel>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">
+                    Mã số thuế (Tùy chọn)
+                  </FormLabel>
                   <FormControl>
-                    <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Nhập mã số thuế" {...field} />
+                    {isVerified ? (
+                      <div className="relative group">
+                        <div className="h-12 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50/60 px-4 pr-[100px] flex items-center gap-3 cursor-not-allowed overflow-hidden">
+                          <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
+                          <span className="text-[14px] font-bold text-[#0F172A] font-mono tracking-wider">{field.value || <span className="text-slate-400 font-normal italic font-sans tracking-normal">Chưa có dữ liệu</span>}</span>
+                        </div>
+                        <div className="absolute right-0 top-0 h-full flex items-center pr-3">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-wide shadow-sm">
+                            <Lock size={9} />
+                            Đã khóa
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <Input className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20" placeholder="Nhập mã số thuế" {...field} />
+                    )}
                   </FormControl>
+                  {isVerified && (
+                    <p className="text-[11px] font-medium text-emerald-600/80 flex items-center gap-1.5 mt-1">
+                      <ShieldCheck size={11} />
+                      Xác thực bởi quản trị viên — không thể chỉnh sửa.
+                    </p>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -378,8 +382,8 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
                   <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Tỉnh / Thành phố <span className="text-rose-500">*</span></FormLabel>
                   <Select onValueChange={(value) => {
                     field.onChange(value);
-                    form.setValue("districtId", ""); // Reset district when province changes
-                  }} value={field.value?.toString()} disabled={isLoadingProvinces}>
+                    form.setValue("districtId", "" as any); // Reset district when province changes
+                  }} value={field.value ? field.value.toString() : undefined} disabled={isLoadingProvinces}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
                         <SelectValue placeholder={isLoadingProvinces ? "Đang tải..." : "Chọn Tỉnh/Thành phố"} />
@@ -403,8 +407,8 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
               name="districtId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Quận / Huyện <span className="text-rose-500">*</span></FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value?.toString()} disabled={!selectedProvinceId || isLoadingDistricts}>
+                  <FormLabel className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Quận / Huyện (Tùy chọn)</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value ? field.value.toString() : undefined} disabled={!selectedProvinceId || isLoadingDistricts}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-xl border-[#E2E8F0] bg-[#F8FAFC] focus:bg-white focus:border-[#00307c] focus:ring-2 focus:ring-[#00307c]/20">
                         <SelectValue placeholder={!selectedProvinceId ? "Chọn Tỉnh/Thành phố trước" : isLoadingDistricts ? "Đang tải..." : "Chọn Quận/Huyện"} />
@@ -486,50 +490,77 @@ export const ManageCompanyForm: React.FC<ManageCompanyFormProps> = ({ initialDat
           </div>
         </section>
 
-        {/* Culture & Environment Section */}
         <section className="bg-white border border-[#F1F5F9] rounded-3xl p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
           <div className="flex items-center justify-between mb-8 border-l-4 border-emerald-500 pl-4">
-            <h3 className="text-[20px] font-black text-[#0F172A]">Văn hóa & Môi trường</h3>
-            <button type="button" className="text-[#00307c] font-bold text-[14px] flex items-center gap-1.5 hover:underline transition-all">
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
-              Thêm ảnh mới
+            <div>
+              <h3 className="text-[20px] font-black text-[#0F172A]">Văn hóa & Môi trường</h3>
+              <p className="text-[#64748B] text-[14px] mt-1">Giới thiệu không gian làm việc và hoạt động của công ty</p>
+            </div>
+            <button type="button" className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-emerald-100 transition-all border border-emerald-100 shadow-sm">
+              <span className="material-symbols-outlined text-[18px]">add_photo_alternate</span>
+              <span className="hidden sm:inline">Thêm ảnh</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {/* Hardcoded sample images to match the UI mockup */}
-            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#F1F5F9]">
-              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLiVxdhIY8umUiBLsAvWQPVI5DnnN1cERctweXp8rNVRUKykH3fYdrQEWMPZYSFzELPDR9MV8a5gq5BfbjGwvGODTZ6w9Lddgfd0u8WhrGyN5a5zZW_HZ3PMgoNjsqD_UU1PAB2OhwXkHXPh_CddVPn74UsZL0xoj4sAM4zOhKt6k0fXGrKWGwwatEif7XssbkLASQ33uKQCvXgE-jR_NiSjNgbaOqpNfsfxQfBk5bYWgojhtzIY2EhjXFG1zpHWd7iaDUdChv-hk" />
-              <div className="absolute inset-0 bg-[#0F172A]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
-                <button type="button" className="p-2 bg-white rounded-full text-[#64748B] hover:text-rose-600 shadow-sm"><span className="material-symbols-outlined text-[20px]">delete</span></button>
-                <button type="button" className="p-2 bg-white rounded-full text-[#64748B] hover:text-[#00307c] shadow-sm"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {/* Hardcoded sample images */}
+            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm">
+              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-[#0F172A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-rose-600 flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">delete</span></button>
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-[#00307c] flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
               </div>
             </div>
 
-            {/* NÚT SUBMIT */}
-            <div className="flex justify-end pt-4 border-t border-slate-100">
-              <Button type="submit" disabled={isPending} className="px-8 bg-[#4F46E5] hover:bg-[#4338CA]">
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Đang lưu...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Lưu thông tin công ty
-                  </>
-                )}
-              </Button>
+            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm">
+              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-[#0F172A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-rose-600 flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">delete</span></button>
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-[#00307c] flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
+              </div>
             </div>
 
-            <div className="aspect-square border-2 border-dashed border-[#CBD5E1] rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[#00307c] hover:bg-blue-50 transition-all cursor-pointer group bg-[#F8FAFC]">
-              <span className="material-symbols-outlined text-[#94A3B8] text-[32px] group-hover:text-[#00307c]">upload_file</span>
-              <span className="text-[13px] font-bold text-[#64748B] group-hover:text-[#00307c]">Tải lên ảnh</span>
+            <div className="group relative aspect-square rounded-2xl overflow-hidden border border-[#E2E8F0] shadow-sm">
+              <img alt="Culture" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-[#0F172A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-rose-600 flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">delete</span></button>
+                <button type="button" className="w-10 h-10 bg-white/20 hover:bg-white backdrop-blur-md rounded-full text-white hover:text-[#00307c] flex items-center justify-center transition-all shadow-lg"><span className="material-symbols-outlined text-[20px]">visibility</span></button>
+              </div>
+            </div>
+            <div className="aspect-square border-2 border-dashed border-[#CBD5E1] rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-[#00307c] hover:bg-blue-50/50 transition-all cursor-pointer group bg-[#F8FAFC]">
+              <div className="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-[#94A3B8] text-[28px] group-hover:text-[#00307c] transition-colors">upload_file</span>
+              </div>
+              <div className="text-center px-2">
+                <p className="text-[14px] font-bold text-[#64748B] group-hover:text-[#00307c] transition-colors">Tải lên ảnh mới</p>
+                <p className="text-[12px] text-[#94A3B8] mt-1 hidden sm:block">PNG, JPG tối đa 5MB</p>
+              </div>
             </div>
           </div>
         </section>
-
+        {/* NÚT SUBMIT */}
+        <div className="flex justify-end pt-6 mt-8">
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="h-14 px-10 bg-gradient-to-r from-[#00307c] to-[#0047b3] hover:from-[#00225c] hover:to-[#00307c] text-white rounded-xl font-bold shadow-[0_8px_20px_-6px_rgba(0,48,124,0.4)] hover:-translate-y-0.5 hover:shadow-lg transition-all flex items-center gap-2 text-[16px]"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Đang lưu thay đổi...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-5 w-5" />
+                Lưu thông tin công ty
+              </>
+            )}
+          </Button>
+        </div>
       </form>
     </Form>
   );

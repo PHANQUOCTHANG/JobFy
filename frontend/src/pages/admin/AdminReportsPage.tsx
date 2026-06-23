@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   Flag,
   CheckCircle2,
@@ -32,12 +32,12 @@ import { toast } from "sonner";
 
 // ─── API ─────────────────────────────────────────────────────────
 const fetchReports = async (params: Record<string, any>) => {
-  const { data } = await axios.get("/api/v1/reports", { params, withCredentials: true });
+  const { data } = await api.get("/reports", { params });
   return data;
 };
 
-const updateReportApi = (id: string, status: string, note?: string) =>
-  axios.patch(`/api/v1/reports/${id}/review`, { status, note }, { withCredentials: true });
+const updateReportApi = (id: string, status: string, resolutionNote?: string) =>
+  api.patch(`/reports/${id}/review`, { status, resolutionNote });
 
 // ─── Config ───────────────────────────────────────────────────────
 const REPORT_TYPE_CONFIG: Record<string, { label: string; color: string }> = {

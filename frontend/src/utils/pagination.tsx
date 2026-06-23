@@ -145,7 +145,6 @@ const PageButton = memo(
         isRipple && "animate-[pg-ripple_0.35s_ease-out_both]",
       )}
     >
-      {/* Ripple overlay */}
       {isRipple && (
         <span
           aria-hidden="true"
@@ -184,7 +183,6 @@ const StatsLabel = memo(
       className="flex items-center gap-3.5 min-w-0"
       aria-label={`Showing ${startItem} to ${endItem} of ${totalItems} ${itemLabel}`}
     >
-      {/* Item range */}
       <span className="flex items-baseline gap-1 text-[11.5px] whitespace-nowrap">
         <span className="font-mono font-semibold text-foreground/90 tabular-nums">
           {startItem}–{endItem}
@@ -200,7 +198,6 @@ const StatsLabel = memo(
         </span>
       </span>
 
-      {/* Per-page selector */}
       {onItemsPerPageChange && (
         <div className="flex items-center gap-1.5 pl-3.5 border-l border-border/60">
           <span className="text-[10.5px] text-muted-foreground/55 whitespace-nowrap font-normal">
@@ -230,7 +227,6 @@ const StatsLabel = memo(
                 </option>
               ))}
             </select>
-            {/* Chevron */}
             <span
               className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 text-[9px] pointer-events-none"
               aria-hidden="true"
@@ -402,10 +398,8 @@ const Pagination = ({
         className={cn("w-full select-none", className)}
         aria-label="Pagination controls"
       >
-        {/* Progress bar */}
         <ProgressBar percent={progressPercent} />
 
-        {/* Main row */}
         <div
           className={cn(
             "flex items-center justify-between gap-3 px-4 py-2.5",
@@ -413,7 +407,6 @@ const Pagination = ({
             "flex-wrap sm:flex-nowrap",
           )}
         >
-          {/* ── LEFT: Stats + per-page ──────────────────────────────── */}
           <StatsLabel
             startItem={startItem}
             endItem={endItem}
@@ -423,12 +416,10 @@ const Pagination = ({
             onItemsPerPageChange={onItemsPerPageChange}
           />
 
-          {/* ── CENTER: Navigation ──────────────────────────────────── */}
           <nav
             aria-label="Pagination navigation"
             className="flex items-center gap-1 shrink-0"
           >
-            {/* First page — hidden on mobile */}
             <NavButton
               label="First page"
               size="sm"
@@ -439,7 +430,6 @@ const Pagination = ({
               <ChevronsLeft size={14} aria-hidden="true" />
             </NavButton>
 
-            {/* Previous */}
             <NavButton
               label="Previous page"
               onClick={() => handlePageChange(currentPage - 1)}
@@ -448,7 +438,6 @@ const Pagination = ({
               <ChevronLeft size={15} aria-hidden="true" />
             </NavButton>
 
-            {/* Page numbers — desktop only */}
             <div
               role="list"
               className="hidden sm:flex items-center gap-[3px]"
@@ -477,7 +466,6 @@ const Pagination = ({
               )}
             </div>
 
-            {/* Mobile indicator — current / total */}
             <div
               className="sm:hidden flex items-baseline gap-[3px] px-1.5"
               aria-live="polite"
@@ -492,7 +480,6 @@ const Pagination = ({
               </span>
             </div>
 
-            {/* Next */}
             <NavButton
               label="Next page"
               onClick={() => handlePageChange(currentPage + 1)}
@@ -501,7 +488,6 @@ const Pagination = ({
               <ChevronRight size={15} aria-hidden="true" />
             </NavButton>
 
-            {/* Last page — hidden on mobile */}
             <NavButton
               label="Last page"
               size="sm"
@@ -513,7 +499,6 @@ const Pagination = ({
             </NavButton>
           </nav>
 
-          {/* ── RIGHT: Jump to page ──────────────────────────────────── */}
           <form
             onSubmit={handleJump}
             noValidate
@@ -526,7 +511,6 @@ const Pagination = ({
               Go to
             </label>
 
-            {/* Input wrapper — focus ring via parent class */}
             <div
               className={cn(
                 "rounded-lg transition-all duration-150",

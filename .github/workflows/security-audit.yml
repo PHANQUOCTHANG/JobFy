@@ -16,6 +16,10 @@ on:
       - 'backend/package-lock.json'
       - 'frontend/package-lock.json'
 
+concurrency:
+  group: security-audit-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   # ─────────────────────────────────────────────
   # Job 1: npm audit backend

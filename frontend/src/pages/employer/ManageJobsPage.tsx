@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, no-unsafe-finally */
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
@@ -13,7 +12,7 @@ import { EditJobModal } from "@/features/jobs/components/EditJobModal";
 
 
 
-type JobStatusUi = "all" | "active" | "pending" | "draft" | "expired" | "closed" | "paused";
+type JobStatusUi = "all" | "active" | "pending" | "rejected" | "draft" | "expired" | "closed" | "paused";
 
 type JobRow = {
   id: string;
@@ -103,7 +102,7 @@ const ManageJobsPage = () => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState<"Tất cả" | "Đang hoạt động" | "Tạm dừng" | "Bản nháp" | "Hết hạn" | "Đã đóng">(
+  const [activeTab, setActiveTab] = useState<"Tất cả" | "Đang hoạt động" | "Chờ duyệt" | "Tạm dừng" | "Bản nháp" | "Từ chối" | "Hết hạn" | "Đã đóng">(
     "Tất cả",
   );
   const [page, setPage] = useState(1);
@@ -128,7 +127,7 @@ const ManageJobsPage = () => {
   const [filterJobType, setFilterJobType] = useState("");
   const [filterProvince, setFilterProvince] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
-  
+
   const { data: provinces } = useProvinces() as any;
   const { data: myCompany } = useMyCompany();
   const { data: industries } = useIndustries() as any;
@@ -139,14 +138,8 @@ const ManageJobsPage = () => {
   }>({ isOpen: false, type: null, jobId: null });
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // States for Stats & AI Insights
-  const [dashboardStats, setDashboardStats] = useState<any | null>(null);
-  const [conversionReport, setConversionReport] = useState<any | null>(null);
-  const [timeToHire, setTimeToHire] = useState<any | null>(null);
-  const [isStatsLoading, setIsStatsLoading] = useState(false);
-
   const tabs = useMemo(
-    () => ["Tất cả", "Đang hoạt động", "Tạm dừng", "Bản nháp", "Hết hạn", "Đã đóng"] as const,
+    () => ["Tất cả", "Đang hoạt động", "Chờ duyệt", "Từ chối", "Tạm dừng", "Bản nháp", "Hết hạn", "Đã đóng"] as const,
     [],
   );
 
@@ -154,6 +147,8 @@ const ManageJobsPage = () => {
     const map: Record<(typeof tabs)[number], JobStatusUi> = {
       "Tất cả": "all",
       "Đang hoạt động": "active",
+      "Chờ duyệt": "pending",
+      "Từ chối": "rejected",
       "Tạm dừng": "paused",
       "Bản nháp": "draft",
       "Hết hạn": "expired",
@@ -174,6 +169,10 @@ const ManageJobsPage = () => {
     switch (ui) {
       case "active":
         return "published";
+      case "pending":
+        return "pending";
+      case "rejected":
+        return "rejected";
       case "paused":
         return "paused";
       case "draft":
@@ -207,7 +206,7 @@ const ManageJobsPage = () => {
         if (myCompany?.id) params.companyId = myCompany.id;
         if (filterCategory) params.categoryId = Number(filterCategory);
 
-        const resp = await api.get("/jobs", { params });
+        const resp = await api.get("/employer/jobs", { params });
         const payload = resp.data as any;
 
         /**
@@ -271,48 +270,6 @@ const ManageJobsPage = () => {
     };
   }, [page, limit, statusQuery, debouncedKeyword, filterJobType, filterProvince, filterCategory, myCompany]);
 
-  // Fetch Dashboard statistics and AI suggestions on mount
-  useEffect(() => {
-    let active = true;
-    const fetchDashboardStats = async () => {
-      try {
-        setIsStatsLoading(true);
-        const [dashResp, convResp, timeResp] = await Promise.all([
-          api.get("/employer/dashboard"),
-          api.get("/employer/candidates/conversion-report"),
-          api.get("/employer/analytics/time-to-hire"),
-        ]);
-        if (!active) return;
-        setDashboardStats(dashResp.data.data);
-        setConversionReport(convResp.data.data);
-        setTimeToHire(timeResp.data.data);
-      } catch (error) {
-        console.error("Lỗi khi tải thống kê:", error);
-      } finally {
-        if (active) setIsStatsLoading(false);
-      }
-    };
-    fetchDashboardStats();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const computedConversionRate = useMemo(() => {
-    if (!conversionReport || conversionReport.total === 0) return "32.4";
-    const offered = conversionReport.offered || 0;
-    const accepted = conversionReport.accepted || 0;
-    const total = conversionReport.total || 0;
-    return ((offered + accepted) / total * 100).toFixed(1);
-  }, [conversionReport]);
-
-  const computedAverageDays = useMemo(() => {
-    if (!timeToHire || timeToHire.averageDays == null || timeToHire.averageDays === 0) {
-      return "18 Ngày";
-    }
-    return `${timeToHire.averageDays} Ngày`;
-  }, [timeToHire]);
-
   const displayFrom = totalItems === 0 ? 0 : (page - 1) * limit + 1;
   const displayTo = Math.min(page * limit, totalItems);
 
@@ -373,6 +330,8 @@ const ManageJobsPage = () => {
 
   const statusUi = (status?: string) => {
     if (status === "published") return { label: "Đang hoạt động", cls: "inline-flex px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-[12px] font-bold border border-emerald-200" };
+    if (status === "pending") return { label: "Chờ duyệt", cls: "inline-flex px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-[12px] font-bold border border-blue-200" };
+    if (status === "rejected") return { label: "Từ chối", cls: "inline-flex px-3 py-1.5 bg-rose-50 text-rose-700 rounded-lg text-[12px] font-bold border border-rose-200" };
     if (status === "draft") return { label: "Bản nháp", cls: "inline-flex px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg text-[12px] font-bold border border-amber-200" };
     if (status === "expired") return { label: "Hết hạn", cls: "inline-flex px-3 py-1.5 bg-rose-50 text-rose-700 rounded-lg text-[12px] font-bold border border-rose-200" };
     if (status === "closed") return { label: "Đã đóng", cls: "inline-flex px-3 py-1.5 bg-[#E2E8F0] text-[#475569] rounded-lg text-[12px] font-bold border border-[#CBD5E1]" };
@@ -387,7 +346,7 @@ const ManageJobsPage = () => {
     setIsJobDetailLoading(true);
 
     try {
-      const resp = await api.get(`/jobs/${id}`, { signal });
+      const resp = await api.get(`/employer/jobs/${id}`, { signal });
       const payload = resp.data as any;
 
       // Swagger: { status: 'success', data: Job }
@@ -524,7 +483,7 @@ const ManageJobsPage = () => {
               </div>
             </div>
           </div>
-          
+
           {(searchKeyword || filterJobType || filterProvince || filterCategory) && (
             <div className="mt-4 flex justify-end">
               <button
@@ -550,11 +509,10 @@ const ManageJobsPage = () => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-3 font-bold text-[14px] whitespace-nowrap transition-all duration-300 border-b-2 ${
-              activeTab === tab
-                ? "border-[#00307c] text-[#00307c]"
-                : "border-transparent text-[#64748B] hover:text-[#0F172A] hover:border-[#CBD5E1]"
-            }`}
+            className={`px-4 py-3 font-bold text-[14px] whitespace-nowrap transition-all duration-300 border-b-2 ${activeTab === tab
+              ? "border-[#00307c] text-[#00307c]"
+              : "border-transparent text-[#64748B] hover:text-[#0F172A] hover:border-[#CBD5E1]"
+              }`}
           >
             {tab}
           </button>
@@ -562,7 +520,7 @@ const ManageJobsPage = () => {
       </div>
 
       {/* Table Container */}
-      <div className="bg-white border border-[#F1F5F9] rounded-2xl overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
+      < div className="bg-white border border-[#F1F5F9] rounded-2xl overflow-hidden shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
@@ -596,9 +554,8 @@ const ManageJobsPage = () => {
                     <td className="px-6 py-5">
                       <div>
                         <p
-                          className={`text-[15px] font-bold group-hover:text-[#00307c] cursor-pointer transition-colors ${
-                            selectedJobId === job.id ? "text-[#00307c]" : "text-[#0F172A]"
-                          }`}
+                          className={`text-[15px] font-bold group-hover:text-[#00307c] cursor-pointer transition-colors ${selectedJobId === job.id ? "text-[#00307c]" : "text-[#0F172A]"
+                            }`}
                           onClick={() => {
                             setSelectedJobId(job.id);
                             const controller = new AbortController();
@@ -671,12 +628,16 @@ const ManageJobsPage = () => {
                       >
                         {job.status === "published"
                           ? "Đang hoạt động"
-                          : job.status === "draft"
-                            ? "Bản nháp"
-                            : job.status === "expired"
-                              ? "Hết hạn"
-                                : job.status === "closed"
-                                  ? "Đã đóng"
+                          : job.status === "pending"
+                            ? "Chờ duyệt"
+                            : job.status === "rejected"
+                              ? "Từ chối"
+                              : job.status === "draft"
+                                ? "Bản nháp"
+                                : job.status === "expired"
+                                  ? "Hết hạn"
+                                  : job.status === "closed"
+                                    ? "Đã đóng"
                                     : job.status === "paused"
                                       ? "Tạm dừng"
                                       : "—"}
@@ -724,11 +685,10 @@ const ManageJobsPage = () => {
               return (
                 <button
                   key={p}
-                  className={`w-9 h-9 flex items-center justify-center rounded-lg text-[14px] font-bold transition-all ${
-                    p === page
-                      ? "bg-[#00307c] text-white shadow-sm"
-                      : "border-2 border-transparent hover:border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A]"
-                  }`}
+                  className={`w-9 h-9 flex items-center justify-center rounded-lg text-[14px] font-bold transition-all ${p === page
+                    ? "bg-[#00307c] text-white shadow-sm"
+                    : "border-2 border-transparent hover:border-[#E2E8F0] text-[#64748B] hover:text-[#0F172A]"
+                    }`}
                   onClick={() => setPage(p)}
                   type="button"
                 >
@@ -877,7 +837,10 @@ const ManageJobsPage = () => {
                 </div>
 
                 <div className="p-4 border border-[#E2E8F0] rounded-2xl">
-                  <p className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Thời gian</p>
+                  <p className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">
+                    Thời gian
+                  </p>
+
                   <div className="mt-3 space-y-2 text-[#334155] text-[14px] font-medium">
                     <div className="flex items-center justify-between gap-4">
                       <span className="text-[#64748B]">Đăng</span>
@@ -897,6 +860,7 @@ const ManageJobsPage = () => {
           )}
         </div>
       </div>
+
 
       {/* Confirm Action Modal */}
       {confirmModal.isOpen && createPortal(
@@ -919,24 +883,24 @@ const ManageJobsPage = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="p-6 bg-white">
               <p className="text-[14.5px] font-medium text-[#475569] leading-relaxed">
-                {confirmModal.type === 'delete' 
-                  ? 'Bạn có chắc chắn muốn xóa tin tuyển dụng này khỏi hệ thống không? Tất cả dữ liệu liên quan sẽ bị xóa vĩnh viễn.' 
+                {confirmModal.type === 'delete'
+                  ? 'Bạn có chắc chắn muốn xóa tin tuyển dụng này khỏi hệ thống không? Tất cả dữ liệu liên quan sẽ bị xóa vĩnh viễn.'
                   : 'Bạn đang chuyển sang chế độ chỉnh sửa. Bạn có thể thay đổi các thông tin của tin tuyển dụng này ngay bây giờ.'}
               </p>
             </div>
-            
+
             <div className="p-5 bg-[#F8FAFC] border-t border-[#F1F5F9] flex justify-end gap-3">
-              <button 
+              <button
                 onClick={() => setConfirmModal({ isOpen: false, type: null, jobId: null })}
                 disabled={isProcessing}
                 className="px-6 py-2.5 rounded-xl font-bold text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] transition-colors text-[14.5px] disabled:opacity-50"
               >
                 Hủy bỏ
               </button>
-              <button 
+              <button
                 onClick={async () => {
                   if (confirmModal.type === 'edit') {
                     setConfirmModal({ isOpen: false, type: null, jobId: null });
@@ -945,15 +909,15 @@ const ManageJobsPage = () => {
                     if (!confirmModal.jobId) return;
                     setIsProcessing(true);
                     try {
-                      await api.delete(`/jobs/${confirmModal.jobId}`);
+                      await api.delete(`/employer/jobs/${confirmModal.jobId}`);
                       toast.success("Xóa tin tuyển dụng thành công");
-                      
+
                       // Refetch current list
                       const params: Record<string, any> = { page, limit };
                       if (statusQuery) params.status = statusQuery;
                       if (myCompany?.id) params.companyId = myCompany.id;
 
-                      const resp = await api.get("/jobs", { params });
+                      const resp = await api.get("/employer/jobs", { params });
                       const payload = resp.data as any;
 
                       const listCandidate = payload?.data;
@@ -984,11 +948,10 @@ const ManageJobsPage = () => {
                   }
                 }}
                 disabled={isProcessing}
-                className={`px-6 py-2.5 rounded-xl font-bold text-white transition-all flex items-center gap-2 text-[14.5px] shadow-sm disabled:opacity-70 disabled:hover:-translate-y-0 disabled:hover:shadow-none hover:-translate-y-0.5 ${
-                  confirmModal.type === 'delete' 
-                    ? 'bg-rose-600 hover:bg-rose-700 hover:shadow-[0_4px_12px_rgba(225,29,72,0.3)]' 
-                    : 'bg-gradient-to-r from-[#00307c] to-[#0052cc] hover:shadow-[0_4px_12px_rgba(0,48,124,0.3)]'
-                }`}
+                className={`px-6 py-2.5 rounded-xl font-bold text-white transition-all flex items-center gap-2 text-[14.5px] shadow-sm disabled:opacity-70 disabled:hover:-translate-y-0 disabled:hover:shadow-none hover:-translate-y-0.5 ${confirmModal.type === 'delete'
+                  ? 'bg-rose-600 hover:bg-rose-700 hover:shadow-[0_4px_12px_rgba(225,29,72,0.3)]'
+                  : 'bg-gradient-to-r from-[#00307c] to-[#0052cc] hover:shadow-[0_4px_12px_rgba(0,48,124,0.3)]'
+                  }`}
               >
                 {isProcessing ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -1025,9 +988,7 @@ const ManageJobsPage = () => {
         <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-100 p-6 rounded-2xl relative overflow-hidden group shadow-[0_4px_20px_-4px_rgba(0,48,124,0.05)]">
           <div className="relative z-10">
             <h3 className="text-[13px] font-bold text-[#00307c] mb-2 uppercase tracking-wider">TỶ LỆ CHUYỂN ĐỔI</h3>
-            <p className="text-4xl font-black text-[#0F172A] tracking-tight">
-              {computedConversionRate}%
-            </p>
+            <p className="text-4xl font-black text-[#0F172A] tracking-tight">32.4%</p>
             <p className="text-[14px] text-emerald-600 font-bold mt-2 flex items-center gap-1">
               <span className="material-symbols-outlined text-[16px]">trending_up</span>
               Tăng 4.2% so với tháng trước
@@ -1041,14 +1002,13 @@ const ManageJobsPage = () => {
         <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 p-6 rounded-2xl relative overflow-hidden group shadow-[0_4px_20px_-4px_rgba(16,185,129,0.05)]">
           <div className="relative z-10">
             <h3 className="text-[13px] font-bold text-emerald-700 mb-2 uppercase tracking-wider">THỜI GIAN TUYỂN TRUNG BÌNH</h3>
-            <p className="text-4xl font-black text-[#0F172A] tracking-tight">
-              {computedAverageDays}
-            </p>
+            <p className="text-4xl font-black text-[#0F172A] tracking-tight">18 Ngày</p>
             <p className="text-[14px] text-emerald-600 font-bold mt-2 flex items-center gap-1">
               <span className="material-symbols-outlined text-[16px]">task_alt</span>
               Nhanh hơn 3 ngày so với KPI
             </p>
           </div>
+
           <span className="material-symbols-outlined absolute -bottom-6 -right-6 text-[120px] text-emerald-600/5 group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500">
             timer
           </span>
@@ -1061,28 +1021,11 @@ const ManageJobsPage = () => {
               <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
               GỢI Ý TỪ AI
             </h3>
-            {selectedJobDetail ? (
-              <p className="text-[15px] font-bold text-[#0F172A] leading-relaxed mt-2 animate-fade-in">
-                Vị trí <span className="text-indigo-600">{selectedJobDetail.title}</span> đang có{" "}
-                <span className="text-indigo-600">
-                  {Math.max(0, (selectedJobDetail.viewCount ?? 0) - (selectedJobDetail.applyCount ?? 0))}
-                </span>{" "}
-                ứng viên tiềm năng cao chưa được xem.
-              </p>
-            ) : dashboardStats?.aiSuggestion ? (
-              <p className="text-[14px] font-semibold text-[#334155] leading-relaxed mt-2">
-                {dashboardStats.aiSuggestion}
-              </p>
-            ) : (
-              <p className="text-[15px] font-bold text-[#0F172A] leading-relaxed mt-2">
-                Vị trí <span className="text-indigo-600">UI/UX Designer</span> đang có 8 ứng viên tiềm năng cao chưa được xem.
-              </p>
-            )}
+            <p className="text-[15px] font-bold text-[#0F172A] leading-relaxed mt-2">
+              Vị trí <span className="text-indigo-600">UI/UX Designer</span> đang có 8 ứng viên tiềm năng cao chưa được xem.
+            </p>
           </div>
-          <button
-            onClick={() => navigate(`/employer/${EMPLOYER_PATHS.APPLICATIONS}`)}
-            className="mt-4 text-[14px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 group-hover:gap-2 transition-all relative z-10 w-fit"
-          >
+          <button className="mt-4 text-[14px] font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 group-hover:gap-2 transition-all relative z-10 w-fit">
             Xem ngay <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
         </div>

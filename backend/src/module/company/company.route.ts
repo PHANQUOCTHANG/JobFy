@@ -21,6 +21,7 @@ router
   .get(companyCtrl.getCompanies)
   .post(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(CreateCompanySchema),
     companyCtrl.createCompany
   );
@@ -28,29 +29,31 @@ router
 router
   .route("/:id")
   .get(
-    validationMiddleware(UuidParamSchema, "params"),
+    validationMiddleware(z.object({ id: z.string().min(1) }), "params"),
     companyCtrl.getCompany
   )
   .patch(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(UuidParamSchema, "params"),
     validationMiddleware(UpdateCompanySchema),
     companyCtrl.updateCompany
   )
   .delete(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(UuidParamSchema, "params"),
     companyCtrl.deleteCompany
   );
 
-// Admin-only: verify / unverify a company
-router.patch(
-  "/:id/verify",
-  requireAuth,
-  requireRole("admin"),
-  validationMiddleware(UuidParamSchema, "params"),
-  companyCtrl.verifyCompany
-);
+// Admin-only: verify / unverify a company (Moved to admin-employer.routes.ts)
+// router.patch(
+//   "/:id/verify",
+//   requireAuth,
+//   requireRole("admin"),
+//   validationMiddleware(UuidParamSchema, "params"),
+//   companyCtrl.verifyCompany
+// );
 
 // ================= LOCATION =================
 router
@@ -61,6 +64,7 @@ router
   )
   .post(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(z.object({ companyId: z.string().uuid() }), "params"),
     validationMiddleware(CreateCompanyLocationSchema),
     companyCtrl.addLocation
@@ -70,12 +74,14 @@ router
   .route("/:companyId/locations/:locationId")
   .patch(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(z.object({ companyId: z.string().uuid(), locationId: z.string().regex(/^\d+$/).transform(Number) }), "params"),
     validationMiddleware(UpdateCompanyLocationSchema),
     companyCtrl.updateLocation
   )
   .delete(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(z.object({ companyId: z.string().uuid(), locationId: z.string().regex(/^\d+$/).transform(Number) }), "params"),
     companyCtrl.deleteLocation
   );
@@ -90,6 +96,7 @@ router
   )
   .post(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(z.object({ companyId: z.string().uuid() }), "params"),
     validationMiddleware(CreateCompanyMemberSchema),
     companyCtrl.addMember
@@ -99,12 +106,14 @@ router
   .route("/:companyId/members/:memberId")
   .patch(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(z.object({ companyId: z.string().uuid(), memberId: z.string().regex(/^\d+$/).transform(Number) }), "params"),
     validationMiddleware(UpdateCompanyMemberSchema),
     companyCtrl.updateMember
   )
   .delete(
     requireAuth,
+    requireRole("employer"),
     validationMiddleware(z.object({ companyId: z.string().uuid(), memberId: z.string().regex(/^\d+$/).transform(Number) }), "params"),
     companyCtrl.removeMember
   );

@@ -53,9 +53,7 @@ export const CompanyReviews: React.FC<CompanyReviewsProps> = ({ reviews, isLoadi
     <div className="space-y-5">
       {reviews.map((review) => (
         <div key={review.id} className="bg-card rounded-2xl border border-border/40 overflow-hidden hover:border-primary/20 hover:shadow-card transition-all duration-300">
-          {/* Review Header */}
           <div className="flex flex-col sm:flex-row gap-5 items-start p-6 border-b border-border/30">
-            {/* Rating Block */}
             <div className="flex flex-col items-center justify-center bg-[#F59E0B]/8 border border-[#F59E0B]/20 rounded-2xl px-6 py-4 min-w-[120px] flex-shrink-0">
               <span className="text-4xl font-black text-foreground leading-none">{review.overallRating}</span>
               <div className="flex mt-2 gap-0.5">
@@ -64,7 +62,6 @@ export const CompanyReviews: React.FC<CompanyReviewsProps> = ({ reviews, isLoadi
               <span className="text-[11px] text-muted-foreground font-medium mt-1.5 uppercase tracking-wider">Đánh giá</span>
             </div>
 
-            {/* Meta info */}
             <div className="flex-1">
               <h4 className="text-[17px] font-bold text-foreground mb-2">{review.title || 'Đánh giá công ty'}</h4>
               <div className="flex flex-wrap items-center gap-2.5">
@@ -84,7 +81,6 @@ export const CompanyReviews: React.FC<CompanyReviewsProps> = ({ reviews, isLoadi
             </div>
           </div>
 
-          {/* Review Content */}
           <div className="p-6 space-y-4">
             {review.pros && (
               <div className="flex gap-4 p-4 bg-success/5 border border-success/15 rounded-xl">

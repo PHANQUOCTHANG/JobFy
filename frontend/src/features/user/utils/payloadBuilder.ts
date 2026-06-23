@@ -2,6 +2,7 @@ import { AdminUserFormValues } from "../schemas/user.schema";
 
 export const buildUserPayload = (
   values: AdminUserFormValues,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dirtyFields: Partial<Record<keyof AdminUserFormValues, boolean | any>>,
   isEditMode: boolean,
 ): any => {

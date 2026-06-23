@@ -13,9 +13,7 @@ import api from "@/lib/axios";
 import type { ApiErrorResponse, ApiResponse } from "@/types";
 
 const authApi = {
-  // =================================================================
   // 🟢 PUBLIC ROUTES (Không cần Token)
-  // =================================================================
 
   // 1. Đăng nhập
   login: async (payload: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
@@ -110,9 +108,7 @@ const authApi = {
     return res.data;
   },
 
-  // =================================================================
   // 🔒 PROTECTED ROUTES (Cần Token)
-  // =================================================================
 
   // 9. Lấy thông tin bản thân (Me)
   getMe: async (token?: string) => {

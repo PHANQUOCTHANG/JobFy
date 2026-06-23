@@ -134,7 +134,6 @@ const YearGrid = memo(
 
             return (
               <div key={decadeLabel}>
-                {/* Decade header */}
                 <div className="flex items-center gap-2 px-1.5 mb-1">
                   <span
                     className={cn(
@@ -161,7 +160,6 @@ const YearGrid = memo(
                   )}
                 </div>
 
-                {/* Year grid */}
                 <div className="grid grid-cols-4 gap-1">
                   {years.map((year) => {
                     const isSelected = value === year;
@@ -189,7 +187,6 @@ const YearGrid = memo(
                         )}
                       >
                         {year}
-                        {/* Current year dot */}
                         {isCurrent && !isSelected && (
                           <span
                             className="absolute bottom-[3px] left-1/2 -translate-x-1/2 size-1 rounded-full bg-primary/45"
@@ -319,7 +316,6 @@ export const YearPicker: React.FC<YearPickerProps> = ({
               : "border-border/60 shadow-sm",
           )}
         >
-          {/* Panel header */}
           <div className="flex items-center justify-between px-3 py-2 border-b border-border/40 bg-muted/18">
             <div className="flex items-center gap-2 text-muted-foreground/60">
               <Calendar className="size-3.5" aria-hidden="true" />
@@ -382,7 +378,6 @@ export const YearPicker: React.FC<YearPickerProps> = ({
         </label>
       )}
 
-      {/* Trigger */}
       <button
         type="button"
         disabled={disabled}
@@ -438,7 +433,6 @@ export const YearPicker: React.FC<YearPickerProps> = ({
         </span>
       </button>
 
-      {/* Popover */}
       {isOpen && (
         <div
           aria-label="Select release year"
@@ -448,7 +442,6 @@ export const YearPicker: React.FC<YearPickerProps> = ({
             "animate-in fade-in zoom-in-95 duration-150",
           )}
         >
-          {/* Popover header */}
           <div className="flex items-center justify-between px-3 py-2 border-b border-border/40 bg-muted/18">
             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
               {value ? `Selected: ${value}` : "Choose year"}
@@ -477,7 +470,6 @@ export const YearPicker: React.FC<YearPickerProps> = ({
             scrollRef={scrollRef}
           />
 
-          {/* Footer */}
           <div className="border-t border-border/40 px-3 py-1.5 flex justify-end">
             <button
               type="button"

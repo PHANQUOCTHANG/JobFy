@@ -33,8 +33,8 @@ export const useUpdateMyCompany = () => {
       const payload = {
         name: updateData.name,
         industryId: updateData.industryId ? Number(updateData.industryId) : 0,
-        provinceId: updateData.provinceId ? Number(updateData.provinceId) : 0,
-        districtId: updateData.districtId ? Number(updateData.districtId) : 0,
+        provinceId: updateData.provinceId ? Number(updateData.provinceId) : undefined,
+        districtId: updateData.districtId ? Number(updateData.districtId) : undefined,
         address: updateData.address,
         size: updateData.size,
         website: updateData.website || null,
@@ -57,12 +57,13 @@ export const useUpdateMyCompany = () => {
       return data;
     },
     onSuccess: () => {
-      toast.success('Cập nhật hồ sơ công ty thành công!');
+      toast.success("Cập nhật hồ sơ công ty thành công!");
       // Làm mới dữ liệu công ty
       queryClient.invalidateQueries({ queryKey: ['myCompany'] });
       // Quan trọng: Làm mới tiến trình xác thực để cập nhật trạng thái Bước 2
       queryClient.invalidateQueries({ queryKey: ['employer-verification-progress'] });
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const message = error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật công ty.';
       toast.error(message);
@@ -73,7 +74,7 @@ export const useUpdateMyCompany = () => {
 // Hook để lấy danh sách các ngành nghề
 export const useIndustries = () => {
   return useQuery({
-    queryKey: ['industries'],
+    queryKey: ['manage-industries'],
     queryFn: async () => {
       const { data } = await axios.get(`${API_BASE_URL}/industries`);
       return data.data; // Giả sử backend trả về { status: "success", data: [...] }

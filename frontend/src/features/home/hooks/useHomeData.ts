@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
 import { Code2, Palette, BookOpen, Heart, Headphones, DollarSign, LineChart, TrendingUp } from "lucide-react";
 import { Job, Testimonial, Article, Category, Company } from "../types";
+import { useFeaturedJobs, useJobCategories } from "@/features/jobs/hooks/useJobs";
+import { useCompanies } from "@/features/companies/hooks/useCompanies";
 
 interface HomeData {
   jobs: Job[];
@@ -182,24 +183,58 @@ const MOCK_DATA: HomeData = {
   ],
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CATEGORY_ICONS: Record<string, any> = {
+  "it": Code2,
+  "marketing": LineChart,
+  "design": Palette,
+  "education": BookOpen,
+  "healthcare": Heart,
+  "customer-service": Headphones,
+  "sales": TrendingUp,
+  "finance": DollarSign,
+};
+
 export function useHomeData() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<HomeData | null>(null);
-  const [error, setError] = useState<Error | null>(null);
+  const { data: jobs, isLoading: isJobsLoading, error: jobsError } = useFeaturedJobs();
+  const { data: rawCategories, isLoading: isCategoriesLoading, error: categoriesError } = useJobCategories();
+  const { data: companies, isLoading: isCompaniesLoading, error: companiesError } = useCompanies();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        setData(MOCK_DATA);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to load home data"));
-      } finally {
-        setIsLoading(false);
-      }
-    }, 1500);
+  // Map category icons based on slug, fallback to Code2 if not found
+  const categories = (rawCategories || []).map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    count: 0, // Backend doesn't return job count per category yet
+    icon: CATEGORY_ICONS[cat.slug] || Code2,
+  })).slice(0, 8);
 
-    return () => clearTimeout(timer);
-  }, []);
+  const LOGO_COLORS = ["#FF6B2C", "#0066FF", "#1A94FF", "#00B14F", "#E31837", "#F05A28", "#A50064", "#0F146D"];
+
+  const companiesList = companies?.data || [];
+  const mappedCompanies = companiesList.map((comp, idx) => {
+    // Generate an abbreviation from the name (e.g. FPT Software -> FPT, VNG Corporation -> VNG)
+    const words = comp.name.split(' ');
+    const logoText = words.length > 1 ? (words[0][0] + words[1][0]).toUpperCase() : comp.name.substring(0, 3).toUpperCase();
+    
+    return {
+      name: comp.name,
+      industry: "Công nghệ", // Mock industry since it's not in RealCompany
+      openings: comp.totalJobs || Math.floor(Math.random() * 50) + 10,
+      logo: logoText,
+      bg: LOGO_COLORS[idx % LOGO_COLORS.length]
+    };
+  });
+
+  const isLoading = isJobsLoading || isCategoriesLoading || isCompaniesLoading;
+  const error = jobsError || categoriesError || companiesError;
+
+  const data = {
+    jobs: jobs || [],
+    categories: categories || [],
+    companies: mappedCompanies || [],
+    testimonials: MOCK_DATA.testimonials,
+    articles: MOCK_DATA.articles,
+  };
 
   return { isLoading, data, error };
 }

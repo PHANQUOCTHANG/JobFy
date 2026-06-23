@@ -27,8 +27,10 @@ export class CompanyRepository implements ICompanyRepository {
     const where: Prisma.CompanyWhereInput = {
       deletedAt: null, // Chỉ lấy công ty chưa bị xóa mềm
       ...(query.isActive !== undefined && { isActive: String(query.isActive) === "true" }),
+      ...(query.isVerified !== undefined && { isVerified: query.isVerified }),
       ...(query.industryId !== undefined && { industryId: Number(query.industryId) }),
       ...(query.provinceId !== undefined && { provinceId: Number(query.provinceId) }),
+      ...(query.region && { province: { region: query.region } }),
       ...(query.size && { size: query.size }),
       ...(query.search && {
         name: { contains: getSearchPattern(query.search), mode: "insensitive" },
@@ -52,14 +54,19 @@ export class CompanyRepository implements ICompanyRepository {
     return this.prisma.company.findUnique({ where: { id, deletedAt: null } });
   }
 
-  async findByIdWithRelations(id: string): Promise<any | null> {
+  async findByIdWithRelations(idOrSlug: string): Promise<any | null> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    const where = isUuid ? { id: idOrSlug, deletedAt: null } : { slug: idOrSlug, deletedAt: null };
     return this.prisma.company.findUnique({
-      where: { id, deletedAt: null },
+      where,
       include: {
-        locations: true,
+        locations: {
+          include: { province: true, district: true }
+        },
         members: {
           include: { user: { select: { id: true, email: true, avatarUrl: true } } }
-        }
+        },
+        industry: true
       }
     });
   }

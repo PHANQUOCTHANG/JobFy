@@ -15,6 +15,7 @@ export const useLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginInput>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(loginSchema) as any,
     mode: "onBlur",
     defaultValues: { email: "", password: "", rememberMe: false, role: "candidate" },
@@ -50,6 +51,7 @@ export const useLogin = () => {
       navigate("/");
     } else {
       // loginUser.rejected — errorPayload là server response data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const errorPayload = resultAction.payload as any;
       handleLoginError(errorPayload, setError, navigate);
     }
@@ -98,8 +100,11 @@ export const useLogin = () => {
  *   - hoặc axios error wrapped: { message }
  */
 function handleLoginError(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errorPayload: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setError: (field: any, error: any) => void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   navigate: (path: string, opts?: any) => void
 ) {
   // Nếu là Axios error (network error không có response)

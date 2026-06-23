@@ -12,7 +12,7 @@ import { getCache, setCache, deleteCache, deleteCacheByPattern } from "@/utils/c
 
 export interface ICandidateProfileService {
   create(userId: string, dto: CreateCandidateProfileRequestDto): Promise<CandidateProfileResponseDto>;
-  findAll(query?: CandidateProfileQuery): Promise<any>;
+  findAll(query?: CandidateProfileQuery, isAdmin?: boolean): Promise<any>;
   findById(id: string): Promise<CandidateProfileResponseDto>;
   findByUserId(userId: string): Promise<CandidateProfileResponseDto>;
   updateByUserId(userId: string, dto: UpdateCandidateProfileRequestDto): Promise<CandidateProfileResponseDto>;
@@ -68,12 +68,12 @@ export class CandidateProfileService implements ICandidateProfileService {
     return CandidateProfileResponseDto.from(profile);
   }
 
-  async findAll(query: CandidateProfileQuery): Promise<any> {
-    const cacheKey = `${this.CACHE_KEY}:list:${JSON.stringify(query)}`;
+  async findAll(query: CandidateProfileQuery, isAdmin: boolean = false): Promise<any> {
+    const cacheKey = `${this.CACHE_KEY}:list:${JSON.stringify({ ...query, isAdmin })}`;
     const cached = await getCache<any>(cacheKey);
     if (cached) return cached;
 
-    const result = await this.profileRepo.findAll(query);
+    const result = await this.profileRepo.findAll(query, isAdmin);
     const response = {
       ...result,
       data: CandidateProfileResponseDto.fromList(result.data),

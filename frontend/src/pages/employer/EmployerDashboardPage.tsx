@@ -138,7 +138,6 @@ const EmployerDashboardPage = () => {
   return (
     <>
       <div className="p-6 md:p-8 lg:p-10 max-w-container_max_width mx-auto w-full space-y-10 flex-1">
-        {/* Header Section */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="space-y-1">
             <h2 className="text-3xl lg:text-4xl font-bold text-[#0F172A] tracking-tight">
@@ -177,9 +176,7 @@ const EmployerDashboardPage = () => {
           </div>
         </header>
 
-        {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Total CVs */}
           <div className="interactive-card bg-white p-6 rounded-2xl border border-[#F1F5F9] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,48,124,0.12)] transition-all duration-300 cursor-pointer group relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white to-[#F8FAFC] opacity-50 pointer-events-none" />
             <div className="relative z-10">
@@ -196,7 +193,6 @@ const EmployerDashboardPage = () => {
             </div>
           </div>
 
-          {/* Conversion Rate */}
           <div className="interactive-card bg-white p-6 rounded-2xl border border-[#F1F5F9] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(16,185,129,0.12)] transition-all duration-300 cursor-pointer group relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white to-[#F8FAFC] opacity-50 pointer-events-none" />
             <div className="relative z-10">
@@ -213,7 +209,6 @@ const EmployerDashboardPage = () => {
             </div>
           </div>
 
-          {/* Interview Success */}
           <div className="interactive-card bg-white p-6 rounded-2xl border border-[#F1F5F9] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(245,158,11,0.12)] transition-all duration-300 cursor-pointer group relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white to-[#F8FAFC] opacity-50 pointer-events-none" />
             <div className="relative z-10">
@@ -288,7 +283,6 @@ const EmployerDashboardPage = () => {
             </div>
           </div>
 
-          {/* Right Column */}
           <div className="lg:col-span-4 flex flex-col gap-8">
             <div className="bg-white rounded-3xl border border-[#F1F5F9] p-8 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
               <h3 className="text-xl font-bold text-[#0F172A] mb-8">Nguồn CV Hàng Đầu</h3>
@@ -339,7 +333,6 @@ const EmployerDashboardPage = () => {
               )}
             </div>
 
-            {/* AI Suggestion */}
             <div className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-3xl border border-indigo-100 p-8 shadow-[0_8px_30px_-12px_rgba(99,102,241,0.15)] group">
               <div className="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full blur-[50px] opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
               <div className="relative z-10">

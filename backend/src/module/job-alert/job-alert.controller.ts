@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { JobAlertService } from "./job-alert.service";
 import { sendResponse } from "@/utils/sendResponse";
-import { catchAsync } from "@/utils/catchAsync";
+import asyncHandler from "@/utils/asyncHandler";
 import { toJobAlertListResponse, toJobAlertResponse } from "./job-alert.response";
 
 const alertService = new JobAlertService();
 
-export const getAlerts = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+export const getAlerts = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { page, limit } = req.query;
@@ -27,16 +27,16 @@ export const getAlerts = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const createAlert = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+export const createAlert = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const alert = await alertService.createAlert(userId, req.body);
   sendResponse(res, 201, "Job alert created", toJobAlertResponse(alert));
 });
 
-export const updateAlert = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+export const updateAlert = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -45,8 +45,8 @@ export const updateAlert = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-export const deleteAlert = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+export const deleteAlert = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;
@@ -54,8 +54,8 @@ export const deleteAlert = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, 200, "Job alert deleted");
 });
 
-export const toggleAlert = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user?.id;
+export const toggleAlert = asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
   const { id } = req.params;

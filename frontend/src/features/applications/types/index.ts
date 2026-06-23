@@ -1,7 +1,7 @@
 import { Job } from '@/features/jobs/types';
 import { CandidateProfile, Resume } from '@/features/candidates/types';
 
-export type ApplicationStatus = 'pending' | 'reviewing' | 'interviewed' | 'offered' | 'rejected' | 'hired';
+export type ApplicationStatus = 'pending' | 'reviewing' | 'shortlisted' | 'interviewed' | 'offered' | 'accepted' | 'rejected' | 'withdrawn';
 
 export interface JobApplication {
   id: string;
@@ -21,6 +21,7 @@ export interface JobApplication {
 
 export interface ApplyPayload {
   jobId: string;
-  resumeId: string;
+  resumeId?: string | null;
   coverLetter?: string;
+  source?: string;
 }

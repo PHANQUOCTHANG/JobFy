@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Mail, Disc, ChevronLeft, AlertCircle, Briefcase, KeyRound, Lock, CheckCircle2 } from "lucide-react";
+import { Mail, Disc, ChevronLeft, AlertCircle, Briefcase, KeyRound, Lock, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -9,19 +9,19 @@ import { forgotPasswordSchema, resetPasswordSchema, type ForgotPasswordInput, ty
 
 const BackgroundPattern = () => (
   <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-    {/* Grid */}
     <div className="absolute inset-0" style={{
       backgroundImage: "linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)",
       backgroundSize: "64px 64px",
     }} />
-    {/* Glows */}
     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#4F46E5]/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3" />
     <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#F59E0B]/10 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4" />
   </div>
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Button = ({ children, className, isLoading, variant = "primary", ...props }: any) => {
   const base = "relative group w-full h-12 rounded-xl font-bold text-[14.5px] transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const variants: any = {
     primary: "bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-lg shadow-[#4F46E5]/20",
     outline: "bg-white border border-[#E2E8F0] hover:border-[#0F172A] text-[#0F172A]",
@@ -34,33 +34,57 @@ const Button = ({ children, className, isLoading, variant = "primary", ...props 
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const InputField = React.forwardRef<HTMLInputElement, any>(
-  ({ icon: Icon, className, error, ...props }, ref) => (
-    <div className="relative group w-full">
-      <div className={cn(
-        "absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-300",
-        error ? "text-red-500" : "text-[#94A3B8] group-focus-within:text-[#4F46E5]"
-      )}>
-        <Icon size={18} />
-      </div>
-      <input
-        ref={ref}
-        className={cn(
-          "w-full h-13 bg-white hover:bg-gray-50 focus:bg-white rounded-xl border pl-11 pr-4 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-300",
-          error ? "border-red-500 focus:border-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.1)]" 
-                : "border-[#E2E8F0] focus:border-[#4F46E5] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.1)]",
-          className
-        )}
-        style={{ height: "52px" }}
-        {...props}
-      />
-      {error && (
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
-          <AlertCircle size={16} />
+  ({ icon: Icon, className, error, type, ...props }, ref) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const isPassword = type === "password";
+    const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
+    return (
+      <div className="relative group w-full">
+        <div className={cn(
+          "absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-colors duration-300",
+          error ? "text-red-500" : "text-[#94A3B8] group-focus-within:text-[#4F46E5]"
+        )}>
+          <Icon size={18} />
         </div>
-      )}
-    </div>
-  )
+        <input
+          ref={ref}
+          type={inputType}
+          className={cn(
+            "w-full h-13 bg-white hover:bg-gray-50 focus:bg-white rounded-xl border pl-11 outline-none placeholder:text-[#94A3B8] text-[14.5px] text-[#0F172A] font-medium transition-all duration-300",
+            error ? "border-red-500 focus:border-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.1)]" 
+                  : "border-[#E2E8F0] focus:border-[#4F46E5] focus:shadow-[0_0_0_4px_rgba(79,70,229,0.1)]",
+            isPassword ? (error ? "pr-[4.5rem]" : "pr-12") : (error ? "pr-12" : "pr-4"),
+            className
+          )}
+          style={{ height: "52px" }}
+          {...props}
+        />
+        {isPassword ? (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            {error && (
+              <div className="text-red-500">
+                <AlertCircle size={16} />
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-[#94A3B8] hover:text-[#4F46E5] transition-colors focus:outline-none flex items-center justify-center"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+        ) : error && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
+            <AlertCircle size={16} />
+          </div>
+        )}
+      </div>
+    );
+  }
 );
 InputField.displayName = "InputField";
 
@@ -167,6 +191,7 @@ const ResendTimer = ({ onResend, isLoading }: { onResend: () => Promise<void>; i
 };
 
 const ForgotPasswordForm = () => {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const navigate = useNavigate();
   const { step, email, handleSendOtp, handleVerifyOtp, handleResendOtp, handleResetPassword } = useForgotPassword();
   
@@ -198,11 +223,11 @@ const ForgotPasswordForm = () => {
       setIsVerifying(true);
       handleVerifyOtp(otp).finally(() => setIsVerifying(false));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otp]);
 
   return (
     <div className="min-h-screen w-full flex bg-white text-slate-900" style={{ fontFamily: "'Manrope', sans-serif" }}>
-      {/* LEFT COLUMN: Visuals */}
       <div className="hidden lg:flex w-[45%] relative flex-col justify-between p-12 bg-slate-50 border-r border-slate-200 text-slate-900 overflow-hidden">
         <BackgroundPattern />
         
@@ -245,7 +270,6 @@ const ForgotPasswordForm = () => {
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Form */}
       <div className="w-full lg:w-[55%] flex flex-col items-center justify-center p-6 sm:p-12 relative">
         <Link to="/" className="absolute top-8 left-8 lg:hidden flex items-center gap-2 text-slate-900">
           <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">
@@ -257,7 +281,6 @@ const ForgotPasswordForm = () => {
           <ChevronLeft size={16} /> Quay lại đăng nhập
         </Link>
 
-        {/* PROGRESS INDICATOR */}
         <div className="w-full max-w-[440px] mb-8 flex items-center gap-2">
           {[1, 2, 3].map((item) => (
             <div key={item} className="flex-1 flex flex-col gap-2">

@@ -120,6 +120,10 @@ export const jobService: JobService = new JobService(
   companyRepository
 );
 
+// Notification
+import { NotificationService } from "@/module/notification/notification.service";
+export const notificationService = new NotificationService();
+
 // Application
 import { IApplicationRepository, ApplicationRepository } from "@/module/application/application.repository";
 import { ApplicationService } from "@/module/application/application.service";
@@ -128,6 +132,18 @@ const applicationRepository: IApplicationRepository = new ApplicationRepository(
 export const applicationService: ApplicationService = new ApplicationService(
   applicationRepository,
   jobRepository,
-  candidateProfileRepository
+  candidateProfileRepository,
+  resumeRepository,
+  companyRepository,
+  notificationService
 );
 
+// AI
+import { AiService } from "@/module/ai/ai.service";
+export const aiService = new AiService();
+
+// Cover Letter
+import { CoverLetterService } from "@/module/cover-letter/cover-letter.service";
+import { CoverLetterController } from "@/module/cover-letter/cover-letter.controller";
+export const coverLetterService = new CoverLetterService(prisma);
+export const coverLetterController = new CoverLetterController(coverLetterService);

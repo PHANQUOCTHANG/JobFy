@@ -42,8 +42,8 @@ const fetchCompanies = async (params: Record<string, any>) => {
   return data;
 };
 
-const verifyCompanyApi = (id: string, verified: boolean) =>
-  api.patch(`/companies/${id}/verify`, { verified });
+const verifyCompanyApi = (id: string, verified: boolean, reason?: string) =>
+  api.patch(`/admin/employer/${id}/verify`, { status: verified ? "approved" : "rejected", reason: reason || "" });
 
 const deleteCompanyApi = (id: string) =>
   api.delete(`/companies/${id}`);
@@ -60,6 +60,7 @@ const AdminCompaniesPage: React.FC = () => {
   const [verifiedFilter, setVerifiedFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [confirmVerify, setConfirmVerify] = useState<{ id: string; name: string; verified: boolean; businessLicenseUrl?: string } | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
 
   // Thêm state cho Edit Modal
@@ -70,14 +71,14 @@ const AdminCompaniesPage: React.FC = () => {
     queryKey: ["admin", "companies", "stats"],
     queryFn: async () => {
       const [allRes, verifiedRes, unverifiedRes] = await Promise.all([
-        api.get("/api/v1/companies?limit=1", { withCredentials: true }),
-        api.get("/api/v1/companies?isVerified=true&limit=1", { withCredentials: true }),
-        api.get("/api/v1/companies?isVerified=false&limit=1", { withCredentials: true }),
+        api.get("/companies?limit=1", { withCredentials: true }),
+        api.get("/companies?isVerified=true&limit=1", { withCredentials: true }),
+        api.get("/companies?isVerified=false&limit=1", { withCredentials: true }),
       ]);
       return {
-        all: allRes.data.meta?.totalItems || 0,
-        verified: verifiedRes.data.meta?.totalItems || 0,
-        unverified: unverifiedRes.data.meta?.totalItems || 0,
+        all: allRes.data.meta?.total || 0,
+        verified: verifiedRes.data.meta?.total || 0,
+        unverified: unverifiedRes.data.meta?.total || 0,
       };
     },
     refetchInterval: 60000,
@@ -86,7 +87,7 @@ const AdminCompaniesPage: React.FC = () => {
   const params = {
     page,
     limit: 15,
-    ...(search && { keyword: search }),
+    ...(search && { search: search }),
     ...(verifiedFilter !== "all" && { isVerified: verifiedFilter === "verified" }),
   };
 
@@ -96,15 +97,16 @@ const AdminCompaniesPage: React.FC = () => {
   });
 
   const companies: any[] = data?.data ?? [];
-  const meta = data?.meta ?? { totalItems: 0, totalPages: 1, page: 1 };
+  const meta = data?.meta ?? { total: 0, totalPages: 1, page: 1 };
 
   const verifyMutation = useMutation({
-    mutationFn: ({ id, verified }: { id: string; verified: boolean }) =>
-      verifyCompanyApi(id, verified),
+    mutationFn: ({ id, verified, reason }: { id: string; verified: boolean; reason?: string }) =>
+      verifyCompanyApi(id, verified, reason),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: ["admin", "companies"] });
       toast.success(vars.verified ? "Đã xác thực công ty" : "Đã hủy xác thực công ty");
       setConfirmVerify(null);
+      setRejectReason("");
     },
     onError: () => toast.error("Thao tác thất bại. Vui lòng thử lại."),
   });
@@ -363,8 +365,8 @@ const AdminCompaniesPage: React.FC = () => {
       {/* Verify confirm */}
       <ConfirmationModal
         isOpen={!!confirmVerify}
-        onCancel={() => setConfirmVerify(null)}
-        onConfirm={() => confirmVerify && verifyMutation.mutate({ id: confirmVerify.id, verified: confirmVerify.verified })}
+        onCancel={() => { setConfirmVerify(null); setRejectReason(""); }}
+        onConfirm={() => confirmVerify && verifyMutation.mutate({ id: confirmVerify.id, verified: confirmVerify.verified, reason: rejectReason })}
         isLoading={verifyMutation.isPending}
         title={confirmVerify?.verified ? "Xác nhận cấp Verified?" : "Hủy xác thực công ty?"}
         description={
@@ -374,7 +376,7 @@ const AdminCompaniesPage: React.FC = () => {
                 ? `Công ty "${confirmVerify?.name}" sẽ được gắn nhãn "Verified" trên toàn bộ nền tảng, tăng độ uy tín với ứng viên.`
                 : `Hủy xác thực cho "${confirmVerify?.name}". Nhãn Verified sẽ bị gỡ bỏ ngay lập tức.`}
             </p>
-            {confirmVerify?.verified && (
+            {confirmVerify?.verified ? (
               <div className="mt-2 rounded-2xl overflow-hidden border border-border/50 shadow-inner">
                 <div className="bg-muted/50 p-3 text-xs font-bold text-center border-b border-border/50 uppercase tracking-wider">
                   Giấy phép kinh doanh đính kèm
@@ -395,6 +397,16 @@ const AdminCompaniesPage: React.FC = () => {
                     <p className="font-medium">Công ty này chưa tải lên Giấy phép kinh doanh.</p>
                   </div>
                 )}
+              </div>
+            ) : (
+              <div className="mt-2">
+                <label className="text-xs font-semibold mb-2 block">Lý do từ chối (bắt buộc):</label>
+                <Input 
+                  placeholder="Ví dụ: Giấy phép kinh doanh mờ, sai thông tin..." 
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  className="bg-background"
+                />
               </div>
             )}
           </div>

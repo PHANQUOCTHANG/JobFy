@@ -8,6 +8,10 @@ on:
     paths:
       - 'frontend/**'
 
+concurrency:
+  group: pr-preview-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   preview-deploy:
     name: 🔍 Deploy PR Preview

@@ -17,22 +17,31 @@ const IdParamSchema = z.object({
 // APIs dành riêng cho ứng viên quản lý hồ sơ cá nhân
 router
   .route("/me")
-  .get(requireAuth, requireRole("CANDIDATE"), profileCtrl.getMyProfile)
+  .get(requireAuth, requireRole("candidate"), profileCtrl.getMyProfile)
   .post(
     requireAuth,
-    requireRole("CANDIDATE"),
+    requireRole("candidate"),
     validationMiddleware(CreateCandidateProfileSchema),
     profileCtrl.createMyProfile
   )
   .patch(
     requireAuth,
-    requireRole("CANDIDATE"),
+    requireRole("candidate"),
     validationMiddleware(UpdateCandidateProfileSchema),
     profileCtrl.updateMyProfile
   );
 
 // APIs công khai (lấy danh sách và chi tiết hồ sơ)
 router.route("/").get(profileCtrl.getProfiles);
+
+// APIs dành riêng cho ADMIN
+router
+  .route("/admin")
+  .get(
+    requireAuth,
+    requireRole("admin"),
+    profileCtrl.adminGetProfiles
+  );
 
 router
   .route("/:id")
@@ -41,19 +50,19 @@ router
     profileCtrl.getProfileById
   );
 
-// APIs dành riêng cho ADMIN
+
 router
   .route("/:id/admin")
   .patch(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     validationMiddleware(UpdateCandidateProfileSchema),
     profileCtrl.adminUpdateProfile
   )
   .delete(
     requireAuth,
-    requireRole("ADMIN"),
+    requireRole("admin"),
     validationMiddleware(IdParamSchema, "params"),
     profileCtrl.adminDeleteProfile
   );

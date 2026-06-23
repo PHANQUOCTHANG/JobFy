@@ -9,7 +9,7 @@ export class CompanyReviewRepository {
     });
   }
 
-  async updateReview(id: string, data: UpdateCompanyReviewPayload) {
+  async updateReview(id: string, data: UpdateCompanyReviewPayload & { isApproved?: boolean }) {
     return await prisma.companyReview.update({
       where: { id },
       data,
@@ -42,7 +42,10 @@ export class CompanyReviewRepository {
     const [data, total] = await Promise.all([
       prisma.companyReview.findMany({
         where,
-        include: { reviewer: true },
+        include: { 
+          reviewer: { include: { candidateProfile: true } },
+          company: true
+        },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit

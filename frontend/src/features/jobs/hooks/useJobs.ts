@@ -1,13 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { 
   getJobs, 
+  getFeaturedJobs,
   getJobBySlug, 
   getJobCategories,
   saveJob,
   unsaveJob,
   getSavedJobs,
   getSavedJobIds,
-  getProvinces
+  getProvinces,
+  getDistricts,
+  getIndustries
 } from '../api/jobs.api';
 import { JobFilterParams } from '../types';
 
@@ -15,6 +19,15 @@ export const useJobs = (params?: JobFilterParams) => {
   return useQuery({
     queryKey: ['jobs', params],
     queryFn: () => getJobs(params),
+  });
+};
+
+export const useFeaturedJobs = () => {
+  return useQuery({
+    queryKey: ['jobs', 'featured'],
+    queryFn: getFeaturedJobs,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    select: (data) => data.data,
   });
 };
 
@@ -42,6 +55,15 @@ export const useProvinces = () => {
   });
 };
 
+export const useDistricts = (provinceId?: number) => {
+  return useQuery({
+    queryKey: ['districts', provinceId],
+    queryFn: () => getDistricts(provinceId!),
+    enabled: !!provinceId,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+};
+
 export const useSavedJobs = (params?: { page?: number; limit?: number }) => {
   return useQuery({
     queryKey: ['saved-jobs', params],
@@ -58,6 +80,7 @@ export const useSavedJobIds = (enabled: boolean = true) => {
 };
 
 export const useSaveJob = () => {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const queryClient = useQueryClient();
   
   return useMutation({
@@ -74,10 +97,14 @@ export const useSaveJob = () => {
       if (context?.previousIds) {
         queryClient.setQueryData(['saved-job-ids'], context.previousIds);
       }
+      toast.error('Có lỗi xảy ra khi lưu việc làm');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['saved-job-ids'] });
       queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
+    },
+    onSuccess: () => {
+      toast.success('Đã lưu việc làm thành công');
     },
   });
 };
@@ -99,10 +126,22 @@ export const useUnsaveJob = () => {
       if (context?.previousIds) {
         queryClient.setQueryData(['saved-job-ids'], context.previousIds);
       }
+      toast.error('Có lỗi xảy ra khi bỏ lưu việc làm');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['saved-job-ids'] });
       queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
     },
+    onSuccess: () => {
+      toast.success('Đã bỏ lưu việc làm');
+    },
+  });
+};
+
+export const useIndustries = () => {
+  return useQuery({
+    queryKey: ['job-industries'],
+    queryFn: getIndustries,
+    staleTime: 1000 * 60 * 60, // 1 hour
   });
 };

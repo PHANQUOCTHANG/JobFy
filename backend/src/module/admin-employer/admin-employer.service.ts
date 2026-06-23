@@ -79,10 +79,7 @@ export class AdminEmployerService {
         where: { id: companyId },
         data: {
           isVerified: isApproved,
-          // Nếu từ chối, có thể lưu lý do vào description hoặc log riêng
-          shortDescription: isApproved 
-            ? company.shortDescription 
-            : `Bị từ chối: ${data.reason}. ${company.shortDescription}`,
+          rejectedReason: isApproved ? null : data.reason || "Không có lý do cụ thể.",
         },
       });
 

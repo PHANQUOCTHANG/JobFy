@@ -9,15 +9,25 @@ import type {
 } from "../types";
 
 const userApi = {
-  // ==========================================
   // 1. PUBLIC / CLIENT LOGIC (Hành động của cá nhân)
-  // ==========================================
+  
+  // Xem tường nhà người khác / profile public 
+  getPublicProfile: async (userId: string) => {
+    const res = await api.get<ApiResponse<User>>(`/users/${userId}/profile`);
+    return res.data;
+  },
 
   // Cập nhật Profile cá nhân (Nhận FormData vì có Avatar) - Giữ nguyên nếu backend hỗ trợ
   updateProfile: async (data: FormData) => {
     const res = await api.patch<ApiResponse<User>>("/users/profile", data, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+    return res.data;
+  },
+
+  // Cập nhật User cơ bản (SĐT, Avatar)
+  updateMe: async (data: { phone?: string; avatarUrl?: string }) => {
+    const res = await api.patch<ApiResponse<User>>("/users/me", data);
     return res.data;
   },
 
@@ -51,8 +61,9 @@ const userApi = {
   },
 
   // ==========================================
+
+
   // 2. ADMIN LOGIC (Quản lý hệ thống)
-  // ==========================================
 
   // Lấy danh sách có phân trang & tìm kiếm
   getAll: async (params: UserFilterParams) => {
@@ -111,6 +122,7 @@ const userApi = {
     );
     return res.data;
   },
+
 };
 
 export default userApi;

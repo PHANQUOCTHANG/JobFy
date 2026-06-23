@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserDropdown from "@/features/user/components/UserDropdown";
 import { NotificationDropdown } from "./NotificationDropdown";
-import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
 import { useMyCompany } from "@/features/companies/hooks/useManageCompany";
 
@@ -62,9 +61,7 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
   return (
     <header className="flex justify-between items-center w-full px-6 md:px-10 py-3 h-[76px] sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-[#F1F5F9] shadow-[0_4px_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300">
 
-      {/* ── LEFT ── */}
       <div className="flex items-center gap-6 flex-1">
-        {/* Mobile menu toggle */}
         <button
           onClick={() => setIsSidebarOpen(true)}
           className="lg:hidden w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-full transition-colors focus:ring-2 focus:ring-primary/20"
@@ -72,7 +69,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
           <span className="material-symbols-outlined text-[24px]">menu</span>
         </button>
 
-        {/* Search Desktop */}
         <form onSubmit={handleSearchSubmit} className="relative w-full max-w-[480px] hidden md:block group">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] group-focus-within:text-[#00307c] transition-colors duration-300">
             search
@@ -95,7 +91,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
               <span className="material-symbols-outlined text-[18px]">close</span>
             </button>
           )}
-          {/* Keyboard Shortcut Hint */}
           {!searchValue && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:flex items-center gap-1 opacity-60 pointer-events-none">
               <kbd className="px-1.5 py-0.5 text-[10px] font-black bg-white border border-[#E2E8F0] rounded shadow-sm text-[#64748B]">⌘</kbd>
@@ -104,7 +99,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
           )}
         </form>
 
-        {/* Search Mobile Toggle */}
         <button
           className="md:hidden w-10 h-10 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-full transition-colors ml-auto"
           onClick={() => setSearchOpen(true)}
@@ -113,24 +107,19 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
         </button>
       </div>
 
-      {/* ── RIGHT ── */}
       <div className="flex items-center gap-2 md:gap-5">
         <div className="hidden sm:flex items-center border-r border-[#E2E8F0] pr-5 gap-2">
-          {/* Notification */}
           <NotificationDropdown />
 
-          {/* Chat */}
           <button className="w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300">
             <span className="material-symbols-outlined text-[22px]">chat_bubble</span>
           </button>
 
-          {/* Settings */}
           <Link to="/employer/settings" className="w-11 h-11 flex items-center justify-center text-[#64748B] hover:text-[#00307c] hover:bg-blue-50 rounded-full transition-all duration-300">
             <span className="material-symbols-outlined text-[22px]">settings</span>
           </Link>
         </div>
 
-        {/* Profile */}
         <div className="flex items-center gap-3 pl-2 sm:pl-0">
           <div className="hidden lg:flex flex-col items-end justify-center">
             {user ? (
@@ -168,7 +157,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
         </div>
       </div>
 
-      {/* ── Mobile fullscreen search overlay ── */}
       {searchOpen && (
         <div className="fixed inset-0 z-50 flex flex-col bg-white/95 backdrop-blur-xl md:hidden animate-in fade-in slide-in-from-top-4 duration-300">
           <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 h-[76px] px-6 border-b border-[#F1F5F9] bg-white">

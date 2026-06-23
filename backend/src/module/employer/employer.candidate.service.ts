@@ -27,7 +27,12 @@ export class EmployerCandidateService {
       select: { id: true },
     });
 
-    if (!company) throw new Error("Không tìm thấy công ty của bạn.");
+    if (!company) {
+      return {
+        data: [],
+        pagination: { total: 0, page: params.page, limit: params.limit, totalPages: 0 }
+      };
+    }
 
     const { page, limit, status, keyword, experience, jobId, sort } = params;
     const skip = (page - 1) * limit;
@@ -173,7 +178,7 @@ export class EmployerCandidateService {
         where: { ownerId: employerId },
         select: { id: true },
       });
-      if (!company) throw new Error("Không tìm thấy công ty của bạn.");
+      if (!company) return "ID,Tên ứng viên,Email,Số điện thoại,Công việc ứng tuyển,Trạng thái,Ngày nộp,Kỹ năng\n";
 
       const whereClause: any = { job: { companyId: company.id } };
 
@@ -258,7 +263,9 @@ export class EmployerCandidateService {
       where: { ownerId: userId },
       select: { id: true },
     });
-    if (!company) throw new Error("Không có quyền thực hiện.");
+    if (!company) {
+      return { total: 0, pending: 0, reviewed: 0, interviewed: 0, offered: 0, accepted: 0, rejected: 0 };
+    }
 
     const stats = await this.prisma.application.groupBy({
       by: ['status'],
@@ -294,7 +301,7 @@ export class EmployerCandidateService {
       where: { ownerId: userId },
       select: { id: true },
     });
-    if (!company) throw new Error("Không có quyền thực hiện.");
+    if (!company) return [];
 
     const history = await this.prisma.application.findMany({
       where: { 
@@ -321,7 +328,7 @@ export class EmployerCandidateService {
       select: { id: true },
     });
 
-    if (!company) throw new Error("Không tìm thấy công ty của bạn.");
+    if (!company) return [];
 
     // FIX: Use JobStatus enum-compatible values via Prisma `in` filter
     const jobs = await this.prisma.jobs.findMany({
@@ -480,7 +487,7 @@ export class EmployerCandidateService {
       select: { id: true },
     });
 
-    if (!company) throw new Error("Không tìm thấy công ty của bạn.");
+    if (!company) return [];
 
     const applications = await this.prisma.application.findMany({
       where: { job: { companyId: company.id } },

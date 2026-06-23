@@ -1,7 +1,6 @@
 import React from 'react';
 import { Company } from '../types';
-import { Badge } from '@/components/ui/badge';
-import { Building2, Globe, MapPin, Users, CheckCircle2, Star } from 'lucide-react';
+import { Building2, Globe, MapPin, Users, CheckCircle2, Star, Briefcase, Calendar, Facebook, Linkedin, FileText } from 'lucide-react';
 
 interface CompanyHeaderProps {
   company: Company;
@@ -10,7 +9,6 @@ interface CompanyHeaderProps {
 export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ company }) => {
   return (
     <div className="bg-card rounded-2xl border border-border/40 shadow-sm overflow-hidden mb-8 relative">
-      {/* Cover Image */}
       <div className="h-48 md:h-[320px] w-full bg-muted relative overflow-hidden">
         {company.coverUrl ? (
           <img src={company.coverUrl} alt="Cover" className="w-full h-full object-cover" />
@@ -24,7 +22,6 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ company }) => {
 
       <div className="px-6 md:px-10 pb-10">
         <div className="flex flex-col md:flex-row gap-8 relative -mt-16 md:-mt-24">
-          {/* Logo */}
           <div className="w-32 h-32 md:w-[180px] md:h-[180px] rounded-[2rem] bg-card p-2.5 border-[6px] border-card shadow-brand-lg flex-shrink-0 relative z-10 overflow-hidden group">
             {company.logoUrl ? (
               <img src={company.logoUrl} alt={`${company.name} logo`} className="w-full h-full object-contain bg-white rounded-[1.25rem] transition-transform duration-500 group-hover:scale-105" />
@@ -35,7 +32,6 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ company }) => {
             )}
           </div>
 
-          {/* Info */}
           <div className="flex-grow pt-2 md:pt-28">
             <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6">
               <div>
@@ -60,7 +56,26 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ company }) => {
                   {company.size && (
                     <div className="flex items-center gap-2">
                       <Users className="w-4 h-4 text-primary/70" />
-                      <span>Quy mô: {company.size.replace('_', ' - ').replace('plus', '+')}</span>
+                      <span>
+                        Quy mô: {
+                          {
+                            'value_1_10': '1 - 10 nhân viên',
+                            'value_11_50': '11 - 50 nhân viên',
+                            'value_51_200': '51 - 200 nhân viên',
+                            'value_201_500': '201 - 500 nhân viên',
+                            'value_501_1000': '501 - 1000 nhân viên',
+                            'value_1001_5000': '1001 - 5000 nhân viên',
+                            'value_5000_plus': 'Trên 5000 nhân viên',
+                            '1_10': '1 - 10 nhân viên',
+                            '11_50': '11 - 50 nhân viên',
+                            '51_200': '51 - 200 nhân viên',
+                            '201_500': '201 - 500 nhân viên',
+                            '501_1000': '501 - 1000 nhân viên',
+                            '1001_5000': '1001 - 5000 nhân viên',
+                            '5000_plus': 'Trên 5000 nhân viên',
+                          }[company.size] || company.size
+                        }
+                      </span>
                     </div>
                   )}
                   {company.address && (
@@ -69,21 +84,39 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ company }) => {
                       <span className="truncate">{company.address}</span>
                     </div>
                   )}
+                  {company.industry && (
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-primary/70" />
+                      <span>{company.industry.name}</span>
+                    </div>
+                  )}
+                  {company.foundedYear && (
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-primary/70" />
+                      <span>Thành lập: {company.foundedYear}</span>
+                    </div>
+                  )}
+                  {company.taxCode && (
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-primary/70" />
+                      <span>MST: {company.taxCode}</span>
+                    </div>
+                  )}
+                  {company.facebookUrl && (
+                    <div className="flex items-center gap-2 hover:text-primary transition-colors">
+                      <Facebook className="w-4 h-4 text-[#1877F2]" />
+                      <a href={company.facebookUrl} target="_blank" rel="noopener noreferrer">Facebook</a>
+                    </div>
+                  )}
+                  {company.linkedinUrl && (
+                    <div className="flex items-center gap-2 hover:text-primary transition-colors">
+                      <Linkedin className="w-4 h-4 text-[#0A66C2]" />
+                      <a href={company.linkedinUrl} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    </div>
+                  )}
                 </div>
               </div>
-              
-              <div className="flex flex-col items-start xl:items-end gap-3 bg-muted/30 p-4 rounded-xl border border-border/50 min-w-[200px]">
-                <div className="text-[13px] font-bold text-muted-foreground uppercase tracking-wider">Đánh giá trung bình</div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-[#F59E0B]/10">
-                    <Star className="w-6 h-6 fill-[#F59E0B] text-[#F59E0B]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-foreground font-black text-[24px] leading-none">{company.avgRating || '5.0'}</span>
-                    <span className="text-muted-foreground font-medium text-[13.5px] mt-1">{company.totalReviews || 0} lượt đánh giá</span>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { z } from "zod";
 import * as jobCtrl from "./job.controller";
 import validationMiddleware from "@/middleware/validate.middleware";
 import { requireAuth, requireRole, requireFullyVerified } from "@/middleware/auth.middleware";
@@ -8,33 +9,13 @@ const router = Router();
 
 router
   .route("/")
-  .get(jobCtrl.getJobs)
-  .post(
-    requireAuth,
-    requireRole("EMPLOYER"),       // chỉ employer được đăng tin
-    requireFullyVerified,           // phải hoàn tất 4 bước xác thực
-    validationMiddleware(CreateJobSchema),
-    jobCtrl.createJob
-  );
+  .get(jobCtrl.getJobs);
 
 router
   .route("/:id")
   .get(
-    validationMiddleware(IdParamSchema, "params"),
+    validationMiddleware(z.object({ id: z.string().min(1) }), "params"),
     jobCtrl.getJob
-  )
-  .patch(
-    requireAuth,
-    requireRole("EMPLOYER"),
-    validationMiddleware(IdParamSchema, "params"),
-    validationMiddleware(UpdateJobSchema),
-    jobCtrl.updateJob
-  )
-  .delete(
-    requireAuth,
-    requireRole("EMPLOYER"),
-    validationMiddleware(IdParamSchema, "params"),
-    jobCtrl.deleteJob
   );
 
 // Admin-only: update any job status (moderate)

@@ -5,7 +5,7 @@ import { jobService } from "@/config/container";
 import { normalizeJobQuery } from "./job.type";
 
 export const createJob = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.id;
+  const userId = req.user!.userId;
   const data = await jobService.create(userId, req.body);
   return res.status(201).json(ApiResponse.success(data, "Tạo tin tuyển dụng thành công"));
 });
@@ -18,20 +18,23 @@ export const getJobs = asyncHandler(async (req: Request, res: Response) => {
 
 export const getJob = asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id;
-  jobService.incrementViewCount(id as string).catch(console.error);
-  
   const data = await jobService.findById(id as string);
+  
+  if (data) {
+    jobService.incrementViewCount(data.id as string).catch(console.error);
+  }
+  
   return res.status(200).json(ApiResponse.success(data));
 });
 
 export const updateJob = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.id;
+  const userId = req.user!.userId;
   const data = await jobService.update((req.params.id as string), userId, req.body);
   return res.status(200).json(ApiResponse.success(data, "Cập nhật tin tuyển dụng thành công"));
 });
 
 export const deleteJob = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.id;
+  const userId = req.user!.userId;
   await jobService.delete((req.params.id as string), userId);
   return res.status(200).json(ApiResponse.success(null, "Đã xóa tin tuyển dụng"));
 });

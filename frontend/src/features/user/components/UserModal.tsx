@@ -63,6 +63,7 @@ const UserModal: React.FC<UserModalProps> = ({
   const {
     register,
     control,
+    // eslint-disable-next-line unused-imports/no-unused-vars
     setValue,
     watch,
     formState: { errors },
@@ -86,7 +87,7 @@ const UserModal: React.FC<UserModalProps> = ({
 
   if (!isOpen) return null;
 
-  // --- Helper Components ---
+  // Helper Components ---
   const FormLabel = ({
     children,
     required,

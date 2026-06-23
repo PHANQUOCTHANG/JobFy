@@ -67,7 +67,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-[#0F172A]/40 backdrop-blur-sm lg:hidden transition-opacity"
@@ -131,7 +130,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 space-y-2 overflow-y-auto px-4 custom-scrollbar">
           {sidebarItems.map((item) => {
             const isActive =
@@ -155,7 +153,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                     : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
                 )}
               >
-                {/* Background hover effect for non-active items */}
                 {!isActive && (
                   <span className="absolute inset-0 bg-[#F1F5F9] opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-200 z-0 rounded-xl" />
                 )}
@@ -185,7 +182,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           })}
         </nav>
 
-        {/* Bottom Actions */}
         <div className="mt-auto px-4 space-y-2 shrink-0 pt-6 border-t border-[#F1F5F9]/60">
           <Link
             to={`${EMPLOYER_PATHS.DASHBOARD}/${EMPLOYER_PATHS.CREATE_JOB}`}

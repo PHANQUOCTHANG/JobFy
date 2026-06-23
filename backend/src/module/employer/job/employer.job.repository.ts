@@ -68,7 +68,6 @@ export class EmployerJobRepository {
           companyId,
           postedBy,
           slug,
-          status: JobStatus.draft, // Always start as draft
         },
       });
 
@@ -131,8 +130,8 @@ export class EmployerJobRepository {
   async updateStatus(id: string, status: JobStatus) {
     const updateData: Prisma.JobsUpdateInput = { status };
     
-    // Set publishedAt if changing to published
-    if (status === JobStatus.published) {
+    // Set publishedAt if changing to published or pending
+    if (status === JobStatus.published || status === JobStatus.pending) {
       updateData.publishedAt = new Date();
       // Default expires in 30 days
       const expiresAt = new Date();

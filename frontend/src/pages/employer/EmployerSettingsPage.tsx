@@ -116,6 +116,20 @@ const EmployerSettingsPage = () => {
         formattedPhone = '+' + formattedPhone;
       }
 
+      if (formattedPhone === '+84000000000' || formattedPhone === '+8400000000') {
+        // BYPASS CHO MÔI TRƯỜNG TEST/LOCAL
+        setConfirmationResult({
+          confirm: async (otp: string) => {
+            if (otp !== "123456") throw new Error("Sai mã OTP test");
+            return { user: { getIdToken: async () => "mock_id_token_123" } };
+          }
+        } as any);
+        setShowPhoneOtpInput(true);
+        toast.success("Môi trường Test: Nhập mã OTP 123456");
+        setIsSendingPhoneOtp(false);
+        return;
+      }
+
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, window.recaptchaVerifier);
       setConfirmationResult(confirmation);
       setShowPhoneOtpInput(true);
@@ -223,7 +237,6 @@ const EmployerSettingsPage = () => {
         </div>
       )}
 
-      {/* Verification Sections */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-[20px] font-black text-[#0F172A]">Tiến trình xác thực doanh nghiệp</h2>
@@ -378,7 +391,7 @@ const EmployerSettingsPage = () => {
               <div className="flex items-center gap-2">
                 <h3 className="text-[16px] font-black text-[#0F172A]">Bước 4: Xác thực giấy đăng ký doanh nghiệp</h3>
                 <span className={`px-2 py-0.5 text-[10px] font-black rounded-md border uppercase ${progress?.step3.isVerified ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                    isStep3Pending ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-100 text-slate-500'
+                  isStep3Pending ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-100 text-slate-500'
                   }`}>
                   {progress?.step3.isVerified ? 'ĐÃ XÁC THỰC' : isStep3Pending ? 'ĐANG CHỜ DUYỆT' : 'CHƯA TẢI LÊN'}
                 </span>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   FileText,
   Search,
@@ -33,17 +33,17 @@ import { Link } from "react-router-dom";
 
 // ─── API ─────────────────────────────────────────────────────────
 const fetchCandidates = async (params: Record<string, any>) => {
-  const { data } = await axios.get("/api/v1/candidate-profiles", { params, withCredentials: true });
+  const { data } = await api.get("/candidate-profiles/admin", { params });
   return data;
 };
 
 const updateCandidateApi = async ({ id, data }: { id: string; data: any }) => {
-  const res = await axios.patch(`/api/v1/candidate-profiles/${id}/admin`, data, { withCredentials: true });
+  const res = await api.patch(`/candidate-profiles/${id}/admin`, data);
   return res.data;
 };
 
 const deleteCandidateApi = (id: string) =>
-  axios.delete(`/api/v1/candidate-profiles/${id}/admin`, { withCredentials: true });
+  api.delete(`/candidate-profiles/${id}/admin`);
 
 // ─── Main ─────────────────────────────────────────────────────────
 const AdminCandidatesPage: React.FC = () => {
@@ -60,9 +60,9 @@ const AdminCandidatesPage: React.FC = () => {
   const { data: stats } = useQuery({
     queryKey: ["admin", "candidates", "stats"],
     queryFn: async () => {
-      const allRes = await axios.get("/api/v1/candidate-profiles?limit=1", { withCredentials: true });
+      const allRes = await api.get("/candidate-profiles/admin?limit=1");
       return {
-        all: allRes.data.meta?.totalItems || 0,
+        all: allRes.data.meta?.total || 0,
       };
     },
     refetchInterval: 60000,
@@ -71,7 +71,7 @@ const AdminCandidatesPage: React.FC = () => {
   const params = {
     page,
     limit: 15,
-    ...(search && { keyword: search }),
+    ...(search && { search: search }),
   };
 
   const { data, isLoading } = useQuery({
@@ -80,7 +80,7 @@ const AdminCandidatesPage: React.FC = () => {
   });
 
   const candidates: any[] = data?.data ?? [];
-  const meta = data?.meta ?? { totalItems: 0, totalPages: 1, page: 1 };
+  const meta = data?.meta ?? { total: 0, totalPages: 1, page: 1 };
 
   const updateMutation = useMutation({
     mutationFn: updateCandidateApi,

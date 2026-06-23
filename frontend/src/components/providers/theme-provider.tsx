@@ -41,7 +41,7 @@ export function ThemeProvider({
 
     const root = window.document.documentElement;
 
-    // --- Xử lý Mode (Light/Dark) ---
+    // Xử lý Mode (Light/Dark) ---
     root.classList.remove("light", "dark");
 
     if (theme === "system") {
@@ -54,7 +54,7 @@ export function ThemeProvider({
       root.classList.add(theme);
     }
 
-    // --- Xử lý Skin (Appearance) ---
+    // Xử lý Skin (Appearance) ---
     // Gán trực tiếp vào data-theme để kích hoạt bộ Skin Engine V4 trong index.css
     root.setAttribute("data-theme", skin);
 

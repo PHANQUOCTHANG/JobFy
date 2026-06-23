@@ -36,7 +36,6 @@ const ManageCompanyPage = () => {
 
   return (
     <div className="p-6 md:p-8 lg:p-10 max-w-container_max_width mx-auto w-full space-y-8 flex-1 animate-fade-in">
-      {/* Page Title & Actions */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <nav className="flex items-center gap-1 text-[#64748B] mb-2">
@@ -49,10 +48,9 @@ const ManageCompanyPage = () => {
             Cập nhật thông tin định danh và văn hóa để thu hút nhân tài hàng đầu.
           </p>
         </div>
-        {/* Buttons are now inside the Form for submitting, or we could use external submit, but we will place them in the Form to keep state simple. We'll leave a "Preview" button here */}
         <div className="flex items-center gap-3">
-          <Link 
-            to={company?.slug ? `/companies/${company.slug}` : "#"} 
+          <Link
+            to={company?.slug ? `/companies/${company.slug}` : "#"}
             target="_blank"
             className="px-5 py-2.5 border-2 border-[#E2E8F0] rounded-xl text-[#475569] font-bold hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all shadow-sm"
           >
@@ -73,7 +71,6 @@ const ManageCompanyPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* LEFT COLUMN: Identity & Info */}
           <div className="lg:col-span-8 space-y-8">
             {!company && !isLoading && (
               <div className="p-4 bg-amber-50 text-amber-700 rounded-2xl border border-amber-200 shadow-sm flex items-start gap-3">
@@ -84,12 +81,10 @@ const ManageCompanyPage = () => {
                 </div>
               </div>
             )}
-            <ManageCompanyForm initialData={company} />
+            <ManageCompanyForm initialData={company} isVerified={company?.isVerified} />
           </div>
 
-          {/* RIGHT COLUMN: Verification & Side Stats */}
           <div className="lg:col-span-4 space-y-8">
-            {/* Verification Status Card */}
             <div className="bg-white border border-[#F1F5F9] rounded-3xl p-6 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -136,7 +131,6 @@ const ManageCompanyPage = () => {
               </div>
             </div>
 
-            {/* Profile Completion Bento Card */}
             <div className="bg-gradient-to-br from-[#00307c] to-[#0052cc] text-white rounded-3xl p-8 relative overflow-hidden shadow-[0_12px_40px_-12px_rgba(0,48,124,0.5)]">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/3"></div>
               <div className="relative z-10">
@@ -145,8 +139,8 @@ const ManageCompanyPage = () => {
                   <span className="text-3xl font-black tracking-tight">{completionRate}%</span>
                 </div>
                 <div className="w-full h-2.5 bg-white/20 rounded-full mb-6 overflow-hidden">
-                  <div 
-                    className="h-full bg-emerald-400 rounded-full shadow-[0_0_12px_rgba(52,211,153,0.8)] transition-all duration-1000" 
+                  <div
+                    className="h-full bg-emerald-400 rounded-full shadow-[0_0_12px_rgba(52,211,153,0.8)] transition-all duration-1000"
                     style={{ width: `${completionRate}%` }}
                   ></div>
                 </div>
@@ -173,7 +167,6 @@ const ManageCompanyPage = () => {
               </div>
             </div>
 
-            {/* Activity Log */}
             <div className="bg-white border border-[#F1F5F9] rounded-3xl p-6 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.08)]">
               <h4 className="text-[16px] font-black text-[#0F172A] mb-5">Hoạt động gần đây</h4>
               <div className="space-y-5">

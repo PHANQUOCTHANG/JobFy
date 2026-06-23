@@ -1,10 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
-import { getCompanies, getCompanyBySlug, getCompanyLocations, getCompanyReviews } from '../api/companies.api';
+import { getCompanies, getCompanyBySlug, getCompanyLocations, getCompanyReviews, getIndustries } from '../api/companies.api';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useCompanies = (params?: Record<string, any>) => {
   return useQuery({
     queryKey: ['companies', params],
     queryFn: () => getCompanies(params),
+  });
+};
+
+export const useIndustries = () => {
+  return useQuery({
+    queryKey: ['industries-paginated'],
+    queryFn: () => getIndustries(),
   });
 };
 

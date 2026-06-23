@@ -7,9 +7,7 @@ import {
 import authApi from "@/features/auth/api/authApi";
 import { UserProfile, EmployerLoginInput as LoginInput, EmployerRegisterInput } from "../types/auth.types";
 
-// =================================================================
 // 1. Initial State
-// =================================================================
 const initialState: any = {
   token: typeof window !== "undefined" ? localStorage.getItem("accessToken") : null,
   user: null,
@@ -17,9 +15,7 @@ const initialState: any = {
   isAuthChecking: typeof window !== "undefined" && !!localStorage.getItem("accessToken"),
 };
 
-// =================================================================
 // 2. Async Thunks
-// =================================================================
 
 // A. Init Auth (Chạy khi F5 App)
 export const initAuth = createAsyncThunk(
@@ -36,6 +32,7 @@ export const initAuth = createAsyncThunk(
 
       return { accessToken, user };
     } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const e: any = error;
       // Normalize axios error shape -> prefer server payload (response.data)
       const payload = e?.response?.data ?? {
@@ -57,6 +54,7 @@ export const fetchCurrentUser = createAsyncThunk(
       const response = await authApi.getMe();
       return response.data; // Trả về UserProfile mới
     } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const e: any = error;
       const payload = e?.response?.data ?? {
         message: e?.message ?? "Failed fetching user",
@@ -142,6 +140,7 @@ export const loginUser = createAsyncThunk(
 
       return { accessToken, user };
     } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const e: any = error;
       const payload = e?.response?.data ?? {
         message: e?.message ?? "Login failed",
@@ -209,9 +208,7 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
-// =================================================================
 // 3. Slice Logic
-// =================================================================
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -241,11 +238,9 @@ const authSlice = createSlice({
     },
   },
 
-  // =================================================================
   // 4. Extra Reducers (Xử lý Async)
-  // =================================================================
   extraReducers: (builder) => {
-    // --- Init Auth ---
+    // Init Auth ---
     builder
       .addCase(initAuth.pending, (state) => {
         state.isAuthChecking = true;
@@ -262,19 +257,19 @@ const authSlice = createSlice({
         localStorage.removeItem("accessToken");
       });
 
-    // --- Fetch Current User (MỚI THÊM) ---
+    // Fetch Current User (MỚI THÊM) ---
     builder.addCase(fetchCurrentUser.fulfilled, (state, action) => {
       // Chỉ cập nhật thông tin user, giữ nguyên token
       state.user = action.payload;
     });
-    // --- Login User ---
+    // Login User ---
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.token = action.payload.accessToken;
       state.user = action.payload.user;
       state.isAuthChecking = false;
     });
 
-    // --- Google Login User ---
+    // Google Login User ---
     builder.addCase(googleLoginUser.fulfilled, (state, action) => {
       state.token = action.payload.accessToken;
       state.user = action.payload.user;

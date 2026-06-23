@@ -4,7 +4,7 @@ import { EMPLOYER_PATHS } from "@/config/paths";
 import { useQuery } from "@tanstack/react-query"; // Import useQuery
 import api from "@/lib/axios";
 import { useMyCompany, useProvinces, useDistricts, useIndustries, useSkills } from "@/features/companies/hooks/useManageCompany";
-import { toast } from "sonner";
+import Swal from "sweetalert2";
 import { employerApi } from "@/types/employerApi"; // Import employerApi
 import { Loader2 } from "lucide-react"; // Đã thêm import Loader2
 
@@ -147,8 +147,11 @@ const CreateJobPage = () => {
     setStatus(targetStatus);
 
     if (targetStatus === "published" && !isFullyVerified) {
-      toast.error("Bạn cần hoàn tất xác thực doanh nghiệp để đăng tin tuyển dụng.", {
-        description: "Vui lòng truy cập trang Cài đặt để hoàn tất các bước xác thực.",
+      Swal.fire({
+        title: "Chưa xác thực!",
+        text: "Bạn cần hoàn tất xác thực doanh nghiệp tại trang Cài đặt để nộp tin chờ duyệt. Tuy nhiên, bạn vẫn có thể Lưu bản nháp.",
+        icon: "warning",
+        confirmButtonColor: "#00307c"
       });
       return;
     }
@@ -158,36 +161,36 @@ const CreateJobPage = () => {
     try {
 
       if (!companyId) {
-        toast.error("Chưa lấy được thông tin công ty của bạn. Vui lòng thử lại sau.");
+        Swal.fire({ title: "Lỗi!", text: "Chưa lấy được thông tin công ty của bạn. Vui lòng thử lại sau.", icon: "error", confirmButtonColor: "#00307c" });
         return;
       }
       if (!categoryId) {
-        toast.error("Vui lòng chọn Lĩnh vực / Ngành nghề");
+        Swal.fire({ title: "Thiếu thông tin", text: "Vui lòng chọn Lĩnh vực / Ngành nghề", icon: "warning", confirmButtonColor: "#00307c" });
         return;
       }
       if (!title.trim()) {
-        toast.error("Vui lòng nhập Tên vị trí tuyển dụng");
+        Swal.fire({ title: "Thiếu thông tin", text: "Vui lòng nhập Tên vị trí tuyển dụng", icon: "warning", confirmButtonColor: "#00307c" });
         return;
       }
       if (!description.trim()) {
-        toast.error("Vui lòng nhập Mô tả công việc");
+        Swal.fire({ title: "Thiếu thông tin", text: "Vui lòng nhập Mô tả công việc", icon: "warning", confirmButtonColor: "#00307c" });
         return;
       }
       if (!requirements.trim()) {
-        toast.error("Vui lòng nhập Yêu cầu ứng viên");
+        Swal.fire({ title: "Thiếu thông tin", text: "Vui lòng nhập Yêu cầu ứng viên", icon: "warning", confirmButtonColor: "#00307c" });
         return;
       }
       // Validation for salary (now numbers)
       if (isNaN(salaryMin) || isNaN(salaryMax)) {
-        toast.error("Mức lương tối thiểu và tối đa không hợp lệ.");
+        Swal.fire({ title: "Lỗi", text: "Mức lương tối thiểu và tối đa không hợp lệ.", icon: "error", confirmButtonColor: "#00307c" });
         return;
       }
       if (salaryMin > salaryMax) {
-        toast.error("Mức lương tối thiểu không được lớn hơn mức lương tối đa.");
+        Swal.fire({ title: "Lỗi", text: "Mức lương tối thiểu không được lớn hơn mức lương tối đa.", icon: "error", confirmButtonColor: "#00307c" });
         return;
       }
       if (!expiresAt) {
-        toast.error("Vui lòng chọn Hạn chót nộp hồ sơ");
+        Swal.fire({ title: "Thiếu thông tin", text: "Vui lòng chọn Hạn chót nộp hồ sơ", icon: "warning", confirmButtonColor: "#00307c" });
         return;
       }
 
@@ -215,24 +218,24 @@ const CreateJobPage = () => {
         quantity: Number(quantity || 1),
         metaTitle: title.trim(),
         metaDescription: description.trim().slice(0, 160),
-        skills: selectedSkills.map(id => ({ skillId: Number(id), isRequired: true })),
+        skillIds: selectedSkills.map(id => Number(id)),
       };
 
-      const { data } = await api.post("/jobs", payload);
+      const { data } = await api.post("/employer/jobs", payload);
       const created = data?.data;
 
       setIsPublished(true);
-      toast.success("Tạo tin tuyển dụng thành công");
+      Swal.fire({ title: "Thành công!", text: "Tạo tin tuyển dụng thành công", icon: "success", confirmButtonColor: "#00307c", timer: 1500, showConfirmButton: false });
 
       // nếu backend trả về job id/slug bạn có thể redirect chi tiết; hiện redirect danh sách.
       setTimeout(() => {
         navigate(`/employer/${EMPLOYER_PATHS.JOBS}`);
-      }, 600);
+      }, 1500);
 
       return created;
     } catch (err: any) {
       const message = err?.response?.data?.message || "Tạo tin thất bại";
-      toast.error(message);
+      Swal.fire({ title: "Lỗi!", text: message, icon: "error", confirmButtonColor: "#00307c" });
       setIsPublishing(false);
       setIsPublished(false);
     }
@@ -240,7 +243,6 @@ const CreateJobPage = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
-      {/* Header */}
       <header className="flex justify-between items-center w-full px-6 md:px-8 h-16 sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#E2E8F0]">
         <div className="flex items-center gap-4">
           <button
@@ -253,7 +255,6 @@ const CreateJobPage = () => {
         </div>
       </header>
 
-      {/* Form Content */}
       <div className="p-6 md:p-10 flex-grow overflow-y-auto custom-scrollbar animate-fade-in relative">
         <div className="max-w-4xl mx-auto space-y-8">
 
@@ -309,7 +310,6 @@ const CreateJobPage = () => {
               </div>
             </div>
 
-            {/* Row 2: Rich Text Editor Mockup */}
             <div className="space-y-2">
               <label className="text-[11px] font-black text-[#64748B] uppercase tracking-widest flex items-center gap-2 ml-1">
                 <span className="material-symbols-outlined text-[18px]">subject</span> Mô tả công việc*
@@ -334,7 +334,6 @@ const CreateJobPage = () => {
               </div>
             </div>
 
-            {/* Row 3: Requirements */}
             <div className="space-y-2">
               <label className="text-[11px] font-black text-[#64748B] uppercase tracking-widest flex items-center gap-2 ml-1">
                 <span className="material-symbols-outlined text-[18px]">checklist</span> Yêu cầu ứng viên*
@@ -388,7 +387,6 @@ const CreateJobPage = () => {
               ></textarea>
             </div>
 
-            {/* Row 4: Salary, Experience & Headcount */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
               <div className="md:col-span-5 space-y-3">
                 <label className="text-[11px] font-black text-[#64748B] uppercase tracking-widest flex items-center gap-2 ml-1">

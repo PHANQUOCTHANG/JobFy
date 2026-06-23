@@ -18,23 +18,22 @@ import GoogleLoginButton from "./GoogleLoginButton";
 
 const BackgroundPattern = () => (
   <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-    {/* Grid */}
     <div className="absolute inset-0" style={{
       backgroundImage: "linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)",
       backgroundSize: "64px 64px",
     }} />
-    {/* Glows */}
     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#4F46E5]/10 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3" />
     <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#F59E0B]/10 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4" />
-    {/* Noise */}
     <div className="absolute inset-0 opacity-[0.03]" style={{
       backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
     }} />
   </div>
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Button = ({ children, className, isLoading, variant = "primary", ...props }: any) => {
   const base = "relative group w-full h-12 rounded-xl font-bold text-[14.5px] transition-all duration-300 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const variants: any = {
     primary: "bg-[#4F46E5] hover:bg-[#4338CA] text-white shadow-lg shadow-[#4F46E5]/20",
     outline: "bg-white border-2 border-[#E2E8F0] hover:border-[#0F172A] text-[#0F172A]",
@@ -47,6 +46,7 @@ const Button = ({ children, className, isLoading, variant = "primary", ...props 
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const InputField = React.forwardRef<HTMLInputElement, any>(
   ({ icon: Icon, className, error, ...props }, ref) => (
     <div className="relative group w-full">
@@ -77,6 +77,7 @@ const InputField = React.forwardRef<HTMLInputElement, any>(
 );
 InputField.displayName = "InputField";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Checkbox = ({ id, label, checked, onChange }: any) => (
   <div className="flex items-center gap-2.5">
     <button
@@ -104,7 +105,6 @@ export default function LoginForm() {
   return (
     <div className="min-h-screen w-full flex bg-white text-slate-900" style={{ fontFamily: "'Manrope', sans-serif" }}>
       
-      {/* LEFT COLUMN: Visuals */}
       <div className="hidden lg:flex w-[45%] relative flex-col justify-between p-12 bg-slate-50 border-r border-slate-200 text-slate-900 overflow-hidden">
         <BackgroundPattern />
         
@@ -147,7 +147,6 @@ export default function LoginForm() {
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Login Form */}
       <div className="w-full lg:w-[55%] flex items-center justify-center p-6 sm:p-12 relative">
         <Link to="/" className="absolute top-8 left-8 lg:hidden flex items-center gap-2 text-slate-900">
           <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center">
@@ -205,14 +204,16 @@ export default function LoginForm() {
             <div className="h-px bg-[#E2E8F0] flex-1" />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div className="flex items-center justify-center [&>div]:justify-center [&>div]:mt-0 w-full overflow-hidden rounded-xl border-2 border-[#E2E8F0] hover:border-[#0F172A] transition-all">
               <GoogleLoginButton role="candidate" />
             </div>
+            {/* Facebook login hidden temporarily
             <a href={`${env.API_URL}/auth/facebook`} className="flex items-center justify-center gap-2.5 h-[40px] mt-0 rounded-xl border-2 border-[#E2E8F0] hover:border-[#0F172A] bg-white text-[14px] font-bold text-[#0F172A] transition-all">
               <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook" className="w-5 h-5" />
               Facebook
             </a>
+            */}
           </div>
 
           <p className="text-center text-[14px] text-[#64748B] mt-10">
