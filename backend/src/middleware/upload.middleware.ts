@@ -472,3 +472,16 @@ const cvUpload = multer({
 });
 
 export const uploadCvFile = cvUpload.single("cvFile");
+
+// ─── Custom memory storage cho AI Extract Text ─────────────────────────────────────
+const memoryUpload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: cvFileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+    files: 1,
+  },
+});
+
+export const uploadMemoryCvFile = memoryUpload.single("cv");
+

@@ -91,4 +91,5 @@ export interface JobFilterParams {
   limit?: number;
   searchMode?: 'title' | 'company' | 'both';
   region?: string;
+  companyId?: string;
 }

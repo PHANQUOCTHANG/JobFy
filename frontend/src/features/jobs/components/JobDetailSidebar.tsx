@@ -8,6 +8,9 @@ import { differenceInDays, format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { Job } from '../types';
 import { cn } from '@/lib/utils';
+import { useAppSelector } from '@/store/hooks';
+import { useMyResumes } from '@/features/candidates/hooks/useCandidates';
+import { JobMatchBadge } from '@/features/ai/components/JobMatchBadge';
 
 interface JobDetailSidebarProps {
   job: Job;
@@ -81,6 +84,10 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
   // eslint-disable-next-line unused-imports/no-unused-vars
   onApplyClick,
 }) => {
+  const { user } = useAppSelector((state) => state.auth);
+  const { data: resumes } = useMyResumes();
+  const primaryResume = resumes?.find(r => r.isPrimary) || resumes?.[0];
+
   const daysLeft = job.expiresAt
     ? differenceInDays(new Date(job.expiresAt), new Date())
     : null;
@@ -160,6 +167,20 @@ export const JobDetailSidebar: React.FC<JobDetailSidebarProps> = ({
           >
             Xem trang công ty <ExternalLink className="w-3.5 h-3.5" />
           </Link>
+        </div>
+      )}
+
+      {user?.role === 'candidate' && primaryResume && (
+        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-lg shadow-sm p-4">
+          <div className="flex items-start justify-between gap-2">
+             <div>
+                <h3 className="font-bold text-purple-900 text-sm mb-1">Kiểm tra độ phù hợp CV</h3>
+                <p className="text-xs text-purple-700 leading-snug mb-3">
+                  JobFy AI sẽ đối chiếu CV của bạn với yêu cầu công việc để xem tỷ lệ khớp.
+                </p>
+                <JobMatchBadge resumeId={primaryResume.id} jobId={job.id} />
+             </div>
+          </div>
         </div>
       )}
 

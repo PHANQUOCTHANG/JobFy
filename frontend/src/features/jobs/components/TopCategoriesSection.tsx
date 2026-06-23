@@ -36,7 +36,7 @@ const SORT_OPTIONS: QuickFilterOption[] = [
 export const TopCategoriesSection: React.FC = () => {
   const { data: apiCategories, isLoading: categoriesLoading } = useJobCategories();
   const { data: industries, isLoading: industriesLoading } = useIndustries();
-  const [activeFilterType, setActiveFilterType] = useState<string | number>('all');
+  const [activeFilterType, setActiveFilterType] = useState<string>('all');
   const [activeSortValue, setActiveSortValue] = useState<string | number>('popular');
 
   const filterTypes = React.useMemo<FilterType[]>(() => {
@@ -45,7 +45,7 @@ export const TopCategoriesSection: React.FC = () => {
     return [
       ...base,
       ...industries.map(ind => ({
-        id: ind.id,
+        id: String(ind.id),
         label: ind.name,
       })),
     ];
@@ -64,7 +64,7 @@ export const TopCategoriesSection: React.FC = () => {
 
   const filteredCategories = React.useMemo(() => {
     if (activeFilterType === 'all') return rawCategories.slice(0, 8);
-    const filtered = rawCategories.filter(c => c.industryId === activeFilterType);
+    const filtered = rawCategories.filter(c => String(c.industryId) === activeFilterType);
     return filtered.slice(0, 8);
   }, [rawCategories, activeFilterType]);
 

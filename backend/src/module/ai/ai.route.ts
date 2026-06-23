@@ -14,4 +14,10 @@ router.post("/cv/suggest-skills", aiController.suggestSkills);
 router.post("/cover-letter/generate", aiController.generateCoverLetter);
 router.post("/cv/generate-full", aiController.generateFullCv);
 
+// Employer AI Routes
+import { uploadMemoryCvFile } from "@/middleware/upload.middleware";
+router.post("/generate-jd", aiController.generateJd);
+router.post("/generate-questions", aiController.generateQuestions);
+router.post("/analyze-cv", uploadMemoryCvFile, aiController.analyzeCv);
+
 export default router;

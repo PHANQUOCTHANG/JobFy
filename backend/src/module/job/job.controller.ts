@@ -12,6 +12,24 @@ export const createJob = asyncHandler(async (req: Request, res: Response) => {
 
 export const getJobs = asyncHandler(async (req: Request, res: Response) => {
   const query = normalizeJobQuery(req.query);
+
+  let isAdmin = false;
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    try {
+      const jwt = require("jsonwebtoken");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any;
+      if (decoded.role === "admin") {
+        isAdmin = true;
+      }
+    } catch (e) {}
+  }
+
+  if (!isAdmin) {
+    query.status = "published";
+  }
+
   const data = await jobService.findAll(query);
   return res.status(200).json(ApiResponse.paginate(data));
 });
@@ -21,6 +39,24 @@ export const getJob = asyncHandler(async (req: Request, res: Response) => {
   const data = await jobService.findById(id as string);
   
   if (data) {
+    let isAdmin = false;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const jwt = require("jsonwebtoken");
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any;
+        if (decoded.role === "admin") {
+          isAdmin = true;
+        }
+      } catch (e) {}
+    }
+
+    if (!isAdmin && data.status !== "published") {
+      // Allow candidates who already applied to view it? Maybe not strictly necessary right now.
+      return res.status(404).json(ApiResponse.error("Không tìm thấy tin tuyển dụng", 404));
+    }
+
     jobService.incrementViewCount(data.id as string).catch(console.error);
   }
   
