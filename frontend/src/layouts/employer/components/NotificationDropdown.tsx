@@ -20,7 +20,8 @@ export const NotificationDropdown = () => {
     queryKey: ["notifications"],
     queryFn: async () => {
       const res = await api.get("/notifications?limit=10");
-      return res.data?.data || [];
+      // res.data.data is { data: [...], meta: {...} }
+      return res.data?.data?.data || [];
     },
     refetchInterval: 30000,
   });

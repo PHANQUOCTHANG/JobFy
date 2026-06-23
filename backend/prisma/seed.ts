@@ -83,14 +83,16 @@ async function main() {
     });
   }
 
-  // Mật khẩu mặc định: 123456
-  const defaultPassword = await bcrypt.hash('123456', 10);
+  // Mật khẩu mặc định: 12345678
+  const defaultPassword = await bcrypt.hash('12345678', 10);
 
   // 2. Admin User
   console.log('👑 Seeding Admin...');
   await prisma.user.upsert({
     where: { email: 'admin@jobfy.vn' },
-    update: {},
+    update: {
+      passwordHash: defaultPassword,
+    },
     create: {
       email: 'admin@jobfy.vn',
       passwordHash: defaultPassword,
@@ -207,8 +209,10 @@ async function main() {
       }
     });
 
-    const candProfile = await prisma.candidateProfile.create({
-      data: {
+    const candProfile = await prisma.candidateProfile.upsert({
+      where: { userId: candUser.id },
+      update: {},
+      create: {
         userId: candUser.id,
         fullName: faker.person.fullName(),
         headline: faker.person.jobTitle(),
@@ -220,7 +224,8 @@ async function main() {
       }
     });
 
-    const resume = await prisma.resume.create({
+    const resume = await prisma.resume.findFirst({ where: { candidateId: candProfile.id, isPrimary: true } }) 
+      || await prisma.resume.create({
       data: {
         candidateId: candProfile.id,
         title: 'CV - ' + candProfile.fullName,
@@ -230,6 +235,7 @@ async function main() {
     });
 
     // Add random skills to resume
+    await prisma.resumeSkill.deleteMany({ where: { resumeId: resume.id } });
     const randomSkills = faker.helpers.arrayElements(dbSkills, faker.number.int({ min: 2, max: 5 }));
     for (const sk of randomSkills) {
       await prisma.resumeSkill.create({

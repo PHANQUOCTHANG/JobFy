@@ -138,4 +138,38 @@ Job Requirements: ${JSON.stringify(jobData)}
       throw new AppError("Lỗi định dạng dữ liệu từ AI", 500);
     }
   }
+
+  async generateJd(data: any): Promise<string> {
+    const systemPrompt = "Bạn là chuyên gia nhân sự. Hãy viết một bản mô tả công việc (Job Description) thật chuyên nghiệp, rõ ràng, chia làm các phần: Giới thiệu, Trách nhiệm công việc, Yêu cầu ứng viên, và Quyền lợi.";
+    const userPrompt = `Vị trí: ${data.title}\nKỹ năng: ${data.skills?.join(', ')}\nCấp độ: ${data.experienceLevel}\nHình thức: ${data.jobType}\nYêu cầu thêm: ${data.description}`;
+    const content = await this.callGroq(systemPrompt, userPrompt);
+    return content.trim();
+  }
+
+  async generateQuestions(data: any): Promise<string> {
+    const systemPrompt = "Bạn là chuyên gia phỏng vấn. Hãy tạo một bộ câu hỏi phỏng vấn gồm 5-7 câu hỏi chuyên sâu và tình huống thực tế dựa trên thông tin vị trí công việc.";
+    const userPrompt = `Vị trí: ${data.title}\nKỹ năng trọng tâm: ${data.skills?.join(', ')}\nBối cảnh: ${data.description}`;
+    const content = await this.callGroq(systemPrompt, userPrompt);
+    return content.trim();
+  }
+
+  async analyzeCv(cvText: string, jobDescription: string, position: string): Promise<any> {
+    const systemPrompt = `Bạn là chuyên gia tuyển dụng. Phân tích CV so với yêu cầu công việc.
+Trả về JSON đúng chuẩn (không chứa markdown) với cấu trúc sau:
+{
+  "score": <số từ 0-100>,
+  "summary": "<Tóm tắt 2-3 câu về ứng viên>",
+  "strengths": ["<Điểm mạnh 1>", "<Điểm mạnh 2>"],
+  "weaknesses": ["<Điểm yếu 1>", "<Điểm yếu 2>"],
+  "recommendation": "<Đề xuất tuyển dụng ngắn gọn>"
+}`;
+    const userPrompt = `Vị trí: ${position}\n\nJD: ${jobDescription || 'Không có JD cụ thể'}\n\nCV Text: ${cvText}`;
+    const content = await this.callGroq(systemPrompt, userPrompt, true);
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      console.error(e);
+      throw new AppError("Lỗi định dạng dữ liệu từ AI", 500);
+    }
+  }
 }

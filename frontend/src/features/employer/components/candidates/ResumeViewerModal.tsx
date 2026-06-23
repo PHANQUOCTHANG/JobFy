@@ -119,9 +119,9 @@ export const ResumeViewerModal: React.FC<Props> = ({ applicationId, onClose, onU
 
               {/* Right Column: PDF Viewer */}
               <div className="flex-1 bg-slate-100 relative">
-                {detail.candidate.resumes?.[0]?.fileUrl ? (
+                {(detail.resume?.fileUrl || detail.candidate.resumes?.[0]?.fileUrl) ? (
                   <iframe 
-                    src={`${detail.candidate.resumes[0].fileUrl}#toolbar=0`} 
+                    src={`${detail.resume?.fileUrl || detail.candidate.resumes[0].fileUrl}#toolbar=0`} 
                     className="w-full h-full"
                     title="Resume PDF"
                   />

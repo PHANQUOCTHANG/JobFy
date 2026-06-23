@@ -62,7 +62,7 @@ export const CompanyDetailPage: React.FC = () => {
   }
 
   const tabCountMap: Record<string, number | undefined> = {
-    jobs: companyJobsResponse?.total || companyJobs.length,
+    jobs: companyJobsResponse?.meta?.total || companyJobs.length,
     reviews: company.totalReviews,
   };
 

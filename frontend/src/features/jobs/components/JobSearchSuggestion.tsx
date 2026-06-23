@@ -23,7 +23,7 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
   if (searchMode === 'title') {
     suggestions = Array.from(new Set(jobs.map(j => j.title))).filter(Boolean).slice(0, 5);
   } else if (searchMode === 'company') {
-    suggestions = Array.from(new Set(jobs.map(j => j.company?.name))).filter(Boolean).slice(0, 5);
+    suggestions = Array.from(new Set(jobs.map(j => j.company?.name))).filter(Boolean).slice(0, 5) as string[];
   } else {
     const rawSuggs = jobs.flatMap(j => [j.title, j.company?.name]).filter(Boolean);
     suggestions = Array.from(new Set(rawSuggs)).slice(0, 5) as string[];
@@ -32,10 +32,9 @@ export const JobSearchSuggestion: React.FC<JobSearchSuggestionProps> = ({
   // Extract related keywords from job skills and tags
   const relatedKeywords = Array.from(new Set(
     jobs.flatMap(j => [
-      ...(j.jobSkills?.map(s => s.skill?.name) || []),
-      ...(j.jobTags?.map(t => t.tag?.name) || [])
+      ...(j.jobSkills?.map(s => s.skill?.name) || [])
     ])
-  )).filter(Boolean).slice(0, 5);
+  )).filter(Boolean).slice(0, 5) as string[];
 
   return (
     <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-[#e8e8e8] z-50 flex overflow-hidden max-h-[500px]">

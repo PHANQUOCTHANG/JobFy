@@ -453,6 +453,7 @@ export class EmployerCandidateService {
       where: { id: applicationId, job: { companyId: company.id } },
       include: {
         job: true,
+        resume: true,
         candidate: {
           include: {
             user: { select: { email: true, phone: true } },

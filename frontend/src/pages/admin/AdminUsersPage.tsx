@@ -141,7 +141,7 @@ const AdminUsersPage: React.FC = () => {
     <div className="space-y-6">
       <PageHeader
         title="Quản lý Người dùng"
-        description="Theo dõi và quản lý tài khoản thành viên hệ thống"
+        subtitle="Theo dõi và quản lý tài khoản thành viên hệ thống"
       />
 
       <div className="grid gap-4 md:grid-cols-4">
@@ -189,7 +189,7 @@ const AdminUsersPage: React.FC = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
         {isLoading ? (
-          <TableSkeleton columns={6} rows={5} />
+          <TableSkeleton cols={6} rows={5} />
         ) : (
           <Table>
             <TableHeader>
@@ -286,11 +286,11 @@ const AdminUsersPage: React.FC = () => {
 
       <ConfirmationModal
         isOpen={!!confirmDelete}
-        onClose={() => setConfirmDelete(null)}
+        onCancel={() => setConfirmDelete(null)}
         onConfirm={() => confirmDelete && deleteMutation.mutate(confirmDelete.id)}
         title="Khóa/Xóa mềm tài khoản"
         description={`Tài khoản "${confirmDelete?.email}" sẽ bị vô hiệu hóa và chuyển vào trạng thái Xóa mềm (Deleted At). Người này không thể đăng nhập được nữa. Bạn có chắc chắn?`}
-        confirmText="Vô hiệu hóa"
+        confirmLabel="Vô hiệu hóa"
         variant="destructive"
         isLoading={deleteMutation.isPending}
       />
