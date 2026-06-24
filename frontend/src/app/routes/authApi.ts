@@ -1,7 +1,30 @@
 import axios from 'axios';
-import { RegisterRequest, LoginRequest, ResetPasswordRequest } from '@/../../backend/src/module/auth/auth.request';
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+// Local interface definitions to avoid importing from backend
+export interface RegisterRequest {
+  fullName: string;
+  email: string;
+  password?: string;
+  phone?: string;
+  role: 'admin' | 'employer' | 'candidate';
+  companyName?: string;
+  provinceId?: string;
+  districtId?: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password?: string;
+  role: 'admin' | 'employer' | 'candidate';
+  rememberMe?: boolean;
+}
+
+export interface ResetPasswordRequest {
+  verificationToken: string;
+  newPassword?: string;
+}
 
 export const authApi = {
   register: (data: RegisterRequest) => 

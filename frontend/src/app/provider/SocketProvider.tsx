@@ -57,7 +57,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
     // 4. Cleanup
     return () => {
-      // console.log("🧹 Cleaning up socket...");
       socketInstance.removeAllListeners();
       socketInstance.disconnect();
     };

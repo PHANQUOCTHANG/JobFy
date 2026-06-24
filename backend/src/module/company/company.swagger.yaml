@@ -1,0 +1,302 @@
+tags:
+  name: Companies
+  description: Quản lý thông tin Công ty
+
+components:
+  schemas:
+    CreateCompanyRequestDto:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        logoUrl:
+          type: string
+        bannerUrl:
+          type: string
+        website:
+          type: string
+        size:
+          type: string
+        description:
+          type: string
+        taxCode:
+          type: string
+        industryId:
+          type: number
+
+    CompanyLocationRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        provinceId:
+          type: number
+        districtId:
+          type: number
+        isHeadquarters:
+          type: boolean
+
+    CompanyMemberRequestDto:
+      type: object
+      properties:
+        userId:
+          type: string
+        role:
+          type: string
+
+paths:
+  /api/v1/companies:
+    get:
+      summary: Lấy danh sách công ty
+      tags: [Companies]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: industryId
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo mới công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/companies/{id}:
+    get:
+      summary: Lấy chi tiết công ty
+      tags: [Companies]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+    patch:
+      summary: Cập nhật công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyRequestDto'
+      responses:
+        200:
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Xóa thành công
+
+  /api/v1/companies/{companyId}/locations:
+    get:
+      summary: Lấy danh sách địa điểm của công ty
+      tags: [Companies]
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Thêm địa điểm cho công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyLocationRequestDto'
+      responses:
+        201:
+          description: Thêm thành công
+
+  /api/v1/companies/{companyId}/locations/{locationId}:
+    patch:
+      summary: Cập nhật địa điểm công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyLocationRequestDto'
+      responses:
+        200:
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa địa điểm công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: locationId
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Xóa thành công
+
+  /api/v1/companies/{companyId}/members:
+    get:
+      summary: Lấy danh sách thành viên của công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Thêm thành viên cho công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyMemberRequestDto'
+      responses:
+        201:
+          description: Thêm thành công
+
+  /api/v1/companies/{companyId}/members/{memberId}:
+    patch:
+      summary: Cập nhật thành viên công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: memberId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyMemberRequestDto'
+      responses:
+        200:
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa thành viên công ty
+      tags: [Companies]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: memberId
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Xóa thành công

@@ -1,0 +1,96 @@
+tags:
+  name: Cover Letters
+  description: Quản lý Thư xin việc (Cover Letter) của ứng viên
+
+components:
+  schemas:
+    CoverLetterRequestDto:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          example: "Thư xin việc Frontend Developer"
+        content:
+          type: string
+          example: "<p>Kính gửi nhà tuyển dụng...</p>"
+        isPrimary:
+          type: boolean
+          example: false
+
+paths:
+  /api/v1/cover-letters:
+    get:
+      summary: Lấy danh sách Thư xin việc của ứng viên hiện tại
+      tags: [Cover Letters]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo mới Thư xin việc
+      tags: [Cover Letters]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoverLetterRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/cover-letters/{id}:
+    get:
+      summary: Lấy chi tiết Thư xin việc
+      tags: [Cover Letters]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+    patch:
+      summary: Cập nhật Thư xin việc
+      tags: [Cover Letters]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoverLetterRequestDto'
+      responses:
+        200:
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa Thư xin việc
+      tags: [Cover Letters]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Xóa thành công

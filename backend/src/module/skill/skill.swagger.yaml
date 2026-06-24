@@ -1,0 +1,120 @@
+tags:
+  name: Skills
+  description: Quản lý Kỹ năng
+
+components:
+  schemas:
+    SkillRequestDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: "ReactJS"
+        slug:
+          type: string
+          example: "reactjs"
+        categoryId:
+          type: number
+          example: 1
+        isActive:
+          type: boolean
+          example: true
+        isVerified:
+          type: boolean
+          example: true
+
+paths:
+  /api/v1/skills:
+    get:
+      summary: Lấy danh sách kỹ năng
+      tags: [Skills]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: categoryId
+          schema:
+            type: number
+        - in: query
+          name: isActive
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo mới kỹ năng (Admin)
+      tags: [Skills]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/skills/{id}:
+    get:
+      summary: Lấy chi tiết kỹ năng
+      tags: [Skills]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+    patch:
+      summary: Cập nhật kỹ năng (Admin)
+      tags: [Skills]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillRequestDto'
+      responses:
+        200:
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa kỹ năng (Admin)
+      tags: [Skills]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Xóa thành công

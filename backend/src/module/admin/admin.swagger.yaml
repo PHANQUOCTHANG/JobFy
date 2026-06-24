@@ -1,0 +1,59 @@
+tags:
+  name: Admin
+  description: Quản trị Hệ thống
+
+paths:
+  /api/v1/admin/logs:
+    get:
+      summary: Lấy danh sách nhật ký hoạt động (System Logs)
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 20
+        - in: query
+          name: action
+          schema:
+            type: string
+        - in: query
+          name: userId
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/admin/stats:
+    get:
+      summary: Lấy thống kê tổng quan (Dashboard)
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/admin/job-views/{id}:
+    get:
+      summary: Lấy thống kê lượt xem công việc
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công

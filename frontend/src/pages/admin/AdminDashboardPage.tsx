@@ -113,7 +113,7 @@ const AdminDashboardPage: React.FC = () => {
       sub: "Từ các gói Subscriptions",
     },
     {
-      label: "Total Users",
+      label: "Tổng Người Dùng",
       value: (stats?.totalUsers ?? 0).toLocaleString(),
       icon: Users,
       color: "text-indigo-600",
@@ -121,48 +121,48 @@ const AdminDashboardPage: React.FC = () => {
       sub: `+${stats?.newUsersToday ?? 0} hôm nay`,
     },
     {
-      label: "Companies",
+      label: "Doanh Nghiệp",
       value: (stats?.totalCompanies ?? 0).toLocaleString(),
       icon: Building2,
       color: "text-emerald-600",
       bg: "bg-emerald-50 dark:bg-emerald-500/10",
       badge:
         (stats?.pendingCompanyVerifications ?? 0) > 0
-          ? { label: `${stats?.pendingCompanyVerifications} pending`, color: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" }
+          ? { label: `${stats?.pendingCompanyVerifications} chờ duyệt`, color: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" }
           : undefined,
     },
     {
-      label: "Total Jobs",
+      label: "Tin Tuyển Dụng",
       value: (stats?.totalJobs ?? 0).toLocaleString(),
       icon: Briefcase,
       color: "text-orange-600",
       bg: "bg-orange-50 dark:bg-orange-500/10",
     },
     {
-      label: "Applications",
+      label: "Lượt Ứng Tuyển",
       value: (stats?.totalApplications ?? 0).toLocaleString(),
       icon: FileText,
       color: "text-pink-600",
       bg: "bg-pink-50 dark:bg-pink-500/10",
     },
     {
-      label: "Total Reports",
+      label: "Lượt Báo Cáo",
       value: (stats?.totalReports ?? 0).toLocaleString(),
       icon: AlertTriangle,
       color: "text-red-600",
       bg: "bg-red-50 dark:bg-red-500/10",
       badge:
         (stats?.pendingReports ?? 0) > 0
-          ? { label: `${stats?.pendingReports} pending`, color: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400" }
+          ? { label: `${stats?.pendingReports} chờ duyệt`, color: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400" }
           : undefined,
     },
     {
-      label: "Activity",
+      label: "Hoạt Động",
       value: (stats?.userGrowth ?? []).reduce((s: number, d: any) => s + d.value, 0).toLocaleString(),
       icon: Activity,
       color: "text-teal-600",
       bg: "bg-teal-50 dark:bg-teal-500/10",
-      sub: `New users last ${days} days`,
+      sub: `Người dùng mới trong ${days} ngày qua`,
     },
   ];
 
@@ -171,7 +171,7 @@ const AdminDashboardPage: React.FC = () => {
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-[#0F172A] dark:text-white tracking-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>Admin Dashboard</h1>
+          <h1 className="text-3xl font-black text-[#0F172A] dark:text-white tracking-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>Bảng điều khiển Admin</h1>
           <p className="text-[15px] text-[#64748B] dark:text-slate-400 mt-1">
             Tổng quan hệ thống JobFy — cập nhật mỗi 60 giây.
           </p>
@@ -243,7 +243,7 @@ const AdminDashboardPage: React.FC = () => {
               <Line
                 type="monotone"
                 dataKey="value"
-                name="New Users"
+                name="Người dùng mới"
                 stroke="#6366f1"
                 strokeWidth={2.5}
                 dot={{ r: 4, fill: "#6366f1", strokeWidth: 0 }}
@@ -265,7 +265,7 @@ const AdminDashboardPage: React.FC = () => {
               <XAxis dataKey="date" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} allowDecimals={false} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="value" name="Applications" fill="#ec4899" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="value" name="Lượt ứng tuyển" fill="#ec4899" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

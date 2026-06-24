@@ -1,0 +1,57 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[BUG] "
+labels: ["bug", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting this issue. Please provide as much detail as possible to help us reproduce and fix it.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is the issue? What is the expected behavior?
+      placeholder: For example: When clicking the "Login" button, the system does not respond...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide step-by-step instructions to reproduce this bug.
+      placeholder: |
+        1. Go to '...'
+        2. Enter '...'
+        3. Scroll down to '...'
+        4. Click on '...'
+        5. Observe the error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: How should the system behave in this scenario?
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Media (Optional)
+      description: Attach any screenshots or videos that help illustrate the problem.
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, browser, screen resolution, etc.
+      placeholder: E.g., Windows 11, Chrome 120, Desktop 1080p
+    validations:
+      required: true

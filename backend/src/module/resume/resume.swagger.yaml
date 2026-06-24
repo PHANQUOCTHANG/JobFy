@@ -1,0 +1,554 @@
+tags:
+  name: Resumes
+  description: Quản lý hồ sơ CV của ứng viên
+
+components:
+  schemas:
+    ResumeRequestDto:
+      type: object
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        fileUrl:
+          type: string
+        extractedText:
+          type: string
+        isPrimary:
+          type: boolean
+        isActive:
+          type: boolean
+        template:
+          type: string
+        settings:
+          type: object
+
+    ResumeEducationRequestDto:
+      type: object
+      properties:
+        school:
+          type: string
+        degree:
+          type: string
+        fieldOfStudy:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        current:
+          type: boolean
+        description:
+          type: string
+
+    ResumeExperienceRequestDto:
+      type: object
+      properties:
+        company:
+          type: string
+        position:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        current:
+          type: boolean
+        description:
+          type: string
+
+    ResumeSkillRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+        level:
+          type: string
+
+    ResumeCertificationRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+        organization:
+          type: string
+        issueDate:
+          type: string
+          format: date
+        url:
+          type: string
+
+    ResumeProjectRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        current:
+          type: boolean
+        description:
+          type: string
+        url:
+          type: string
+
+paths:
+  /api/v1/resumes:
+    get:
+      summary: Lấy danh sách CV (Admin)
+      tags: [Resumes]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo CV mới
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeRequestDto'
+      responses:
+        201:
+          description: Thành công
+
+  /api/v1/resumes/my:
+    get:
+      summary: Lấy danh sách CV của ứng viên hiện tại
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/resumes/upload:
+    post:
+      summary: Tải file CV (PDF)
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Upload thành công
+
+  /api/v1/resumes/{id}:
+    get:
+      summary: Lấy chi tiết CV
+      tags: [Resumes]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+    patch:
+      summary: Cập nhật CV
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeRequestDto'
+      responses:
+        200:
+          description: Thành công
+    delete:
+      summary: Xóa CV
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/resumes/{id}/educations:
+    post:
+      summary: Thêm quá trình học tập
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeEducationRequestDto'
+      responses:
+        201:
+          description: Thành công
+
+  /api/v1/resumes/{id}/educations/{nestedId}:
+    patch:
+      summary: Cập nhật quá trình học tập
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeEducationRequestDto'
+      responses:
+        200:
+          description: Thành công
+    delete:
+      summary: Xóa quá trình học tập
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/resumes/{id}/experiences:
+    post:
+      summary: Thêm kinh nghiệm làm việc
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeExperienceRequestDto'
+      responses:
+        201:
+          description: Thành công
+
+  /api/v1/resumes/{id}/experiences/{nestedId}:
+    patch:
+      summary: Cập nhật kinh nghiệm làm việc
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeExperienceRequestDto'
+      responses:
+        200:
+          description: Thành công
+    delete:
+      summary: Xóa kinh nghiệm làm việc
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/resumes/{id}/skills:
+    post:
+      summary: Thêm kỹ năng
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeSkillRequestDto'
+      responses:
+        201:
+          description: Thành công
+
+  /api/v1/resumes/{id}/skills/{nestedId}:
+    patch:
+      summary: Cập nhật kỹ năng
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeSkillRequestDto'
+      responses:
+        200:
+          description: Thành công
+    delete:
+      summary: Xóa kỹ năng
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/resumes/{id}/certifications:
+    post:
+      summary: Thêm chứng chỉ
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeCertificationRequestDto'
+      responses:
+        201:
+          description: Thành công
+
+  /api/v1/resumes/{id}/certifications/{nestedId}:
+    patch:
+      summary: Cập nhật chứng chỉ
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeCertificationRequestDto'
+      responses:
+        200:
+          description: Thành công
+    delete:
+      summary: Xóa chứng chỉ
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/resumes/{id}/projects:
+    post:
+      summary: Thêm dự án
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeProjectRequestDto'
+      responses:
+        201:
+          description: Thành công
+
+  /api/v1/resumes/{id}/projects/{nestedId}:
+    patch:
+      summary: Cập nhật dự án
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeProjectRequestDto'
+      responses:
+        200:
+          description: Thành công
+    delete:
+      summary: Xóa dự án
+      tags: [Resumes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: nestedId
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công

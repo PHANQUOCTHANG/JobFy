@@ -1,0 +1,115 @@
+tags:
+  name: Job Alerts
+  description: Quản lý Thông báo việc làm của ứng viên
+
+components:
+  schemas:
+    JobAlertRequestDto:
+      type: object
+      required:
+        - keyword
+      properties:
+        keyword:
+          type: string
+          example: "Frontend Developer"
+        cityId:
+          type: number
+          example: 1
+        industryId:
+          type: number
+          example: 2
+        minSalary:
+          type: number
+          example: 10000000
+        frequency:
+          type: string
+          enum: [daily, weekly, monthly]
+          example: "weekly"
+
+paths:
+  /api/v1/job-alerts:
+    get:
+      summary: Lấy danh sách thông báo việc làm
+      tags: [Job Alerts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo mới thông báo việc làm
+      tags: [Job Alerts]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobAlertRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/job-alerts/{id}:
+    patch:
+      summary: Cập nhật thông báo việc làm
+      tags: [Job Alerts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobAlertRequestDto'
+      responses:
+        200:
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa thông báo việc làm
+      tags: [Job Alerts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Xóa thành công
+
+  /api/v1/job-alerts/{id}/toggle:
+    patch:
+      summary: Bật/tắt trạng thái thông báo việc làm
+      tags: [Job Alerts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công

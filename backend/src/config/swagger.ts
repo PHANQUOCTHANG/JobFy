@@ -6,9 +6,9 @@ const options: swaggerJSDoc.Options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Flower Web API",
+      title: "JobFy API",
       version: "1.0.0",
-      description: "Tài liệu API cho hệ thống Flower Web",
+      description: "Tài liệu API cho hệ thống JobFy",
     },
     servers: [
       {
