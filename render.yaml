@@ -24,7 +24,11 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: "30d"
       - key: FRONTEND_URL
-        value: "https://your-vercel-domain.vercel.app" # Hãy sửa lại thành URL thật sau khi deploy Vercel
+        value: "https://job-fy-seven.vercel.app"
+      - key: CLIENT_URL
+        value: "https://job-fy-seven.vercel.app"
+      - key: CORS_ORIGINS
+        value: "https://job-fy-seven.vercel.app"
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
