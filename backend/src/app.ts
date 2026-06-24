@@ -19,7 +19,7 @@ app.use("/api", globalRateLimiter);
 // Cấu hình CORS đọc từ biến môi trường — tránh hardcode localhost
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim())
-  : ["http://localhost:3000", "http://localhost:5173"];
+  : ["http://localhost:3000", "http://localhost:5173" , "https://job-fy-seven.vercel.app"];
 
 const corsOptions = {
   origin: allowedOrigins,
