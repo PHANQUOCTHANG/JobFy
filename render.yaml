@@ -12,12 +12,14 @@ services:
       - key: PORT
         value: 5000
       - key: DATABASE_URL
-        fromDatabase:
-          name: jobfy-db
-          property: connectionString
+        sync: false
+      - key: REDIS_URL
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_RESET_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: "7d"
@@ -37,29 +39,13 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
-      - key: GOOGLE_CLIENT_SECRET
+      - key: EMAIL_SERVICE
+        value: "gmail"
+      - key: EMAIL_USER
         sync: false
-      - key: SMTP_HOST
+      - key: EMAIL_PASSWORD
         sync: false
-      - key: SMTP_PORT
+      - key: EMAIL_SENDER_NAME
+        value: "JobFy"
+      - key: GROQ_API_KEY
         sync: false
-      - key: SMTP_USER
-        sync: false
-      - key: SMTP_PASS
-        sync: false
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: jobfy-redis
-          property: connectionString
-
-  - type: redis
-    name: jobfy-redis
-    plan: free
-    ipAllowList: []
-
-databases:
-  - name: jobfy-db
-    databaseName: jobfydb
-    user: jobfyuser
-    plan: free
