@@ -23,9 +23,7 @@ export default function HomePageV2() {
     return <ThemedLoader />;
   }
 
-  if (error) {
-    return <div className="p-10 text-red-500 bg-white">Lỗi khi tải trang chủ: {error.message}</div>;
-  }
+  // Xóa phần báo lỗi trắng trang để giao diện vẫn hiển thị bình thường khi backend bị sập
 
   return (
     <div className="bg-[#F4F6FA] text-[#0F172A]" style={{ fontFamily: "'Manrope', sans-serif" }}>
