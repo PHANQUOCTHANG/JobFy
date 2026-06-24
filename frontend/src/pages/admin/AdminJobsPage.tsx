@@ -91,7 +91,6 @@ const AdminJobsPage: React.FC = () => {
         api.get("/jobs?status=pending&limit=1"),
         api.get("/jobs?status=published&limit=1"),
       ]);
-      console.log(allRes, pendingRes, publishedRes)
       return {
         all: allRes.data.meta?.total || allRes.data.meta?.totalItems || 0,
         pending: pendingRes.data.meta?.total || pendingRes.data.meta?.totalItems || 0,

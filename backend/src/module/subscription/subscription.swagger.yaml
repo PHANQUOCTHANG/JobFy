@@ -1,0 +1,124 @@
+tags:
+  - name: Subscriptions
+    description: Quản lý Gói cước của Nhà tuyển dụng
+  - name: Payments
+    description: Quản lý Thanh toán
+
+components:
+  schemas:
+    CreateSubscriptionRequestDto:
+      type: object
+      required:
+        - planId
+      properties:
+        planId:
+          type: number
+          example: 1
+
+    CreatePaymentRequestDto:
+      type: object
+      required:
+        - subscriptionId
+        - amount
+        - method
+      properties:
+        subscriptionId:
+          type: string
+          example: "uuid-subscription"
+        amount:
+          type: number
+          example: 500000
+        method:
+          type: string
+          enum: [vnpay, momo, bank_transfer, credit_card]
+          example: "vnpay"
+        status:
+          type: string
+          enum: [pending, success, failed, refunded]
+          example: "success"
+
+paths:
+  /api/v1/subscriptions/plans:
+    get:
+      summary: Lấy danh sách các gói cước có sẵn (Public)
+      tags: [Subscriptions]
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/subscriptions/my:
+    get:
+      summary: Lấy gói cước hiện tại của nhà tuyển dụng
+      tags: [Subscriptions]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/subscriptions:
+    post:
+      summary: Đăng ký mua gói cước mới
+      tags: [Subscriptions]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionRequestDto'
+      responses:
+        201:
+          description: Thành công
+
+  /api/v1/subscriptions/{id}/cancel:
+    delete:
+      summary: Hủy gia hạn gói cước
+      tags: [Subscriptions]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/payments:
+    get:
+      summary: Lấy lịch sử giao dịch thanh toán (Employer)
+      tags: [Payments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo giao dịch thanh toán
+      tags: [Payments]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequestDto'
+      responses:
+        201:
+          description: Thành công

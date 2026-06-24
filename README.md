@@ -93,6 +93,25 @@ npm run dev
 ```
 Mở trình duyệt ở địa chỉ `http://localhost:5173`.
 
+## 🖥️ Hướng Dẫn Sử Dụng Nhanh
+
+Sau khi khởi chạy thành công cả Backend và Frontend, bạn có thể truy cập các phân hệ theo đường dẫn sau:
+
+### 1. Phân hệ Ứng viên (Candidate)
+- **Đường dẫn**: `http://localhost:5173/` (Trang chủ chính)
+- **Chức năng**: Xem tin tuyển dụng, nộp CV, quản lý hồ sơ ứng viên, v.v.
+- **Tài khoản demo**: `candidate1@jobfy.vn` / `12345678`
+
+### 2. Phân hệ Nhà Tuyển Dụng (Employer)
+- **Đường dẫn**: `http://localhost:5173/employer`
+- **Chức năng**: Đăng tin tuyển dụng, duyệt hồ sơ ứng viên theo cột (Kanban), tạo bài test AI.
+- **Tài khoản demo**: `employer1@jobfy.vn` / `12345678`
+
+### 3. Phân hệ Quản Trị Viên (Admin)
+- **Đường dẫn**: `http://localhost:5173/admin`
+- **Chức năng**: Bảng điều khiển (Dashboard) theo dõi tổng quan, quản lý người dùng, duyệt tin tuyển dụng, thiết lập dữ liệu hệ thống (Ngành nghề, Kỹ năng, Danh mục...).
+- **Tài khoản demo**: `admin@jobfy.vn` (hoặc `admin@jobfy.com`) / `12345678`
+
 ## 📦 Hướng Dẫn Triển Khai (Deployment)
 
 ### Triển Khai Backend (Render)

@@ -24,81 +24,81 @@ import Avatar, { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const sidebarGroups = [
   {
-    title: "Overview",
+    title: "Tổng quan",
     items: [
       {
-        label: "Dashboard",
+        label: "Bảng điều khiển",
         path: `${ADMIN_PATHS.ADMIN}`,
         icon: LayoutDashboard,
       },
     ],
   },
   {
-    title: "Recruitment",
+    title: "Tuyển dụng",
     items: [
       {
-        label: "Jobs",
+        label: "Tin tuyển dụng",
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.JOBS}`,
         icon: Briefcase,
       },
       {
-        label: "Companies",
+        label: "Công ty",
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.COMPANIES}`,
         icon: Building2,
       },
       {
-        label: "Candidates",
+        label: "Ứng viên",
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.CANDIDATES}`,
         icon: FileText,
       },
     ],
   },
   {
-    title: "Management",
+    title: "Quản trị",
     items: [
       {
-        label: "Users",
+        label: "Người dùng",
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.USERS}`,
         icon: Users,
       },
       {
-        label: "Reports",
+        label: "Báo cáo",
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.REPORTS}`,
         icon: Flag,
       },
-      { label: "Reviews", path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.REVIEWS}`, icon: MessageSquare },
+      { label: "Đánh giá", path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.REVIEWS}`, icon: MessageSquare },
     ],
   },
   {
-    title: "Master Data",
+    title: "Dữ liệu hệ thống",
     items: [
       {
-        label: "Industries",
+        label: "Ngành nghề",
         path: `${ADMIN_PATHS.ADMIN}/industries`,
         icon: Briefcase,
       },
       {
-        label: "Categories",
+        label: "Danh mục",
         path: `${ADMIN_PATHS.ADMIN}/categories`,
         icon: LayoutDashboard,
       },
       {
-        label: "Skills",
+        label: "Kỹ năng",
         path: `${ADMIN_PATHS.ADMIN}/skills`,
         icon: FileText,
       },
     ],
   },
   {
-    title: "System",
+    title: "Hệ thống",
     items: [
       {
-        label: "Analytics",
+        label: "Phân tích",
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.ANALYTICS}`,
         icon: BarChart3,
       },
       {
-        label: "Settings",
+        label: "Cài đặt",
         path: `${ADMIN_PATHS.ADMIN}/${ADMIN_PATHS.SETTINGS}`,
         icon: Settings,
       },

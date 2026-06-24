@@ -1,0 +1,78 @@
+tags:
+  name: Admin Employer
+  description: Quản trị Nhà tuyển dụng (Admin)
+
+components:
+  schemas:
+    VerifyCompanyRequestDto:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum: [approve, reject]
+          example: "approve"
+        reason:
+          type: string
+          example: "Giấy phép kinh doanh không hợp lệ"
+
+paths:
+  /api/v1/admin/employer/pending:
+    get:
+      summary: Lấy danh sách hồ sơ công ty chờ duyệt
+      tags: [Admin Employer]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/admin/employer/{companyId}:
+    get:
+      summary: Xem chi tiết hồ sơ công ty (dành cho phê duyệt)
+      tags: [Admin Employer]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/admin/employer/{companyId}/verify:
+    patch:
+      summary: Phê duyệt/Từ chối hồ sơ công ty
+      tags: [Admin Employer]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyCompanyRequestDto'
+      responses:
+        200:
+          description: Xử lý thành công

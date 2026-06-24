@@ -1,0 +1,116 @@
+tags:
+  name: Skill Categories
+  description: Quản lý Danh mục Kỹ năng
+
+components:
+  schemas:
+    SkillCategoryRequestDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: "Lập trình Web"
+        slug:
+          type: string
+          example: "lap-trinh-web"
+        description:
+          type: string
+          example: "Các kỹ năng liên quan đến lập trình Web"
+        isActive:
+          type: boolean
+          example: true
+        sortOrder:
+          type: number
+          example: 1
+
+paths:
+  /api/v1/skill-categories:
+    get:
+      summary: Lấy danh sách danh mục kỹ năng
+      tags: [Skill Categories]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: isActive
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo mới danh mục kỹ năng (Admin)
+      tags: [Skill Categories]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillCategoryRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/skill-categories/{id}:
+    get:
+      summary: Lấy chi tiết danh mục kỹ năng
+      tags: [Skill Categories]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Thành công
+    patch:
+      summary: Cập nhật danh mục kỹ năng (Admin)
+      tags: [Skill Categories]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillCategoryRequestDto'
+      responses:
+        200:
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa danh mục kỹ năng (Admin)
+      tags: [Skill Categories]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Xóa thành công

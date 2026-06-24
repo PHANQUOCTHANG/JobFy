@@ -8,9 +8,6 @@ import { Mail, ArrowLeft, Loader2, ChevronRight, KeyRound } from 'lucide-react';
 import { BackgroundPattern, FeatureBadge, InputField } from '../../components/ui/AuthComponents';
 
 const EmployerForgotPasswordPage: React.FC = () => {
-  useEffect(() => {
-    console.log('DEBUG: ForgotPasswordPage component đã mount thành công');
-  }, []);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();

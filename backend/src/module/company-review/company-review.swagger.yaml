@@ -1,0 +1,162 @@
+tags:
+  name: Company Reviews
+  description: Đánh giá và nhận xét công ty
+
+components:
+  schemas:
+    CreateCompanyReviewRequestDto:
+      type: object
+      required:
+        - companyId
+        - rating
+        - title
+        - content
+      properties:
+        companyId:
+          type: string
+          example: "uuid-company"
+        rating:
+          type: number
+          example: 4
+        title:
+          type: string
+          example: "Môi trường làm việc tốt"
+        content:
+          type: string
+          example: "Đồng nghiệp thân thiện, sếp hòa đồng..."
+        isAnonymous:
+          type: boolean
+          example: true
+
+    UpdateCompanyReviewRequestDto:
+      type: object
+      properties:
+        rating:
+          type: number
+        title:
+          type: string
+        content:
+          type: string
+        isAnonymous:
+          type: boolean
+
+paths:
+  /api/v1/company-reviews:
+    get:
+      summary: Lấy danh sách đánh giá công ty (Công khai)
+      tags: [Company Reviews]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+        - in: query
+          name: companyId
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Gửi đánh giá công ty
+      tags: [Company Reviews]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyReviewRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/company-reviews/admin:
+    get:
+      summary: Lấy danh sách đánh giá công ty (Admin)
+      tags: [Company Reviews]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 10
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/company-reviews/{id}:
+    patch:
+      summary: Cập nhật đánh giá
+      tags: [Company Reviews]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyReviewRequestDto'
+      responses:
+        200:
+          description: Cập nhật thành công
+    delete:
+      summary: Xóa đánh giá
+      tags: [Company Reviews]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Xóa thành công
+
+  /api/v1/company-reviews/{id}/approve:
+    patch:
+      summary: Duyệt/Từ chối đánh giá (Admin)
+      tags: [Company Reviews]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isApproved:
+                  type: boolean
+                  example: true
+      responses:
+        200:
+          description: Thành công

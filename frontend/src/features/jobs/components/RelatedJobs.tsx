@@ -206,7 +206,8 @@ const RelatedJobItem: React.FC<{ job: Job }> = ({ job }) => {
             variant="outline"
             className="flex-1 h-11 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-bold rounded-xl"
             onClick={(e) => {
-              e.stopPropagation(); /* TODO: handle apply open */
+              e.stopPropagation();
+              navigate(`/jobs/${job.slug}?apply=true`);
             }}
           >
             Ứng tuyển

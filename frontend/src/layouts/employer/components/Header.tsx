@@ -50,7 +50,6 @@ const Header: React.FC<HeaderProps> = ({ setIsSidebarOpen }) => {
     e.preventDefault();
     if (!searchValue.trim()) return;
     // Tích hợp logic tìm kiếm (gọi API hoặc điều hướng) ở đây
-    console.log("Tìm kiếm:", searchValue);
   }, [searchValue]);
 
   const handleClearSearch = useCallback(() => {

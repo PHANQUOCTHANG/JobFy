@@ -1,0 +1,190 @@
+tags:
+  name: AI Assistant
+  description: Trợ lý AI phân tích và tạo nội dung (Tích hợp Groq)
+
+paths:
+  /api/v1/ai/cv/generate-summary:
+    post:
+      summary: Tạo phần giới thiệu (Summary) cho CV
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resumeId:
+                  type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/ai/cv/review:
+    post:
+      summary: Đánh giá và góp ý cho CV
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resumeId:
+                  type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/ai/cv/match-job:
+    post:
+      summary: Kiểm tra mức độ phù hợp của CV với công việc
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resumeId:
+                  type: string
+                jobId:
+                  type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/ai/cv/suggest-skills:
+    post:
+      summary: Gợi ý kỹ năng cần bổ sung dựa trên CV và công việc mục tiêu
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resumeId:
+                  type: string
+                jobTitle:
+                  type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/ai/cover-letter/generate:
+    post:
+      summary: Tạo thư xin việc tự động dựa trên CV và công việc
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resumeId:
+                  type: string
+                jobId:
+                  type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/ai/cv/generate-full:
+    post:
+      summary: Viết lại toàn bộ nội dung CV chuyên nghiệp hơn
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resumeId:
+                  type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/ai/generate-jd:
+    post:
+      summary: Tạo mô tả công việc (Job Description) tự động cho Nhà tuyển dụng
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                industry:
+                  type: string
+                skills:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/ai/generate-questions:
+    post:
+      summary: Gợi ý câu hỏi phỏng vấn dựa trên JD
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jobId:
+                  type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/ai/analyze-cv:
+    post:
+      summary: Phân tích CV PDF tải lên (Nhà tuyển dụng)
+      tags: [AI Assistant]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                jobId:
+                  type: string
+      responses:
+        200:
+          description: Thành công

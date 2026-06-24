@@ -1,0 +1,141 @@
+tags:
+  name: Messaging
+  description: Quản lý Tin nhắn và Cuộc hội thoại (Conversations)
+
+components:
+  schemas:
+    CreateConversationRequestDto:
+      type: object
+      required:
+        - participantId
+        - applicationId
+      properties:
+        participantId:
+          type: string
+          example: "uuid-participant"
+        applicationId:
+          type: string
+          example: "uuid-application"
+
+    SendMessageRequestDto:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          example: "Xin chào, tôi là nhà tuyển dụng..."
+
+paths:
+  /api/v1/conversations:
+    get:
+      summary: Lấy danh sách cuộc hội thoại của user hiện tại
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 20
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Tạo cuộc hội thoại mới
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConversationRequestDto'
+      responses:
+        201:
+          description: Tạo thành công
+
+  /api/v1/conversations/{id}/messages:
+    get:
+      summary: Lấy danh sách tin nhắn trong cuộc hội thoại
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: number
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 50
+      responses:
+        200:
+          description: Thành công
+    post:
+      summary: Gửi tin nhắn
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequestDto'
+      responses:
+        201:
+          description: Gửi thành công
+
+  /api/v1/conversations/{id}/read:
+    patch:
+      summary: Đánh dấu đã đọc tin nhắn trong cuộc hội thoại
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công
+
+  /api/v1/conversations/{id}:
+    delete:
+      summary: Lưu trữ/Ẩn cuộc hội thoại (Archive)
+      tags: [Messaging]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Thành công

@@ -271,7 +271,6 @@ const EmployerSettingsPage = () => {
                 />
                 <button
                   onClick={() => {
-                    console.log('[FE] submit OTP=', otpValue, 'email=', progress?.step1?.email);
                     verifyEmailMutation.mutate(otpValue);
                   }}
                   disabled={verifyEmailMutation.isPending || otpValue.length !== 6}

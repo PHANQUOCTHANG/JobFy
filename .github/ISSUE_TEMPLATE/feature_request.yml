@@ -1,0 +1,41 @@
+name: Feature Request
+description: Suggest a new feature or idea for the project
+title: "[FEATURE] "
+labels: ["enhancement"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing to JobFy! Please fill out the information below to propose a new feature.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The Problem
+      description: What problem or pain point does this feature solve?
+      placeholder: Creating manual interview tests takes too much time...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe how the feature should work.
+      placeholder: I propose adding a "Generate AI Test" button to the Candidates Management page...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered (Optional)
+      description: Have you used any temporary workarounds to solve this issue?
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context (Optional)
+      description: Any mockups, screenshots, or reference materials.
