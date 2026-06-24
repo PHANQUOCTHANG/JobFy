@@ -17,7 +17,7 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": ["jest", "node"]
+    "types": ["node"]
   },
   "include": [
     "src/**/*" // Đảm bảo TypeScript biên dịch tất cả file trong src
