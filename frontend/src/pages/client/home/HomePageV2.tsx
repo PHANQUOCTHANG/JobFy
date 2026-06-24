@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { useHomeData } from "../../../features/home/hooks/useHomeData";
-import { ThemedLoader } from "../../../components/ui/ThemedLoader";
+
 import { HomeHero } from "../../../features/home/components/HomeHero";
 import { MarqueeStrip } from "../../../features/home/components/MarqueeStrip";
 import { CategorySection } from "../../../features/home/components/CategorySection";
@@ -19,9 +19,7 @@ export default function HomePageV2() {
   const { isLoading, data, error } = useHomeData();
   const [annoBar, setAnnoBar] = useState(true);
 
-  if (isLoading) {
-    return <ThemedLoader />;
-  }
+  // Xóa màn hình loading toàn trang để nhường chỗ cho Skeleton load từng phần
 
   // Xóa phần báo lỗi trắng trang để giao diện vẫn hiển thị bình thường khi backend bị sập
 
